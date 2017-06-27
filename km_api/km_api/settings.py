@@ -34,6 +34,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Custom Apps
+    'km_auth',
 ]
 
 MIDDLEWARE = [
@@ -65,6 +68,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'km_api.wsgi.application'
+
+
+# Custom user model
+
+AUTH_USER_MODEL = 'km_auth.User'
 
 
 # Database
