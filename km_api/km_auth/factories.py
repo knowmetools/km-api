@@ -14,6 +14,7 @@ class UserFactory(factory.django.DjangoModelFactory):
         name=user.first_name))
     first_name = 'John'
     last_name = 'Doe'
+    password = 'password'
 
     class Meta:
         model = models.User

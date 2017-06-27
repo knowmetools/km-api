@@ -65,3 +65,25 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     # Set custom manager
     objects = managers.UserManager()
+
+    def get_full_name(self):
+        """
+        Get the user's full name.
+
+        Returns:
+            str:
+                The user's first and last name.
+        """
+        return '{first} {last}'.format(
+            first=self.first_name,
+            last=self.last_name)
+
+    def get_short_name(self):
+        """
+        Get a short name for the user.
+
+        Returns:
+            str:
+                The user's first name.
+        """
+        return self.first_name
