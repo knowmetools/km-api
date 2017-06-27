@@ -5,6 +5,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from km_auth import managers
+
 
 class User(PermissionsMixin, AbstractBaseUser):
     """
@@ -60,3 +62,6 @@ class User(PermissionsMixin, AbstractBaseUser):
     # username and password fields which are included by default.
     # https://docs.djangoproject.com/en/1.11/topics/auth/customizing/#django.contrib.auth.models.CustomUser.REQUIRED_FIELDS
     REQUIRED_FIELDS = ('first_name', 'last_name')
+
+    # Set custom manager
+    objects = managers.UserManager()
