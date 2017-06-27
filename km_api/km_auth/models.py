@@ -66,6 +66,10 @@ class User(PermissionsMixin, AbstractBaseUser):
     # Set custom manager
     objects = managers.UserManager()
 
+    class Meta:
+        verbose_name = _('user')
+        verbose_name_plural = _('users')
+
     def get_full_name(self):
         """
         Get the user's full name.
