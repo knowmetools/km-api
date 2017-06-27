@@ -31,7 +31,7 @@ def test_register(api_rf):
     assert response.status_code == status.HTTP_201_CREATED
     assert get_user_model().objects.count() == 1
 
-    serializer = serializers.UserRegistrationSerializer(
+    serializer = serializers.UserDetailSerializer(
         get_user_model().objects.get())
 
     assert response.data == serializer.data

@@ -6,9 +6,9 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
+class UserDetailSerializer(serializers.ModelSerializer):
     """
-    Serializer for registering new users.
+    Serializer for retrieving, creating, and updating ``User`` objects.
     """
 
     class Meta:
@@ -18,7 +18,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 'write_only': True,
             },
         }
-        fields = ('email', 'first_name', 'last_name', 'password')
+        fields = ('id', 'email', 'first_name', 'last_name', 'password')
         model = get_user_model()
 
     def create(self, validated_data):
@@ -33,3 +33,28 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             The newly created ``User`` instance.
         """
         return get_user_model().objects.create_user(**validated_data)
+
+    def update(self, user, validated_data):
+        """
+        Update a user's details.
+
+        Args:
+            user:
+                The user being updated.
+            validated_data:
+                The data to update the user with.
+
+        Returns:
+            The edited ``User`` instance.
+        """
+        user.email = validated_data.get('email', user.email)
+        user.first_name = validated_data.get('first_name', user.first_name)
+        user.last_name = validated_data.get('last_name', user.last_name)
+
+        password = validated_data.get('password', None)
+        if password is not None:
+            user.set_password(password)
+
+        user.save()
+
+        return user
