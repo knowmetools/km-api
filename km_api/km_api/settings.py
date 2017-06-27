@@ -35,6 +35,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Third Party Apps
+    'rest_framework',
+
     # Custom Apps
     'km_auth',
 ]
