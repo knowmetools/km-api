@@ -6,9 +6,19 @@ from rest_framework import serializers
 from know_me import models
 
 
+class ProfileDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for single ``Profile`` instances.
+    """
+
+    class Meta:
+        fields = ('id', 'name', 'quote', 'welcome_message')
+        model = models.Profile
+
+
 class ProfileListSerializer(serializers.ModelSerializer):
     """
-    Serializer for ``Profile`` instances.
+    Serializer for multiple ``Profile`` instances.
     """
 
     class Meta:

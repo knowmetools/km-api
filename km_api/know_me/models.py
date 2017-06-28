@@ -5,6 +5,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from rest_framework.reverse import reverse
+
 
 class Profile(models.Model):
     """
@@ -44,3 +46,15 @@ class Profile(models.Model):
                 The profile's name.
         """
         return self.name
+
+    def get_absolute_url(self):
+        """
+        Get the absolute URL of the instance's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the instance's detail view.
+        """
+        return reverse(
+            'know-me:profile-detail',
+            kwargs={'profile_pk': self.pk})

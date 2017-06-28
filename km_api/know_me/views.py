@@ -10,6 +10,24 @@ from rest_framework.permissions import IsAuthenticated
 from know_me import models, serializers
 
 
+class ProfileDetailView(generics.RetrieveUpdateAPIView):
+    """
+    View for retreiving and updating a specific profile.
+    """
+    lookup_url_kwarg = 'profile_pk'
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.ProfileDetailSerializer
+
+    def get_queryset(self):
+        """
+        Get the profiles that the requesting user has access to.
+
+        Returns:
+            The requesting user's profile.
+        """
+        return models.Profile.objects.filter(user=self.request.user)
+
+
 class ProfileListView(generics.ListCreateAPIView):
     """
     View for listing and creating profiles.
