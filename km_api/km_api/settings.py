@@ -37,6 +37,7 @@ INSTALLED_APPS = [
 
     # Third Party Apps
     'rest_framework',
+    'rest_framework.authtoken',
 
     # Custom Apps
     'km_auth',
@@ -126,6 +127,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Rest Framework
+# http://www.django-rest-framework.org/api-guide/settings/
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}
 
 
 # Use local settings if they exist
