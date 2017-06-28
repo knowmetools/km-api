@@ -13,7 +13,7 @@ class ProfileFactory(factory.django.DjangoModelFactory):
     name = 'John'
     quote = factory.LazyAttribute(lambda profile: "Hi, I'm {name}".format(
         name=profile.name))
-    user = factory.SubFactory('km_auth.factories.UserFactory')
+    user = factory.SubFactory('factories.UserFactory')
     welcome_message = 'Life is like a box of chocolates.'
 
     class Meta:

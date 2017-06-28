@@ -8,12 +8,13 @@ profile_list_view = views.ProfileListView.as_view()
 url = reverse('know-me:profile-list')
 
 
-def test_create(admin_api_rf):
+def test_create(api_rf, user_factory):
     """
     Sending a POST request with valid data to the view should create a
     new profile for the user making the request.
     """
-    user = admin_api_rf.user
+    user = user_factory()
+    api_rf.user = user
 
     data = {
         'name': user.get_short_name(),
@@ -21,7 +22,7 @@ def test_create(admin_api_rf):
         'welcome_message': 'Welcome to my profile',
     }
 
-    request = admin_api_rf.post(url, data)
+    request = api_rf.post(url, data)
     response = profile_list_view(request)
 
     assert response.status_code == status.HTTP_201_CREATED
@@ -31,12 +32,14 @@ def test_create(admin_api_rf):
     assert response.data == serializer.data
 
 
-def test_create_second_profile(admin_api_rf, profile_factory):
+def test_create_second_profile(api_rf, profile_factory, user_factory):
     """
     A user who already has a profile should not be able to create a
     second one.
     """
-    user = admin_api_rf.user
+    user = user_factory()
+    api_rf.user = user
+
     profile_factory(user=user)
 
     data = {
@@ -45,45 +48,50 @@ def test_create_second_profile(admin_api_rf, profile_factory):
         'welcome_message': 'Welcome to my profile',
     }
 
-    request = admin_api_rf.post(url, data)
+    request = api_rf.post(url, data)
     response = profile_list_view(request)
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_get_anonymous(anon_api_rf, profile_factory):
+def test_get_anonymous(api_rf, profile_factory):
     """
     Anonymous users should not be able to access the view.
     """
-    request = anon_api_rf.get(url)
+    request = api_rf.get(url)
     response = profile_list_view(request)
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_get_other_profile(admin_api_rf, profile_factory):
+def test_get_other_profile(api_rf, profile_factory, user_factory):
     """
     The profile list should not include other users' profiles.
     """
+    user = user_factory()
+    api_rf.user = user
+
     # Build profile for different user
     profile_factory()
 
-    request = admin_api_rf.get(url)
+    request = api_rf.get(url)
     response = profile_list_view(request)
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data == []
 
 
-def test_get_own_profile(admin_api_rf, profile_factory):
+def test_get_own_profile(api_rf, profile_factory, user_factory):
     """
     If the requesting user has a profile, then a GET request to this
     view should contain that profile.
     """
-    user = admin_api_rf.user
+    user = user_factory()
+    api_rf.user = user
+
     profile = profile_factory(user=user)
 
-    request = admin_api_rf.get(url)
+    request = api_rf.get(url)
     response = profile_list_view(request)
 
     serializer = serializers.ProfileListSerializer([profile], many=True)

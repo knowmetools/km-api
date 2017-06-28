@@ -1,9 +1,11 @@
-"""Factories to generate model instances for testing.
+"""Factories to create model instances for testing.
+
+These factories are used project-wide.
 """
 
-import factory
+from django.contrib.auth import get_user_model
 
-from km_auth import models
+import factory
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -16,7 +18,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     password = 'password'
 
     class Meta:
-        model = models.User
+        model = get_user_model()
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):

@@ -1,7 +1,5 @@
 import pytest
 
-from km_auth.tests.conftest import admin_api_rf, anon_api_rf, user_factory     # noqa
-
 from know_me import factories
 
 
