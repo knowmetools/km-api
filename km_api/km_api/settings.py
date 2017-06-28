@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     # Custom Apps
     'km_auth',
+    'know_me',
 ]
 
 MIDDLEWARE = [
