@@ -1,23 +1,24 @@
-"""Factories to generate model instances for testing.
+"""Factories to create model instances for testing.
+
+These factories are used project-wide.
 """
 
-import factory
+from django.contrib.auth import get_user_model
 
-from km_auth import models
+import factory
 
 
 class UserFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``User`` instances.
     """
-    email = factory.LazyAttribute(lambda user: '{name}@example.com'.format(
-        name=user.first_name))
+    email = factory.Sequence(lambda n: 'test{n}@example.com'.format(n=n))
     first_name = 'John'
     last_name = 'Doe'
     password = 'password'
 
     class Meta:
-        model = models.User
+        model = get_user_model()
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):

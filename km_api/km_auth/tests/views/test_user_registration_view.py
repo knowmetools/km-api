@@ -37,11 +37,14 @@ def test_register(api_rf):
     assert response.data == serializer.data
 
 
-def test_register_authenticated(admin_api_rf):
+def test_register_authenticated(api_rf, user_factory):
     """
     Authenticated users should receive a permission error if they try to
     register.
     """
+    user = user_factory()
+    api_rf.user = user
+
     data = {
         'email': 'test@example.com',
         'first_name': 'John',
@@ -50,7 +53,7 @@ def test_register_authenticated(admin_api_rf):
     }
 
     url = reverse('auth:register')
-    request = admin_api_rf.post(url, data)
+    request = api_rf.post(url, data)
 
     response = user_registration_view(request)
 
