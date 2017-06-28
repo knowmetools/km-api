@@ -10,8 +10,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``User`` instances.
     """
-    email = factory.LazyAttribute(lambda user: '{name}@example.com'.format(
-        name=user.first_name))
+    email = factory.Sequence(lambda n: 'test{n}@example.com'.format(n=n))
     first_name = 'John'
     last_name = 'Doe'
     password = 'password'
