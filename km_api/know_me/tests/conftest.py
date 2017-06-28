@@ -12,3 +12,14 @@ def profile_factory(db):
         The factory class used to create test ``Profile`` instances.
     """
     return factories.ProfileFactory
+
+
+@pytest.fixture
+def profile_group_factory(db):
+    """
+    Fixture to get the factory used to create profile groups.
+
+    Returns:
+        The factory class used to create ``ProfileGroup`` instances.
+    """
+    return factories.ProfileGroupFactory

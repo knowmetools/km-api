@@ -58,3 +58,45 @@ class Profile(models.Model):
         return reverse(
             'know-me:profile-detail',
             kwargs={'profile_pk': self.pk})
+
+
+class ProfileGroup(models.Model):
+    """
+    A profile group contains a targeted subset of a ``Profile``.
+
+    Attributes:
+        is_default (bool):
+            A boolean controlling if the group is the default for its
+            parent profile.
+        name (str):
+            The name of the group.
+        profile:
+            The ``Profile`` instance the group belongs to.
+    """
+    is_default = models.BooleanField(
+        default=False,
+        help_text=_('The default profile group is displayed initially.'),
+        verbose_name=_('is default'))
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'))
+    profile = models.ForeignKey(
+        'know_me.Profile',
+        on_delete=models.CASCADE,
+        related_name='groups',
+        related_query_name='group',
+        verbose_name=_('profile'))
+
+    class Meta:
+        verbose_name = _('profile group')
+        verbose_name_plural = _('profile groups')
+
+    def __str__(self):
+        """
+        Get a string representation of the profile group.
+
+        Returns:
+            str:
+                The profile group's name.
+        """
+        return self.name
