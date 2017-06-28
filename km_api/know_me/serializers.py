@@ -6,7 +6,7 @@ from rest_framework import serializers
 from know_me import models
 
 
-class ProfileDetailSerializer(serializers.ModelSerializer):
+class ProfileListSerializer(serializers.ModelSerializer):
     """
     Serializer for ``Profile`` instances.
     """
