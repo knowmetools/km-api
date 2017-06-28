@@ -6,21 +6,26 @@ from rest_framework import serializers
 from know_me import models
 
 
-class ProfileDetailSerializer(serializers.ModelSerializer):
-    """
-    Serializer for single ``Profile`` instances.
-    """
-
-    class Meta:
-        fields = ('id', 'name', 'quote', 'welcome_message')
-        model = models.Profile
-
-
-class ProfileListSerializer(serializers.ModelSerializer):
+class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for multiple ``Profile`` instances.
     """
+    url = serializers.HyperlinkedIdentityField(
+        lookup_url_kwarg='profile_pk',
+        view_name='know-me:profile-detail')
 
     class Meta:
-        fields = ('id', 'name', 'quote', 'welcome_message')
+        fields = ('id', 'url', 'name', 'quote', 'welcome_message')
+        model = models.Profile
+
+
+class ProfileDetailSerializer(ProfileListSerializer):
+    """
+    Serializer for single ``Profile`` instances.
+
+    This serializer builds off of the ``ProfileListSerializer``.
+    """
+
+    class Meta:
+        fields = ('id', 'url', 'name', 'quote', 'welcome_message')
         model = models.Profile

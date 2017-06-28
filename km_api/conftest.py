@@ -70,6 +70,20 @@ def api_rf():
 
 
 @pytest.fixture
+def serializer_context(api_rf):
+    """
+    Fixture to get context for serializer instantiation.
+
+    Returns:
+        dict:
+            A dictionary containing dummy context for serializers.
+    """
+    return {
+        'request': api_rf.get('/'),
+    }
+
+
+@pytest.fixture
 def user_factory(db):
     """
     Fixture to get the factory used to create test users.

@@ -1,15 +1,23 @@
+from rest_framework.reverse import reverse
+
 from know_me import serializers
 
 
-def test_serialize(profile_factory):
+def test_serialize(profile_factory, serializer_context):
     """
     Test serializing a profile.
     """
     profile = profile_factory()
-    serializer = serializers.ProfileDetailSerializer(profile)
+    serializer = serializers.ProfileDetailSerializer(
+        profile,
+        context=serializer_context)
 
     expected = {
         'id': profile.id,
+        'url': reverse(
+            'know-me:profile-detail',
+            kwargs={'profile_pk': profile.pk},
+            request=serializer_context['request']),
         'name': profile.name,
         'quote': profile.quote,
         'welcome_message': profile.welcome_message,

@@ -27,7 +27,9 @@ def test_create(api_rf, user_factory):
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    serializer = serializers.ProfileListSerializer(user.profile)
+    serializer = serializers.ProfileListSerializer(
+        user.profile,
+        context={'request': request})
 
     assert response.data == serializer.data
 
@@ -94,7 +96,10 @@ def test_get_own_profile(api_rf, profile_factory, user_factory):
     request = api_rf.get(url)
     response = profile_list_view(request)
 
-    serializer = serializers.ProfileListSerializer([profile], many=True)
+    serializer = serializers.ProfileListSerializer(
+        [profile],
+        context={'request': request},
+        many=True)
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data == serializer.data

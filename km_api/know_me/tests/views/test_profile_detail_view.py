@@ -43,10 +43,13 @@ def test_get_own_profile(api_rf, profile_factory, user_factory):
     api_rf.user = user
 
     profile = profile_factory(user=user)
-    serializer = serializers.ProfileDetailSerializer(profile)
 
     request = api_rf.get(profile.get_absolute_url())
     response = profile_detail_view(request, profile_pk=profile.pk)
+
+    serializer = serializers.ProfileDetailSerializer(
+        profile,
+        context={'request': request})
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data == serializer.data
@@ -71,6 +74,8 @@ def test_update(api_rf, profile_factory, user_factory):
     assert response.status_code == status.HTTP_200_OK
 
     profile.refresh_from_db()
-    serializer = serializers.ProfileDetailSerializer(profile)
+    serializer = serializers.ProfileDetailSerializer(
+        profile,
+        context={'request': request})
 
     assert response.data == serializer.data
