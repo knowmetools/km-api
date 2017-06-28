@@ -1,6 +1,8 @@
 """Fixtures for pytest.
 """
 
+from django.contrib.auth.models import AnonymousUser
+
 import pytest
 
 from rest_framework.test import APIRequestFactory
@@ -8,9 +10,9 @@ from rest_framework.test import APIRequestFactory
 from km_auth import factories
 
 
-class AdminAPIRequestFactory(APIRequestFactory):
+class UserAPIRequestFactory(APIRequestFactory):
     """
-    Request factory that makes all requests as an authenticated user.
+    Request factory that makes all requests as a particular user.
     """
 
     def __init__(self, user, *args, **kwargs):
@@ -61,7 +63,20 @@ def admin_api_rf(user_factory):
     """
     user = user_factory(is_superuser=True)
 
-    return AdminAPIRequestFactory(user=user)
+    return UserAPIRequestFactory(user=user)
+
+
+@pytest.fixture(scope='session')
+def anon_api_rf():
+    """
+    Fixture to get a factory for making anonymous API requests.
+
+    Returns:
+        A factory that makes requests as an anonymous user.
+    """
+    user = AnonymousUser()
+
+    return UserAPIRequestFactory(user=user)
 
 
 @pytest.fixture(scope='session')
