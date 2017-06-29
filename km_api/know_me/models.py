@@ -134,6 +134,28 @@ class ProfileGroup(models.Model):
                 'profile_pk': self.profile.pk,
             })
 
+    def get_row_list_url(self, request=None):
+        """
+        Get the URL of the instance's row list view.
+
+        Args:
+            request (optional):
+                The request to use when constructing the URL. If a
+                request is provided, the URL will include a protocol
+                and domain. Otherwise it will be an absolute URL.
+
+        Returns:
+            str:
+                The URL of the instance's row list view.
+        """
+        return reverse(
+            'know-me:profile-row-list',
+            kwargs={
+                'group_pk': self.pk,
+                'profile_pk': self.profile.pk,
+            },
+            request=request)
+
 
 class ProfileRow(models.Model):
     """

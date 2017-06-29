@@ -43,12 +43,26 @@ class ProfileGroupListSerializer(serializers.HyperlinkedModelSerializer):
     Serializer for multiple ``ProfileGroup`` instances.
     """
     rows = ProfileRowListSerializer(many=True, read_only=True)
+    rows_url = serializers.SerializerMethodField()
     url = GroupHyperlinkedIdentityField(
         view_name='know-me:profile-group-detail')
 
     class Meta:
-        fields = ('id', 'url', 'name', 'is_default', 'rows')
+        fields = ('id', 'url', 'name', 'is_default', 'rows_url', 'rows')
         model = models.ProfileGroup
+
+    def get_rows_url(self, group):
+        """
+        Get the URL of the given group's row list.
+
+        Args:
+            group:
+                The group being serialized.
+
+        Returns:
+            The URL of the given group's row list.
+        """
+        return group.get_row_list_url(self.context['request'])
 
 
 class ProfileGroupDetailSerializer(ProfileGroupListSerializer):

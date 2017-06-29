@@ -27,6 +27,7 @@ def test_create(profile_factory, serializer_context):
 
 
 def test_serialize(
+        api_rf,
         profile_group_factory,
         profile_row_factory,
         serializer_context):
@@ -42,7 +43,10 @@ def test_serialize(
         context=serializer_context)
     row_serializer = serializers.ProfileRowListSerializer(
         group.rows,
+        context=serializer_context,
         many=True)
+
+    row_list_request = api_rf.get(group.get_row_list_url())
 
     expected = {
         'id': group.id,
@@ -55,6 +59,7 @@ def test_serialize(
             request=serializer_context['request']),
         'name': group.name,
         'is_default': group.is_default,
+        'rows_url': row_list_request.build_absolute_uri(),
         'rows': row_serializer.data,
     }
 
