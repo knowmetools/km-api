@@ -8,6 +8,7 @@ from know_me import views
 
 profile_detail_urls = [
     url(r'^$', views.ProfileDetailView.as_view(), name='profile-detail'),
+    url(r'^groups/$', views.ProfileGroupListView.as_view(), name='profile-group-list'),     # noqa
 ]
 
 profile_urls = [

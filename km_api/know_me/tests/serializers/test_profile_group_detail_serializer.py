@@ -11,7 +11,6 @@ def test_serialize(profile_group_factory):
     expected = {
         'id': group.id,
         'name': group.name,
-        'profile': group.profile.id,
         'is_default': group.is_default,
     }
 

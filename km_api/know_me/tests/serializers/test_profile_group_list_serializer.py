@@ -9,14 +9,13 @@ def test_create(profile_factory):
     profile = profile_factory()
     data = {
         'name': 'Profile Group',
-        'profile': profile.id,
         'is_default': True,
     }
 
     serializer = serializers.ProfileGroupListSerializer(data=data)
     assert serializer.is_valid()
 
-    group = serializer.save()
+    group = serializer.save(profile=profile)
 
     assert group.name == data['name']
     assert group.profile == profile
@@ -33,7 +32,6 @@ def test_serialize(profile_group_factory):
     expected = {
         'id': group.id,
         'name': group.name,
-        'profile': group.profile.id,
         'is_default': group.is_default,
     }
 

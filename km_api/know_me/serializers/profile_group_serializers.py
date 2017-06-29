@@ -12,7 +12,7 @@ class ProfileGroupListSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
-        fields = ('id', 'name', 'profile', 'is_default')
+        fields = ('id', 'name', 'is_default')
         model = models.ProfileGroup
 
 
@@ -24,5 +24,5 @@ class ProfileGroupDetailSerializer(ProfileGroupListSerializer):
     """
 
     class Meta:
-        fields = ('id', 'name', 'profile', 'is_default')
+        fields = ('id', 'name', 'is_default')
         model = models.ProfileGroup

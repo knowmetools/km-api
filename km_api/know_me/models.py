@@ -59,6 +59,18 @@ class Profile(models.Model):
             'know-me:profile-detail',
             kwargs={'profile_pk': self.pk})
 
+    def get_group_list_url(self):
+        """
+        Get the absolute URL of the instance's group list view.
+
+        Returns:
+            str:
+                The absolute URL of the instance's group list view.
+        """
+        return reverse(
+            'know-me:profile-group-list',
+            kwargs={'profile_pk': self.pk})
+
 
 class ProfileGroup(models.Model):
     """

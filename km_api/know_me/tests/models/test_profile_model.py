@@ -26,6 +26,18 @@ def test_get_absolute_url(profile_factory):
     assert profile.get_absolute_url() == expected
 
 
+def test_get_group_list_url(profile_factory):
+    """
+    This method should return the URL of the profile's group list view.
+    """
+    profile = profile_factory()
+    expected = reverse(
+        'know-me:profile-group-list',
+        kwargs={'profile_pk': profile.pk})
+
+    assert profile.get_group_list_url() == expected
+
+
 def test_string_conversion(profile_factory):
     """
     Converting a profile to a string should return the profile's name.
