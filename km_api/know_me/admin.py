@@ -25,3 +25,14 @@ class ProfileGroupAdmin(admin.ModelAdmin):
     list_display = ('name', 'profile', 'is_default')
     list_filter = ('is_default',)
     search_fields = ('name', 'profile__name')
+
+
+@admin.register(models.ProfileRow)
+class ProfileRowAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``ProfileRow`` model.
+    """
+    fields = ('name', 'group', 'row_type')
+    list_display = ('name', 'group', 'row_type')
+    list_filter = ('row_type',)
+    search_fields = ('group__name', 'name')

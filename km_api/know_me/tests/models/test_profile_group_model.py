@@ -29,6 +29,22 @@ def test_get_absolute_url(profile_group_factory):
     assert group.get_absolute_url() == expected
 
 
+def test_get_row_list_url(profile_group_factory):
+    """
+    This method should return the URL of the profile group's row list
+    view.
+    """
+    group = profile_group_factory()
+    expected = reverse(
+        'know-me:profile-row-list',
+        kwargs={
+            'group_pk': group.pk,
+            'profile_pk': group.profile.pk,
+        })
+
+    assert group.get_row_list_url() == expected
+
+
 def test_string_conversion(profile_group_factory):
     """
     Converting a profile group to a string should return the group's

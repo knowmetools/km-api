@@ -6,6 +6,8 @@ from rest_framework.reverse import reverse
 
 from know_me import models
 
+from .profile_row_serializers import ProfileRowSerializer
+
 
 class GroupHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
     """
@@ -40,12 +42,27 @@ class ProfileGroupListSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for multiple ``ProfileGroup`` instances.
     """
+    rows = ProfileRowSerializer(many=True, read_only=True)
+    rows_url = serializers.SerializerMethodField()
     url = GroupHyperlinkedIdentityField(
         view_name='know-me:profile-group-detail')
 
     class Meta:
-        fields = ('id', 'url', 'name', 'is_default')
+        fields = ('id', 'url', 'name', 'is_default', 'rows_url', 'rows')
         model = models.ProfileGroup
+
+    def get_rows_url(self, group):
+        """
+        Get the URL of the given group's row list.
+
+        Args:
+            group:
+                The group being serialized.
+
+        Returns:
+            The URL of the given group's row list.
+        """
+        return group.get_row_list_url(self.context['request'])
 
 
 class ProfileGroupDetailSerializer(ProfileGroupListSerializer):
@@ -56,5 +73,5 @@ class ProfileGroupDetailSerializer(ProfileGroupListSerializer):
     """
 
     class Meta:
-        fields = ('id', 'url', 'name', 'is_default')
+        fields = ('id', 'url', 'name', 'is_default', 'rows')
         model = models.ProfileGroup

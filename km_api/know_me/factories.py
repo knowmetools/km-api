@@ -29,3 +29,15 @@ class ProfileGroupFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = models.ProfileGroup
+
+
+class ProfileRowFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``ProfileRow`` instances.
+    """
+    group = factory.SubFactory('know_me.factories.ProfileGroupFactory')
+    name = factory.Sequence(lambda n: 'Profile Row {n}'.format(n=n))
+    row_type = models.ProfileRow.TEXT
+
+    class Meta:
+        model = models.ProfileRow
