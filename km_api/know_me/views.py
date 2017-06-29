@@ -1,6 +1,7 @@
 """Views for the ``know_me`` module.
 """
 
+from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
 from rest_framework import generics
@@ -61,3 +62,67 @@ class ProfileListView(generics.ListCreateAPIView):
                 detail=_('Users may not have more than one profile.'))
 
         return serializer.save(user=self.request.user)
+
+
+class ProfileGroupDetailView(generics.RetrieveUpdateAPIView):
+    """
+    View for retreiving and updating a specific profile group.
+    """
+    lookup_url_kwarg = 'group_pk'
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.ProfileGroupDetailSerializer
+
+    def get_queryset(self):
+        """
+        Get the profile groups of the specified profile.
+
+        Returns:
+            The profile groups associated with the profile whose ID is
+            given in the current URL.
+        """
+        profile = get_object_or_404(
+            models.Profile,
+            pk=self.kwargs.get('profile_pk'),
+            user=self.request.user)
+
+        return profile.groups
+
+
+class ProfileGroupListView(generics.ListCreateAPIView):
+    """
+    View for listing and creating profile groups.
+    """
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.ProfileGroupListSerializer
+
+    def get_queryset(self):
+        """
+        Get the profile groups of the specified profile.
+
+        Returns:
+            The profile groups associated with the profile whose ID is
+            given in the current URL.
+        """
+        profile = get_object_or_404(
+            models.Profile,
+            pk=self.kwargs.get('profile_pk'),
+            user=self.request.user)
+
+        return profile.groups
+
+    def perform_create(self, serializer):
+        """
+        Create a new profile group for the given profile.
+
+        Args:
+            serializer:
+                The serializer containing the data received.
+
+        Returns:
+            The newly created ``ProfileGroup`` instance.
+        """
+        profile = get_object_or_404(
+            models.Profile,
+            pk=self.kwargs.get('profile_pk'))
+
+        return serializer.save(profile=profile)

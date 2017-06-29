@@ -18,3 +18,14 @@ class ProfileFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = models.Profile
+
+
+class ProfileGroupFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``ProfileGroup`` instances.
+    """
+    name = 'Test Profile'
+    profile = factory.SubFactory('know_me.factories.ProfileFactory')
+
+    class Meta:
+        model = models.ProfileGroup
