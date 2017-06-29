@@ -133,3 +133,53 @@ class ProfileGroup(models.Model):
                 'group_pk': self.pk,
                 'profile_pk': self.profile.pk,
             })
+
+
+class ProfileRow(models.Model):
+    """
+    A profile row holds a category of information for a profile group.
+
+    Attributes:
+        group:
+            The row's parent ``ProfileGroup``.
+        name (str):
+            The row's name.
+    """
+    GROUPED = 1
+    PAGED = 2
+    TEXT = 3
+    VISUAL = 4
+
+    ROW_TYPE_CHOICES = (
+        (GROUPED, _('grouped row')),
+        (PAGED, _('paged row')),
+        (TEXT, _('text row')),
+        (VISUAL, _('visual row')),
+    )
+
+    group = models.ForeignKey(
+        'know_me.ProfileGroup',
+        on_delete=models.CASCADE,
+        related_name='rows',
+        related_query_name='row',
+        verbose_name=_('profile group'))
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'))
+    row_type = models.PositiveSmallIntegerField(
+        choices=ROW_TYPE_CHOICES,
+        verbose_name=_('row type'))
+
+    class Meta:
+        verbose_name = _('profile row')
+        verbose_name_plural = _('profile rows')
+
+    def __str__(self):
+        """
+        Get a string representation of the profile group.
+
+        Returns:
+            str:
+                The instance's name.
+        """
+        return self.name
