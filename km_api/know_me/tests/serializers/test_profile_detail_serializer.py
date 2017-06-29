@@ -20,6 +20,7 @@ def test_serialize(
         context=serializer_context)
     group_serializer = serializers.ProfileGroupListSerializer(
         profile.groups,
+        context=serializer_context,
         many=True)
 
     group_list_request = api_rf.get(profile.get_group_list_url())

@@ -119,3 +119,17 @@ class ProfileGroup(models.Model):
                 The profile group's name.
         """
         return self.name
+
+    def get_absolute_url(self):
+        """
+        Get the absolute URL of the instance's detail view.
+
+        Returns:
+            The URL of the instance's detail view.
+        """
+        return reverse(
+            'know-me:profile-group-detail',
+            kwargs={
+                'group_pk': self.pk,
+                'profile_pk': self.profile.pk,
+            })

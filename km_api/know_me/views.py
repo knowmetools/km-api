@@ -64,6 +64,30 @@ class ProfileListView(generics.ListCreateAPIView):
         return serializer.save(user=self.request.user)
 
 
+class ProfileGroupDetailView(generics.RetrieveUpdateAPIView):
+    """
+    View for retreiving and updating a specific profile group.
+    """
+    lookup_url_kwarg = 'group_pk'
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.ProfileGroupDetailSerializer
+
+    def get_queryset(self):
+        """
+        Get the profile groups of the specified profile.
+
+        Returns:
+            The profile groups associated with the profile whose ID is
+            given in the current URL.
+        """
+        profile = get_object_or_404(
+            models.Profile,
+            pk=self.kwargs.get('profile_pk'),
+            user=self.request.user)
+
+        return profile.groups
+
+
 class ProfileGroupListView(generics.ListCreateAPIView):
     """
     View for listing and creating profile groups.

@@ -25,7 +25,9 @@ def test_create(api_rf, profile_factory):
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    serializer = serializers.ProfileGroupListSerializer(profile.groups.get())
+    serializer = serializers.ProfileGroupListSerializer(
+        profile.groups.get(),
+        context={'request': request})
 
     assert response.data == serializer.data
 
@@ -73,6 +75,7 @@ def test_get_own(api_rf, profile_group_factory):
 
     serializer = serializers.ProfileGroupListSerializer(
         profile.groups,
+        context={'request': request},
         many=True)
 
     assert response.status_code == status.HTTP_200_OK
