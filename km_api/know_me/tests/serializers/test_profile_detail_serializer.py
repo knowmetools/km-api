@@ -3,14 +3,20 @@ from rest_framework.reverse import reverse
 from know_me import serializers
 
 
-def test_serialize(profile_factory, serializer_context):
+def test_serialize(profile_factory, profile_group_factory, serializer_context):
     """
     Test serializing a profile.
     """
     profile = profile_factory()
+    profile_group_factory(profile=profile)
+    profile_group_factory(profile=profile)
+
     serializer = serializers.ProfileDetailSerializer(
         profile,
         context=serializer_context)
+    group_serializer = serializers.ProfileGroupListSerializer(
+        profile.groups,
+        many=True)
 
     expected = {
         'id': profile.id,
@@ -21,6 +27,7 @@ def test_serialize(profile_factory, serializer_context):
         'name': profile.name,
         'quote': profile.quote,
         'welcome_message': profile.welcome_message,
+        'groups': group_serializer.data
     }
 
     assert serializer.data == expected

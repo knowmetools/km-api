@@ -1,9 +1,11 @@
-"""Serializers for the models in the ``know_me`` module.
+"""Serializers for the ``Profile`` model.
 """
 
 from rest_framework import serializers
 
 from know_me import models
+
+from .profile_group_serializers import ProfileGroupListSerializer
 
 
 class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
@@ -25,7 +27,8 @@ class ProfileDetailSerializer(ProfileListSerializer):
 
     This serializer builds off of the ``ProfileListSerializer``.
     """
+    groups = ProfileGroupListSerializer(many=True, read_only=True)
 
     class Meta:
-        fields = ('id', 'url', 'name', 'quote', 'welcome_message')
+        fields = ('id', 'url', 'name', 'quote', 'welcome_message', 'groups')
         model = models.Profile
