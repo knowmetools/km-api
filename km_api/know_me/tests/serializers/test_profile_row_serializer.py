@@ -11,7 +11,7 @@ def test_create(profile_group_factory):
         'row_type': models.ProfileRow.TEXT,
     }
 
-    serializer = serializers.ProfileRowListSerializer(data=data)
+    serializer = serializers.ProfileRowSerializer(data=data)
     assert serializer.is_valid()
 
     row = serializer.save(group=group)
@@ -26,7 +26,7 @@ def test_serialize(profile_row_factory):
     Test serializing a profile.
     """
     row = profile_row_factory()
-    serializer = serializers.ProfileRowListSerializer(row)
+    serializer = serializers.ProfileRowSerializer(row)
 
     expected = {
         'id': row.id,

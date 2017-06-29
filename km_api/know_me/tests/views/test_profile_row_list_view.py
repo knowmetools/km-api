@@ -45,7 +45,7 @@ def test_create_row(api_rf, profile_group_factory):
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    serializer = serializers.ProfileRowListSerializer(group.rows.get())
+    serializer = serializers.ProfileRowSerializer(group.rows.get())
 
     assert response.data == serializer.data
 
@@ -88,6 +88,6 @@ def test_list_own_rows(api_rf, profile_row_factory):
 
     assert response.status_code == status.HTTP_200_OK
 
-    serializer = serializers.ProfileRowListSerializer([row], many=True)
+    serializer = serializers.ProfileRowSerializer([row], many=True)
 
     assert response.data == serializer.data

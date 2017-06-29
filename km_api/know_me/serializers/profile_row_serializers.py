@@ -6,9 +6,9 @@ from rest_framework import serializers
 from know_me import models
 
 
-class ProfileRowListSerializer(serializers.ModelSerializer):
+class ProfileRowSerializer(serializers.ModelSerializer):
     """
-    Serializer for multiple ``ProfileRow`` instances.
+    Serializer for ``ProfileRow`` instances.
     """
 
     class Meta:

@@ -133,7 +133,7 @@ class ProfileRowListView(generics.ListCreateAPIView):
     View for listing and creating rows in a profile group.
     """
     permission_classes = (IsAuthenticated,)
-    serializer_class = serializers.ProfileRowListSerializer
+    serializer_class = serializers.ProfileRowSerializer
 
     def get_queryset(self):
         """

@@ -17,7 +17,7 @@ def test_serialize(
     serializer = serializers.ProfileGroupDetailSerializer(
         group,
         context=serializer_context)
-    row_serializer = serializers.ProfileRowListSerializer(
+    row_serializer = serializers.ProfileRowSerializer(
         group.rows,
         many=True)
 

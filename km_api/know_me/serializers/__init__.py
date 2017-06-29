@@ -9,5 +9,5 @@ from .profile_group_serializers import (    # noqa
 )
 
 from .profile_row_serializers import (      # noqa
-    ProfileRowListSerializer,
+    ProfileRowSerializer,
 )
