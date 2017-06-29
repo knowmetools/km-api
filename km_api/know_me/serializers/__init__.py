@@ -7,3 +7,7 @@ from .profile_group_serializers import (    # noqa
     ProfileGroupDetailSerializer,
     ProfileGroupListSerializer,
 )
+
+from .profile_row_serializers import (      # noqa
+    ProfileRowListSerializer,
+)
