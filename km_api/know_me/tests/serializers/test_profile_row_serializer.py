@@ -1,3 +1,5 @@
+from rest_framework.reverse import reverse
+
 from know_me import models, serializers
 
 
@@ -21,15 +23,25 @@ def test_create(profile_group_factory):
     assert row.group == group
 
 
-def test_serialize(profile_row_factory):
+def test_serialize(profile_row_factory, serializer_context):
     """
     Test serializing a profile.
     """
     row = profile_row_factory()
-    serializer = serializers.ProfileRowSerializer(row)
+    serializer = serializers.ProfileRowSerializer(
+        row,
+        context=serializer_context)
 
     expected = {
         'id': row.id,
+        'url': reverse(
+            'know-me:profile-row-detail',
+            kwargs={
+                'group_pk': row.group.pk,
+                'profile_pk': row.group.profile.pk,
+                'row_pk': row.pk,
+            },
+            request=serializer_context['request']),
         'name': row.name,
         'row_type': row.row_type,
     }

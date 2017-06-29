@@ -205,3 +205,19 @@ class ProfileRow(models.Model):
                 The instance's name.
         """
         return self.name
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the instance's detail view.
+        """
+        return reverse(
+            'know-me:profile-row-detail',
+            kwargs={
+                'group_pk': self.group.pk,
+                'profile_pk': self.group.profile.pk,
+                'row_pk': self.pk,
+            })

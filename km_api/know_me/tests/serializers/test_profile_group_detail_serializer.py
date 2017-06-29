@@ -19,6 +19,7 @@ def test_serialize(
         context=serializer_context)
     row_serializer = serializers.ProfileRowSerializer(
         group.rows,
+        context=serializer_context,
         many=True)
 
     expected = {

@@ -128,6 +128,31 @@ class ProfileGroupListView(generics.ListCreateAPIView):
         return serializer.save(profile=profile)
 
 
+class ProfileRowDetailView(generics.RetrieveUpdateAPIView):
+    """
+    View for retreiving and updating a profile row.
+    """
+    lookup_url_kwarg = 'row_pk'
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.ProfileRowSerializer
+
+    def get_queryset(self):
+        """
+        Get the profile rows accessible to the current user.
+
+        Returns:
+            The profile rows belonging to the profile group whose ID is
+            given in the current URL.
+        """
+        group = get_object_or_404(
+            models.ProfileGroup,
+            pk=self.kwargs.get('group_pk'),
+            profile__pk=self.kwargs.get('profile_pk'),
+            profile__user=self.request.user)
+
+        return group.rows
+
+
 class ProfileRowListView(generics.ListCreateAPIView):
     """
     View for listing and creating rows in a profile group.
