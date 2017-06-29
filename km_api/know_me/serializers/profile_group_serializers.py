@@ -14,3 +14,15 @@ class ProfileGroupListSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'name', 'profile', 'is_default')
         model = models.ProfileGroup
+
+
+class ProfileGroupDetailSerializer(ProfileGroupListSerializer):
+    """
+    Serializer for single ``ProfileGroup`` instances.
+
+    Based off ``ProfileGroupListSerializer``.
+    """
+
+    class Meta:
+        fields = ('id', 'name', 'profile', 'is_default')
+        model = models.ProfileGroup

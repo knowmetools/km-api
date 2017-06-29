@@ -1,2 +1,9 @@
-from .profile_serializers import ProfileDetailSerializer, ProfileListSerializer     # noqa
-from .profile_group_serializers import ProfileGroupListSerializer                   # noqa
+from .profile_serializers import (          # noqa
+    ProfileDetailSerializer,
+    ProfileListSerializer,
+)
+
+from .profile_group_serializers import (    # noqa
+    ProfileGroupDetailSerializer,
+    ProfileGroupListSerializer,
+)
