@@ -6,7 +6,10 @@ cache: pip
 install:
   - pip install --upgrade pip
   - pip install -r requirements/test.txt
+  - pip install codecov
 
 before_script: flake8
 
-script: pytest km_api/
+script: coverage run -m pytest km_api/
+
+after_success: codecov
