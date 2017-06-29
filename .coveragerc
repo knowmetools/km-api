@@ -1,0 +1,7 @@
+[run]
+branch = True
+omit = \
+    */tests/*,
+   km_api/manage.py,
+   km_api/km_api/wsgi.py
+source = km_api
