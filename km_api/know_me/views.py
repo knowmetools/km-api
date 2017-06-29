@@ -8,10 +8,10 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
-from know_me import models, serializers
+from know_me import mixins, models, serializers
 
 
-class ProfileDetailView(generics.RetrieveUpdateAPIView):
+class ProfileDetailView(mixins.ProfileMixin, generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile.
     """
@@ -19,31 +19,13 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.ProfileDetailSerializer
 
-    def get_queryset(self):
-        """
-        Get the profiles that the requesting user has access to.
 
-        Returns:
-            The requesting user's profile.
-        """
-        return models.Profile.objects.filter(user=self.request.user)
-
-
-class ProfileListView(generics.ListCreateAPIView):
+class ProfileListView(mixins.ProfileMixin, generics.ListCreateAPIView):
     """
     View for listing and creating profiles.
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.ProfileListSerializer
-
-    def get_queryset(self):
-        """
-        Get the profiles that the requesting user has access to.
-
-        Returns:
-            The requesting user's profile.
-        """
-        return models.Profile.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         """
