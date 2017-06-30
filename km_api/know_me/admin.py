@@ -6,6 +6,16 @@ from django.contrib import admin
 from know_me import models
 
 
+@admin.register(models.GalleryItem)
+class GalleryItemAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``GalleryItem`` model.
+    """
+    fields = ('name', 'profile', 'resource')
+    list_display = ('name', 'profile')
+    search_fields = ('name', 'profile__name')
+
+
 @admin.register(models.Profile)
 class ProfileAdmin(admin.ModelAdmin):
     """

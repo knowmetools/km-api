@@ -1,9 +1,35 @@
 """Factories to generate model instances for testing.
 """
 
+from django.core.files.base import ContentFile
+
 import factory
 
 from know_me import models
+
+
+def create_file():
+    """
+    Create a simple text file.
+
+    Returns:
+        A simple text file represented as a ``ContentFile`` instance.
+    """
+    return ContentFile(
+        content='The quick brown fox jumped over the lazy dog.',
+        name='foo.txt')
+
+
+class GalleryItemFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``GalleryItem`` instances.
+    """
+    name = factory.Sequence(lambda n: 'Gallery Item {n}'.format(n=n))
+    profile = factory.SubFactory('know_me.factories.ProfileFactory')
+    resource = factory.LazyFunction(create_file)
+
+    class Meta:
+        model = models.GalleryItem
 
 
 class ProfileFactory(factory.django.DjangoModelFactory):

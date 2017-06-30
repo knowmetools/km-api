@@ -8,6 +8,66 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.reverse import reverse
 
 
+def get_gallery_item_upload_path(item, filename):
+    """
+    Get the path to upload a gallery item's resource to.
+
+    Args:
+        item:
+            The gallery item whose resource is being uploaded.
+        filename (str):
+            The original name of the file being uploaded.
+
+    Returns:
+        str:
+            The original filename prefixed with
+            ``profile/<id>/gallery/``.
+    """
+    return 'profile/{id}/gallery/{file}'.format(
+        file=filename,
+        id=item.profile.id)
+
+
+class GalleryItem(models.Model):
+    """
+    A gallery item is an uploaded file attached to a profile.
+
+    Attributes:
+        name:
+            The name of the item.
+        profile:
+            The profile that the item is attached to.
+        resource:
+            A file containing some sort of content.
+    """
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'))
+    profile = models.ForeignKey(
+        'know_me.Profile',
+        related_name='gallery_items',
+        related_query_name='gallery_item',
+        verbose_name=_('profile'))
+    resource = models.FileField(
+        max_length=255,
+        upload_to=get_gallery_item_upload_path,
+        verbose_name=_('resource'))
+
+    class Meta:
+        verbose_name = _('gallery item')
+        verbose_name_plural = _('gallery items')
+
+    def __str__(self):
+        """
+        Get a string representation of the gallery item.
+
+        Returns:
+            str:
+                The gallery item's name.
+        """
+        return self.name
+
+
 class Profile(models.Model):
     """
     A profile contains information about a specific user.

@@ -106,3 +106,7 @@ ENV/
 
 # Database
 *.sqlite3
+
+# Static files
+km_api/media/
+km_api/static/
