@@ -265,6 +265,23 @@ class ProfileItem(models.Model):
         """
         return self.name
 
+    def get_absolute_url(self):
+        """
+        Get the URL of the profile item's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the profile item's detail view.
+        """
+        return reverse(
+            'know-me:profile-item-detail',
+            kwargs={
+                'group_pk': self.row.group.pk,
+                'item_pk': self.pk,
+                'profile_pk': self.row.group.profile.pk,
+                'row_pk': self.row.pk,
+            })
+
 
 class ProfileRow(models.Model):
     """

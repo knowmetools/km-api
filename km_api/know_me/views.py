@@ -84,6 +84,17 @@ class ProfileGroupListView(
         return serializer.save(profile=profile)
 
 
+class ProfileItemDetailView(
+        mixins.ProfileItemMixin,
+        generics.RetrieveUpdateAPIView):
+    """
+    View for retrieving and updating a specific profile item.
+    """
+    lookup_url_kwarg = 'item_pk'
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.ProfileItemSerializer
+
+
 class ProfileItemListView(mixins.ProfileItemMixin, generics.ListCreateAPIView):
     """
     View for listing and creating profile items.

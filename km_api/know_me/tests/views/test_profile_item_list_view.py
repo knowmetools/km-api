@@ -49,7 +49,9 @@ def test_create(api_rf, profile_row_factory):
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    serializer = serializers.ProfileItemSerializer(row.items.get())
+    serializer = serializers.ProfileItemSerializer(
+        row.items.get(),
+        context={'request': request})
 
     assert response.data == serializer.data
 
@@ -79,6 +81,7 @@ def test_get_items(api_rf, profile_item_factory, profile_row_factory):
 
     serializer = serializers.ProfileItemSerializer(
         row.items.all(),
+        context={'request': request},
         many=True)
 
     assert response.data == serializer.data

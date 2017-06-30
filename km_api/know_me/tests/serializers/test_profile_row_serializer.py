@@ -40,6 +40,7 @@ def test_serialize(
         context=serializer_context)
     item_serializer = serializers.ProfileItemSerializer(
         row.items.all(),
+        context=serializer_context,
         many=True)
 
     item_list_request = api_rf.get(row.get_item_list_url())
