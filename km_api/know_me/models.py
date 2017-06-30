@@ -330,3 +330,27 @@ class ProfileRow(models.Model):
                 'profile_pk': self.group.profile.pk,
                 'row_pk': self.pk,
             })
+
+    def get_item_list_url(self, request=None):
+        """
+        Get the URL of the row's item list view.
+
+        Args:
+            request (optional):
+                The request to use when constructing the URL. If it is
+                provided, the resulting URL will include a protocol and
+                domain. Otherwise the resulting URL will be an absolute
+                URL (beginning with a ``'/'``). Defaults to ``None``.
+
+        Returns:
+            str:
+                The URL of the row's item list view.
+        """
+        return reverse(
+            'know-me:profile-item-list',
+            kwargs={
+                'group_pk': self.group.pk,
+                'profile_pk': self.group.profile.pk,
+                'row_pk': self.pk,
+            },
+            request=request)

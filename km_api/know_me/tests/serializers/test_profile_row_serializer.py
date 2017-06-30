@@ -23,7 +23,7 @@ def test_create(profile_group_factory):
     assert row.group == group
 
 
-def test_serialize(profile_row_factory, serializer_context):
+def test_serialize(api_rf, profile_row_factory, serializer_context):
     """
     Test serializing a profile.
     """
@@ -31,6 +31,8 @@ def test_serialize(profile_row_factory, serializer_context):
     serializer = serializers.ProfileRowSerializer(
         row,
         context=serializer_context)
+
+    item_list_request = api_rf.get(row.get_item_list_url())
 
     expected = {
         'id': row.id,
@@ -44,6 +46,7 @@ def test_serialize(profile_row_factory, serializer_context):
             request=serializer_context['request']),
         'name': row.name,
         'row_type': row.row_type,
+        'items_url': item_list_request.build_absolute_uri(),
     }
 
     assert serializer.data == expected
