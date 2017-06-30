@@ -6,6 +6,8 @@ from rest_framework.reverse import reverse
 
 from know_me import models
 
+from .profile_item_serializers import ProfileItemSerializer
+
 
 class RowHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
     """
@@ -41,11 +43,12 @@ class ProfileRowSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for ``ProfileRow`` instances.
     """
+    items = ProfileItemSerializer(many=True, read_only=True)
     items_url = serializers.SerializerMethodField()
     url = RowHyperlinkedIdentityField(view_name='know-me:profile-row-detail')
 
     class Meta:
-        fields = ('id', 'url', 'name', 'row_type', 'items_url')
+        fields = ('id', 'url', 'name', 'row_type', 'items_url', 'items')
         model = models.ProfileRow
 
     def get_items_url(self, row):
