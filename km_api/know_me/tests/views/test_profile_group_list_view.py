@@ -46,7 +46,7 @@ def test_get_anonymous(api_rf, profile_factory):
 
 def test_get_own(api_rf, profile_group_factory):
     """
-    User's should be able to list their own profile's groups.
+    Users should be able to list their own profile's groups.
     """
     group = profile_group_factory()
     profile = group.profile
