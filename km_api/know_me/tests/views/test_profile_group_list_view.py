@@ -44,25 +44,9 @@ def test_get_anonymous(api_rf, profile_factory):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_get_other(api_rf, profile_group_factory, user_factory):
-    """
-    User's should not be able to access the groups for a profile they
-    don't own.
-    """
-    group = profile_group_factory()
-    profile = group.profile
-
-    api_rf.user = user_factory()
-
-    request = api_rf.get(profile.get_group_list_url())
-    response = profile_group_list_view(request, profile_pk=profile.pk)
-
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-
-
 def test_get_own(api_rf, profile_group_factory):
     """
-    User's should be able to list their own profile's groups.
+    Users should be able to list their own profile's groups.
     """
     group = profile_group_factory()
     profile = group.profile

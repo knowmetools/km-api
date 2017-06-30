@@ -52,26 +52,6 @@ def test_create_row(api_rf, profile_group_factory):
     assert response.data == serializer.data
 
 
-def test_list_others_rows(api_rf, profile_row_factory, user_factory):
-    """
-    Users should not be able to list the rows from another user's
-    profile.
-    """
-    row = profile_row_factory()
-    group = row.group
-    profile = group.profile
-
-    api_rf.user = user_factory()
-
-    request = api_rf.get(group.get_row_list_url())
-    response = profile_row_list_view(
-        request,
-        group_pk=group.pk,
-        profile_pk=profile.pk)
-
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-
-
 def test_list_own_rows(api_rf, profile_row_factory):
     """
     Users should be able to list the rows in their own profile.

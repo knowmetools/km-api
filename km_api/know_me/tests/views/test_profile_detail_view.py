@@ -18,23 +18,6 @@ def test_get_anonymous(api_rf, profile_factory):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_get_other_profile(api_rf, profile_factory, user_factory):
-    """
-    A user should not be able to access profiles owned by a different
-    user.
-    """
-    user = user_factory()
-    api_rf.user = user
-
-    # Create profile for different user
-    profile = profile_factory()
-
-    request = api_rf.get(profile.get_absolute_url())
-    response = profile_detail_view(request, profile_pk=profile.pk)
-
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-
-
 def test_get_own_profile(api_rf, profile_factory, user_factory):
     """
     A user should be able to get the details of their own profile.
