@@ -46,7 +46,9 @@ class ProfileListView(mixins.ProfileMixin, generics.ListCreateAPIView):
         return serializer.save(user=self.request.user)
 
 
-class ProfileGroupDetailView(generics.RetrieveUpdateAPIView):
+class ProfileGroupDetailView(
+        mixins.ProfileGroupMixin,
+        generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile group.
     """
@@ -54,43 +56,15 @@ class ProfileGroupDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.ProfileGroupDetailSerializer
 
-    def get_queryset(self):
-        """
-        Get the profile groups of the specified profile.
 
-        Returns:
-            The profile groups associated with the profile whose ID is
-            given in the current URL.
-        """
-        profile = get_object_or_404(
-            models.Profile,
-            pk=self.kwargs.get('profile_pk'),
-            user=self.request.user)
-
-        return profile.groups
-
-
-class ProfileGroupListView(generics.ListCreateAPIView):
+class ProfileGroupListView(
+        mixins.ProfileGroupMixin,
+        generics.ListCreateAPIView):
     """
     View for listing and creating profile groups.
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.ProfileGroupListSerializer
-
-    def get_queryset(self):
-        """
-        Get the profile groups of the specified profile.
-
-        Returns:
-            The profile groups associated with the profile whose ID is
-            given in the current URL.
-        """
-        profile = get_object_or_404(
-            models.Profile,
-            pk=self.kwargs.get('profile_pk'),
-            user=self.request.user)
-
-        return profile.groups
 
     def perform_create(self, serializer):
         """
