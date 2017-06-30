@@ -20,7 +20,7 @@ urlpatterns = [
                         url(r'^$', views.ProfileRowDetailView.as_view(), name='profile-row-detail'),                            # noqa
                         url(r'^items/', include([
                             url(r'^$', views.ProfileItemListView.as_view(), name='profile-item-list'),                          # noqa
-                            url(r'^(?P<item_pk>[0-9]+)/$', views.ProfileItemDetailView.as_view, name='profile-item-detail'),    # noqa
+                            url(r'^(?P<item_pk>[0-9]+)/$', views.ProfileItemDetailView.as_view(), name='profile-item-detail'),  # noqa
                         ])),
                     ])),
                 ])),
