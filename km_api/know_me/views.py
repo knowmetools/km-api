@@ -84,7 +84,9 @@ class ProfileGroupListView(
         return serializer.save(profile=profile)
 
 
-class ProfileRowDetailView(generics.RetrieveUpdateAPIView):
+class ProfileRowDetailView(
+        mixins.ProfileRowMixin,
+        generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a profile row.
     """
@@ -92,48 +94,13 @@ class ProfileRowDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.ProfileRowSerializer
 
-    def get_queryset(self):
-        """
-        Get the profile rows accessible to the current user.
 
-        Returns:
-            The profile rows belonging to the profile group whose ID is
-            given in the current URL.
-        """
-        group = get_object_or_404(
-            models.ProfileGroup,
-            pk=self.kwargs.get('group_pk'),
-            profile__pk=self.kwargs.get('profile_pk'),
-            profile__user=self.request.user)
-
-        return group.rows
-
-
-class ProfileRowListView(generics.ListCreateAPIView):
+class ProfileRowListView(mixins.ProfileRowMixin, generics.ListCreateAPIView):
     """
     View for listing and creating rows in a profile group.
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.ProfileRowSerializer
-
-    def get_queryset(self):
-        """
-        Get the profile rows accessible to the current user.
-
-        Returns:
-            The profile rows belonging to the profile group with the ID
-            given in the current URL.
-        """
-        profile = get_object_or_404(
-            models.Profile,
-            pk=self.kwargs.get('profile_pk'),
-            user=self.request.user)
-
-        group = get_object_or_404(
-            profile.groups,
-            pk=self.kwargs.get('group_pk'))
-
-        return group.rows
 
     def perform_create(self, serializer):
         """

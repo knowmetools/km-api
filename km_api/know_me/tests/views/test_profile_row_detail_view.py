@@ -24,26 +24,6 @@ def test_anonymous(api_rf, profile_row_factory):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_get_others_row(api_rf, profile_row_factory, user_factory):
-    """
-    Users should not be able to access rows from other users' profiles.
-    """
-    row = profile_row_factory()
-    group = row.group
-    profile = group.profile
-
-    api_rf.user = user_factory()
-
-    request = api_rf.get(row.get_absolute_url())
-    response = profile_row_detail_view(
-        request,
-        group_pk=group.pk,
-        profile_pk=profile.pk,
-        row_pk=row.pk)
-
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-
-
 def test_get_own_row(api_rf, profile_row_factory):
     """
     Users should be able to access rows that are part of their own
