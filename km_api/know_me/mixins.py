@@ -82,6 +82,22 @@ class ProfileItemMixin:
 
         return row.items.all()
 
+    def get_serializer_context(self):
+        """
+        Get additional context to pass to serializers.
+
+        Returns:
+            dict:
+                The superclass' serialzer context with the profile whose
+                primary key is passed to the view appended.
+        """
+        context = super().get_serializer_context()
+
+        context['profile'] = models.Profile.objects.get(
+            pk=self.kwargs.get('profile_pk'))
+
+        return context
+
 
 class ProfileRowMixin:
     """
