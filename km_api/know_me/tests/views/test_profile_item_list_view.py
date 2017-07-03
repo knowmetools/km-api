@@ -24,7 +24,7 @@ def test_anonymous(api_rf, profile_row_factory):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_create(api_rf, profile_row_factory):
+def test_create(api_rf, gallery_item_factory, profile_row_factory):
     """
     Sending a POST request to the view with valid data should create a
     new profile item.
@@ -32,10 +32,12 @@ def test_create(api_rf, profile_row_factory):
     row = profile_row_factory()
     group = row.group
     profile = group.profile
+    gallery_item = gallery_item_factory(profile=profile)
 
     api_rf.user = profile.user
 
     data = {
+        'gallery_item': gallery_item.pk,
         'name': 'Test Item',
         'text': 'Some sample text.',
     }
@@ -51,7 +53,10 @@ def test_create(api_rf, profile_row_factory):
 
     serializer = serializers.ProfileItemSerializer(
         row.items.get(),
-        context={'request': request})
+        context={
+            'profile': profile,
+            'request': request,
+        })
 
     assert response.data == serializer.data
 

@@ -94,6 +94,21 @@ class ProfileItemDetailView(
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.ProfileItemSerializer
 
+    def get_serializer_context(self):
+        """
+        Get context for the view's serializer.
+
+        Returns:
+            dict:
+                A dictionary containing context for the serializer.
+        """
+        context = super().get_serializer_context()
+
+        context['profile'] = models.Profile.objects.get(
+            pk=self.kwargs.get('profile_pk'))
+
+        return context
+
 
 class ProfileItemListView(mixins.ProfileItemMixin, generics.ListCreateAPIView):
     """
@@ -101,6 +116,21 @@ class ProfileItemListView(mixins.ProfileItemMixin, generics.ListCreateAPIView):
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.ProfileItemSerializer
+
+    def get_serializer_context(self):
+        """
+        Get context for the view's serializer.
+
+        Returns:
+            dict:
+                A dictionary containing context for the serializer.
+        """
+        context = super().get_serializer_context()
+
+        context['profile'] = models.Profile.objects.get(
+            pk=self.kwargs.get('profile_pk'))
+
+        return context
 
     def perform_create(self, serializer):
         """
