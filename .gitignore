@@ -110,3 +110,8 @@ ENV/
 # Static files
 km_api/media/
 km_api/static/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
