@@ -24,13 +24,22 @@ def test_create(profile_row_factory, serializer_context):
     assert item.row == row
 
 
-def test_serialize(api_rf, profile_item_factory, serializer_context):
+def test_serialize(
+        api_rf,
+        gallery_item_factory,
+        profile_item_factory,
+        serializer_context):
     """
     Test serializing a profile item.
     """
-    item = profile_item_factory()
+    gallery_item = gallery_item_factory()
+    item = profile_item_factory(gallery_item=gallery_item)
+
     serializer = serializers.ProfileItemSerializer(
         item,
+        context=serializer_context)
+    gallery_item_serializer = serializers.GalleryItemSerializer(
+        gallery_item,
         context=serializer_context)
 
     url_request = api_rf.get(item.get_absolute_url())
@@ -40,6 +49,7 @@ def test_serialize(api_rf, profile_item_factory, serializer_context):
         'url': url_request.build_absolute_uri(),
         'name': item.name,
         'text': item.text,
+        'gallery_item_info': gallery_item_serializer.data,
     }
 
     assert serializer.data == expected

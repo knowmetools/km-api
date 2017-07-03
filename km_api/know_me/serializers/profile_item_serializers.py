@@ -6,6 +6,8 @@ from rest_framework.reverse import reverse
 
 from know_me import models
 
+from .gallery_item_serializers import GalleryItemSerializer
+
 
 class ItemHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
     """
@@ -42,8 +44,11 @@ class ProfileItemSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for ``ProfileItem`` instances.
     """
+    gallery_item_info = GalleryItemSerializer(
+        read_only=True,
+        source='gallery_item')
     url = ItemHyperlinkedIdentityField(view_name='know-me:profile-item-detail')
 
     class Meta:
-        fields = ('id', 'url', 'name', 'text')
+        fields = ('id', 'url', 'name', 'text', 'gallery_item_info')
         model = models.ProfileItem
