@@ -2,6 +2,8 @@ from django.http import Http404
 
 import pytest
 
+from rest_framework import generics
+
 from know_me import mixins
 
 
@@ -122,3 +124,21 @@ def test_get_other_user_profile(api_rf, profile_row_factory, user_factory):
 
     with pytest.raises(Http404):
         view.get_queryset()
+
+
+def test_get_serializer_context(api_rf, profile_factory):
+    """
+    The serializer context from the mixin should include the profile
+    with the given primary key.
+    """
+    class DummyView(mixins.ProfileItemMixin, generics.GenericAPIView):
+        pass
+
+    profile = profile_factory()
+
+    view = DummyView()
+    view.format_kwarg = ''
+    view.kwargs = {'profile_pk': profile.pk}
+    view.request = api_rf.get('/')
+
+    assert view.get_serializer_context()['profile'] == profile
