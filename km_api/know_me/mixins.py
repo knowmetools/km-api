@@ -48,6 +48,41 @@ class ProfileGroupMixin:
         return profile.groups.all()
 
 
+class ProfileItemMixin:
+    """
+    Mixin for retrieving profile items.
+
+    This mixin determines which items to retrieve based on paramters
+    given in the URL and the user making the request.
+    """
+
+    def get_queryset(self):
+        """
+        Get the profile items corresponding to the given parameters.
+
+        The fetched items must match the given profile, profile group,
+        and profile row. They must also be accessible to the current
+        user.
+
+        Returns:
+            The profile items belonging to the profile group with the
+            given primary key.
+
+        Raises:
+            Http404:
+                If the profile, group, or row whose primary keys are
+                given do not exist.
+        """
+        row = get_object_or_404(
+            models.ProfileRow,
+            group__pk=self.kwargs.get('group_pk'),
+            group__profile__pk=self.kwargs.get('profile_pk'),
+            group__profile__user=self.request.user,
+            pk=self.kwargs.get('row_pk'))
+
+        return row.items.all()
+
+
 class ProfileRowMixin:
     """
     Mixin for retrieving profile rows.

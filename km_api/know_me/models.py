@@ -217,6 +217,72 @@ class ProfileGroup(models.Model):
             request=request)
 
 
+class ProfileItem(models.Model):
+    """
+    A profile item holds a piece of information for a profile row.
+
+    Attributes:
+        gallery_item (optional):
+            A ``GalleryItem`` associated with the profile item.
+        name (str);
+            The item's name.
+        row:
+            The profile row the item is part of.
+        text (optional):
+            The item's text. Defaults to an empty string.
+    """
+    gallery_item = models.ForeignKey(
+        'know_me.GalleryItem',
+        blank=True,
+        null=True,
+        related_name='profile_items',
+        related_query_name='profile_item',
+        verbose_name=_('gallery item'))
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'))
+    row = models.ForeignKey(
+        'know_me.ProfileRow',
+        related_name='items',
+        related_query_name='item',
+        verbose_name=_('profile row'))
+    text = models.TextField(
+        blank=True,
+        default='',
+        verbose_name=_('text'))
+
+    class Meta:
+        verbose_name = _('profile item')
+        verbose_name_plural = _('profile items')
+
+    def __str__(self):
+        """
+        Get a string representation of the profile item.
+
+        Returns:
+            str:
+                The profile item's name.
+        """
+        return self.name
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the profile item's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the profile item's detail view.
+        """
+        return reverse(
+            'know-me:profile-item-detail',
+            kwargs={
+                'group_pk': self.row.group.pk,
+                'item_pk': self.pk,
+                'profile_pk': self.row.group.profile.pk,
+                'row_pk': self.row.pk,
+            })
+
+
 class ProfileRow(models.Model):
     """
     A profile row holds a category of information for a profile group.
@@ -281,3 +347,27 @@ class ProfileRow(models.Model):
                 'profile_pk': self.group.profile.pk,
                 'row_pk': self.pk,
             })
+
+    def get_item_list_url(self, request=None):
+        """
+        Get the URL of the row's item list view.
+
+        Args:
+            request (optional):
+                The request to use when constructing the URL. If it is
+                provided, the resulting URL will include a protocol and
+                domain. Otherwise the resulting URL will be an absolute
+                URL (beginning with a ``'/'``). Defaults to ``None``.
+
+        Returns:
+            str:
+                The URL of the row's item list view.
+        """
+        return reverse(
+            'know-me:profile-item-list',
+            kwargs={
+                'group_pk': self.group.pk,
+                'profile_pk': self.group.profile.pk,
+                'row_pk': self.pk,
+            },
+            request=request)

@@ -55,6 +55,17 @@ def profile_group_factory(db):
 
 
 @pytest.fixture
+def profile_item_factory(db):
+    """
+    Fixture to get the factory used to create profile items.
+
+    Returns:
+        The factory class used to create ``ProfileItem`` instances.
+    """
+    return factories.ProfileItemFactory
+
+
+@pytest.fixture
 def profile_row_factory(db):
     """
     Fixture to get the factory used to create profile rows.

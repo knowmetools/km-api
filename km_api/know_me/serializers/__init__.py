@@ -1,3 +1,5 @@
+from .gallery_item_serializers import GalleryItemSerializer     # noqa
+
 from .profile_serializers import (          # noqa
     ProfileDetailSerializer,
     ProfileListSerializer,
@@ -8,6 +10,6 @@ from .profile_group_serializers import (    # noqa
     ProfileGroupListSerializer,
 )
 
-from .profile_row_serializers import (      # noqa
-    ProfileRowSerializer,
-)
+from .profile_item_serializers import ProfileItemSerializer     # noqa
+
+from .profile_row_serializers import ProfileRowSerializer       # noqa

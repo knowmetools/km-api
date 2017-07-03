@@ -84,6 +84,46 @@ class ProfileGroupListView(
         return serializer.save(profile=profile)
 
 
+class ProfileItemDetailView(
+        mixins.ProfileItemMixin,
+        generics.RetrieveUpdateAPIView):
+    """
+    View for retrieving and updating a specific profile item.
+    """
+    lookup_url_kwarg = 'item_pk'
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.ProfileItemSerializer
+
+
+class ProfileItemListView(mixins.ProfileItemMixin, generics.ListCreateAPIView):
+    """
+    View for listing and creating profile items.
+    """
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.ProfileItemSerializer
+
+    def perform_create(self, serializer):
+        """
+        Create a new profile item for the given row.
+
+        Args:
+            serializer:
+                The serializer containing the data used to create the
+                new item.
+
+        Returns:
+            The newly created ``ProfileItem`` instance.
+        """
+        row = get_object_or_404(
+            models.ProfileRow,
+            group__pk=self.kwargs.get('group_pk'),
+            group__profile__pk=self.kwargs.get('profile_pk'),
+            group__profile__user=self.request.user,
+            pk=self.kwargs.get('row_pk'))
+
+        return serializer.save(row=row)
+
+
 class ProfileRowDetailView(
         mixins.ProfileRowMixin,
         generics.RetrieveUpdateAPIView):
