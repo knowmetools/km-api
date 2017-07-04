@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+import datetime
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -145,6 +146,12 @@ STATIC_URL = '/static/'
 # https://github.com/ottoyiu/django-cors-headers#configuration
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+# Layer Configuration
+
+LAYER_IDENTITY_EXPIRATION = datetime.timedelta(minutes=5)
+LAYER_RSA_KEY_FILE_PATH = os.path.join(BASE_DIR, 'layer.pem')
 
 
 # Rest Framework
