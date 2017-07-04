@@ -29,6 +29,7 @@ urlpatterns = [
                     ])),
                 ])),
             ])),
+            url(r'^teamtalk/', include('know_me.teamtalk.urls', namespace='teamtalk')),                                         # noqa
         ])),
     ])),
 ]

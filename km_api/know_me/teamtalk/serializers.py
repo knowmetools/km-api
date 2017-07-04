@@ -21,6 +21,6 @@ class IdentitySerializer(serializers.Serializer):
         """
         Generate an identity for the requesting user.
         """
-        self.identity_token = layer.generate_identity_token(
+        self.validated_data['identity_token'] = layer.generate_identity_token(
             self.context['request'].user,
-            self.nonce)
+            self.validated_data['nonce'])

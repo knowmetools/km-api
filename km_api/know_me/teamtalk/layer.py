@@ -44,7 +44,7 @@ def generate_identity_token(user, nonce):
     jwt_token = jwt.encode(
         payload={
             'iss': settings.LAYER_PROVIDER_ID,
-            'prn': user.id,
+            'prn': str(user.id),
 
             'iat': timezone.now(),
             'exp': timezone.now() + settings.LAYER_IDENTITY_EXPIRATION,
