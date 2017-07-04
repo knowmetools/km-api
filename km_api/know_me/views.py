@@ -11,11 +11,10 @@ from rest_framework.permissions import IsAuthenticated
 from know_me import mixins, models, serializers
 
 
-class GalleryView(generics.CreateAPIView):
+class GalleryView(mixins.GalleryItemMixin, generics.CreateAPIView):
     """
     View for creating gallery items.
     """
-    queryset = models.GalleryItem.objects.all()
     serializer_class = serializers.GalleryItemSerializer
 
     def perform_create(self, serializer):
