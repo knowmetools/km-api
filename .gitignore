@@ -115,3 +115,6 @@ km_api/static/
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# Layer Key
+layer.pem
