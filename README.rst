@@ -15,11 +15,24 @@ Environment Variables
 
 The application uses the following environment variables. These can be set from the Elastic Beanstalk interface.
 
-ALLOWED_HOSTS
+ALLOWED_HOSTS (=[ ])
   A comma separated list of URLs that the app is accessible from.
 
 DEBUG (=False)
   Set to ``True`` (case insensitive) to enable Django's debug mode.
+
+LAYER_IDENTITY_EXPIRATION (=300)
+  The expiration time of each Layer identity token in seconds. See Layer's `Identity Token documentation <layer-identity-token-docs_>`_ for more information.
+
+LAYER_KEY_ID
+  The ID of the key located at ``LAYER_RSA_KEY_FILE_PATH``. This can be found
+  in Layer's organization dashboard. It should have the format ``layer:///keys/<key-content>``.
+
+LAYER_PROVIDER_ID
+  The provider ID of the Layer organization. This can be found in Layer's organization dashboard. It should have the format ``layer:///providers/<provider-id>``.
+
+LAYER_RSA_KEY_FILE_PATH (=<project_dir>/layer.pem)
+  The path to the RSA key used to encode the identity tokens for Layer.
 
 SECRET_KEY
   The secret key to use. This should be a long random string. See the `documentation <secret-key-docs_>`_ for details.
@@ -49,4 +62,5 @@ RDS_USERNAME:
   The username to connect to the database with.
 
 
+.. _layer-identity-token-docs: https://docs.layer.com/sdk/web/authentication#identity-token
 .. _secret-key-docs: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
