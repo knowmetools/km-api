@@ -26,6 +26,16 @@ def test_get_absolute_url(profile_factory):
     assert profile.get_absolute_url() == expected
 
 
+def test_get_gallery_url(profile_factory):
+    """
+    This method should return the URL of the profile's gallery view.
+    """
+    profile = profile_factory()
+    expected = reverse('know-me:gallery', kwargs={'profile_pk': profile.pk})
+
+    assert profile.get_gallery_url() == expected
+
+
 def test_get_group_list_url(profile_factory):
     """
     This method should return the URL of the profile's group list view.

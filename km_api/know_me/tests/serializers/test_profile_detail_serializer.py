@@ -23,6 +23,7 @@ def test_serialize(
         context=serializer_context,
         many=True)
 
+    gallery_request = api_rf.get(profile.get_gallery_url())
     group_list_request = api_rf.get(profile.get_group_list_url())
 
     expected = {
@@ -34,6 +35,7 @@ def test_serialize(
         'name': profile.name,
         'quote': profile.quote,
         'welcome_message': profile.welcome_message,
+        'gallery_url': gallery_request.build_absolute_uri(),
         'groups_url': group_list_request.build_absolute_uri(),
         'groups': group_serializer.data
     }

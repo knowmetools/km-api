@@ -11,6 +11,40 @@ from rest_framework.permissions import IsAuthenticated
 from know_me import mixins, models, serializers
 
 
+class GalleryView(mixins.GalleryItemMixin, generics.CreateAPIView):
+    """
+    View for creating gallery items.
+    """
+    serializer_class = serializers.GalleryItemSerializer
+
+    def perform_create(self, serializer):
+        """
+        Create a new gallery item for the given profile.
+
+        Args:
+            serializer:
+                A serializer instance containing the submitted data.
+
+        Returns:
+            The newly created ``GalleryItem`` instance.
+        """
+        profile = models.Profile.objects.get(
+            pk=self.kwargs.get('profile_pk'))
+
+        return serializer.save(profile=profile)
+
+
+class GalleryItemDetailView(
+        mixins.GalleryItemMixin,
+        generics.RetrieveUpdateAPIView):
+    """
+    View for retrieving and updating a specific gallery item.
+    """
+    lookup_url_kwarg = 'gallery_item_pk'
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.GalleryItemSerializer
+
+
 class ProfileDetailView(mixins.ProfileMixin, generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile.

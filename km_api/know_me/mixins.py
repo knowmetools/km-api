@@ -6,6 +6,30 @@ from django.shortcuts import get_object_or_404
 from know_me import models
 
 
+class GalleryItemMixin:
+    """
+    Mixin for retrieving gallery items.
+
+    This mixin limits the retrieved gallery items to those belonging to
+    the specified profile.
+    """
+
+    def get_queryset(self):
+        """
+        Get the gallery items that belong to the given profile.
+
+        Returns:
+            A list of ``GalleryItem`` instances belonging to the profile
+            whose primary key is given.
+        """
+        profile = get_object_or_404(
+            models.Profile,
+            pk=self.kwargs.get('profile_pk'),
+            user=self.request.user)
+
+        return profile.gallery_items.all()
+
+
 class ProfileMixin:
     """
     Mixin for retrieving profiles.
