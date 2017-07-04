@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     # Third Party Apps
     'rest_framework',
     'rest_framework.authtoken',
+    'storages',
 
     # Custom Apps
+    'custom_storages',
     'km_auth',
     'know_me',
 ]

@@ -41,3 +41,19 @@ CSRF_COOKIE_SECURE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
+
+
+# Static files configuration
+
+DEFAULT_FILE_STORAGE = 'custom_storages.backends.MediaStorage'
+STATICFILES_STORAGE = 'custom_storages.backends.StaticStorage'
+
+
+# S3 Configuration
+
+AWS_AUTO_CREATE_BUCKET = True
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=31536000',
+}
+AWS_S3_REGION_NAME = 'us-east-1'
+AWS_STORAGE_BUCKET_NAME = os.environ['STATIC_BUCKET']

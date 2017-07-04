@@ -24,6 +24,9 @@ DEBUG (=False)
 SECRET_KEY
   The secret key to use. This should be a long random string. See the `documentation <secret-key-docs_>`_ for details.
 
+STATIC_BUCKET
+  The name of the S3 bucket to store static and media files in. The IAM role that the webservers use must have access to this bucket. This bucket must be in the ``us-east-1`` region.
+
 
 Database Credentials
 --------------------
