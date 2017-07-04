@@ -33,3 +33,11 @@ DATABASES = {
         'PORT': os.environ['RDS_PORT'],
     }
 }
+
+
+# SSL Settings
+
+CSRF_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
