@@ -1,0 +1,4 @@
+-r requirements/base.txt
+
+boto3 == 1.4.4
+psycopg2 == 2.7.1
