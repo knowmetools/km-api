@@ -31,10 +31,12 @@ def test_serialize(api_rf, gallery_item_factory, serializer_context):
         item,
         context=serializer_context)
 
+    item_request = api_rf.get(item.get_absolute_url())
     resource_request = api_rf.get(item.resource.url)
 
     expected = {
         'id': item.id,
+        'url': item_request.build_absolute_uri(),
         'name': item.name,
         'resource': resource_request.build_absolute_uri(),
     }

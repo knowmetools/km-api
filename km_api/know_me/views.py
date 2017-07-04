@@ -34,6 +34,17 @@ class GalleryView(mixins.GalleryItemMixin, generics.CreateAPIView):
         return serializer.save(profile=profile)
 
 
+class GalleryItemDetailView(
+        mixins.GalleryItemMixin,
+        generics.RetrieveUpdateAPIView):
+    """
+    View for retrieving and updating a specific gallery item.
+    """
+    lookup_url_kwarg = 'gallery_item_pk'
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.GalleryItemSerializer
+
+
 class ProfileDetailView(mixins.ProfileMixin, generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile.

@@ -67,6 +67,21 @@ class GalleryItem(models.Model):
         """
         return self.name
 
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the instance's detail view.
+        """
+        return reverse(
+            'know-me:gallery-item-detail',
+            kwargs={
+                'gallery_item_pk': self.pk,
+                'profile_pk': self.profile.pk,
+            })
+
 
 class Profile(models.Model):
     """
