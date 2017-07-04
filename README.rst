@@ -31,7 +31,7 @@ LAYER_KEY_ID
 LAYER_PROVIDER_ID
   The provider ID of the Layer organization. This can be found in Layer's organization dashboard. It should have the format ``layer:///providers/<provider-id>``.
 
-LAYER_RSA_KEY_FILE_PATH (=<project_dir>/layer.pem)
+LAYER_RSA_KEY_FILE_PATH (=/etc/km-api/certs/layer-dev.pem)
   The path to the RSA key used to encode the identity tokens for Layer.
 
 SECRET_KEY
