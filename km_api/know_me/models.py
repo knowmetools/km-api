@@ -119,6 +119,25 @@ class Profile(models.Model):
             'know-me:profile-detail',
             kwargs={'profile_pk': self.pk})
 
+    def get_gallery_url(self, request=None):
+        """
+        Get the absolute URL of the instance's gallery view.
+
+        Args:
+            request (optional):
+                A request used as context when constructing the URL. If
+                given, the resulting URL will be a full URI with a
+                protocol and domain name.
+
+        Returns:
+            str:
+                The absolute URL of the instance's gallery view.
+        """
+        return reverse(
+            'know-me:gallery',
+            kwargs={'profile_pk': self.pk},
+            request=request)
+
     def get_group_list_url(self, request=None):
         """
         Get the absolute URL of the instance's group list view.

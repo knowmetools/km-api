@@ -27,15 +27,31 @@ class ProfileDetailSerializer(ProfileListSerializer):
 
     This serializer builds off of the ``ProfileListSerializer``.
     """
+    gallery_url = serializers.SerializerMethodField()
     groups = ProfileGroupListSerializer(many=True, read_only=True)
     groups_url = serializers.SerializerMethodField()
 
     class Meta:
         fields = (
-            'id', 'url', 'name', 'quote', 'welcome_message', 'groups_url',
-            'groups',
+            'id', 'url', 'name', 'quote', 'welcome_message', 'gallery_url',
+            'groups_url', 'groups'
         )
         model = models.Profile
+
+    def get_gallery_url(self, profile):
+        """
+        Get the URL for the gallery view of the profile being
+        serialized.
+
+        Args:
+            profile:
+                The ``Profile`` instance being serialized.
+
+        Returns:
+            str:
+                The URL of the profile's gallery view.
+        """
+        return profile.get_gallery_url(self.context['request'])
 
     def get_groups_url(self, profile):
         """
