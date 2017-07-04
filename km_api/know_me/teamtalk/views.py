@@ -1,7 +1,7 @@
 """Views for the ``know_me.teamtalk`` module.
 """
 
-from rest_framework import mixins, generics
+from rest_framework import generics
 
 from know_me.teamtalk import serializers
 
