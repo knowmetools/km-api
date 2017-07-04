@@ -1,7 +1,13 @@
 """Production settings.
 """
 
+import datetime
 import os
+
+
+# Base directory for the project.
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Set the secret key from an environment variable. We use the bracket
@@ -57,3 +63,14 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 AWS_S3_REGION_NAME = 'us-east-1'
 AWS_STORAGE_BUCKET_NAME = os.environ['STATIC_BUCKET']
+
+
+# Layer Configuration
+
+LAYER_IDENTITY_EXPIRATION = datetime.timedelta(
+    seconds=os.environ.get('LAYER_IDENTITY_EXPIRATION', 300))
+LAYER_KEY_ID = os.environ['LAYER_KEY_ID']
+LAYER_PROVIDER_ID = os.environ['LAYER_PROVIDER_ID']
+LAYER_RSA_KEY_FILE_PATH = os.environ.get(
+    'LAYER_RSA_KEY_FILE_PATH',
+    os.path.join(BASE_DIR, 'layer.pem'))
