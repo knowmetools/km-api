@@ -4,14 +4,15 @@
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
+from dry_rest_permissions.generics import DRYPermissions
+
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
 
-from know_me import mixins, models, serializers
+from know_me import filters, models, serializers
 
 
-class GalleryView(mixins.GalleryItemMixin, generics.CreateAPIView):
+class GalleryView(generics.CreateAPIView):
     """
     View for creating gallery items.
     """
@@ -34,31 +35,33 @@ class GalleryView(mixins.GalleryItemMixin, generics.CreateAPIView):
         return serializer.save(profile=profile)
 
 
-class GalleryItemDetailView(
-        mixins.GalleryItemMixin,
-        generics.RetrieveUpdateAPIView):
+class GalleryItemDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retrieving and updating a specific gallery item.
     """
     lookup_url_kwarg = 'gallery_item_pk'
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.GalleryItem.objects.all()
     serializer_class = serializers.GalleryItemSerializer
 
 
-class ProfileDetailView(mixins.ProfileMixin, generics.RetrieveUpdateAPIView):
+class ProfileDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile.
     """
     lookup_url_kwarg = 'profile_pk'
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileDetailSerializer
 
 
-class ProfileListView(mixins.ProfileMixin, generics.ListCreateAPIView):
+class ProfileListView(generics.ListCreateAPIView):
     """
     View for listing and creating profiles.
     """
-    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.ProfileFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileListSerializer
 
     def perform_create(self, serializer):
@@ -80,24 +83,23 @@ class ProfileListView(mixins.ProfileMixin, generics.ListCreateAPIView):
         return serializer.save(user=self.request.user)
 
 
-class ProfileGroupDetailView(
-        mixins.ProfileGroupMixin,
-        generics.RetrieveUpdateAPIView):
+class ProfileGroupDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile group.
     """
     lookup_url_kwarg = 'group_pk'
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ProfileGroup.objects.all()
     serializer_class = serializers.ProfileGroupDetailSerializer
 
 
-class ProfileGroupListView(
-        mixins.ProfileGroupMixin,
-        generics.ListCreateAPIView):
+class ProfileGroupListView(generics.ListCreateAPIView):
     """
     View for listing and creating profile groups.
     """
-    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.ProfileGroupFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ProfileGroup.objects.all()
     serializer_class = serializers.ProfileGroupListSerializer
 
     def perform_create(self, serializer):
@@ -118,23 +120,40 @@ class ProfileGroupListView(
         return serializer.save(profile=profile)
 
 
-class ProfileItemDetailView(
-        mixins.ProfileItemMixin,
-        generics.RetrieveUpdateAPIView):
+class ProfileItemDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retrieving and updating a specific profile item.
     """
     lookup_url_kwarg = 'item_pk'
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ProfileItem.objects.all()
     serializer_class = serializers.ProfileItemSerializer
 
 
-class ProfileItemListView(mixins.ProfileItemMixin, generics.ListCreateAPIView):
+class ProfileItemListView(generics.ListCreateAPIView):
     """
     View for listing and creating profile items.
     """
-    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.ProfileItemFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ProfileItem.objects.all()
     serializer_class = serializers.ProfileItemSerializer
+
+    def get_serializer_context(self):
+        """
+        Get additional context to pass to serializers.
+
+        Returns:
+            dict:
+                The superclass' serialzer context with the profile whose
+                primary key is passed to the view appended.
+        """
+        context = super().get_serializer_context()
+
+        context['profile'] = models.Profile.objects.get(
+            pk=self.kwargs.get('profile_pk'))
+
+        return context
 
     def perform_create(self, serializer):
         """
@@ -158,22 +177,23 @@ class ProfileItemListView(mixins.ProfileItemMixin, generics.ListCreateAPIView):
         return serializer.save(row=row)
 
 
-class ProfileRowDetailView(
-        mixins.ProfileRowMixin,
-        generics.RetrieveUpdateAPIView):
+class ProfileRowDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a profile row.
     """
     lookup_url_kwarg = 'row_pk'
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ProfileRow.objects.all()
     serializer_class = serializers.ProfileRowSerializer
 
 
-class ProfileRowListView(mixins.ProfileRowMixin, generics.ListCreateAPIView):
+class ProfileRowListView(generics.ListCreateAPIView):
     """
     View for listing and creating rows in a profile group.
     """
-    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.ProfileRowFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ProfileRow.objects.all()
     serializer_class = serializers.ProfileRowSerializer
 
     def perform_create(self, serializer):

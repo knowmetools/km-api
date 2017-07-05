@@ -45,6 +45,68 @@ def test_get_item_list_url(profile_row_factory):
     assert row.get_item_list_url() == expected
 
 
+def test_has_object_read_permission_other(
+        api_rf,
+        profile_row_factory,
+        user_factory):
+    """
+    Users should not have read permissions on profile rows that belong
+    to a profile they don't have access to.
+    """
+    row = profile_row_factory()
+
+    api_rf.user = user_factory()
+    request = api_rf.get('/')
+
+    assert not row.has_object_read_permission(request)
+
+
+def test_has_object_read_permission_owner(api_rf, profile_row_factory):
+    """
+    Users should have read permissions on profile rows that belong to
+    their own profile.
+    """
+    row = profile_row_factory()
+    group = row.group
+    profile = group.profile
+
+    api_rf.user = profile.user
+    request = api_rf.get('/')
+
+    assert row.has_object_read_permission(request)
+
+
+def test_has_object_write_permission_other(
+        api_rf,
+        profile_row_factory,
+        user_factory):
+    """
+    Users should not have write permissions on profile rows that belong
+    to a profile they don't have access to.
+    """
+    row = profile_row_factory()
+
+    api_rf.user = user_factory()
+    request = api_rf.get('/')
+
+    assert not row.has_object_write_permission(request)
+
+
+def test_has_object_write_permission_owner(api_rf, profile_row_factory):
+    """
+    Users should have write permissions on profile rows that belong to
+    their own profile.
+    """
+    row = profile_row_factory()
+    group = row.group
+    profile = group.profile
+
+    api_rf.user = profile.user
+    request = api_rf.get('/')
+
+    assert row.has_object_write_permission(request)
+
+
 def test_string_conversion(profile_row_factory):
     """
     Converting a profile row to a string should return the row's name.

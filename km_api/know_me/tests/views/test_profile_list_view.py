@@ -56,16 +56,6 @@ def test_create_second_profile(api_rf, profile_factory, user_factory):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_get_anonymous(api_rf, profile_factory):
-    """
-    Anonymous users should not be able to access the view.
-    """
-    request = api_rf.get(url)
-    response = profile_list_view(request)
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
 def test_get_own_profile(api_rf, profile_factory, user_factory):
     """
     If the requesting user has a profile, then a GET request to this

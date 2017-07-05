@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
     # Third Party Apps
     'corsheaders',
+    'dry_rest_permissions',
     'rest_framework',
     'rest_framework.authtoken',
     'storages',

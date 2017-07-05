@@ -6,26 +6,6 @@ from know_me import serializers, views
 profile_item_detail_view = views.ProfileItemDetailView.as_view()
 
 
-def test_anonymous(api_rf, profile_item_factory):
-    """
-    Anonymous users should not be able to access the view.
-    """
-    item = profile_item_factory()
-    row = item.row
-    group = row.group
-    profile = group.profile
-
-    request = api_rf.get(item.get_absolute_url())
-    response = profile_item_detail_view(
-        request,
-        group_pk=group.pk,
-        item_pk=item.pk,
-        profile_pk=profile.pk,
-        row_pk=row.pk)
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
 def test_get_item(api_rf, profile_item_factory):
     """
     Users should be able to access items in their own profile.

@@ -7,6 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.reverse import reverse
 
+from know_me.models import mixins
+
 
 def get_gallery_item_upload_path(item, filename):
     """
@@ -28,7 +30,7 @@ def get_gallery_item_upload_path(item, filename):
         id=item.profile.id)
 
 
-class GalleryItem(models.Model):
+class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
     """
     A gallery item is an uploaded file attached to a profile.
 
@@ -82,8 +84,38 @@ class GalleryItem(models.Model):
                 'profile_pk': self.profile.pk,
             })
 
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a given request.
 
-class Profile(models.Model):
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to read the instance
+                and ``False`` otherwise.
+        """
+        return self.profile.user == request.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to write to the
+                instance and ``False`` otherwise.
+        """
+        return self.profile.user == request.user
+
+
+class Profile(mixins.IsAuthenticatedMixin, models.Model):
     """
     A profile contains information about a specific user.
 
@@ -172,8 +204,38 @@ class Profile(models.Model):
             kwargs={'profile_pk': self.pk},
             request=request)
 
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
 
-class ProfileGroup(models.Model):
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the profile and
+                ``False`` otherwise.
+        """
+        return request.user == self.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the profile and
+                ``False`` otherwise.
+        """
+        return request.user == self.user
+
+
+class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
     """
     A profile group contains a targeted subset of a ``Profile``.
 
@@ -250,8 +312,38 @@ class ProfileGroup(models.Model):
             },
             request=request)
 
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
 
-class ProfileItem(models.Model):
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the group's parent
+                profile and ``False`` otherwise.
+        """
+        return request.user == self.profile.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the group's parent
+                profile and ``False`` otherwise.
+        """
+        return request.user == self.profile.user
+
+
+class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
     """
     A profile item holds a piece of information for a profile row.
 
@@ -316,8 +408,38 @@ class ProfileItem(models.Model):
                 'row_pk': self.row.pk,
             })
 
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
 
-class ProfileRow(models.Model):
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the profile the
+                instance belongs to and ``False`` otherwise.
+        """
+        return request.user == self.row.group.profile.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the profile the
+                instance belongs to and ``False`` otherwise.
+        """
+        return request.user == self.row.group.profile.user
+
+
+class ProfileRow(mixins.IsAuthenticatedMixin, models.Model):
     """
     A profile row holds a category of information for a profile group.
 
@@ -405,3 +527,33 @@ class ProfileRow(models.Model):
                 'row_pk': self.pk,
             },
             request=request)
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the profile the
+                instance belongs to and ``False`` otherwise.
+        """
+        return request.user == self.group.profile.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the profile the
+                instance belongs to and ``False`` otherwise.
+        """
+        return request.user == self.group.profile.user
