@@ -178,14 +178,13 @@ class ProfileItemListView(generics.ListCreateAPIView):
         return serializer.save(row=row)
 
 
-class ProfileRowDetailView(
-        mixins.ProfileRowMixin,
-        generics.RetrieveUpdateAPIView):
+class ProfileRowDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a profile row.
     """
     lookup_url_kwarg = 'row_pk'
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ProfileRow.objects.all()
     serializer_class = serializers.ProfileRowSerializer
 
 
