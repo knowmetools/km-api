@@ -94,13 +94,13 @@ class ProfileGroupDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.ProfileGroupDetailSerializer
 
 
-class ProfileGroupListView(
-        mixins.ProfileGroupMixin,
-        generics.ListCreateAPIView):
+class ProfileGroupListView(generics.ListCreateAPIView):
     """
     View for listing and creating profile groups.
     """
-    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.ProfileGroupFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ProfileGroup.objects.all()
     serializer_class = serializers.ProfileGroupListSerializer
 
     def perform_create(self, serializer):

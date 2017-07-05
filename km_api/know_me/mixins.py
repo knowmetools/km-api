@@ -6,30 +6,6 @@ from django.shortcuts import get_object_or_404
 from know_me import models
 
 
-class ProfileGroupMixin:
-    """
-    Mixin for retrieving profile groups.
-
-    This mixin restricts the retrieved profile groups to those
-    accessible by the user making the request.
-    """
-
-    def get_queryset(self):
-        """
-        Get the profile groups that the requesting user has access to.
-
-        Returns:
-            The profile groups that the requesting user has access to
-            and belong to the profile with the ID given.
-        """
-        profile = get_object_or_404(
-            models.Profile,
-            pk=self.kwargs.get('profile_pk'),
-            user=self.request.user)
-
-        return profile.groups.all()
-
-
 class ProfileItemMixin:
     """
     Mixin for retrieving profile items.
