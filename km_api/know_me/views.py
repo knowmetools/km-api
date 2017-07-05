@@ -4,6 +4,8 @@
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
+from dry_rest_permissions.generics import DRYPermissions
+
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
@@ -34,14 +36,13 @@ class GalleryView(mixins.GalleryItemMixin, generics.CreateAPIView):
         return serializer.save(profile=profile)
 
 
-class GalleryItemDetailView(
-        mixins.GalleryItemMixin,
-        generics.RetrieveUpdateAPIView):
+class GalleryItemDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retrieving and updating a specific gallery item.
     """
     lookup_url_kwarg = 'gallery_item_pk'
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.GalleryItem.objects.all()
     serializer_class = serializers.GalleryItemSerializer
 
 
