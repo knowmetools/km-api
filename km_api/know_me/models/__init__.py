@@ -7,6 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.reverse import reverse
 
+from know_me.models import mixins
+
 
 def get_gallery_item_upload_path(item, filename):
     """
@@ -28,7 +30,7 @@ def get_gallery_item_upload_path(item, filename):
         id=item.profile.id)
 
 
-class GalleryItem(models.Model):
+class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
     """
     A gallery item is an uploaded file attached to a profile.
 
@@ -56,38 +58,6 @@ class GalleryItem(models.Model):
     class Meta:
         verbose_name = _('gallery item')
         verbose_name_plural = _('gallery items')
-
-    @staticmethod
-    def has_read_permission(request):
-        """
-        Check read permissions for all gallery items for a request.
-
-        Args:
-            request:
-                The request to check permissions for.
-
-        Returns:
-            bool:
-                ``True`` if the requesting user is allowed to read
-                gallery items at all and ``False`` otherwise.
-        """
-        return request.user.is_authenticated()
-
-    @staticmethod
-    def has_write_permission(request):
-        """
-        Check write permissions for all gallery items for a request.
-
-        Args:
-            request:
-                The request to check permissions for.
-
-        Returns:
-            bool:
-                ``True`` if the requesting user is allowed to write
-                gallery items at all and ``False`` otherwise.
-        """
-        return request.user.is_authenticated()
 
     def __str__(self):
         """
