@@ -2,6 +2,7 @@
 """
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth import password_validation
 
 from rest_framework import serializers
 
@@ -58,3 +59,27 @@ class UserDetailSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+    def validate_password(self, password):
+        """
+        Validate the provided password.
+
+        This runs the password through Django's password validation
+        system.
+
+        Args:
+            password (str):
+                The password to validate.
+
+        Returns:
+            str:
+                The validated password.
+
+        Raises:
+            ValidationError:
+                If the provided password does not pass Django's password
+                validation checks.
+        """
+        password_validation.validate_password(password, self.instance)
+
+        return password
