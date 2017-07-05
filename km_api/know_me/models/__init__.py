@@ -343,7 +343,7 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
         return request.user == self.profile.user
 
 
-class ProfileItem(models.Model):
+class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
     """
     A profile item holds a piece of information for a profile row.
 
@@ -407,6 +407,36 @@ class ProfileItem(models.Model):
                 'profile_pk': self.row.group.profile.pk,
                 'row_pk': self.row.pk,
             })
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the profile the
+                instance belongs to and ``False`` otherwise.
+        """
+        return request.user == self.row.group.profile.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the profile the
+                instance belongs to and ``False`` otherwise.
+        """
+        return request.user == self.row.group.profile.user
 
 
 class ProfileRow(models.Model):
