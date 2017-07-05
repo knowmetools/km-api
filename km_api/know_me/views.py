@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from know_me import mixins, models, serializers
 
 
-class GalleryView(mixins.GalleryItemMixin, generics.CreateAPIView):
+class GalleryView(generics.CreateAPIView):
     """
     View for creating gallery items.
     """
