@@ -10,7 +10,7 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
-from know_me import mixins, models, serializers
+from know_me import filters, mixins, models, serializers
 
 
 class GalleryView(generics.CreateAPIView):
@@ -56,11 +56,13 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.ProfileDetailSerializer
 
 
-class ProfileListView(mixins.ProfileMixin, generics.ListCreateAPIView):
+class ProfileListView(generics.ListCreateAPIView):
     """
     View for listing and creating profiles.
     """
-    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.ProfileFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileListSerializer
 
     def perform_create(self, serializer):
