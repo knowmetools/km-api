@@ -46,12 +46,13 @@ class GalleryItemDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.GalleryItemSerializer
 
 
-class ProfileDetailView(mixins.ProfileMixin, generics.RetrieveUpdateAPIView):
+class ProfileDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile.
     """
     lookup_url_kwarg = 'profile_pk'
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileDetailSerializer
 
 

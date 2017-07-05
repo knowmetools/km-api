@@ -115,7 +115,7 @@ class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
         return self.profile.user == request.user
 
 
-class Profile(models.Model):
+class Profile(mixins.IsAuthenticatedMixin, models.Model):
     """
     A profile contains information about a specific user.
 
@@ -203,6 +203,36 @@ class Profile(models.Model):
             'know-me:profile-group-list',
             kwargs={'profile_pk': self.pk},
             request=request)
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the profile and
+                ``False`` otherwise.
+        """
+        return request.user == self.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the profile and
+                ``False`` otherwise.
+        """
+        return request.user == self.user
 
 
 class ProfileGroup(models.Model):

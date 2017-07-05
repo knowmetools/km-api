@@ -48,6 +48,62 @@ def test_get_group_list_url(profile_factory):
     assert profile.get_group_list_url() == expected
 
 
+def test_has_object_read_permission_other(
+        api_rf,
+        profile_factory,
+        user_factory):
+    """
+    Other users should not have read permissions on profiles they don't
+    own.
+    """
+    profile = profile_factory()
+
+    api_rf.user = user_factory()
+    request = api_rf.get('/')
+
+    assert not profile.has_object_read_permission(request)
+
+
+def test_has_object_read_permission_owner(api_rf, profile_factory):
+    """
+    Users should have read access on their own profile.
+    """
+    profile = profile_factory()
+
+    api_rf.user = profile.user
+    request = api_rf.get('/')
+
+    assert profile.has_object_read_permission(request)
+
+
+def test_has_object_write_permission_other(
+        api_rf,
+        profile_factory,
+        user_factory):
+    """
+    Other users should not have write permissions on profiles they don't
+    own.
+    """
+    profile = profile_factory()
+
+    api_rf.user = user_factory()
+    request = api_rf.get('/')
+
+    assert not profile.has_object_write_permission(request)
+
+
+def test_has_object_write_permission_owner(api_rf, profile_factory):
+    """
+    Users should have write access on their own profile.
+    """
+    profile = profile_factory()
+
+    api_rf.user = profile.user
+    request = api_rf.get('/')
+
+    assert profile.has_object_write_permission(request)
+
+
 def test_string_conversion(profile_factory):
     """
     Converting a profile to a string should return the profile's name.
