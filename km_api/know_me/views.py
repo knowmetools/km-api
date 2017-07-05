@@ -8,9 +8,8 @@ from dry_rest_permissions.generics import DRYPermissions
 
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
 
-from know_me import filters, mixins, models, serializers
+from know_me import filters, models, serializers
 
 
 class GalleryView(generics.CreateAPIView):
@@ -188,11 +187,13 @@ class ProfileRowDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.ProfileRowSerializer
 
 
-class ProfileRowListView(mixins.ProfileRowMixin, generics.ListCreateAPIView):
+class ProfileRowListView(generics.ListCreateAPIView):
     """
     View for listing and creating rows in a profile group.
     """
-    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.ProfileRowFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ProfileRow.objects.all()
     serializer_class = serializers.ProfileRowSerializer
 
     def perform_create(self, serializer):
