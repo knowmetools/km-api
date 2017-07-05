@@ -84,14 +84,13 @@ class ProfileListView(generics.ListCreateAPIView):
         return serializer.save(user=self.request.user)
 
 
-class ProfileGroupDetailView(
-        mixins.ProfileGroupMixin,
-        generics.RetrieveUpdateAPIView):
+class ProfileGroupDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile group.
     """
     lookup_url_kwarg = 'group_pk'
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ProfileGroup.objects.all()
     serializer_class = serializers.ProfileGroupDetailSerializer
 
 

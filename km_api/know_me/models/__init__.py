@@ -235,7 +235,7 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         return request.user == self.user
 
 
-class ProfileGroup(models.Model):
+class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
     """
     A profile group contains a targeted subset of a ``Profile``.
 
@@ -311,6 +311,36 @@ class ProfileGroup(models.Model):
                 'profile_pk': self.profile.pk,
             },
             request=request)
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the group's parent
+                profile and ``False`` otherwise.
+        """
+        return request.user == self.profile.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the group's parent
+                profile and ``False`` otherwise.
+        """
+        return request.user == self.profile.user
 
 
 class ProfileItem(models.Model):
