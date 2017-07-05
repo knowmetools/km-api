@@ -59,3 +59,32 @@ class ProfileGroupFilterBackend(DRYPermissionFiltersBase):
             user=request.user)
 
         return queryset.filter(profile__pk=profile.pk)
+
+
+class ProfileItemFilterBackend(DRYPermissionFiltersBase):
+    """
+    Filter for listing profile items.
+    """
+
+    def filter_list_queryset(self, request, queryset, view):
+        """
+        Filter profile items for a ``list`` action.
+
+        Args:
+            request:
+                The request being made.
+            queryset:
+                A queryset containing the objects to filter.
+            view:
+                The view being accessed.
+
+        Returns:
+            A queryset containing the profile items belonging to the
+            profile row whose primary key is specified in the view.
+        """
+        row = get_object_or_404(
+            models.ProfileRow,
+            group__profile__user=request.user,
+            pk=view.kwargs.get('row_pk'))
+
+        return queryset.filter(row__pk=row.pk)

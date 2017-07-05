@@ -131,12 +131,30 @@ class ProfileItemDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.ProfileItemSerializer
 
 
-class ProfileItemListView(mixins.ProfileItemMixin, generics.ListCreateAPIView):
+class ProfileItemListView(generics.ListCreateAPIView):
     """
     View for listing and creating profile items.
     """
-    permission_classes = (IsAuthenticated,)
+    filter_backends = (filters.ProfileItemFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ProfileItem.objects.all()
     serializer_class = serializers.ProfileItemSerializer
+
+    def get_serializer_context(self):
+        """
+        Get additional context to pass to serializers.
+
+        Returns:
+            dict:
+                The superclass' serialzer context with the profile whose
+                primary key is passed to the view appended.
+        """
+        context = super().get_serializer_context()
+
+        context['profile'] = models.Profile.objects.get(
+            pk=self.kwargs.get('profile_pk'))
+
+        return context
 
     def perform_create(self, serializer):
         """
