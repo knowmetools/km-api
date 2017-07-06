@@ -196,9 +196,9 @@ texinfo_documents = [
 # apidoc settings
 
 APIDOC_EXCLUDE_PATTERNS = (
+    '*/conftest.py',
     'km_api/*/admin.py',
     'km_api/*/apps.py',
-    'km_api/*/conftest.py',
     'km_api/*/factories.py',
     'km_api/*/urls.py',
     'km_api/*/migrations/',
