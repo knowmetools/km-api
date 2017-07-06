@@ -150,7 +150,7 @@ class ProfileItemListView(generics.ListCreateAPIView):
         context = super().get_serializer_context()
 
         context['profile'] = models.Profile.objects.get(
-            pk=self.kwargs.get('profile_pk'))
+            group__row__pk=self.kwargs.get('pk'))
 
         return context
 
@@ -168,10 +168,8 @@ class ProfileItemListView(generics.ListCreateAPIView):
         """
         row = get_object_or_404(
             models.ProfileRow,
-            group__pk=self.kwargs.get('group_pk'),
-            group__profile__pk=self.kwargs.get('profile_pk'),
             group__profile__user=self.request.user,
-            pk=self.kwargs.get('row_pk'))
+            pk=self.kwargs.get('pk'))
 
         return serializer.save(row=row)
 
@@ -180,7 +178,6 @@ class ProfileRowDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a profile row.
     """
-    lookup_url_kwarg = 'row_pk'
     permission_classes = (DRYPermissions,)
     queryset = models.ProfileRow.objects.all()
     serializer_class = serializers.ProfileRowSerializer

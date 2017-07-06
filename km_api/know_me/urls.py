@@ -21,13 +21,11 @@ urlpatterns = [
                 url(r'^$', views.ProfileGroupDetailView.as_view(), name='profile-group-detail'),                                # noqa
                 url(r'^rows/', include([
                     url(r'^$', views.ProfileRowListView.as_view(), name='profile-row-list'),                                    # noqa
-                    url(r'^(?P<row_pk>[0-9]+)/', include([
-                        url(r'^$', views.ProfileRowDetailView.as_view(), name='profile-row-detail'),                            # noqa
-                        url(r'^items/$', views.ProfileItemListView.as_view(), name='profile-item-list'),                          # noqa
-                    ])),
                 ])),
             ])),
             url(r'^teamtalk/', include('know_me.teamtalk.urls', namespace='teamtalk')),                                         # noqa
         ])),
     ])),
+    url(r'^rows/(?P<pk>[0-9]+)/$', views.ProfileRowDetailView.as_view(), name='profile-row-detail'),                            # noqa
+    url(r'^rows/(?P<pk>[0-9]+)/items/$' ,views.ProfileItemListView.as_view(), name='profile-item-list'),                        # noqa
 ]

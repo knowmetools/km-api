@@ -21,9 +21,7 @@ def test_filter_list_inaccessible_row(
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {
-        'row_pk': row.pk,
-    }
+    view.kwargs = {'pk': row.pk}
 
     backend = filters.ProfileItemFilterBackend()
 
@@ -45,9 +43,7 @@ def test_filter_list_nonexistent_row(
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {
-        'row_pk': 1,
-    }
+    view.kwargs = {'pk': 1}
 
     backend = filters.ProfileItemFilterBackend()
 
@@ -74,9 +70,7 @@ def test_filter_list_row_items(api_rf, profile_item_factory):
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {
-        'row_pk': row.pk,
-    }
+    view.kwargs = {'pk': row.pk}
 
     backend = filters.ProfileItemFilterBackend()
     results = backend.filter_list_queryset(

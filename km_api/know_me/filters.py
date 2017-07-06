@@ -85,7 +85,7 @@ class ProfileItemFilterBackend(DRYPermissionFiltersBase):
         row = get_object_or_404(
             models.ProfileRow,
             group__profile__user=request.user,
-            pk=view.kwargs.get('row_pk'))
+            pk=view.kwargs.get('pk'))
 
         return queryset.filter(row__pk=row.pk)
 
