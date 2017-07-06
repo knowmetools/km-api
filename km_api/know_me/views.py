@@ -126,6 +126,22 @@ class ProfileItemDetailView(generics.RetrieveUpdateAPIView):
     queryset = models.ProfileItem.objects.all()
     serializer_class = serializers.ProfileItemSerializer
 
+    def get_serializer_context(self):
+        """
+        Get additional context to pass to serializers.
+
+        Returns:
+            dict:
+                The superclass' serialzer context with the profile whose
+                primary key is passed to the view appended.
+        """
+        context = super().get_serializer_context()
+
+        context['profile'] = models.Profile.objects.get(
+            group__row__pk=self.kwargs.get('pk'))
+
+        return context
+
 
 class ProfileItemListView(generics.ListCreateAPIView):
     """
