@@ -55,7 +55,7 @@ class ProfileGroupFilterBackend(DRYPermissionFiltersBase):
         """
         profile = get_object_or_404(
             models.Profile,
-            pk=view.kwargs.get('profile_pk'),
+            pk=view.kwargs.get('pk'),
             user=request.user)
 
         return queryset.filter(profile__pk=profile.pk)
@@ -85,7 +85,7 @@ class ProfileItemFilterBackend(DRYPermissionFiltersBase):
         row = get_object_or_404(
             models.ProfileRow,
             group__profile__user=request.user,
-            pk=view.kwargs.get('row_pk'))
+            pk=view.kwargs.get('pk'))
 
         return queryset.filter(row__pk=row.pk)
 
@@ -113,7 +113,7 @@ class ProfileRowFilterBackend(DRYPermissionFiltersBase):
         """
         group = get_object_or_404(
             models.ProfileGroup,
-            pk=view.kwargs.get('group_pk'),
+            pk=view.kwargs.get('pk'),
             profile__user=request.user)
 
         return queryset.filter(group__pk=group.pk)

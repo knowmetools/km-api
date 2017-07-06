@@ -21,9 +21,7 @@ def test_filter_list_by_profile(api_rf, profile_group_factory):
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {
-        'profile_pk': profile.pk,
-    }
+    view.kwargs = {'pk': profile.pk}
 
     backend = filters.ProfileGroupFilterBackend()
     result = backend.filter_list_queryset(
@@ -48,9 +46,7 @@ def test_filter_list_non_existent_profile(api_rf, profile_group_factory):
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {
-        'profile_pk': profile.pk + 1,
-    }
+    view.kwargs = {'pk': profile.pk + 1}
 
     backend = filters.ProfileGroupFilterBackend()
 
@@ -75,9 +71,7 @@ def test_filter_list_unowned_profile(
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {
-        'profile_pk': group.profile.pk,
-    }
+    view.kwargs = {'pk': group.profile.pk}
 
     backend = filters.ProfileGroupFilterBackend()
 

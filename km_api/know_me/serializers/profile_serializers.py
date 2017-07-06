@@ -13,7 +13,6 @@ class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
     Serializer for multiple ``Profile`` instances.
     """
     url = serializers.HyperlinkedIdentityField(
-        lookup_url_kwarg='profile_pk',
         view_name='know-me:profile-detail')
 
     class Meta:

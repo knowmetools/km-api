@@ -20,14 +20,7 @@ def test_get_absolute_url(profile_item_factory):
     detail view.
     """
     item = profile_item_factory()
-    expected = reverse(
-        'know-me:profile-item-detail',
-        kwargs={
-            'group_pk': item.row.group.pk,
-            'item_pk': item.pk,
-            'profile_pk': item.row.group.profile.pk,
-            'row_pk': item.row.pk,
-        })
+    expected = reverse('know-me:profile-item-detail', kwargs={'pk': item.pk})
 
     assert item.get_absolute_url() == expected
 

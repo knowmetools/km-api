@@ -18,12 +18,7 @@ def test_get_absolute_url(gallery_item_factory):
     This method should return the URL of the galler item's detail view.
     """
     item = gallery_item_factory()
-    expected = reverse(
-        'know-me:gallery-item-detail',
-        kwargs={
-            'gallery_item_pk': item.pk,
-            'profile_pk': item.profile.pk,
-        })
+    expected = reverse('know-me:gallery-item-detail', kwargs={'pk': item.pk})
 
     assert item.get_absolute_url() == expected
 

@@ -21,7 +21,7 @@ def test_create(api_rf, file, profile_factory):
     }
 
     request = api_rf.post(profile.get_gallery_url(), data)
-    response = gallery_view(request, profile_pk=profile.pk)
+    response = gallery_view(request, pk=profile.pk)
 
     assert response.status_code == status.HTTP_201_CREATED
 

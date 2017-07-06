@@ -7,29 +7,15 @@ from know_me import views
 
 
 urlpatterns = [
-    url(r'^profiles/', include([
-        url(r'^$', views.ProfileListView.as_view(), name='profile-list'),
-        url(r'^(?P<profile_pk>[0-9]+)/', include([
-            url(r'^$', views.ProfileDetailView.as_view(), name='profile-detail'),                                               # noqa
-            url(r'^gallery/', include([
-                url(r'^$', views.GalleryView.as_view(), name='gallery'),
-                url(r'^(?P<gallery_item_pk>[0-9]+)/$', views.GalleryItemDetailView.as_view(), name='gallery-item-detail'),      # noqa
-            ])),
-            url(r'^groups/$', views.ProfileGroupListView.as_view(), name='profile-group-list'),                                 # noqa
-            url(r'^groups/(?P<group_pk>[0-9]+)/', include([
-                url(r'^$', views.ProfileGroupDetailView.as_view(), name='profile-group-detail'),                                # noqa
-                url(r'^rows/', include([
-                    url(r'^$', views.ProfileRowListView.as_view(), name='profile-row-list'),                                    # noqa
-                    url(r'^(?P<row_pk>[0-9]+)/', include([
-                        url(r'^$', views.ProfileRowDetailView.as_view(), name='profile-row-detail'),                            # noqa
-                        url(r'^items/', include([
-                            url(r'^$', views.ProfileItemListView.as_view(), name='profile-item-list'),                          # noqa
-                            url(r'^(?P<item_pk>[0-9]+)/$', views.ProfileItemDetailView.as_view(), name='profile-item-detail'),  # noqa
-                        ])),
-                    ])),
-                ])),
-            ])),
-            url(r'^teamtalk/', include('know_me.teamtalk.urls', namespace='teamtalk')),                                         # noqa
-        ])),
-    ])),
+    url(r'^gallery-items/(?P<pk>[0-9]+)/$', views.GalleryItemDetailView.as_view(), name='gallery-item-detail'),     # noqa
+    url(r'^groups/(?P<pk>[0-9]+)/$', views.ProfileGroupDetailView.as_view(), name='profile-group-detail'),          # noqa
+    url(r'^groups/(?P<pk>[0-9]+)/rows/$', views.ProfileRowListView.as_view(), name='profile-row-list'),             # noqa
+    url(r'^items/(?P<pk>[0-9]+)/$', views.ProfileItemDetailView.as_view(), name='profile-item-detail'),             # noqa
+    url(r'^profiles/$', views.ProfileListView.as_view(), name='profile-list'),
+    url(r'^profiles/(?P<pk>[0-9])/$', views.ProfileDetailView.as_view(), name='profile-detail'),                    # noqa
+    url(r'^profiles/(?P<pk>[0-9])/gallery/$', views.GalleryView.as_view(), name='gallery'),                         # noqa
+    url(r'^profiles/(?P<pk>[0-9])/groups/$', views.ProfileGroupListView.as_view(), name='profile-group-list'),      # noqa
+    url(r'^profiles/(?P<pk>[0-9])/teamtalk/$', include('know_me.teamtalk.urls', namespace='teamtalk')),             # noqa
+    url(r'^rows/(?P<pk>[0-9]+)/$', views.ProfileRowDetailView.as_view(), name='profile-row-detail'),                # noqa
+    url(r'^rows/(?P<pk>[0-9]+)/items/$' ,views.ProfileItemListView.as_view(), name='profile-item-list'),            # noqa
 ]
