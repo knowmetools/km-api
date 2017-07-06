@@ -7,6 +7,7 @@ from know_me import views
 
 
 urlpatterns = [
+    url(r'^items/(?P<pk>[0-9]+)/$', views.ProfileItemDetailView.as_view(), name='profile-item-detail'),                         # noqa
     url(r'^profiles/', include([
         url(r'^$', views.ProfileListView.as_view(), name='profile-list'),
         url(r'^(?P<profile_pk>[0-9]+)/', include([
@@ -22,10 +23,7 @@ urlpatterns = [
                     url(r'^$', views.ProfileRowListView.as_view(), name='profile-row-list'),                                    # noqa
                     url(r'^(?P<row_pk>[0-9]+)/', include([
                         url(r'^$', views.ProfileRowDetailView.as_view(), name='profile-row-detail'),                            # noqa
-                        url(r'^items/', include([
-                            url(r'^$', views.ProfileItemListView.as_view(), name='profile-item-list'),                          # noqa
-                            url(r'^(?P<item_pk>[0-9]+)/$', views.ProfileItemDetailView.as_view(), name='profile-item-detail'),  # noqa
-                        ])),
+                        url(r'^items/$', views.ProfileItemListView.as_view(), name='profile-item-list'),                          # noqa
                     ])),
                 ])),
             ])),

@@ -399,14 +399,7 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
             str:
                 The absolute URL of the profile item's detail view.
         """
-        return reverse(
-            'know-me:profile-item-detail',
-            kwargs={
-                'group_pk': self.row.group.pk,
-                'item_pk': self.pk,
-                'profile_pk': self.row.group.profile.pk,
-                'row_pk': self.row.pk,
-            })
+        return reverse('know-me:profile-item-detail', kwargs={'pk': self.pk})
 
     def has_object_read_permission(self, request):
         """

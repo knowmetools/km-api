@@ -124,7 +124,6 @@ class ProfileItemDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retrieving and updating a specific profile item.
     """
-    lookup_url_kwarg = 'item_pk'
     permission_classes = (DRYPermissions,)
     queryset = models.ProfileItem.objects.all()
     serializer_class = serializers.ProfileItemSerializer
