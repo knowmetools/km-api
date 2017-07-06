@@ -30,7 +30,7 @@ class GalleryView(generics.CreateAPIView):
             The newly created ``GalleryItem`` instance.
         """
         profile = models.Profile.objects.get(
-            pk=self.kwargs.get('profile_pk'))
+            pk=self.kwargs.get('pk'))
 
         return serializer.save(profile=profile)
 
@@ -39,7 +39,6 @@ class GalleryItemDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retrieving and updating a specific gallery item.
     """
-    lookup_url_kwarg = 'gallery_item_pk'
     permission_classes = (DRYPermissions,)
     queryset = models.GalleryItem.objects.all()
     serializer_class = serializers.GalleryItemSerializer
@@ -49,7 +48,6 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile.
     """
-    lookup_url_kwarg = 'profile_pk'
     permission_classes = (DRYPermissions,)
     queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileDetailSerializer
@@ -114,7 +112,8 @@ class ProfileGroupListView(generics.ListCreateAPIView):
         """
         profile = get_object_or_404(
             models.Profile,
-            pk=self.kwargs.get('profile_pk'))
+            pk=self.kwargs.get('pk'),
+            user=self.request.user)
 
         return serializer.save(profile=profile)
 

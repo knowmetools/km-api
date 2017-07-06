@@ -1,5 +1,3 @@
-from rest_framework.reverse import reverse
-
 from know_me import serializers
 
 
@@ -29,7 +27,7 @@ def test_create(serializer_context, user_factory):
     assert profile.user == user
 
 
-def test_serialize(profile_factory, serializer_context):
+def test_serialize(api_rf, profile_factory, serializer_context):
     """
     Test serializing a profile.
     """
@@ -38,12 +36,11 @@ def test_serialize(profile_factory, serializer_context):
         profile,
         context=serializer_context)
 
+    url_request = api_rf.get(profile.get_absolute_url())
+
     expected = {
         'id': profile.id,
-        'url': reverse(
-            'know-me:profile-detail',
-            kwargs={'profile_pk': profile.pk},
-            request=serializer_context['request']),
+        'url': url_request.build_absolute_uri(),
         'name': profile.name,
         'quote': profile.quote,
         'welcome_message': profile.welcome_message,

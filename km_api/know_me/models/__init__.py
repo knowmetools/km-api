@@ -77,12 +77,7 @@ class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
             str:
                 The absolute URL of the instance's detail view.
         """
-        return reverse(
-            'know-me:gallery-item-detail',
-            kwargs={
-                'gallery_item_pk': self.pk,
-                'profile_pk': self.profile.pk,
-            })
+        return reverse('know-me:gallery-item-detail', kwargs={'pk': self.pk})
 
     def has_object_read_permission(self, request):
         """
@@ -162,9 +157,7 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
             str:
                 The absolute URL of the instance's detail view.
         """
-        return reverse(
-            'know-me:profile-detail',
-            kwargs={'profile_pk': self.pk})
+        return reverse('know-me:profile-detail', kwargs={'pk': self.pk})
 
     def get_gallery_url(self, request=None):
         """
@@ -182,7 +175,7 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         """
         return reverse(
             'know-me:gallery',
-            kwargs={'profile_pk': self.pk},
+            kwargs={'pk': self.pk},
             request=request)
 
     def get_group_list_url(self, request=None):
@@ -201,7 +194,7 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         """
         return reverse(
             'know-me:profile-group-list',
-            kwargs={'profile_pk': self.pk},
+            kwargs={'pk': self.pk},
             request=request)
 
     def has_object_read_permission(self, request):

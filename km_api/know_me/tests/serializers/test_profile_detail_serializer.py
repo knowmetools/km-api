@@ -1,5 +1,3 @@
-from rest_framework.reverse import reverse
-
 from know_me import serializers
 
 
@@ -23,15 +21,13 @@ def test_serialize(
         context=serializer_context,
         many=True)
 
+    url_request = api_rf.get(profile.get_absolute_url())
     gallery_request = api_rf.get(profile.get_gallery_url())
     group_list_request = api_rf.get(profile.get_group_list_url())
 
     expected = {
         'id': profile.id,
-        'url': reverse(
-            'know-me:profile-detail',
-            kwargs={'profile_pk': profile.pk},
-            request=serializer_context['request']),
+        'url': url_request.build_absolute_uri(),
         'name': profile.name,
         'quote': profile.quote,
         'welcome_message': profile.welcome_message,

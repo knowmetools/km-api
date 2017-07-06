@@ -55,7 +55,7 @@ class ProfileGroupFilterBackend(DRYPermissionFiltersBase):
         """
         profile = get_object_or_404(
             models.Profile,
-            pk=view.kwargs.get('profile_pk'),
+            pk=view.kwargs.get('pk'),
             user=request.user)
 
         return queryset.filter(profile__pk=profile.pk)

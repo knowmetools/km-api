@@ -17,11 +17,7 @@ def test_get_gallery_item(api_rf, gallery_item_factory):
     api_rf.user = profile.user
 
     request = api_rf.get(profile.get_absolute_url())
-    response = gallery_item_detail_view(
-        request,
-        gallery_item_pk=item.pk,
-        profile_pk=profile.pk)
-
+    response = gallery_item_detail_view(request, pk=item.pk)
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.GalleryItemSerializer(
@@ -46,11 +42,7 @@ def test_update_gallery_item(api_rf, gallery_item_factory):
     }
 
     request = api_rf.patch(profile.get_absolute_url(), data)
-    response = gallery_item_detail_view(
-        request,
-        gallery_item_pk=item.pk,
-        profile_pk=profile.pk)
-
+    response = gallery_item_detail_view(request, pk=item.pk)
     assert response.status_code == status.HTTP_200_OK
 
     item.refresh_from_db()
