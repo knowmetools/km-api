@@ -15,6 +15,9 @@ Know Me API
 API Root
   https://new-api.knowmetools.com
 
+Documentation
+  http://know-me-api.readthedocs.io/
+
 -----
 About
 -----
