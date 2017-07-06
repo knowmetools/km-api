@@ -17,6 +17,7 @@ Welcome to Know Me API's documentation!
 
    development
    deployment
+   internal-api
 
 
 Indices and tables

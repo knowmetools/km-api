@@ -18,8 +18,15 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import sys
+
+import django
+
+sys.path.insert(0, os.path.abspath('../km_api'))
+
+# Set Django settings so we can use autodoc.
+os.environ['DJANGO_SETTINGS_MODULE'] = 'km_api.test_settings'
+django.setup()
 
 
 # -- General configuration ------------------------------------------------
@@ -34,6 +41,7 @@ import os
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
+    'sphinxcontrib.napoleon',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
