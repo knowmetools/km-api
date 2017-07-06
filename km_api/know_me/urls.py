@@ -15,7 +15,7 @@ urlpatterns = [
     url(r'^profiles/(?P<pk>[0-9])/$', views.ProfileDetailView.as_view(), name='profile-detail'),                    # noqa
     url(r'^profiles/(?P<pk>[0-9])/gallery/$', views.GalleryView.as_view(), name='gallery'),                         # noqa
     url(r'^profiles/(?P<pk>[0-9])/groups/$', views.ProfileGroupListView.as_view(), name='profile-group-list'),      # noqa
-    url(r'^profiles/(?P<pk>[0-9])/teamtalk/$', include('know_me.teamtalk.urls', namespace='teamtalk')),             # noqa
+    url(r'^profiles/(?P<pk>[0-9])/teamtalk/', include('know_me.teamtalk.urls', namespace='teamtalk')),              # noqa
     url(r'^rows/(?P<pk>[0-9]+)/$', views.ProfileRowDetailView.as_view(), name='profile-row-detail'),                # noqa
     url(r'^rows/(?P<pk>[0-9]+)/items/$' ,views.ProfileItemListView.as_view(), name='profile-item-list'),            # noqa
 ]
