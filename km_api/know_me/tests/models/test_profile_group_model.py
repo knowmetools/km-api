@@ -19,12 +19,7 @@ def test_get_absolute_url(profile_group_factory):
     view.
     """
     group = profile_group_factory()
-    expected = reverse(
-        'know-me:profile-group-detail',
-        kwargs={
-            'group_pk': group.pk,
-            'profile_pk': group.profile.pk,
-        })
+    expected = reverse('know-me:profile-group-detail', kwargs={'pk': group.pk})
 
     assert group.get_absolute_url() == expected
 
@@ -35,12 +30,7 @@ def test_get_row_list_url(profile_group_factory):
     view.
     """
     group = profile_group_factory()
-    expected = reverse(
-        'know-me:profile-row-list',
-        kwargs={
-            'group_pk': group.pk,
-            'profile_pk': group.profile.pk,
-        })
+    expected = reverse('know-me:profile-row-list', kwargs={'pk': group.pk})
 
     assert group.get_row_list_url() == expected
 

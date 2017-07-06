@@ -283,12 +283,7 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
         Returns:
             The URL of the instance's detail view.
         """
-        return reverse(
-            'know-me:profile-group-detail',
-            kwargs={
-                'group_pk': self.pk,
-                'profile_pk': self.profile.pk,
-            })
+        return reverse('know-me:profile-group-detail', kwargs={'pk': self.pk})
 
     def get_row_list_url(self, request=None):
         """
@@ -306,10 +301,7 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
         """
         return reverse(
             'know-me:profile-row-list',
-            kwargs={
-                'group_pk': self.pk,
-                'profile_pk': self.profile.pk,
-            },
+            kwargs={'pk': self.pk},
             request=request)
 
     def has_object_read_permission(self, request):

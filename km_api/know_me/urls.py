@@ -7,6 +7,8 @@ from know_me import views
 
 
 urlpatterns = [
+    url(r'^groups/(?P<pk>[0-9]+)/$', views.ProfileGroupDetailView.as_view(), name='profile-group-detail'),                      # noqa
+    url(r'^groups/(?P<pk>[0-9]+)/rows/$', views.ProfileRowListView.as_view(), name='profile-row-list'),                         # noqa
     url(r'^items/(?P<pk>[0-9]+)/$', views.ProfileItemDetailView.as_view(), name='profile-item-detail'),                         # noqa
     url(r'^profiles/', include([
         url(r'^$', views.ProfileListView.as_view(), name='profile-list'),
@@ -17,12 +19,6 @@ urlpatterns = [
                 url(r'^(?P<gallery_item_pk>[0-9]+)/$', views.GalleryItemDetailView.as_view(), name='gallery-item-detail'),      # noqa
             ])),
             url(r'^groups/$', views.ProfileGroupListView.as_view(), name='profile-group-list'),                                 # noqa
-            url(r'^groups/(?P<group_pk>[0-9]+)/', include([
-                url(r'^$', views.ProfileGroupDetailView.as_view(), name='profile-group-detail'),                                # noqa
-                url(r'^rows/', include([
-                    url(r'^$', views.ProfileRowListView.as_view(), name='profile-row-list'),                                    # noqa
-                ])),
-            ])),
             url(r'^teamtalk/', include('know_me.teamtalk.urls', namespace='teamtalk')),                                         # noqa
         ])),
     ])),

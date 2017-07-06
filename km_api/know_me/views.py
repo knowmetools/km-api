@@ -87,7 +87,6 @@ class ProfileGroupDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile group.
     """
-    lookup_url_kwarg = 'group_pk'
     permission_classes = (DRYPermissions,)
     queryset = models.ProfileGroup.objects.all()
     serializer_class = serializers.ProfileGroupDetailSerializer
@@ -205,7 +204,7 @@ class ProfileRowListView(generics.ListCreateAPIView):
         """
         group = get_object_or_404(
             models.ProfileGroup,
-            pk=self.kwargs.get('group_pk'),
-            profile__pk=self.kwargs.get('profile_pk'))
+            pk=self.kwargs.get('pk'),
+            profile__user=self.request.user)
 
         return serializer.save(group=group)

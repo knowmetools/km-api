@@ -113,7 +113,7 @@ class ProfileRowFilterBackend(DRYPermissionFiltersBase):
         """
         group = get_object_or_404(
             models.ProfileGroup,
-            pk=view.kwargs.get('group_pk'),
+            pk=view.kwargs.get('pk'),
             profile__user=request.user)
 
         return queryset.filter(group__pk=group.pk)

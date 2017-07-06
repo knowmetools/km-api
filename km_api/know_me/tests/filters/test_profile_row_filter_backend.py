@@ -22,9 +22,7 @@ def test_filter_list_group_rows(api_rf, profile_row_factory):
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {
-        'group_pk': group.pk,
-    }
+    view.kwargs = {'pk': group.pk}
 
     backend = filters.ProfileRowFilterBackend()
     results = backend.filter_list_queryset(
@@ -51,9 +49,7 @@ def test_filter_list_inaccessible_group(
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {
-        'group_pk': group.pk,
-    }
+    view.kwargs = {'pk': group.pk}
 
     backend = filters.ProfileRowFilterBackend()
 
@@ -73,9 +69,7 @@ def test_filter_list_non_existent_group(api_rf, user_factory):
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {
-        'group_pk': 1,
-    }
+    view.kwargs = {'pk': 1}
 
     backend = filters.ProfileRowFilterBackend()
 
