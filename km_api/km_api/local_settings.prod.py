@@ -74,3 +74,42 @@ LAYER_PROVIDER_ID = os.environ['LAYER_PROVIDER_ID']
 LAYER_RSA_KEY_FILE_PATH = os.environ.get(
     'LAYER_RSA_KEY_FILE_PATH',
     os.path.join(BASE_DIR, 'layer.pem'))
+
+
+# Logging Configuration
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',  # noqa
+            'datefmt': '%d/%b/%Y %H:%M:%S',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/var/log/km-api/django-info.log',
+            'formatter': 'standard',
+            'backupCount': 5,
+            'maxBytes': 5000000,    # 5 megabytes
+        },
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django.security.DisallowedHost': {
+            'handlers': ['null'],
+            'propogate': False,
+        },
+    },
+}
