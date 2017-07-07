@@ -67,7 +67,7 @@ Profile Details
     :>json string groups_url: The URL of the profile's group list.
     :>json array groups: A list of the groups contained in the profile.
 
-    :statuscode 200: The profile's details were retreived succesfully.
+    :statuscode 200: The profile's details were retrieved succesfully.
     :statuscode 404: There is no profile with the given `id` accessible to the requesting user.
 
 .. http:patch:: /know-me/profiles/(int:id)/
@@ -91,3 +91,89 @@ Profile Details
 
     :statuscode 200: The profile's details were succesfully updated.
     :statuscode 400: The update failed. Check the response data for details.
+
+
+--------------
+Profile Groups
+--------------
+
+Profile groups are the next step down in a profile. They contain information targeted towards a group of people.
+
+Profile Group List
+------------------
+
+The profile group list endpoint allows for listing of a profile's groups as well as creation of new profile groups.
+
+.. http:get:: /know-me/profiles/(int:id)/groups/
+
+    List the groups in a particular profile.
+
+    :param int id: The ID of the profile to fetch the groups of.
+
+    :>jsonarr int id: The ID of the profile group.
+    :>jsonarr string url: The URL of the profile group's detail view.
+    :>jsonarr string name: The name of the profile group.
+    :>jsonarr boolean is_default: A boolean representing if the group is the default for its profile.
+
+    :statuscode 200: The profile's groups were retrieved succesfully.
+    :statuscode 404: No profile with the given `id` was found.
+
+.. http:post:: /know-me/profiles/(int:id)/groups/
+
+    Create a new profile group for the given profile.
+
+    :param int id: The ID of the profile to create a group for.
+
+    :<json string name: The name of the profile group.
+    :<json boolean is_default: *(Optional)* A boolean determining if the group will be the default group for the profile. Defaults to ``false``.
+
+    :>header Location: The URL of the created profile group's detail view.
+
+    :>json int id: The ID of the profile group.
+    :>json string url: The URL of the profile group's detail view.
+    :>json string name: The name of the profile group.
+    :>json boolean is_default: A boolean representing if the group is the default for its profile.
+
+    :statuscode 201: The profile group was successfully created.
+    :statuscode 400: Invalid request. Check the response data for details.
+
+Profile Group Detail
+--------------------
+
+The profile group detail endpoint allows for viewing and updating a profile group's information.
+
+.. http:get:: /know-me/groups/(int:id)/
+
+    Get the details of a particular profile group.
+
+    :param int id: The ID of the profile group to fetch.
+
+    :>json int id: The ID of the profile group.
+    :>json string url: The URL of the profile group's detail view.
+    :>json string name: The name of the profile group.
+    :>json boolean is_default: A boolean representing if the group is the default for its profile.
+    :>json string rows_url: The URL of the group's row list.
+    :>json object rows: A list of the profile rows contained in the group.
+
+    :status 200: The profile group's details were retrieved succesfully.
+    :status 404: There is no profile group with the given ``id`` accessible to the requesting user.
+
+.. http:patch:: /know-me/groups/(int:id)/
+
+    Update a specific profile group's information.
+
+    :param int id: The ID of the profile group to update.
+
+    :<json string name: *(Optional)* A new name for the profile group.
+    :<json boolean is_default: *(Optional)* The new ``is_default`` status for the group.
+
+    :>json int id: The ID of the profile group.
+    :>json string url: The URL of the profile group's detail view.
+    :>json string name: The name of the profile group.
+    :>json boolean is_default: A boolean representing if the group is the default for its profile.
+    :>json string rows_url: The URL of the group's row list.
+    :>json object rows: A list of the profile rows contained in the group.
+
+    :status 200: The profile group's information was succesfully updated.
+    :status 400: Invalid request. Check the response data for details.
+    :status 404: There is no profile group with the given ``id`` accessible to the requesting user.
