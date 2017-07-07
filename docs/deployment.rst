@@ -33,6 +33,12 @@ LAYER_RSA_KEY_FILE_PATH (=/etc/km-api/certs/layer-dev.pem)
 SECRET_KEY
   The secret key to use. This should be a long random string. See the `documentation <secret-key-docs_>`_ for details.
 
+SENTRY_DSN
+  The DSN to use for sentry logging. See the `documentation <sentry-dsn-docs_>`_ for details.
+
+SENTRY_ENVIRONMENT (=staging)
+  The environment to use when logging errors to sentry. This allows for differentiating between production and staging errors. For simplicity, this should be either ``staging`` or ``production``.
+
 STATIC_BUCKET
   The name of the S3 bucket to store static and media files in. The IAM role that the webservers use must have access to this bucket. This bucket must be in the ``us-east-1`` region.
 
@@ -61,3 +67,4 @@ RDS_USERNAME:
 
 .. _layer-identity-token-docs: https://docs.layer.com/sdk/web/authentication#identity-token
 .. _secret-key-docs: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
+.. _sentry-dsn-docs: https://docs.sentry.io/quickstart/#configure-the-dsn

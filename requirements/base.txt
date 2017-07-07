@@ -6,3 +6,4 @@ djangorestframework == 3.6.3
 dry-rest-permissions == 0.1.9
 pycrypto == 2.6.1
 PyJWT == 1.5.2
+raven == 6.1.0
