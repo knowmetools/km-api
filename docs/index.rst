@@ -15,6 +15,7 @@ Welcome to Know Me API's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   api-endpoints
    development
    deployment
    internal-api
