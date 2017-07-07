@@ -9,6 +9,13 @@ from rest_framework.permissions import IsAuthenticated
 from km_auth import permissions, serializers
 
 
+class LayerIdentityView(generics.CreateAPIView):
+    """
+    View for getting a Layer identity.
+    """
+    serializer_class = serializers.IdentitySerializer
+
+
 class UserDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retrieving and updating a user's details.

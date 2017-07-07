@@ -1,4 +1,4 @@
-from know_me.teamtalk import serializers
+from km_auth import serializers
 
 
 def test_validate():
