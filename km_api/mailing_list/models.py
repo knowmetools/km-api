@@ -31,3 +31,13 @@ class MailchimpUser(models.Model):
     class Meta:
         verbose_name = _('MailChimp user')
         verbose_name_plural = _('MailChimp users')
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            str:
+                The instance's user's full name.
+        """
+        return self.user.get_full_name()
