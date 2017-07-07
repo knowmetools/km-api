@@ -1,5 +1,5 @@
 boto3 == 1.4.4
-Django == 1.11.2
+Django == 1.11.3
 django-cors-headers == 2.1.0
 django-storages == 1.6.3
 djangorestframework == 3.6.3
