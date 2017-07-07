@@ -20,6 +20,9 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # Set the hosts allowed to access the application
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS.extend([
+    'localhost',
+])
 
 
 # Enable debugging only if the appropriate environment variable is set.
