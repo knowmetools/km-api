@@ -51,6 +51,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
+    'sphinxcontrib.httpdomain',
     'sphinxcontrib.napoleon',
 ]
 
