@@ -1,6 +1,6 @@
-=======
-Know Me
-=======
+=================
+Know Me - Profile
+=================
 
 These endpoints provide data for the Know Me app.
 
