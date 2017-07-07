@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'custom_storages',
     'km_auth',
     'know_me',
+    'mailing_list',
 ]
 
 MIDDLEWARE = [
