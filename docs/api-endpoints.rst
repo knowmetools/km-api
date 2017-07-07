@@ -17,3 +17,4 @@ API Endpoints
     :maxdepth: 2
 
     API/authentication
+    API/know-me
