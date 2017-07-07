@@ -8,7 +8,7 @@ def test_validate():
     data = {
         'nonce': 's4mpl3n0nc3',
     }
-    serializer = serializers.IdentitySerializer(data=data)
+    serializer = serializers.LayerIdentitySerializer(data=data)
 
     assert serializer.is_valid()
     assert serializer.data == {}

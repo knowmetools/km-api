@@ -13,7 +13,7 @@ class LayerIdentityView(generics.CreateAPIView):
     """
     View for getting a Layer identity.
     """
-    serializer_class = serializers.IdentitySerializer
+    serializer_class = serializers.LayerIdentitySerializer
 
 
 class UserDetailView(generics.RetrieveUpdateAPIView):

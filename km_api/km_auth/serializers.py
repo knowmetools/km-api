@@ -9,7 +9,7 @@ from rest_framework import serializers
 from km_auth import layer
 
 
-class IdentitySerializer(serializers.Serializer):
+class LayerIdentitySerializer(serializers.Serializer):
     """
     Serializer for obtaining an identity from Layer.
 
