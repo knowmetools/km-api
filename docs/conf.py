@@ -50,6 +50,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx_issues',
     'sphinx.ext.viewcode',
     'sphinxcontrib.httpdomain',
     'sphinxcontrib.napoleon',
@@ -207,6 +208,11 @@ APIDOC_EXCLUDE_PATTERNS = (
     'km_api/km_api/',
 )
 APIDOC_OUTPUT = os.path.join(BASE_DIR, '_internal-api')
+
+
+# Issues Configuration
+
+issues_github_path = 'knowmetools/km-api'
 
 
 def run_apidoc(*args):
