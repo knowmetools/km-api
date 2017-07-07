@@ -52,15 +52,7 @@ class ItemHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
         Returns:
             The URL of the given profile item's detail view.
         """
-        return reverse(
-            view_name,
-            kwargs={
-                'group_pk': item.row.group.pk,
-                'item_pk': item.pk,
-                'profile_pk': item.row.group.profile.pk,
-                'row_pk': item.row.pk,
-            },
-            request=request)
+        return reverse(view_name, kwargs={'pk': item.pk}, request=request)
 
 
 class ProfileItemSerializer(serializers.HyperlinkedModelSerializer):

@@ -21,7 +21,7 @@ def test_create(api_rf, profile_factory):
     }
 
     request = api_rf.post(profile.get_group_list_url(), data)
-    response = profile_group_list_view(request, profile_pk=profile.pk)
+    response = profile_group_list_view(request, pk=profile.pk)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -30,18 +30,6 @@ def test_create(api_rf, profile_factory):
         context={'request': request})
 
     assert response.data == serializer.data
-
-
-def test_get_anonymous(api_rf, profile_factory):
-    """
-    Anonymous users should not be able to access the view.
-    """
-    profile = profile_factory()
-
-    request = api_rf.get(profile.get_group_list_url())
-    response = profile_group_list_view(request, profile_pk=profile.pk)
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_get_own(api_rf, profile_group_factory):
@@ -55,7 +43,7 @@ def test_get_own(api_rf, profile_group_factory):
     api_rf.user = user
 
     request = api_rf.get(profile.get_group_list_url())
-    response = profile_group_list_view(request, profile_pk=profile.pk)
+    response = profile_group_list_view(request, pk=profile.pk)
 
     serializer = serializers.ProfileGroupListSerializer(
         profile.groups,

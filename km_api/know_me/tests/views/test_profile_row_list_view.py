@@ -6,22 +6,6 @@ from know_me import models, serializers, views
 profile_row_list_view = views.ProfileRowListView.as_view()
 
 
-def test_anonymous(api_rf, profile_group_factory):
-    """
-    Anonymous users should not be able to access the view.
-    """
-    group = profile_group_factory()
-    profile = group.profile
-
-    request = api_rf.get(group.get_row_list_url())
-    response = profile_row_list_view(
-        request,
-        group_pk=group.pk,
-        profile_pk=profile.pk)
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
 def test_create_row(api_rf, profile_group_factory):
     """
     Sending a POST request with valid data to the view should create a
@@ -38,10 +22,7 @@ def test_create_row(api_rf, profile_group_factory):
     }
 
     request = api_rf.post(group.get_row_list_url(), data)
-    response = profile_row_list_view(
-        request,
-        group_pk=group.pk,
-        profile_pk=profile.pk)
+    response = profile_row_list_view(request, pk=group.pk)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -63,10 +44,7 @@ def test_list_own_rows(api_rf, profile_row_factory):
     api_rf.user = profile.user
 
     request = api_rf.get(group.get_row_list_url())
-    response = profile_row_list_view(
-        request,
-        group_pk=group.pk,
-        profile_pk=profile.pk)
+    response = profile_row_list_view(request, pk=group.pk)
 
     assert response.status_code == status.HTTP_200_OK
 

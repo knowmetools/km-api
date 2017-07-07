@@ -11,15 +11,9 @@ def test_anonymous(api_rf, profile_row_factory):
     Anonymous users should not be able to access the view.
     """
     row = profile_row_factory()
-    group = row.group
-    profile = group.profile
 
     request = api_rf.get(row.get_item_list_url())
-    response = profile_item_list_view(
-        request,
-        group_pk=group.pk,
-        profile_pk=profile.pk,
-        row_pk=row.pk)
+    response = profile_item_list_view(request, pk=row.pk)
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -43,11 +37,7 @@ def test_create(api_rf, gallery_item_factory, profile_row_factory):
     }
 
     request = api_rf.post(row.get_item_list_url(), data)
-    response = profile_item_list_view(
-        request,
-        group_pk=group.pk,
-        profile_pk=profile.pk,
-        row_pk=row.pk)
+    response = profile_item_list_view(request, pk=row.pk)
 
     assert response.status_code == status.HTTP_201_CREATED
 
@@ -76,11 +66,7 @@ def test_get_items(api_rf, profile_item_factory, profile_row_factory):
     api_rf.user = profile.user
 
     request = api_rf.get(row.get_item_list_url())
-    response = profile_item_list_view(
-        request,
-        group_pk=group.pk,
-        profile_pk=profile.pk,
-        row_pk=row.pk)
+    response = profile_item_list_view(request, pk=row.pk)
 
     assert response.status_code == status.HTTP_200_OK
 

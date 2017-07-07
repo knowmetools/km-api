@@ -38,6 +38,8 @@ INSTALLED_APPS = [
 
     # Third Party Apps
     'corsheaders',
+    'dry_rest_permissions',
+    'raven.contrib.django.raven_compat',
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
