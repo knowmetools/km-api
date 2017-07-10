@@ -1,10 +1,15 @@
 """Serializers for account tasks.
 """
 
+import logging
+
 from django.contrib.auth import password_validation
 from django.utils.translation import ugettext as _
 
 from rest_framework import serializers
+
+
+logger = logging.getLogger(__name__)
 
 
 class PasswordChangeSerializer(serializers.Serializer):
@@ -12,10 +17,10 @@ class PasswordChangeSerializer(serializers.Serializer):
     Serializer for changing a user's password.
     """
     new_password = serializers.CharField(
-        style={'input': 'password'},
+        style={'input_type': 'password'},
         write_only=True)
     old_password = serializers.CharField(
-        style={'input': 'password'},
+        style={'input_type': 'password'},
         write_only=True)
 
     class Meta:
@@ -28,6 +33,8 @@ class PasswordChangeSerializer(serializers.Serializer):
         user = self.context['request'].user
 
         user.set_password(self.validated_data['new_password'])
+
+        logger.info('Set new password for %s.', user)
 
     def validate_new_password(self, password):
         """
