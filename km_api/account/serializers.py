@@ -16,15 +16,12 @@ class PasswordChangeSerializer(serializers.Serializer):
     """
     Serializer for changing a user's password.
     """
-    new_password = serializers.CharField(
-        style={'input_type': 'password'},
-        write_only=True)
     old_password = serializers.CharField(
         style={'input_type': 'password'},
         write_only=True)
-
-    class Meta:
-        fields = ('old_password', 'new_password')
+    new_password = serializers.CharField(
+        style={'input_type': 'password'},
+        write_only=True)
 
     def save(self):
         """
