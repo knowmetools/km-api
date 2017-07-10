@@ -30,6 +30,12 @@ LAYER_PROVIDER_ID
 LAYER_RSA_KEY_FILE_PATH (=/etc/km-api/certs/layer-dev.pem)
   The path to the RSA key used to encode the identity tokens for Layer.
 
+MAILCHIMP_ENABLED (=False)
+  Set to ``True`` (case insensitive) to enable syncing of user data to a MailChimp list. Requires ``MAILCHIMP_LIST_ID`` to be set.
+
+MAILCHIMP_LIST_ID (='')
+  The ID of the MailChimp list to sync users to. Can be found under the list's "Settings" menu in "List name and campaign defaults".
+
 SECRET_KEY
   The secret key to use. This should be a long random string. See the `documentation <secret-key-docs_>`_ for details.
 
