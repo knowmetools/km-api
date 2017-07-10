@@ -2,6 +2,16 @@ Changelog
 =========
 
 
+v0.3
+----
+
+Features
+  * :issue:`29,30,31`: Automatically sync user info to a MailChimp list.
+
+Miscellaneous
+  * :issue:`32`: Ignore reports about disallowed hosts.
+
+
 v0.2
 ----
 
