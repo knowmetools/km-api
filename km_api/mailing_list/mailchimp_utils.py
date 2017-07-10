@@ -50,20 +50,12 @@ def sync_mailchimp_data(list_id, user):
         user:
             The user to pull information for the mailing list from.
     """
-    client = _get_client()
-
     mailchimp_query = models.MailchimpUser.objects.filter(user=user)
 
     if mailchimp_query.exists():
         mailchimp_user = mailchimp_query.get()
 
-        response = client.lists.members.update(
-            data=get_member_info(user),
-            list_id=list_id,
-            subscriber_hash=mailchimp_user.subscriber_hash)
-
-        mailchimp_user.subscriber_hash = response['id']
-        mailchimp_user.save()
+        _member_update(list_id, user, mailchimp_user)
     else:
         _member_create(list_id, user)
 
@@ -82,6 +74,9 @@ def _get_client():
 def _member_create(list_id, user):
     """
     Create a member for a MailChimp list.
+
+    If the member already exists in the given list, we save a record of
+    the membership and attempt to update their info.
 
     Args:
         list_id (str):
@@ -111,3 +106,40 @@ def _member_create(list_id, user):
     models.MailchimpUser.objects.create(
         subscriber_hash=response['id'],
         user=user)
+
+
+def _member_update(list_id, user, mailchimp_user):
+    """
+    Update a mailing list member's information.
+
+    If the member does not exist, we add the member and update our
+    record of their membership.
+
+    Args:
+        list_id (str):
+            The ID of the list to update the member's info for.
+        user:
+            The user to pull member info from.
+        mailchimp_user:
+            The model instance linking the mailing list member to a user
+            account. The instance will be updated to reflect the updated
+            user information.
+    """
+    client = _get_client()
+
+    data = get_member_info(user)
+
+    try:
+        response = client.lists.members.update(
+            data=data,
+            list_id=list_id,
+            subscriber_hash=mailchimp_user.subscriber_hash)
+    except HTTPError:
+        data.update({'status': 'subscribed'})
+
+        response = client.lists.members.create(
+            data=data,
+            list_id=list_id)
+
+    mailchimp_user.subscriber_hash = response['id']
+    mailchimp_user.save()
