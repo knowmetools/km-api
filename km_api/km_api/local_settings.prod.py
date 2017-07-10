@@ -20,6 +20,9 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # Set the hosts allowed to access the application
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS.extend([
+    'localhost',
+])
 
 
 # Enable debugging only if the appropriate environment variable is set.
@@ -76,6 +79,13 @@ LAYER_RSA_KEY_FILE_PATH = os.environ.get(
     os.path.join(BASE_DIR, 'layer.pem'))
 
 
+# MailChimp Configuration
+
+MAILCHIMP_API_KEY = os.environ.get('MAILCHIMP_API_KEY', '')
+MAILCHIMP_ENABLED = os.environ.get('MAILCHIMP_ENABLED', '').lower() == 'true'
+MAILCHIMP_LIST_ID = os.environ.get('MAILCHIMP_LIST_ID', '')
+
+
 # Sentry Configuration (for logging)
 
 RAVEN_CONFIG = {
@@ -90,8 +100,8 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'root': {
-        'level': 'WARNING',
-        'handlers': ['sentry'],
+        'level': 'INFO',
+        'handlers': ['file', 'sentry'],
     },
     'formatters': {
         'standard': {
@@ -113,29 +123,22 @@ LOGGING = {
             'class': 'logging.NullHandler',
         },
         'sentry': {
-            'level': 'INFO',
+            'level': 'WARNING',
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',        # noqa
             'formatter': 'standard',
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['file', 'sentry'],
-            'level': 'INFO',
+        'boto3.resources.action': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+        'django.request': {
+            'level': 'ERROR',
             'propagate': True,
         },
         'django.security.DisallowedHost': {
             'handlers': ['null'],
-            'propogate': False,
-        },
-        'raven': {
-            'level': 'DEBUG',
-            'handlers': ['file'],
-            'propagate': False,
-        },
-        'sentry.errors': {
-            'level': 'DEBUG',
-            'handlers': ['file'],
             'propagate': False,
         },
     },
