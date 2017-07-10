@@ -100,8 +100,8 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'root': {
-        'level': 'WARNING',
-        'handlers': ['sentry'],
+        'level': 'INFO',
+        'handlers': ['file', 'sentry'],
     },
     'formatters': {
         'standard': {
@@ -123,34 +123,22 @@ LOGGING = {
             'class': 'logging.NullHandler',
         },
         'sentry': {
-            'level': 'INFO',
+            'level': 'WARNING',
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',        # noqa
             'formatter': 'standard',
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['file', 'sentry'],
-            'level': 'INFO',
+        'boto3.resources.action': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+        'django.request': {
+            'level': 'ERROR',
             'propagate': True,
         },
         'django.security.DisallowedHost': {
             'handlers': ['null'],
-            'propogate': False,
-        },
-        'mailing_list': {
-            'handlers': ['file', 'sentry'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'raven': {
-            'level': 'DEBUG',
-            'handlers': ['file'],
-            'propagate': False,
-        },
-        'sentry.errors': {
-            'level': 'DEBUG',
-            'handlers': ['file'],
             'propagate': False,
         },
     },
