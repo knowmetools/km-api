@@ -10,33 +10,13 @@ def test_create_user(mock_mc_client, user_factory):
     """
     user = user_factory()
 
-    mock_mc_client.lists.members.create.return_value = {
-        'id': 'hash',
-    }
-
     with mock.patch(
-            'mailing_list.mailchimp_utils._get_client',
-            return_value=mock_mc_client):
+            'mailing_list.mailchimp_utils._member_create',
+            autospec=True) as mock_create:
         mailchimp_utils.sync_mailchimp_data('list', user)
 
-    expected_data = mailchimp_utils.get_member_info(user)
-    expected_data.update({
-        'status': 'subscribed',
-    })
-
-    assert mock_mc_client.lists.members.create.call_count == 1
-    assert mock_mc_client.lists.members.create.call_args[1] == {
-        'data': expected_data,
-        'list_id': 'list',
-    }
-
-    assert models.MailchimpUser.objects.count() == 1
-
-    mailchimp_user = models.MailchimpUser.objects.get()
-
-    assert mailchimp_user.subscriber_hash == \
-        mock_mc_client.lists.members.create.return_value['id']
-    assert mailchimp_user.user == user
+    assert mock_create.call_count == 1
+    assert mock_create.call_args[0] == ('list', user)
 
 
 def test_update_user(mailchimp_user_factory, mock_mc_client):

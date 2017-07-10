@@ -5,6 +5,8 @@ from django.conf import settings
 
 import mailchimp3
 
+from requests.exceptions import HTTPError
+
 from mailing_list import models
 
 
@@ -63,16 +65,7 @@ def sync_mailchimp_data(list_id, user):
         mailchimp_user.subscriber_hash = response['id']
         mailchimp_user.save()
     else:
-        member_data = get_member_info(user)
-        member_data.update({'status': 'subscribed'})
-
-        response = client.lists.members.create(
-            data=member_data,
-            list_id=list_id)
-
-        models.MailchimpUser.objects.create(
-            subscriber_hash=response['id'],
-            user=user)
+        _member_create(list_id, user)
 
 
 def _get_client():
@@ -84,3 +77,37 @@ def _get_client():
         specified in the project's settings.
     """
     return mailchimp3.MailChimp('km-api', settings.MAILCHIMP_API_KEY)
+
+
+def _member_create(list_id, user):
+    """
+    Create a member for a MailChimp list.
+
+    Args:
+        list_id (str):
+            The ID of the list to add a member to.
+        user:
+            The user to pull member info from.
+    """
+    client = _get_client()
+
+    data = get_member_info(user)
+    data.update({'status': 'subscribed'})
+
+    try:
+        response = client.lists.members.create(
+            data=data,
+            list_id=list_id)
+    except HTTPError:
+        # When updating a user's info we don't want to set them to
+        # subscribed
+        del data['status']
+
+        response = client.lists.members.update(
+            data=data,
+            list_id=list_id,
+            subscriber_hash=user.email)
+
+    models.MailchimpUser.objects.create(
+        subscriber_hash=response['id'],
+        user=user)
