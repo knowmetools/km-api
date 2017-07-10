@@ -79,6 +79,13 @@ LAYER_RSA_KEY_FILE_PATH = os.environ.get(
     os.path.join(BASE_DIR, 'layer.pem'))
 
 
+# MailChimp Configuration
+
+MAILCHIMP_API_KEY = os.environ.get('MAILCHIMP_API_KEY', '')
+MAILCHIMP_ENABLED = os.environ.get('MAILCHIMP_ENABLED', '').lower() == 'true'
+MAILCHIMP_LIST_ID = os.environ.get('MAILCHIMP_LIST_ID', '')
+
+
 # Sentry Configuration (for logging)
 
 RAVEN_CONFIG = {
@@ -130,6 +137,11 @@ LOGGING = {
         'django.security.DisallowedHost': {
             'handlers': ['null'],
             'propogate': False,
+        },
+        'mailing_list': {
+            'handlers': ['file', 'sentry'],
+            'level': 'INFO',
+            'propagate': True,
         },
         'raven': {
             'level': 'DEBUG',
