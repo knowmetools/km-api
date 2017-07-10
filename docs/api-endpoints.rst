@@ -17,5 +17,6 @@ API Endpoints
     :maxdepth: 2
 
     API/authentication
+    API/account
     API/know-me-gallery
     API/know-me-profile
