@@ -137,6 +137,11 @@ LOGGING = {
             'handlers': ['null'],
             'propogate': False,
         },
+        'mailing_list': {
+            'handlers': ['file', 'sentry'],
+            'level': 'INFO',
+            'propagate': True,
+        },
         'raven': {
             'level': 'DEBUG',
             'handlers': ['file'],

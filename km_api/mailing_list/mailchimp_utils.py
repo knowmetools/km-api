@@ -1,6 +1,8 @@
 """Utilities for interacting with MailChimp.
 """
 
+import logging
+
 from django.conf import settings
 
 import mailchimp3
@@ -8,6 +10,9 @@ import mailchimp3
 from requests.exceptions import HTTPError
 
 from mailing_list import models
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_member_info(user):
@@ -93,6 +98,7 @@ def _member_create(list_id, user):
         response = client.lists.members.create(
             data=data,
             list_id=list_id)
+        logger.info('Subscribed %s to mailing list', user.email)
     except HTTPError:
         # When updating a user's info we don't want to set them to
         # subscribed
@@ -102,6 +108,11 @@ def _member_create(list_id, user):
             data=data,
             list_id=list_id,
             subscriber_hash=user.email)
+
+        logger.info(
+            ('Failed to create new mailing list member; updated info for %s '
+             'instead.'),
+            user.email)
 
     models.MailchimpUser.objects.create(
         subscriber_hash=response['id'],
@@ -134,12 +145,18 @@ def _member_update(list_id, user, mailchimp_user):
             data=data,
             list_id=list_id,
             subscriber_hash=mailchimp_user.subscriber_hash)
+        logger.info('Updated mailing list info for %s.', user.email)
     except HTTPError:
         data.update({'status': 'subscribed'})
 
         response = client.lists.members.create(
             data=data,
             list_id=list_id)
+
+        logger.info(
+            ('Failed to update member info; subscribed %s to mailing list '
+             'instead.'),
+            user.email)
 
     mailchimp_user.subscriber_hash = response['id']
     mailchimp_user.save()
