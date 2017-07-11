@@ -37,16 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third Party Apps
-    'corsheaders',
     'dry_rest_permissions',
-    'raven.contrib.django.raven_compat',
     'rest_framework',
     'rest_framework.authtoken',
-    'storages',
 
     # Custom Apps
     'account',
-    'custom_storages',
     'km_auth',
     'know_me',
     'mailing_list',
@@ -150,12 +146,6 @@ MEDIA_URL = '/media/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
-
-
-# CORS Configurations
-# https://github.com/ottoyiu/django-cors-headers#configuration
-
-CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Layer Configuration
