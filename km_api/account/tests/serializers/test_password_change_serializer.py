@@ -68,6 +68,10 @@ def test_save(api_rf, user_factory):
         data=data)
     assert serializer.is_valid()
 
-    serializer.save()
+    with mock.patch.object(
+            user,
+            'send_password_changed_email') as mock_send_mail:
+        serializer.save()
 
     assert user.check_password(data['new_password'])
+    assert mock_send_mail.call_count == 1

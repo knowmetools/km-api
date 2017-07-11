@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'storages',
 
     # Custom Apps
+    'account',
     'custom_storages',
     'km_auth',
     'know_me',
@@ -116,6 +117,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',             # noqa
     },
 ]
+
+
+# Email Configuration
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Internationalization

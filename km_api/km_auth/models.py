@@ -1,8 +1,11 @@
 """Models dealing with user authentication.
 """
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core import mail
 from django.db import models
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
 from km_auth import managers
@@ -91,3 +94,19 @@ class User(PermissionsMixin, AbstractBaseUser):
                 The user's first name.
         """
         return self.first_name
+
+    def send_password_changed_email(self):
+        """
+        Send an email notifying the user their password was changed.
+        """
+        text_content = render_to_string(
+            'account/email/password-changed.txt',
+            {
+                'user': self,
+            })
+
+        mail.send_mail(
+            _('Your Know Me Password was Changed'),
+            message=text_content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[self.email])
