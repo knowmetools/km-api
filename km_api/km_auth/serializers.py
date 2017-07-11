@@ -6,6 +6,7 @@ from django.contrib.auth import password_validation
 
 from rest_framework import serializers
 
+from account.models import EmailConfirmation
 from km_auth import layer
 
 
@@ -48,6 +49,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """
         Create a new user from the serializer's validated data.
 
+        This also sends out an email to the user confirming their email
+        address.
+
         Args:
             validated_data:
                 The data to create the new user from.
@@ -55,7 +59,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         Returns:
             The newly created ``User`` instance.
         """
-        return get_user_model().objects.create_user(**validated_data)
+        user = get_user_model().objects.create_user(**validated_data)
+
+        confirmation = EmailConfirmation.objects.create(user=user)
+        confirmation.send_confirmation()
+
+        return user
 
     def validate_password(self, password):
         """

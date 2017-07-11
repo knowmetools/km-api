@@ -1,5 +1,8 @@
+from unittest import mock
+
 import pytest
 
+from account.models import EmailConfirmation
 from km_auth import serializers
 
 
@@ -18,12 +21,19 @@ def test_create():
     serializer = serializers.UserRegistrationSerializer(data=data)
     assert serializer.is_valid()
 
-    user = serializer.save()
+    with mock.patch(
+            'km_auth.serializers.EmailConfirmation.send_confirmation',
+            autospec=True) as mock_confirm:
+        user = serializer.save()
 
     assert user.email == data['email']
     assert user.first_name == data['first_name']
     assert user.last_name == data['last_name']
     assert user.check_password(data['password'])
+
+    # Ensure we sent the user an email confirmation
+    assert EmailConfirmation.objects.count() == 1
+    assert mock_confirm.call_count == 1
 
 
 def test_serialize(user_factory):
