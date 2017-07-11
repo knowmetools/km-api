@@ -56,6 +56,10 @@ Layer
 
 For real time communications we use Layer_. Layer requires an identity token in order to authenticate with their services.
 
+.. warning::
+
+    The validity of the token returned from this endpoint is not guaranteed. If an invalid nonce was provided, the returned token will also be invalid.
+
 .. http:post:: /auth/layer/
 
     Obtain an identity token for Layer.
@@ -66,10 +70,6 @@ For real time communications we use Layer_. Layer requires an identity token in 
 
     :statuscode 201: Identity token successfully created.
     :statuscode 400: Invalid request. Check the response data for details.
-
-.. warning::
-
-    Just because an identity token was received does not mean the identity token is valid. If an invalid nonce was provided, the returned token will also be invalid.
 
 
 .. _Layer: https://layer.com/
