@@ -1,8 +1,10 @@
 {% load i18n %}{% blocktrans with email=user.email name=user.first_name %}Hello {{ name }},
 
-Please confirm your email address ({{ email }}) to complete the registration process for your Know Me account. If you did not sign up for an account, you can safely ignore this email. If you have questions, please contact us at team@knowmetools.com.
+Please confirm your email address ({{ email }}) by clicking the link below. If you did not sign up for an account, you can safely ignore this email. If you have questions, please contact us at team@knowmetools.com.{% endblocktrans %}
 
-Sincerely,
+{{ confirmation_link }}
+
+{% blocktrans %}Sincerely,
 The Know Me Team{% endblocktrans %}
 
 
