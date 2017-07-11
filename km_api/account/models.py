@@ -5,6 +5,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 
+from account import managers
+
 
 class EmailConfirmation(models.Model):
     """
@@ -26,6 +28,8 @@ class EmailConfirmation(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         verbose_name=_('user'))
+
+    objects = managers.EmailConfirmationManager()
 
     class Meta:
         verbose_name = _('email confirmation')
