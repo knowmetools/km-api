@@ -3,7 +3,7 @@
 
 import logging
 
-from django.contrib.auth import password_validation
+from django.contrib.auth import get_user_model, password_validation
 from django.utils.translation import ugettext as _
 
 from rest_framework import serializers
@@ -106,3 +106,16 @@ class PasswordChangeSerializer(serializers.Serializer):
                   "match your current password."))
 
         return password
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for ``User`` instances.
+
+    The serializer allows for updating of basic information like email
+    or name. It does **not** allow for changing the user's password.
+    """
+
+    class Meta:
+        fields = ('id', 'email', 'first_name', 'last_name')
+        model = get_user_model()

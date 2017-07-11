@@ -8,4 +8,5 @@ from account import views
 
 urlpatterns = [
     url(r'^change-password/$', views.PasswordChangeView.as_view(), name='change-password'),     # noqa
+    url(r'^profile/$', views.UserDetailView.as_view(), name='profile'),
 ]

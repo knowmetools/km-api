@@ -2,6 +2,13 @@ Changelog
 =========
 
 
+v0.4
+----
+
+Breaking Changes
+  * :issue:`27`: Move user profile view from ``/auth/profile/`` to ``/account/profile``.
+
+
 v0.3
 ----
 

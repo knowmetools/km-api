@@ -39,3 +39,24 @@ class PasswordChangeView(generics.GenericAPIView):
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserDetailView(generics.RetrieveUpdateAPIView):
+    """
+    View for retrieving and updating a user's information.
+
+    This view is only able to update account information such as email
+    address or name. To change a user's password, see
+    :class:`.PasswordChangeView`.
+    """
+    permission_classes = (IsAuthenticated,)
+    serializer_class = serializers.UserSerializer
+
+    def get_object(self):
+        """
+        Get the user making the request.
+
+        Returns:
+            The user making the request.
+        """
+        return self.request.user
