@@ -2,7 +2,9 @@
 """
 
 from django.conf import settings
+from django.core import mail
 from django.db import models
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from account import managers
@@ -48,3 +50,23 @@ class EmailConfirmation(models.Model):
             'Confirmation for %(email)s' % {
                 'email': self.user.email,
             })
+
+    def send_confirmation(self):
+        """
+        Send a confirmation email to the linked user's address.
+        """
+        confirmation_link = settings.EMAIL_CONFIRMATION_LINK_TEMPLATE.format(
+            key=self.key)
+        context = {
+            'confirmation_link': confirmation_link,
+            'user': self.user,
+        }
+        text_content = render_to_string(
+            'account/email/confirm-email.txt',
+            context)
+
+        mail.send_mail(
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            message=text_content,
+            recipient_list=[self.user.email],
+            subject=ugettext('Please Confirm Your Know Me Email'))
