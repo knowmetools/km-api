@@ -70,4 +70,7 @@ def test_save(api_rf, user_factory):
 
     serializer.save()
 
+    # Regression test for #35
+    user.refresh_from_db()
+
     assert user.check_password(data['new_password'])

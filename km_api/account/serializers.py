@@ -30,6 +30,7 @@ class PasswordChangeSerializer(serializers.Serializer):
         user = self.context['request'].user
 
         user.set_password(self.validated_data['new_password'])
+        user.save()
 
         logger.info('Set new password for %s.', user)
 
