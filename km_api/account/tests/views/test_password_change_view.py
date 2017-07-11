@@ -1,3 +1,5 @@
+from unittest import mock
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 
@@ -32,10 +34,16 @@ def test_change_password(api_rf, user_factory):
     }
 
     request = api_rf.post(url, data)
-    response = password_change_view(request)
+
+    with mock.patch('account.views.update_session_auth_hash') as mock_hash:
+        response = password_change_view(request)
 
     assert response.status_code == 200
     assert user.check_password(data['new_password'])
+
+    # Ensure the session hash was updated
+    assert mock_hash.call_count == 1
+    assert mock_hash.call_args[0][1] == user
 
 
 def test_invalid_request(api_rf, user_factory):

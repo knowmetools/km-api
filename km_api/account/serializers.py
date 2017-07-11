@@ -16,22 +16,22 @@ class PasswordChangeSerializer(serializers.Serializer):
     """
     Serializer for changing a user's password.
     """
-    new_password = serializers.CharField(
-        style={'input_type': 'password'},
-        write_only=True)
     old_password = serializers.CharField(
         style={'input_type': 'password'},
         write_only=True)
-
-    class Meta:
-        fields = ('old_password', 'new_password')
+    new_password = serializers.CharField(
+        style={'input_type': 'password'},
+        write_only=True)
 
     def save(self):
         """
         Change the requesting user's password.
         """
         user = self.context['request'].user
+
         user.set_password(self.validated_data['new_password'])
+        user.save()
+
         user.send_password_changed_email()
 
         logger.info('Set new password for %s.', user)

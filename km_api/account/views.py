@@ -1,6 +1,8 @@
 """Views for the ``account`` module.
 """
 
+from django.contrib.auth import update_session_auth_hash
+
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -31,6 +33,8 @@ class PasswordChangeView(generics.GenericAPIView):
 
         if serializer.is_valid():
             serializer.save()
+
+            update_session_auth_hash(request, request.user)
 
             return Response(serializer.data)
 
