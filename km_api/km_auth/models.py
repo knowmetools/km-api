@@ -36,6 +36,10 @@ class User(PermissionsMixin, AbstractBaseUser):
         max_length=255,
         unique=True,
         verbose_name=_('email'))
+    email_verified = models.BooleanField(
+        default=False,
+        help_text=_('Users without a verified email address may not log in.'),
+        verbose_name=_('email verified'))
     is_active = models.BooleanField(
         default=True,
         help_text=_('Inactive users are not able to log in.'),
