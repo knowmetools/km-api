@@ -36,6 +36,30 @@ class PasswordChangeSerializer(serializers.Serializer):
 
         logger.info('Set new password for %s.', user)
 
+    def validate(self, data):
+        """
+        Validate the serializer as a whole.
+
+        Args:
+            data (dict):
+                The data to validate.
+
+        Returns:
+            dict:
+                A dictionary containing validated data.
+
+        Raises:
+            ValidationError:
+                If the user's new password is the same as their old
+                password.
+        """
+        if data['new_password'] == data['old_password']:
+            raise serializers.ValidationError(
+                _('The new password must be different from the current '
+                  'password.'))
+
+        return data
+
     def validate_new_password(self, password):
         """
         Validate the user's new password.

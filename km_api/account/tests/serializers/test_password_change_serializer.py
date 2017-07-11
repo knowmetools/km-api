@@ -75,3 +75,24 @@ def test_save(api_rf, user_factory):
 
     assert user.check_password(data['new_password'])
     assert mock_send_mail.call_count == 1
+
+
+def test_validate_duplicate_passwords(api_rf, user_factory):
+    """
+    Entering a new password that is the same as the existing password
+    should cause the serializer to be invalid.
+    """
+    user = user_factory(password='oldpassword')
+    data = {
+        'new_password': 'oldpassword',
+        'old_password': 'oldpassword',
+    }
+
+    api_rf.user = user
+    request = api_rf.get('/')
+
+    serializer = serializers.PasswordChangeSerializer(
+        context={'request': request},
+        data=data)
+
+    assert not serializer.is_valid()
