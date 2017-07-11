@@ -3,6 +3,46 @@ Account
 =======
 
 
+-------
+Profile
+-------
+
+A user's profile contains personal information about the user such as their email or name.
+
+.. note::
+
+    If you are looking to change a user's password, see the `Change Password <change-password_>`_ endpoint.
+
+.. http:get:: /account/profile/
+
+    Retrieve the requesting user's account information.
+
+    :>json int id: The user's ID.
+    :>json string email: The user's email address.
+    :>json string first_name: The user's first name.
+    :>json string last_name: The user's last name.
+
+    :status 200: The user's information was successfully retrieved.
+
+.. http:patch:: /account/profile/
+
+    Update the requesting user's information.
+
+    :<json string email: *(Optional)* The user's new email address.
+    :<json string first_name: *(Optional)* The user's new first name.
+    :<json string last_name: *(Optional)* The user's new last name.
+
+    :>json int id: The user's ID.
+    :>json string email: The user's email address.
+    :>json string first_name: The user's first name.
+    :>json string last_name: The user's last name.
+
+    :status 200: The user's information was successfully updated.
+    :status 400: Invalid request. Check the response data for details.
+
+
+.. _change-password:
+
 ---------------
 Change Password
 ---------------
