@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'storages',
 
     # Custom Apps
+    'account',
     'custom_storages',
     'km_auth',
     'know_me',
@@ -86,6 +87,7 @@ WSGI_APPLICATION = 'km_api.wsgi.application'
 # Custom user model
 
 AUTH_USER_MODEL = 'km_auth.User'
+DEFAULT_FROM_EMAIL = 'Know Me <no-reply@knowmetools.com>'
 
 
 # Database
@@ -116,6 +118,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',             # noqa
     },
 ]
+
+
+# Email Configuration
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Internationalization
