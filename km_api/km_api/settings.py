@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'km_api.wsgi.application'
 # Custom user model
 
 AUTH_USER_MODEL = 'km_auth.User'
-DEFAULT_FROM_EMAIL = 'no-reply@knowmetools.com'
+DEFAULT_FROM_EMAIL = 'Know Me <no-reply@knowmetools.com>'
 
 
 # Database
