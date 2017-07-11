@@ -14,6 +14,9 @@ The application uses the following environment variables. These can be set from 
 ALLOWED_HOSTS (=[ ])
   A comma separated list of URLs that the app is accessible from.
 
+AWS_REGION (=us-east-1)
+  The region the project's AWS resources are running in.
+
 DEBUG (=False)
   Set to ``True`` (case insensitive) to enable Django's debug mode.
 

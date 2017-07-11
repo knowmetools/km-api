@@ -44,6 +44,12 @@ DATABASES = {
 }
 
 
+# Email Settings
+
+AWS_SES_REGION_NAME = os.environ.get('AWS_REGION', 'us-east-1')
+EMAIL_BACKEND = 'django_ses.SESBackend'
+
+
 # SSL Settings
 
 CSRF_COOKIE_SECURE = True
