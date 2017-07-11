@@ -4,10 +4,7 @@
 import datetime
 import os
 
-
-# Base directory for the project.
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from km_api.settings import *       # noqa
 
 
 # Set the secret key from an environment variable. We use the bracket
@@ -28,6 +25,19 @@ ALLOWED_HOSTS.extend([
 # Enable debugging only if the appropriate environment variable is set.
 
 DEBUG = os.environ.get('DEBUG', '').lower() == 'true'
+
+
+# Production only apps
+
+INSTALLED_APPS += [         # noqa
+    # Third Party Apps
+    'corsheaders',
+    'raven.contrib.django.raven_compat',
+    'storages',
+
+    # Custom Apps
+    'custom_storages',
+]
 
 
 # Use an external Postgres database.
@@ -64,6 +74,12 @@ DEFAULT_FILE_STORAGE = 'custom_storages.backends.MediaStorage'
 STATICFILES_STORAGE = 'custom_storages.backends.StaticStorage'
 
 
+# CORS Configurations
+# https://github.com/ottoyiu/django-cors-headers#configuration
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+
 # S3 Configuration
 
 AWS_AUTO_CREATE_BUCKET = True
@@ -82,7 +98,7 @@ LAYER_KEY_ID = os.environ['LAYER_KEY_ID']
 LAYER_PROVIDER_ID = os.environ['LAYER_PROVIDER_ID']
 LAYER_RSA_KEY_FILE_PATH = os.environ.get(
     'LAYER_RSA_KEY_FILE_PATH',
-    os.path.join(BASE_DIR, 'layer.pem'))
+    os.path.join(BASE_DIR, 'layer.pem'))        # noqa
 
 
 # MailChimp Configuration
