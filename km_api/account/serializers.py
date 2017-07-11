@@ -3,13 +3,37 @@
 
 import logging
 
+from django.conf import settings
 from django.contrib.auth import get_user_model, password_validation
 from django.utils.translation import ugettext as _
 
 from rest_framework import serializers
 
+from account import models
+
 
 logger = logging.getLogger(__name__)
+
+
+class EmailConfirmationSerializer(serializers.Serializer):
+    """
+    Serializer for verifying a user's email address.
+    """
+    key = serializers.CharField(
+        max_length=settings.EMAIL_CONFIRMATION_KEY_LENGTH,
+        write_only=True)
+
+    def save(self):
+        """
+        Verify the email with the provided key.
+        """
+        confirmation = models.EmailConfirmation.objects.get(
+            key=self.validated_data['key'])
+
+        confirmation.user.email_verified = True
+        confirmation.user.save()
+
+        confirmation.delete()
 
 
 class PasswordChangeSerializer(serializers.Serializer):
