@@ -30,6 +30,7 @@ You must also have the private key referenced by ``LAYER_KEY_ID`` located at ``k
 
 Finally, run the dev server with::
 
+    $ export DJANGO_SETTINGS_MODULE='km_api.local_settings'
     $ km_api/manage.py devserver
 
 Running Tests
