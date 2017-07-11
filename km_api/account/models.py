@@ -3,7 +3,7 @@
 
 from django.conf import settings
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 
 class EmailConfirmation(models.Model):
@@ -30,3 +30,17 @@ class EmailConfirmation(models.Model):
     class Meta:
         verbose_name = _('email confirmation')
         verbose_name_plural = _('email confirmations')
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            str:
+                A string containing a message indicating which email
+                address the confirmation is for.
+        """
+        return ugettext(
+            'Confirmation for %(email)s' % {
+                'email': self.user.email,
+            })
