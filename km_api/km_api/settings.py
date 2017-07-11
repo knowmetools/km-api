@@ -173,11 +173,3 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
 }
-
-
-# Use local settings if they exist
-
-try:
-    from km_api.local_settings import *     # noqa
-except ImportError:
-    pass

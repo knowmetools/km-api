@@ -4,10 +4,7 @@
 import datetime
 import os
 
-
-# Base directory for the project.
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import * from km_api.settings   # noqa
 
 
 # Set the secret key from an environment variable. We use the bracket
