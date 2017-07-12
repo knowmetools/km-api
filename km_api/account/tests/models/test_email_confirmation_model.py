@@ -13,6 +13,32 @@ def test_create(user_factory):
         user=user_factory())
 
 
+def test_is_expired_false(email_confirmation_factory, settings):
+    """
+    If the number of days specified in the
+    ``EMAIL_CONFIRMATION_EXPIRATION_DAYS`` setting has not passed since
+    the creation of the confirmation, it should not be expired.
+    """
+    settings.EMAIL_CONFIRMATION_EXPIRATION_DAYS = 1
+
+    confirmation = email_confirmation_factory()
+
+    assert not confirmation.is_expired()
+
+
+def test_is_expired_true(email_confirmation_factory, settings):
+    """
+    If the number of days specified in the
+    ``EMAIL_CONFIRMATION_EXPIRATION_DAYS`` setting has passed since the
+    creation of the confirmation, it should be expired.
+    """
+    settings.EMAIL_CONFIRMATION_EXPIRATION_DAYS = 0
+
+    confirmation = email_confirmation_factory()
+
+    assert confirmation.is_expired()
+
+
 def test_send_confirmation(email_confirmation_factory, settings):
     """
     The email confirmation should be sent to the email address of the

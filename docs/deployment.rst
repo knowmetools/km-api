@@ -20,6 +20,9 @@ AWS_REGION (=us-east-1)
 DEBUG (=False)
   Set to ``True`` (case insensitive) to enable Django's debug mode.
 
+EMAIL_CONFIRMATION_EXPIRATION_DAYS (=1)
+  An integer specifying the number of days an email confirmation is valid for.
+
 LAYER_IDENTITY_EXPIRATION (=300)
   The expiration time of each Layer identity token in seconds. See Layer's `Identity Token documentation <layer-identity-token-docs_>`_ for more information.
 

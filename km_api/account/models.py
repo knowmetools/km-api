@@ -1,10 +1,13 @@
 """Models for the ``account`` module.
 """
 
+import datetime
+
 from django.conf import settings
 from django.core import mail
 from django.db import models
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from account import managers
@@ -50,6 +53,24 @@ class EmailConfirmation(models.Model):
             'Confirmation for %(email)s' % {
                 'email': self.user.email,
             })
+
+    def is_expired(self):
+        """
+        Determine if the confirmation has expired.
+
+        The duration that a confirmation is valid for is specified in
+        the ``EMAIL_CONFIRMATION_EXPIRATION_DAYS`` setting.
+
+        Returns:
+            bool:
+                ``True`` if the confirmation has expired and ``False``
+                otherwise.
+        """
+        now = timezone.now()
+        expiration = self.created_at + datetime.timedelta(
+            days=settings.EMAIL_CONFIRMATION_EXPIRATION_DAYS)
+
+        return now > expiration
 
     def send_confirmation(self):
         """

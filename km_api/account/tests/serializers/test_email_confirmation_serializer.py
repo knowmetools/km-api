@@ -26,6 +26,23 @@ def test_save_valid_key(email_confirmation_factory):
     assert user.email_verified
 
 
+def test_validate_expired(email_confirmation_factory, settings):
+    """
+    If a key is given for an expired confirmation, the serializer should
+    not be valid.
+    """
+    settings.EMAIL_CONFIRMATION_EXPIRATION_DAYS = 0
+
+    confirmation = email_confirmation_factory()
+    data = {
+        'key': confirmation.key,
+    }
+
+    serializer = serializers.EmailConfirmationSerializer(data=data)
+
+    assert not serializer.is_valid()
+
+
 @pytest.mark.django_db
 def test_validate_unknown_key():
     """

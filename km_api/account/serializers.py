@@ -51,9 +51,16 @@ class EmailConfirmationSerializer(serializers.Serializer):
             ValidationError:
                 If there is no email confirmation with the given key.
         """
-        if not models.EmailConfirmation.objects.filter(key=key).exists():
+        try:
+            confirmation = models.EmailConfirmation.objects.get(key=key)
+        except models.EmailConfirmation.DoesNotExist:
             raise serializers.ValidationError(
                 _('This key is invalid.'))
+
+        if confirmation.is_expired():
+            raise serializers.ValidationError(
+                _('This key has expired. Please send a new verification email '
+                  'and try again.'))
 
         return key
 
