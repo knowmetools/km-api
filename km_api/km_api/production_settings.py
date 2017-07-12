@@ -61,6 +61,9 @@ EMAIL_BACKEND = 'django_ses.SESBackend'
 EMAIL_CONFIRMATION_EXPIRATION_DAYS = int(os.environ.get(
     'EMAIL_CONFIRMATION_EXPIRATION_DAYS',
     '1'))
+EMAIL_CONFIRMATION_LINK_TEMPLATE = os.environ.get(
+    'EMAIL_CONFIRMATION_LINK_TEMPLATE',
+    'https://example.com/confirm-email?key={key}')
 
 
 # SSL Settings
