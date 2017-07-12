@@ -3,9 +3,12 @@
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth import password_validation
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
+from rest_framework.authtoken.serializers import AuthTokenSerializer
 
+from account.models import EmailConfirmation
 from km_auth import layer
 
 
@@ -29,6 +32,36 @@ class LayerIdentitySerializer(serializers.Serializer):
             self.validated_data['nonce'])
 
 
+class TokenSerializer(AuthTokenSerializer):
+    """
+    Serializer for obtaining an auth token.
+
+    This builds upon the default serializer provided by DRF and adds a
+    check to ensure the user obtaining a token has a verified email.
+    """
+
+    def validate(self, data):
+        """
+        Ensure that the requesting user is allowed to obtain a token.
+
+        Returns:
+            dict:
+                The validated data.
+
+        Raises:
+            ValidationError:
+                If the requesting user does not have a verified email
+                address.
+        """
+        data = super().validate(data)
+
+        if not data['user'].email_verified:
+            raise serializers.ValidationError(
+                _('You must verify your email address before logging in.'))
+
+        return data
+
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """
     Serializer for registering new users.
@@ -48,6 +81,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """
         Create a new user from the serializer's validated data.
 
+        This also sends out an email to the user confirming their email
+        address.
+
         Args:
             validated_data:
                 The data to create the new user from.
@@ -55,7 +91,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         Returns:
             The newly created ``User`` instance.
         """
-        return get_user_model().objects.create_user(**validated_data)
+        user = get_user_model().objects.create_user(**validated_data)
+
+        confirmation = EmailConfirmation.objects.create(user=user)
+        confirmation.send_confirmation()
+
+        return user
 
     def validate_password(self, password):
         """

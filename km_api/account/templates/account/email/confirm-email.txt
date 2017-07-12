@@ -1,0 +1,12 @@
+{% load i18n %}{% blocktrans with email=user.email name=user.first_name %}Hello {{ name }},
+
+Please confirm your email address ({{ email }}) by clicking the link below. If you did not sign up for an account, you can safely ignore this email. If you have questions, please contact us at team@knowmetools.com.{% endblocktrans %}
+
+{{ confirmation_link }}
+
+{% blocktrans %}Sincerely,
+The Know Me Team{% endblocktrans %}
+
+
+
+{% include 'account/email/snippets/footer.txt' %}

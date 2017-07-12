@@ -10,6 +10,34 @@ from rest_framework.response import Response
 from account import serializers
 
 
+class EmailVerificationView(generics.GenericAPIView):
+    """
+    View for verifying an email address.
+    """
+    serializer_class = serializers.EmailVerificationSerializer
+
+    def post(self, request):
+        """
+        Verify an email with a verification key.
+
+        Args:
+            request:
+                The request being made.
+
+        Returns:
+            A response with a status code indicating if the request was
+            successful.
+        """
+        serializer = self.get_serializer(data=request.POST)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class PasswordChangeView(generics.GenericAPIView):
     """
     View for changing the user's password.

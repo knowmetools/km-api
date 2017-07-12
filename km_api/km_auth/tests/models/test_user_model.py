@@ -11,13 +11,15 @@ def test_create():
     """
     Test creating a new user.
     """
-    models.User.objects.create(
+    user = models.User.objects.create(
         email='test@example.com',
         is_active=True,
         is_staff=True,
         is_superuser=True,
         first_name='John',
         last_name='Doe')
+
+    assert not user.email_verified
 
 
 def test_get_full_name(user_factory):

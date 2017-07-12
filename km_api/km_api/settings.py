@@ -119,6 +119,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Email Configuration
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_CONFIRMATION_EXPIRATION_DAYS = 1
+EMAIL_CONFIRMATION_KEY_LENGTH = 64
+EMAIL_CONFIRMATION_LINK_TEMPLATE = 'example.com/confirm-email?key={key}'
 
 
 # Internationalization
