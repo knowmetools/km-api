@@ -15,7 +15,7 @@ from account import models
 logger = logging.getLogger(__name__)
 
 
-class EmailConfirmationSerializer(serializers.Serializer):
+class EmailVerificationSerializer(serializers.Serializer):
     """
     Serializer for verifying a user's email address.
     """

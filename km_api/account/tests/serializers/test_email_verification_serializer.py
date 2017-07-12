@@ -16,7 +16,7 @@ def test_save_valid_key(email_confirmation_factory):
         'key': confirmation.key,
     }
 
-    serializer = serializers.EmailConfirmationSerializer(data=data)
+    serializer = serializers.EmailVerificationSerializer(data=data)
     assert serializer.is_valid()
 
     serializer.save()
@@ -38,7 +38,7 @@ def test_validate_expired(email_confirmation_factory, settings):
         'key': confirmation.key,
     }
 
-    serializer = serializers.EmailConfirmationSerializer(data=data)
+    serializer = serializers.EmailVerificationSerializer(data=data)
 
     assert not serializer.is_valid()
 
@@ -53,6 +53,6 @@ def test_validate_unknown_key():
         'key': 'randomkey',
     }
 
-    serializer = serializers.EmailConfirmationSerializer(data=data)
+    serializer = serializers.EmailVerificationSerializer(data=data)
 
     assert not serializer.is_valid()

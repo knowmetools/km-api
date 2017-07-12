@@ -47,7 +47,7 @@ def test_verify_email_invalid_key(api_rf):
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    serializer = serializers.EmailConfirmationSerializer(data=data)
+    serializer = serializers.EmailVerificationSerializer(data=data)
     assert not serializer.is_valid()
 
     assert response.data == serializer.errors

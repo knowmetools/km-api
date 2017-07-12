@@ -14,7 +14,7 @@ class EmailVerificationView(generics.GenericAPIView):
     """
     View for verifying an email address.
     """
-    serializer_class = serializers.EmailConfirmationSerializer
+    serializer_class = serializers.EmailVerificationSerializer
 
     def post(self, request):
         """
