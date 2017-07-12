@@ -35,6 +35,28 @@ class EmailConfirmationSerializer(serializers.Serializer):
 
         confirmation.delete()
 
+    def validate_key(self, key):
+        """
+        Validate the key passed to the serializer.
+
+        Args:
+            key (str):
+                The key given to the serializer.
+
+        Returns:
+            str:
+                The validated key.
+
+        Raises:
+            ValidationError:
+                If there is no email confirmation with the given key.
+        """
+        if not models.EmailConfirmation.objects.filter(key=key).exists():
+            raise serializers.ValidationError(
+                _('This key is invalid.'))
+
+        return key
+
 
 class PasswordChangeSerializer(serializers.Serializer):
     """
