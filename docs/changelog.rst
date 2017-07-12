@@ -7,6 +7,7 @@ v0.4
 
 Breaking Changes
   * :issue:`27`: Move user profile view from ``/auth/profile/`` to ``/account/profile``.
+  * :issue:`36`: Emails must be verified before being able to log in.
 
 
 v0.3

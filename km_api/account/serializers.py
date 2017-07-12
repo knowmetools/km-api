@@ -172,3 +172,4 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'email', 'first_name', 'last_name')
         model = get_user_model()
+        read_only_fields = ('email',)

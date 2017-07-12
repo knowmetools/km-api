@@ -28,7 +28,6 @@ A user's profile contains personal information about the user such as their emai
 
     Update the requesting user's information.
 
-    :<json string email: *(Optional)* The user's new email address.
     :<json string first_name: *(Optional)* The user's new first name.
     :<json string last_name: *(Optional)* The user's new last name.
 
