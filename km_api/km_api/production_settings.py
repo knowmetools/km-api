@@ -40,6 +40,13 @@ INSTALLED_APPS += [         # noqa
 ]
 
 
+# Production only middleware
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+] + MIDDLEWARE              # noqa
+
+
 # Use an external Postgres database.
 
 DATABASES = {
