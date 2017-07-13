@@ -19,7 +19,7 @@ def test_create(file, profile_factory):
     file.seek(0)
 
     assert item.name == data['name']
-    assert item.resource.read().decode('utf8') == file.read()
+    assert item.resource.read() == file.read()
 
 
 def test_serialize(api_rf, gallery_item_factory, serializer_context):
