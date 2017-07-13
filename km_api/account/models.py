@@ -13,6 +13,39 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from account import managers
 
 
+class EmailAddress(models.Model):
+    """
+    Model to track an email address for a user.
+    """
+    email = models.EmailField(
+        max_length=255,
+        unique=True,
+        verbose_name=_('email'))
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='email_addresses',
+        related_query_name='email_address',
+        verbose_name=_('user'))
+    verified = models.BooleanField(
+        default=False,
+        verbose_name=_('verified'))
+
+    class Meta:
+        verbose_name = _('email address')
+        verbose_name_plural = _('email addresses')
+
+    def __str__(self):
+        """
+        Get a string representation of the address.
+
+        Returns:
+            str:
+                The instance's ``email`` attribute.
+        """
+        return self.email
+
+
 class EmailConfirmation(models.Model):
     """
     Model that allows validation of an email address.

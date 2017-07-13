@@ -9,6 +9,17 @@ import factory
 from account import models
 
 
+class EmailFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``EmailAddress`` instances.
+    """
+    email = factory.Sequence(lambda n: 'test{n}@example.com'.format(n=n))
+    user = factory.SubFactory('factories.UserFactory')
+
+    class Meta:
+        model = models.EmailAddress
+
+
 class EmailConfirmationFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``EmailConfirmation`` instances.

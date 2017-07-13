@@ -16,3 +16,14 @@ def email_confirmation_factory(db):
         instances.
     """
     return factories.EmailConfirmationFactory
+
+
+@pytest.fixture
+def email_factory(db):
+    """
+    Get the factory used to create email addresses.
+
+    Returns:
+        The factory class used to create ``EmailAddress`` instances.
+    """
+    return factories.EmailFactory
