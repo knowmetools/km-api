@@ -7,6 +7,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model, password_validation
 from django.utils.translation import ugettext as _
 
+from django.contrib.auth import authenticate
+
 from rest_framework import serializers
 
 from account import models
@@ -22,18 +24,52 @@ class EmailVerificationSerializer(serializers.Serializer):
     key = serializers.CharField(
         max_length=settings.EMAIL_CONFIRMATION_KEY_LENGTH,
         write_only=True)
+    password = serializers.CharField(
+        style={'input_type': 'password'},
+        write_only=True)
 
     def save(self):
         """
         Verify the email with the provided key.
         """
-        confirmation = models.EmailConfirmation.objects.get(
-            key=self.validated_data['key'])
+        confirmation = self.validated_data['confirmation']
+        user = self.validated_data['user']
 
-        confirmation.user.email_verified = True
-        confirmation.user.save()
+        user.email_verified = True
+        user.save()
 
         confirmation.delete()
+
+    def validate(self, data):
+        """
+        Validate the serializer's data as a whole.
+
+        Args:
+            data (dict):
+                The data to validate.
+
+        Returns:
+            dict:
+                The validated data.
+
+        Raises:
+            ValidationError:
+                If the provided password does not match the user
+                associated with the confirmation.
+        """
+        confirmation = models.EmailConfirmation.objects.get(key=data['key'])
+        user = authenticate(
+            email=confirmation.user.email,
+            password=data['password'])
+
+        if not user:
+            raise serializers.ValidationError(
+                _('The provided credentials were invalid.'))
+
+        data['confirmation'] = confirmation
+        data['user'] = user
+
+        return data
 
     def validate_key(self, key):
         """

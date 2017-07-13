@@ -63,11 +63,16 @@ Email Verification
 
 Before a user can log in, they must have a verified email address. This allows us to contact the user with any account related messages.
 
+.. note::
+
+    We require the user's password to prevent mistyped email addresses from being verified by an unknown user. See :issue:`39` for details.
+
 .. http:post:: /account/verify-email/
 
     Verify an email address.
 
     :<json string key: The confirmation key that was sent to the user's email.
+    :<json string password: The user's password.
 
     :status 200: The email address was confirmed.
     :status 400: Invalid request. Check the response data for details. This can happen if an invalid key was provided, or if the key has expired.
