@@ -58,7 +58,7 @@ class EmailVerificationSerializer(serializers.Serializer):
         """
         confirmation = models.EmailConfirmation.objects.get(key=data['key'])
         user = authenticate(
-            email=confirmation.email.user,
+            email=confirmation.email.email,
             password=data['password'])
 
         if not user:
