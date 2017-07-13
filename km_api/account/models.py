@@ -22,6 +22,10 @@ class EmailAddress(models.Model):
         max_length=255,
         unique=True,
         verbose_name=_('email'))
+    primary = models.BooleanField(
+        default=False,
+        help_text=_('The primary address receives all account notifications.'),
+        verbose_name=_('is primary'))
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -31,6 +35,8 @@ class EmailAddress(models.Model):
     verified = models.BooleanField(
         default=False,
         verbose_name=_('verified'))
+
+    objects = managers.EmailAddressManager()
 
     class Meta:
         verbose_name = _('email address')
@@ -45,6 +51,18 @@ class EmailAddress(models.Model):
                 The instance's ``email`` attribute.
         """
         return self.email
+
+    def set_primary(self):
+        """
+        Set this instance as the user's primary email address.
+
+        All other email addresses owned by the user will have
+        ``primary`` set to ``False``.
+        """
+        self.user.email_addresses.filter(primary=True).update(primary=False)
+
+        self.primary = True
+        self.save()
 
 
 class EmailConfirmation(models.Model):

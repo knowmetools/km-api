@@ -7,6 +7,35 @@ from django.db import models
 from django.utils.crypto import get_random_string
 
 
+class EmailAddressManager(models.Manager):
+    """
+    Manager for email addresses.
+    """
+
+    def create(self, **kwargs):
+        """
+        Create a new email address.
+
+        If this email address is the only address owned by a user, it is
+        set as the user's primary address.
+
+        Args:
+            kwargs:
+                Keyword arguments to create the address with.
+
+        Returns:
+            The created ``EmailAddress`` instance.
+        """
+        user = kwargs['user']
+        if not user.email_addresses.filter(primary=True).exists():
+            kwargs['primary'] = True
+
+        email = self.model(**kwargs)
+        email.save()
+
+        return email
+
+
 class EmailConfirmationManager(models.Manager):
     """
     Manager for email confirmations.
