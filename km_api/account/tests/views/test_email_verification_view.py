@@ -10,13 +10,18 @@ email_verification_view = views.EmailVerificationView.as_view()
 url = reverse('account:verify-email')
 
 
-def test_verify_email(api_rf, email_confirmation_factory, user_factory):
+def test_verify_email(
+        api_rf,
+        email_confirmation_factory,
+        email_factory,
+        user_factory):
     """
     Sending a POST request with a valid key to the view should verify
     the email confirmation with that key.
     """
     user = user_factory(password='password')
-    confirmation = email_confirmation_factory(user=user)
+    email = email_factory(user=user)
+    confirmation = email_confirmation_factory(email=email)
 
     data = {
         'key': confirmation.key,
@@ -28,9 +33,9 @@ def test_verify_email(api_rf, email_confirmation_factory, user_factory):
 
     assert response.status_code == status.HTTP_200_OK
 
-    user.refresh_from_db()
+    email.refresh_from_db()
 
-    assert user.email_verified
+    assert email.verified
 
 
 @pytest.mark.django_db

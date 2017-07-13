@@ -93,11 +93,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """
         user = get_user_model().objects.create_user(**validated_data)
 
-        EmailAddress.objects.create(
+        email = EmailAddress.objects.create(
             email=self.validated_data['email'],
             user=user)
 
-        confirmation = EmailConfirmation.objects.create(user=user)
+        confirmation = EmailConfirmation.objects.create(email=email)
         confirmation.send_confirmation()
 
         return user

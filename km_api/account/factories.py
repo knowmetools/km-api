@@ -24,10 +24,10 @@ class EmailConfirmationFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``EmailConfirmation`` instances.
     """
+    email = factory.SubFactory('account.factories.EmailFactory')
     key = factory.LazyFunction(
         lambda: get_random_string(
             length=settings.EMAIL_CONFIRMATION_KEY_LENGTH))
-    user = factory.SubFactory('factories.UserFactory')
 
     class Meta:
         model = models.EmailConfirmation

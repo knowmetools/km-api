@@ -41,14 +41,14 @@ class EmailConfirmationManager(models.Manager):
     Manager for email confirmations.
     """
 
-    def create(self, user, key=None):
+    def create(self, email, key=None):
         """
         Create a new email confirmation.
 
         Args:
-            user:
-                The user to create the confirmation for. The
-                confirmation is sent to the user's email.
+            email:
+                The email address to create the confirmation for. The
+                confirmation is sent to this email address.
             key (:obj:`str`, optional):
                 The key to use to confirm the email. Defaults to a
                 random string whose length is determined by the
@@ -60,7 +60,7 @@ class EmailConfirmationManager(models.Manager):
         key = key or get_random_string(
             length=settings.EMAIL_CONFIRMATION_KEY_LENGTH)
 
-        confirmation = self.model(key=key, user=user)
+        confirmation = self.model(email=email, key=key)
         confirmation.save()
 
         return confirmation

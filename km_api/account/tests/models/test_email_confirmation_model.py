@@ -4,13 +4,13 @@ from django.template.loader import render_to_string
 from account import models
 
 
-def test_create(user_factory):
+def test_create(email_factory):
     """
     Test creating a new email confirmation.
     """
     models.EmailConfirmation.objects.create(
-        key='key',
-        user=user_factory())
+        email=email_factory(),
+        key='key')
 
 
 def test_is_expired_false(email_confirmation_factory, settings):
@@ -55,7 +55,7 @@ def test_send_confirmation(email_confirmation_factory, settings):
         'account/email/confirm-email.txt',
         context={
             'confirmation_link': expected_link,
-            'user': confirmation.user,
+            'user': confirmation.email.user,
         })
 
     confirmation.send_confirmation()
@@ -66,7 +66,7 @@ def test_send_confirmation(email_confirmation_factory, settings):
 
     assert email.subject == 'Please Confirm Your Know Me Email'
     assert email.body == expected_content
-    assert email.to == [confirmation.user.email]
+    assert email.to == [confirmation.email.email]
 
 
 def test_string_conversion(email_confirmation_factory):
@@ -75,6 +75,7 @@ def test_string_conversion(email_confirmation_factory):
     indicating who the confirmation is for.
     """
     confirmation = email_confirmation_factory()
-    expected = 'Confirmation for {email}'.format(email=confirmation.user.email)
+    expected = 'Confirmation for {email}'.format(
+        email=confirmation.email.email)
 
     assert str(confirmation) == expected

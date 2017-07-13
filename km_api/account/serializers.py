@@ -33,10 +33,9 @@ class EmailVerificationSerializer(serializers.Serializer):
         Verify the email with the provided key.
         """
         confirmation = self.validated_data['confirmation']
-        user = self.validated_data['user']
 
-        user.email_verified = True
-        user.save()
+        confirmation.email.verified = True
+        confirmation.email.save()
 
         confirmation.delete()
 
@@ -59,7 +58,7 @@ class EmailVerificationSerializer(serializers.Serializer):
         """
         confirmation = models.EmailConfirmation.objects.get(key=data['key'])
         user = authenticate(
-            email=confirmation.user.email,
+            email=confirmation.email.user,
             password=data['password'])
 
         if not user:
@@ -67,7 +66,6 @@ class EmailVerificationSerializer(serializers.Serializer):
                 _('The provided credentials were invalid.'))
 
         data['confirmation'] = confirmation
-        data['user'] = user
 
         return data
 

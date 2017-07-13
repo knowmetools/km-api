@@ -77,14 +77,16 @@ class EmailConfirmation(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_('created at'))
+    email = models.ForeignKey(
+        'account.EmailAddress',
+        null=True,
+        related_name='confirmations',
+        related_query_name='confirmation',
+        verbose_name=_('email'))
     key = models.CharField(
         max_length=settings.EMAIL_CONFIRMATION_KEY_LENGTH,
         unique=True,
         verbose_name=_('key'))
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        verbose_name=_('user'))
 
     objects = managers.EmailConfirmationManager()
 
@@ -103,7 +105,7 @@ class EmailConfirmation(models.Model):
         """
         return ugettext(
             'Confirmation for %(email)s' % {
-                'email': self.user.email,
+                'email': self.email.email,
             })
 
     def is_expired(self):
@@ -132,7 +134,7 @@ class EmailConfirmation(models.Model):
             key=self.key)
         context = {
             'confirmation_link': confirmation_link,
-            'user': self.user,
+            'user': self.email.user,
         }
         text_content = render_to_string(
             'account/email/confirm-email.txt',
@@ -141,7 +143,7 @@ class EmailConfirmation(models.Model):
         mail.send_mail(
             from_email=settings.DEFAULT_FROM_EMAIL,
             message=text_content,
-            recipient_list=[self.user.email],
+            recipient_list=[self.email.email],
             subject=ugettext('Please Confirm Your Know Me Email'))
 
 
