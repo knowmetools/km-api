@@ -23,7 +23,7 @@ class ObtainTokenView(ObtainAuthToken):
     This view builds upon the default token view from DRF to use our
     custom token serializer.
     """
-    serializer_class = serializers.AuthTokenSerializer
+    serializer_class = serializers.TokenSerializer
 
 
 class UserRegistrationView(generics.CreateAPIView):

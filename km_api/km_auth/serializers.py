@@ -1,12 +1,11 @@
 """Serializers for authentication views.
 """
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth import password_validation
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 
 from account.models import EmailAddress, EmailConfirmation
 from km_auth import layer
@@ -32,13 +31,15 @@ class LayerIdentitySerializer(serializers.Serializer):
             self.validated_data['nonce'])
 
 
-class TokenSerializer(AuthTokenSerializer):
+class TokenSerializer(serializers.Serializer):
     """
     Serializer for obtaining an auth token.
 
-    This builds upon the default serializer provided by DRF and adds a
-    check to ensure the user obtaining a token has a verified email.
+    The actual generation of the auth token is intended to be handled by
+    the view that utilizes this serializer.
     """
+    email = serializers.EmailField()
+    password = serializers.CharField(style={'input_type': 'password'})
 
     def validate(self, data):
         """
@@ -50,14 +51,16 @@ class TokenSerializer(AuthTokenSerializer):
 
         Raises:
             ValidationError:
+                If the provided credentials are invalid.
+            ValidationError:
                 If the requesting user does not have a verified email
                 address.
         """
-        data = super().validate(data)
+        user = authenticate(**data)
 
-        if not data['user'].email_verified:
+        if not user.email_addresses.get(email=data['email']).verified:
             raise serializers.ValidationError(
-                _('You must verify your email address before logging in.'))
+                _('You must verify this email address before logging in.'))
 
         return data
 
