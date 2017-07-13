@@ -1,4 +1,22 @@
+import pytest
+
 from km_auth import serializers
+
+
+@pytest.mark.django_db
+def test_validate_invalid_credentials():
+    """
+    If the credentials provided are not valid, the serializer should not
+    be valid.
+    """
+    data = {
+        'email': 'test@example.com',
+        'password': 'password',
+    }
+
+    serializer = serializers.TokenSerializer(data=data)
+
+    assert not serializer.is_valid()
 
 
 def test_validate_unverified_email(email_factory, user_factory):
@@ -35,3 +53,4 @@ def test_validate_verified_email(email_factory, user_factory):
     serializer = serializers.TokenSerializer(data=data)
 
     assert serializer.is_valid()
+    assert serializer.validated_data['user'] == user

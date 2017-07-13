@@ -83,7 +83,6 @@ WSGI_APPLICATION = 'km_api.wsgi.application'
 
 AUTHENTICATION_BACKENDS = (
     'account.authentication.AuthenticationBackend',
-    'django.contrib.auth.backends.ModelBackend',
 )
 
 
