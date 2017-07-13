@@ -79,6 +79,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'km_api.wsgi.application'
 
 
+# Authentication methods
+
+AUTHENTICATION_BACKENDS = (
+    'account.authentication.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+
 # Custom user model
 
 AUTH_USER_MODEL = 'account.User'

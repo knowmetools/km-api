@@ -22,7 +22,7 @@ def test_create_secondary_email(email_factory, user_factory):
     email_factory(user=user)
 
     email = models.EmailAddress.objects.create(
-        email='test2@example.com',
+        email='random@example.com',
         user=user)
 
     assert not email.primary

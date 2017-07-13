@@ -3,7 +3,18 @@
 
 import pytest
 
-from account import factories
+from account import authentication, factories
+
+
+@pytest.fixture
+def auth_backend():
+    """
+    Get an instance of the account authentication backend.
+
+    Returns:
+        An instance of ``authentication.AuthenticationBackend``.
+    """
+    return authentication.AuthenticationBackend()
 
 
 @pytest.fixture
