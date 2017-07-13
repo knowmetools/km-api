@@ -7,6 +7,16 @@ from django.utils.translation import ugettext_lazy as _
 from account import models
 
 
+@admin.register(models.EmailAddress)
+class EmailAddressAdmin(admin.ModelAdmin):
+    """
+    Admin for ``EmailAddress`` instances.
+    """
+    fields = ('email', 'user', 'primary', 'verified')
+    list_display = ('email', 'user', 'verified', 'primary')
+    search_fields = ('email', 'user__first_name', 'user__last_name')
+
+
 @admin.register(models.EmailConfirmation)
 class EmailConfirmationAdmin(admin.ModelAdmin):
     """
