@@ -3,7 +3,7 @@ from django.template.loader import render_to_string
 
 import pytest
 
-from km_auth import models
+from account import models
 
 
 @pytest.mark.django_db

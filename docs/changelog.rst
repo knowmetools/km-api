@@ -8,6 +8,7 @@ v0.4
 Breaking Changes
   * :issue:`27`: Move user profile view from ``/auth/profile/`` to ``/account/profile``.
   * :issue:`36`: Emails must be verified before being able to log in.
+  * :issue:`42`: The user model was moved to the ``account`` app. This requires dropping any existing databases.
 
 
 v0.3
