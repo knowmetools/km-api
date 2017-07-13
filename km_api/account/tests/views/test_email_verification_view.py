@@ -10,16 +10,17 @@ email_verification_view = views.EmailVerificationView.as_view()
 url = reverse('account:verify-email')
 
 
-def test_verify_email(api_rf, email_confirmation_factory):
+def test_verify_email(api_rf, email_confirmation_factory, user_factory):
     """
     Sending a POST request with a valid key to the view should verify
     the email confirmation with that key.
     """
-    confirmation = email_confirmation_factory()
-    user = confirmation.user
+    user = user_factory(password='password')
+    confirmation = email_confirmation_factory(user=user)
 
     data = {
         'key': confirmation.key,
+        'password': 'password',
     }
 
     request = api_rf.post(url, data)
