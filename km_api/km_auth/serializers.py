@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 
-from account.models import EmailConfirmation
+from account.models import EmailAddress, EmailConfirmation
 from km_auth import layer
 
 
@@ -92,6 +92,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             The newly created ``User`` instance.
         """
         user = get_user_model().objects.create_user(**validated_data)
+
+        EmailAddress.objects.create(
+            email=self.validated_data['email'],
+            user=user)
 
         confirmation = EmailConfirmation.objects.create(user=user)
         confirmation.send_confirmation()

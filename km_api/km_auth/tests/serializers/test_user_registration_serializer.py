@@ -2,7 +2,7 @@ from unittest import mock
 
 import pytest
 
-from account.models import EmailConfirmation
+from account.models import EmailAddress, EmailConfirmation
 from km_auth import serializers
 
 
@@ -30,6 +30,10 @@ def test_create():
     assert user.first_name == data['first_name']
     assert user.last_name == data['last_name']
     assert user.check_password(data['password'])
+
+    # Ensure we created an email address for the user
+    assert EmailAddress.objects.count() == 1
+    assert user.email_addresses.get().email == data['email']
 
     # Ensure we sent the user an email confirmation
     assert EmailConfirmation.objects.count() == 1
