@@ -57,12 +57,16 @@ class EmailAddress(models.Model):
         Set this instance as the user's primary email address.
 
         All other email addresses owned by the user will have
-        ``primary`` set to ``False``.
+        ``primary`` set to ``False``, and the user's ``email`` attribute
+        will be set to this email address.
         """
         self.user.email_addresses.filter(primary=True).update(primary=False)
 
         self.primary = True
         self.save()
+
+        self.user.email = self.email
+        self.user.save()
 
 
 class EmailConfirmation(models.Model):
@@ -172,10 +176,6 @@ class User(PermissionsMixin, AbstractBaseUser):
         max_length=255,
         unique=True,
         verbose_name=_('email'))
-    email_verified = models.BooleanField(
-        default=False,
-        help_text=_('Users without a verified email address may not log in.'),
-        verbose_name=_('email verified'))
     is_active = models.BooleanField(
         default=True,
         help_text=_('Inactive users are not able to log in.'),

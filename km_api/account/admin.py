@@ -49,7 +49,7 @@ class UserAdmin(admin.ModelAdmin):
     """
     fieldsets = (
         (_('Personal Info'), {
-            'fields': ('email', 'email_verified', 'first_name', 'last_name'),
+            'fields': ('email', 'first_name', 'last_name'),
         }),
         (_('Permissions'), {
             'fields': (
@@ -59,8 +59,7 @@ class UserAdmin(admin.ModelAdmin):
         }),
     )
     filter_horizontal = ('groups', 'user_permissions')
-    list_display = (
-        'email', 'email_verified', 'first_name', 'last_name', 'is_staff'
-    )
+    list_display = ('email', 'first_name', 'last_name', 'is_staff')
     list_filter = ('is_active', 'is_staff', 'is_superuser')
+    readonly_fields = ('email',)
     search_fields = ('email', 'first_name', 'last_name')

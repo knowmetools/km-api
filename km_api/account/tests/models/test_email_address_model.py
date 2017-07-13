@@ -23,9 +23,11 @@ def test_set_primary(email_factory, user_factory):
 
     new_primary.set_primary()
 
+    user.refresh_from_db()
     new_primary.refresh_from_db()
     old_primary.refresh_from_db()
 
+    assert user.email == new_primary.email
     assert new_primary.primary
     assert not old_primary.primary
 
