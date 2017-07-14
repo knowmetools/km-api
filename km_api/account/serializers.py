@@ -41,7 +41,12 @@ class EmailSerializer(serializers.ModelSerializer):
         """
         data['user'] = self.context['request'].user
 
-        return super().create(data)
+        email = super().create(data)
+
+        confirmation = models.EmailConfirmation.objects.create(email=email)
+        confirmation.send_confirmation()
+
+        return email
 
     def update(self, instance, data):
         """

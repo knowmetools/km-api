@@ -21,10 +21,15 @@ def test_create_email(api_rf, user_factory):
         data=data)
     assert serializer.is_valid()
 
-    email = serializer.save()
+    with mock.patch(
+            'account.models.EmailConfirmation.send_confirmation',
+            autospec=True) as mock_confirm:
+        email = serializer.save()
 
     assert email.email == data['email']
     assert not email.verified
+    assert email.confirmations.count() == 1
+    assert mock_confirm.call_count == 1
 
 
 def test_create_primary(api_rf, email_factory, user_factory):
