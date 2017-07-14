@@ -12,6 +12,59 @@ def test_create_email(user_factory):
     assert not email.verified
 
 
+def test_has_object_read_permission_other(api_rf, email_factory, user_factory):
+    """
+    User should not have read permissions on other users' email
+    addresses.
+    """
+    email = email_factory()
+
+    api_rf.user = user_factory()
+    request = api_rf.get('/')
+
+    assert not email.has_object_read_permission(request)
+
+
+def test_has_object_read_permission_owner(api_rf, email_factory):
+    """
+    Users should have read permissions on their own email addresses.
+    """
+    email = email_factory()
+
+    api_rf.user = email.user
+    request = api_rf.get('/')
+
+    assert email.has_object_read_permission(request)
+
+
+def test_has_object_write_permission_other(
+        api_rf,
+        email_factory,
+        user_factory):
+    """
+    User should not have write permissions on other users' email
+    addresses.
+    """
+    email = email_factory()
+
+    api_rf.user = user_factory()
+    request = api_rf.get('/')
+
+    assert not email.has_object_write_permission(request)
+
+
+def test_has_object_write_permission_owner(api_rf, email_factory):
+    """
+    Users should have write permissions on their own email addresses.
+    """
+    email = email_factory()
+
+    api_rf.user = email.user
+    request = api_rf.get('/')
+
+    assert email.has_object_write_permission(request)
+
+
 def test_set_primary(email_factory, user_factory):
     """
     Setting a user's email address as the primary address should mark
