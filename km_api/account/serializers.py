@@ -43,30 +43,82 @@ class EmailSerializer(serializers.ModelSerializer):
 
         return super().create(data)
 
-    def validate(self, data):
+    def update(self, instance, data):
         """
-        Validate the data given to the serializer.
+        Update an email address with the serializer's data.
 
         Args:
+            instance:
+                The email address to update.
             data (dict):
-                The data to validate.
+                The data to update the email address with.
 
         Returns:
-            dict:
-                The validated data.
+            The updated email address.
+        """
+        primary = data.get('primary')
+        if primary and not instance.primary:
+            instance.set_primary()
+
+            logger.info(
+                'Set %s as primary address for %s',
+                instance.email,
+                instance.user)
+
+        return instance
+
+    def validate_email(self, email):
+        """
+        Validate the email given to the serializer.
+
+        Args:
+            email (str):
+                The email to validate.
+
+        Returns:
+            str:
+                The validated email.
 
         Raises:
             ValidationError:
-                If an existing email's address is changed.
+                If the serializer is already bound and the email address
+                is different from the bound instance's email.
         """
-        email = data.get('email')
-
         if self.instance and email and self.instance.email != email:
             raise serializers.ValidationError(
                 _("An email's address cannot be changed. Instead, a new email "
                   "address should be added and swapped with this one."))
 
-        return data
+        return email
+
+    def validate_primary(self, primary):
+        """
+        Validate the value passed to the ``primary`` field.
+
+        Args:
+            primary (bool):
+                A boolean indicating if the email address should be the
+                user's primary address.
+
+        Returns:
+            bool:
+                The validated ``primary`` value.
+
+        Raises:
+            ValidationError:
+                If ``primary`` was given when creating a new email.
+        """
+        if not self.instance:
+            raise serializers.ValidationError(
+                _('An email address cannot be set as the primary when it is '
+                  'created.'))
+
+        if primary and not self.instance.verified:
+            raise serializers.ValidationError(
+                _('The email address must be verified before it can be set as '
+                  'the primary address.'))
+
+        return primary
 
 
 class EmailVerificationSerializer(serializers.Serializer):
