@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.reverse import reverse
 
-from know_me.models import mixins
+from permission_utils import model_mixins as mixins
 
 
 def get_gallery_item_upload_path(item, filename):
