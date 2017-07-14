@@ -156,6 +156,18 @@ class EmailConfirmation(models.Model):
                 'email': self.email.email,
             })
 
+    def confirm(self):
+        """
+        Confirm that the associated email is valid.
+
+        This method sets the associated email as verified, and then
+        deletes the confirmation.
+        """
+        self.email.verified = True
+        self.email.save()
+
+        self.delete()
+
     def is_expired(self):
         """
         Determine if the confirmation has expired.

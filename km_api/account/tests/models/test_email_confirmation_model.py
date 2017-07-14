@@ -4,6 +4,21 @@ from django.template.loader import render_to_string
 from account import models
 
 
+def test_confirm(email_confirmation_factory):
+    """
+    Confirming an email should mark the email as verified and then
+    delete the confirmation.
+    """
+    confirmation = email_confirmation_factory()
+    email = confirmation.email
+
+    confirmation.confirm()
+    email.refresh_from_db()
+
+    assert email.verified
+    assert models.EmailConfirmation.objects.count() == 0
+
+
 def test_create(email_factory):
     """
     Test creating a new email confirmation.

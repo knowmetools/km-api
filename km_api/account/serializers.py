@@ -147,11 +147,7 @@ class EmailVerificationSerializer(serializers.Serializer):
         Verify the email with the provided key.
         """
         confirmation = self.validated_data['confirmation']
-
-        confirmation.email.verified = True
-        confirmation.email.save()
-
-        confirmation.delete()
+        confirmation.confirm()
 
     def validate(self, data):
         """
