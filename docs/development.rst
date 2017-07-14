@@ -14,8 +14,8 @@ To get started, clone the repository and install the requirements::
     $ cd km-api
     $ pip install -r requirements/base.txt
 
-Dev Server
-----------
+Local Dev Server
+----------------
 
 Before running the dev server, you must create a file at ``km_api/km_api/local_settings.py`` with the following content::
 
