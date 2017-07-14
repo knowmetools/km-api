@@ -76,3 +76,86 @@ Before a user can log in, they must have a verified email address. This allows u
 
     :status 200: The email address was confirmed.
     :status 400: Invalid request. Check the response data for details. This can happen if an invalid key was provided, or if the key has expired.
+
+
+----------------
+Email Management
+----------------
+
+Users are allowed to have multiple emails associated with their account. One of these emails is the user's primary address, and receives all notifications. The user can log in with any of their verified emails.
+
+Email List
+----------
+
+The email list endpoint allows for listing of a user's email addresses as well as adding new emails.
+
+.. http:get:: /account/emails/
+
+    List the requesting user's email addresses.
+
+    :>jsonarr int id: The ID of the email address.
+    :>jsonarr string email: The email's address.
+    :>jsonarr boolean verified: A boolean indicating if the address has been verified.
+    :>jsonarr boolean primary: A boolean indicating if the address is the user's primary email.
+
+    :status 200: The user's email addresses were successfully retrieved.
+
+.. http:post:: /account/emails/
+
+    Add a new email address for the requesting user.
+
+    :<json string email: The address of the new email.
+
+    :>header Location: The URL of the created email address' detail view.
+
+    :>json int id: The ID of the email address.
+    :>json string url: The URL of the email address' detail view.
+    :>json string email: The email's address.
+    :>json boolean verified: A boolean indicating if the address has been verified.
+    :>json boolean primary: A boolean indicating if the address is the user's primary email.
+
+    :status 201: The email address was created successfully.
+    :status 400: Invalid request. Check the response data for details.
+
+Email Detail
+------------
+
+The email detail endpoint allows for retrieving and updating a specific email address as well as removing email addresses.
+
+.. http:get:: /account/emails/(int:id)/
+
+    Get the details of a specific email address.
+
+    :>json int id: The ID of the email address.
+    :>json string url: The URL of the email address' detail view.
+    :>json string email: The email's address.
+    :>json boolean verified: A boolean indicating if the address has been verified.
+    :>json boolean primary: A boolean indicating if the address is the user's primary email.
+
+    :status 200: The email address' details were successfully retrieved.
+    :status 404: There is no email address with the given ``id`` accessible to
+    the requesting user.
+
+.. http:patch:: /account/emails/(int:id)/
+
+    Update the details of a specific email address.
+
+    :<json boolean primary: *(Optional)* A boolean indicating if the specified email address should be the user's new primary email.
+
+    :>json int id: The ID of the email address.
+    :>json string url: The URL of the email address' detail view.
+    :>json string email: The email's address.
+    :>json boolean verified: A boolean indicating if the address has been verified.
+    :>json boolean primary: A boolean indicating if the address is the user's primary email.
+
+    :status 200: The email address' details were successfully updated.
+    :status 404: There is no email address with the given ``id`` accessible to
+    the requesting user.
+
+.. http:delete:: /account/emails/(int:id)/
+
+    Delete a specific email address.
+
+    :status 204: The email address was successfully deleted.
+    :status 404: There is no email address with the given ``id`` accessible to the requesting user.
+    :status 409: The email address is the user's primary address so it could not be deleted.

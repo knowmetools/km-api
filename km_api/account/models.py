@@ -11,10 +11,14 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext, ugettext_lazy as _
 
+from rest_framework.reverse import reverse
+
+from permission_utils import model_mixins as mixins
+
 from account import managers
 
 
-class EmailAddress(models.Model):
+class EmailAddress(mixins.IsAuthenticatedMixin, models.Model):
     """
     Model to track an email address for a user.
     """
@@ -51,6 +55,46 @@ class EmailAddress(models.Model):
                 The instance's ``email`` attribute.
         """
         return self.email
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the instance's detail view.
+        """
+        return reverse('account:email-detail', kwargs={'pk': self.pk})
+
+    def has_object_read_permission(self, request):
+        """
+        Determine read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to get permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the email address
+                and ``False`` otherwise.
+        """
+        return request.user == self.user
+
+    def has_object_write_permission(self, request):
+        """
+        Determine write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to get permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the email address
+                and ``False`` otherwise.
+        """
+        return request.user == self.user
 
     def set_primary(self):
         """

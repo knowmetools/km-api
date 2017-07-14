@@ -17,6 +17,120 @@ from account import models
 logger = logging.getLogger(__name__)
 
 
+class EmailSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer for email addresses.
+    """
+
+    class Meta:
+        extra_kwargs = {
+            'url': {
+                'view_name': 'account:email-detail',
+            },
+        }
+        fields = ('id', 'url', 'email', 'verified', 'primary')
+        model = models.EmailAddress
+        read_only_fields = ('verified',)
+
+    def create(self, data):
+        """
+        Create a new email address.
+
+        Args:
+            data (dict):
+                A dictionary containing the data to create the email
+                address with.
+
+        Returns:
+            The newly created ``EmailAddress`` instance.
+        """
+        data['user'] = self.context['request'].user
+
+        email = super().create(data)
+
+        confirmation = models.EmailConfirmation.objects.create(email=email)
+        confirmation.send_confirmation()
+
+        return email
+
+    def update(self, instance, data):
+        """
+        Update an email address with the serializer's data.
+
+        Args:
+            instance:
+                The email address to update.
+            data (dict):
+                The data to update the email address with.
+
+        Returns:
+            The updated email address.
+        """
+        primary = data.get('primary')
+        if primary and not instance.primary:
+            instance.set_primary()
+
+            logger.info(
+                'Set %s as primary address for %s',
+                instance.email,
+                instance.user)
+
+        return instance
+
+    def validate_email(self, email):
+        """
+        Validate the email given to the serializer.
+
+        Args:
+            email (str):
+                The email to validate.
+
+        Returns:
+            str:
+                The validated email.
+
+        Raises:
+            ValidationError:
+                If the serializer is already bound and the email address
+                is different from the bound instance's email.
+        """
+        if self.instance and email and self.instance.email != email:
+            raise serializers.ValidationError(
+                _("An email's address cannot be changed. Instead, a new email "
+                  "address should be added and swapped with this one."))
+
+        return email
+
+    def validate_primary(self, primary):
+        """
+        Validate the value passed to the ``primary`` field.
+
+        Args:
+            primary (bool):
+                A boolean indicating if the email address should be the
+                user's primary address.
+
+        Returns:
+            bool:
+                The validated ``primary`` value.
+
+        Raises:
+            ValidationError:
+                If ``primary`` was given when creating a new email.
+        """
+        if not self.instance and primary:
+            raise serializers.ValidationError(
+                _('An email address cannot be set as the primary when it is '
+                  'created.'))
+
+        if primary and not self.instance.verified:
+            raise serializers.ValidationError(
+                _('The email address must be verified before it can be set as '
+                  'the primary address.'))
+
+        return primary
+
+
 class EmailVerificationSerializer(serializers.Serializer):
     """
     Serializer for verifying a user's email address.
