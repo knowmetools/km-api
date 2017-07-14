@@ -209,6 +209,17 @@ class EmailVerificationSerializer(serializers.Serializer):
         return key
 
 
+class EmailVerifiedActionSerializer(serializers.Serializer):
+    """
+    Serializer for email verified actions.
+
+    This serializer is used to serialize all the available actions for
+    when an email is verified.
+    """
+    id = serializers.IntegerField(read_only=True)
+    label = serializers.CharField(read_only=True)
+
+
 class PasswordChangeSerializer(serializers.Serializer):
     """
     Serializer for changing a user's password.

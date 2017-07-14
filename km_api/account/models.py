@@ -1,6 +1,7 @@
 """Models for the ``account`` module.
 """
 
+from collections import namedtuple
 import datetime
 import logging
 
@@ -22,6 +23,9 @@ from account import managers
 logger = logging.getLogger(__name__)
 
 
+EmailAction = namedtuple('EmailAction', ['id', 'label'])
+
+
 class EmailAddress(mixins.IsAuthenticatedMixin, models.Model):
     """
     Model to track an email address for a user.
@@ -30,8 +34,8 @@ class EmailAddress(mixins.IsAuthenticatedMixin, models.Model):
     REPLACE_PRIMARY = 2
 
     VERIFIED_ACTION_CHOICES = (
-        (NOOP, _('noop')),
-        (REPLACE_PRIMARY, _('replace primary email')),
+        EmailAction(NOOP, _('noop')),
+        EmailAction(REPLACE_PRIMARY, _('replace primary email')),
     )
 
     email = models.EmailField(
