@@ -1,3 +1,5 @@
+from unittest import mock
+
 from django.core import mail
 from django.template.loader import render_to_string
 
@@ -10,12 +12,13 @@ def test_confirm(email_confirmation_factory):
     delete the confirmation.
     """
     confirmation = email_confirmation_factory()
-    email = confirmation.email
 
-    confirmation.confirm()
-    email.refresh_from_db()
+    with mock.patch(
+            'account.models.EmailAddress.verify',
+            autospec=True) as mock_verify:
+        confirmation.confirm()
 
-    assert email.verified
+    assert mock_verify.call_count == 1
     assert models.EmailConfirmation.objects.count() == 0
 
 

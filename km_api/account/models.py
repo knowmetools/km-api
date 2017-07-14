@@ -2,6 +2,7 @@
 """
 
 import datetime
+import logging
 
 from django.conf import settings
 from django.core import mail
@@ -18,10 +19,21 @@ from permission_utils import model_mixins as mixins
 from account import managers
 
 
+logger = logging.getLogger(__name__)
+
+
 class EmailAddress(mixins.IsAuthenticatedMixin, models.Model):
     """
     Model to track an email address for a user.
     """
+    NOOP = 1
+    REPLACE_PRIMARY = 2
+
+    VERIFIED_ACTION_CHOICES = (
+        (NOOP, _('noop')),
+        (REPLACE_PRIMARY, _('replace primary email')),
+    )
+
     email = models.EmailField(
         max_length=255,
         unique=True,
@@ -39,6 +51,11 @@ class EmailAddress(mixins.IsAuthenticatedMixin, models.Model):
     verified = models.BooleanField(
         default=False,
         verbose_name=_('verified'))
+    verified_action = models.PositiveSmallIntegerField(
+        choices=VERIFIED_ACTION_CHOICES,
+        default=NOOP,
+        help_text=_('The action to perform after the email is verified.'),
+        verbose_name=_('verified action'))
 
     objects = managers.EmailAddressManager()
 
@@ -112,6 +129,27 @@ class EmailAddress(mixins.IsAuthenticatedMixin, models.Model):
         self.user.email = self.email
         self.user.save()
 
+    def verify(self):
+        """
+        Mark the email address and perform any additional actions.
+
+        If the action given in the instance's ``verified_action`` field
+        is actionable, it is performed.
+        """
+        self.verified = True
+        self.save()
+
+        if self.verified_action == self.REPLACE_PRIMARY:
+            old_primary = self.user.email_addresses.get(primary=True)
+            self.set_primary()
+            old_primary.delete()
+
+            logger.info(
+                'Replaced primary email %s with %s for %s',
+                old_primary.email,
+                self.email,
+                self.user.get_full_name())
+
 
 class EmailConfirmation(models.Model):
     """
@@ -163,9 +201,7 @@ class EmailConfirmation(models.Model):
         This method sets the associated email as verified, and then
         deletes the confirmation.
         """
-        self.email.verified = True
-        self.email.save()
-
+        self.email.verify()
         self.delete()
 
     def is_expired(self):
