@@ -9,8 +9,8 @@ def test_serialize_actions():
     serializer = serializers.EmailVerifiedActionSerializer(mock_action)
 
     expected = {
-        'id': mock_action[0],
-        'label': mock_action[1],
+        'id': mock_action.id,
+        'label': mock_action.label,
     }
 
     assert serializer.data == expected

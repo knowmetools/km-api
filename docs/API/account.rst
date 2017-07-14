@@ -149,8 +149,7 @@ The email detail endpoint allows for retrieving and updating a specific email ad
     :>json boolean primary: A boolean indicating if the address is the user's primary email.
 
     :status 200: The email address' details were successfully updated.
-    :status 404: There is no email address with the given ``id`` accessible to
-    the requesting user.
+    :status 404: There is no email address with the given ``id`` accessible to the requesting user.
 
 .. http:delete:: /account/emails/(int:id)/
 
@@ -159,3 +158,18 @@ The email detail endpoint allows for retrieving and updating a specific email ad
     :status 204: The email address was successfully deleted.
     :status 404: There is no email address with the given ``id`` accessible to the requesting user.
     :status 409: The email address is the user's primary address so it could not be deleted.
+
+
+Email Verification Actions
+--------------------------
+
+When an email address is created, an action can be specified to control what happens when the email is verified. This endpoint provides a list of those actions.
+
+.. http:get:: /account/emails/actions/
+
+    Get a list of available verification actions.
+
+    :>jsonarr int id: The action's ID.
+    :>jsonarr string label: The action's label.
+
+    :status 200: The available actions were successfully retrieved.
