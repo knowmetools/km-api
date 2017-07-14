@@ -3,11 +3,22 @@
 
 from django.contrib.auth import update_session_auth_hash
 
+from dry_rest_permissions.generics import DRYPermissions
+
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from account import serializers
+from account import models, serializers
+
+
+class EmailListView(generics.ListCreateAPIView):
+    """
+    View for listing the requesting user's email addresses.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.EmailAddress.objects.all()
+    serializer_class = serializers.EmailSerializer
 
 
 class EmailVerificationView(generics.GenericAPIView):

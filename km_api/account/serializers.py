@@ -113,7 +113,7 @@ class EmailSerializer(serializers.ModelSerializer):
             ValidationError:
                 If ``primary`` was given when creating a new email.
         """
-        if not self.instance:
+        if not self.instance and primary:
             raise serializers.ValidationError(
                 _('An email address cannot be set as the primary when it is '
                   'created.'))

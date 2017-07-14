@@ -76,3 +76,35 @@ Before a user can log in, they must have a verified email address. This allows u
 
     :status 200: The email address was confirmed.
     :status 400: Invalid request. Check the response data for details. This can happen if an invalid key was provided, or if the key has expired.
+
+
+----------------
+Email Management
+----------------
+
+Users are allowed to have multiple emails associated with their account. One of these emails is the user's primary address, and receives all notifications. The user can log in with any of their verified emails.
+
+.. http:get:: /account/emails/
+
+    List the requesting user's email addresses.
+
+    :>jsonarr int id: The ID of the email address.
+    :>jsonarr string email: The email's address.
+    :>jsonarr boolean verified: A boolean indicating if the address has been verified.
+    :>jsonarr boolean primary: A boolean indicating if the address is the user's primary email.
+
+    :status 200: The user's email addresses were successfully retrieved.
+
+.. http:post:: /account/emails/
+
+    Add a new email address for the requesting user.
+
+    :<json string email: The address of the new email.
+
+    :>json int id: The ID of the email address.
+    :>json string email: The email's address.
+    :>json boolean verified: A boolean indicating if the address has been verified.
+    :>json boolean primary: A boolean indicating if the address is the user's primary email.
+
+    :status 201: The email address was created successfully.
+    :status 400: Invalid request. Check the response data for details.
