@@ -19,6 +19,9 @@ Dev Server
 
 Before running the dev server, you must create a file at ``km_api/km_api/local_settings.py`` with the following content::
 
+    # Extend from the base settings
+    import * from km_api.settings
+
     # A random string. This doesn't have to be anything complex for development
     SECRET_KEY = '<some secret key>'
 
