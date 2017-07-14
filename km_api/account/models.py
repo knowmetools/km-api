@@ -11,6 +11,8 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext, ugettext_lazy as _
 
+from rest_framework.reverse import reverse
+
 from permission_utils import model_mixins as mixins
 
 from account import managers
@@ -53,6 +55,16 @@ class EmailAddress(mixins.IsAuthenticatedMixin, models.Model):
                 The instance's ``email`` attribute.
         """
         return self.email
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the instance's detail view.
+        """
+        return reverse('account:email-detail', kwargs={'pk': self.pk})
 
     def has_object_read_permission(self, request):
         """

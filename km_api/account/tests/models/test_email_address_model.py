@@ -1,3 +1,5 @@
+from rest_framework.reverse import reverse
+
 from account import models
 
 
@@ -10,6 +12,16 @@ def test_create_email(user_factory):
         user=user_factory())
 
     assert not email.verified
+
+
+def test_get_absolute_url(email_factory):
+    """
+    The method should return the URL of the email address' detail view.
+    """
+    email = email_factory()
+    expected = reverse('account:email-detail', kwargs={'pk': email.pk})
+
+    assert email.get_absolute_url() == expected
 
 
 def test_has_object_read_permission_other(api_rf, email_factory, user_factory):

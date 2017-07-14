@@ -17,13 +17,18 @@ from account import models
 logger = logging.getLogger(__name__)
 
 
-class EmailSerializer(serializers.ModelSerializer):
+class EmailSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for email addresses.
     """
 
     class Meta:
-        fields = ('id', 'email', 'verified', 'primary')
+        extra_kwargs = {
+            'url': {
+                'view_name': 'account:email-detail',
+            },
+        }
+        fields = ('id', 'url', 'email', 'verified', 'primary')
         model = models.EmailAddress
         read_only_fields = ('verified',)
 

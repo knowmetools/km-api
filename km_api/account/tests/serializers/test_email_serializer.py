@@ -55,15 +55,18 @@ def test_create_primary(api_rf, email_factory, user_factory):
     assert not serializer.is_valid()
 
 
-def test_serialize_email(email_factory):
+def test_serialize_email(api_rf, email_factory, serializer_context):
     """
     Test serializing an email address.
     """
     email = email_factory()
-    serializer = serializers.EmailSerializer(email)
+    serializer = serializers.EmailSerializer(email, context=serializer_context)
+
+    url_request = api_rf.get(email.get_absolute_url())
 
     expected = {
         'id': email.id,
+        'url': url_request.build_absolute_uri(),
         'email': email.email,
         'verified': email.verified,
         'primary': email.primary,
