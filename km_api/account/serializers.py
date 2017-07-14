@@ -17,6 +17,58 @@ from account import models
 logger = logging.getLogger(__name__)
 
 
+class EmailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for email addresses.
+    """
+
+    class Meta:
+        fields = ('id', 'email', 'verified', 'primary')
+        model = models.EmailAddress
+        read_only_fields = ('verified',)
+
+    def create(self, data):
+        """
+        Create a new email address.
+
+        Args:
+            data (dict):
+                A dictionary containing the data to create the email
+                address with.
+
+        Returns:
+            The newly created ``EmailAddress`` instance.
+        """
+        data['user'] = self.context['request'].user
+
+        return super().create(data)
+
+    def validate(self, data):
+        """
+        Validate the data given to the serializer.
+
+        Args:
+            data (dict):
+                The data to validate.
+
+        Returns:
+            dict:
+                The validated data.
+
+        Raises:
+            ValidationError:
+                If an existing email's address is changed.
+        """
+        email = data.get('email')
+
+        if self.instance and email and self.instance.email != email:
+            raise serializers.ValidationError(
+                _("An email's address cannot be changed. Instead, a new email "
+                  "address should be added and swapped with this one."))
+
+        return data
+
+
 class EmailVerificationSerializer(serializers.Serializer):
     """
     Serializer for verifying a user's email address.
