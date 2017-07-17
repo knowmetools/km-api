@@ -264,6 +264,8 @@ class PasswordReset(models.Model):
         related_query_name='password_reset',
         verbose_name=_('user'))
 
+    objects = managers.PasswordResetManager()
+
     def __str__(self):
         """
         Get a string containing information about the instance.
