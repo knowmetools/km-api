@@ -346,6 +346,22 @@ class PasswordChangeSerializer(serializers.Serializer):
         return password
 
 
+class PasswordResetSerializer(serializers.Serializer):
+    """
+    Serializer for requesting a password reset.
+    """
+    email = serializers.EmailField()
+
+    def save(self):
+        """
+        Send the password reset email.
+        """
+        user = get_user_model().objects.get(
+            email_address__email=self.validated_data['email'])
+
+        models.PasswordReset.objects.create(key='key', user=user)
+
+
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for ``User`` instances.
