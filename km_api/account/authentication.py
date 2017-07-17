@@ -12,7 +12,7 @@ class AuthenticationBackend:
     attached to their account.
     """
 
-    def authenticate(self, request, email=None, password=None):
+    def authenticate(self, request, email=None, password=None, username=None):
         """
         Authenticate a user's credentials.
 
@@ -29,11 +29,17 @@ class AuthenticationBackend:
                 The user's email address.
             password (:obj:`str`, optional):
                 The user's password.
+            username (:obj:`str`, optional):
+                An alias for the ``email`` field. This allows us to
+                continue using Django's authentication views since they
+                provide a ``username`` instead of an email.
 
         Returns:
             The user instance corresponding to the provided credentials,
             or ``None`` if the credentials are invalid.
         """
+        email = email or username
+
         try:
             email_instance = models.EmailAddress.objects.get(email=email)
         except models.EmailAddress.DoesNotExist:

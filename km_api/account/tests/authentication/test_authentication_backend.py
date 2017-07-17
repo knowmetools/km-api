@@ -51,6 +51,26 @@ def test_authenticate_missing_email(auth_backend, api_rf, user_factory):
         'password') is None
 
 
+def test_authenticate_username(
+        auth_backend,
+        api_rf,
+        email_factory,
+        user_factory):
+    """
+    If a username is given instead of an email, it should be used as the
+    email to authenticate the user.
+    """
+    user = user_factory(password='password')
+    email = email_factory(user=user, verified=True)
+
+    request = api_rf.get('/')
+
+    assert auth_backend.authenticate(
+        request,
+        password='password',
+        username=email.email) == user
+
+
 def test_authenticate_valid_credentials(
         auth_backend,
         api_rf,
