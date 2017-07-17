@@ -17,7 +17,7 @@ def file():
         A simple text file.
     """
     return ContentFile(
-        content='The quick brown fox jumped over the lazy dog.',
+        content=b'The quick brown fox jumped over the lazy dog.',
         name='foo.txt')
 
 
