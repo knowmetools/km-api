@@ -28,7 +28,9 @@ class EmailSerializer(serializers.HyperlinkedModelSerializer):
                 'view_name': 'account:email-detail',
             },
         }
-        fields = ('id', 'url', 'email', 'verified', 'primary')
+        fields = (
+            'id', 'url', 'email', 'verified', 'verified_action', 'primary'
+        )
         model = models.EmailAddress
         read_only_fields = ('verified',)
 
@@ -130,6 +132,34 @@ class EmailSerializer(serializers.HyperlinkedModelSerializer):
 
         return primary
 
+    def validate_verified_action(self, action):
+        """
+        Validate the provided verification action.
+
+        The validation action of an email may not be changed once the
+        email address is created.
+
+        Args:
+            action (int):
+                An integer representing the action to be performed when
+                the email is verified.
+
+        Returns:
+            int:
+                The validated action.
+
+        Raises:
+            ValidationError:
+                If the serializer is bound to an instance and the
+                provided action does not match the instance's action.
+        """
+        if self.instance and self.instance.verified_action != action:
+            raise serializers.ValidationError(
+                _('The verification action of an existing email address may '
+                  'not be changed.'))
+
+        return action
+
 
 class EmailVerificationSerializer(serializers.Serializer):
     """
@@ -147,11 +177,7 @@ class EmailVerificationSerializer(serializers.Serializer):
         Verify the email with the provided key.
         """
         confirmation = self.validated_data['confirmation']
-
-        confirmation.email.verified = True
-        confirmation.email.save()
-
-        confirmation.delete()
+        confirmation.confirm()
 
     def validate(self, data):
         """
@@ -211,6 +237,17 @@ class EmailVerificationSerializer(serializers.Serializer):
                   'and try again.'))
 
         return key
+
+
+class EmailVerifiedActionSerializer(serializers.Serializer):
+    """
+    Serializer for email verified actions.
+
+    This serializer is used to serialize all the available actions for
+    when an email is verified.
+    """
+    id = serializers.IntegerField(read_only=True)
+    label = serializers.CharField(read_only=True)
 
 
 class PasswordChangeSerializer(serializers.Serializer):

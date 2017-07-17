@@ -1,6 +1,8 @@
+from unittest import mock
+
 import pytest
 
-from account import models, serializers
+from account import serializers
 
 
 def test_save_valid_key(
@@ -24,11 +26,12 @@ def test_save_valid_key(
     serializer = serializers.EmailVerificationSerializer(data=data)
     assert serializer.is_valid()
 
-    serializer.save()
-    email.refresh_from_db()
+    with mock.patch(
+            'account.models.EmailConfirmation.confirm',
+            autospec=True) as mock_confirm:
+        serializer.save()
 
-    assert models.EmailConfirmation.objects.count() == 0
-    assert email.verified
+    assert mock_confirm.call_count == 1
 
 
 def test_validate_expired(

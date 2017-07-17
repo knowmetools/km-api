@@ -6,11 +6,37 @@ from django.utils.translation import ugettext_lazy as _
 
 from dry_rest_permissions.generics import DRYPermissions
 
-from rest_framework import generics, status
+from rest_framework import generics, status, views
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from account import models, serializers
+
+
+class EmailActionListView(views.APIView):
+    """
+    View for listing the available actions for an email.
+
+    These actions can be specified when creating a new email address to
+    control what happens when the email is confirmed.
+    """
+    def get(self, request):
+        """
+        Get a list of available verification actions.
+
+        Args:
+            request:
+                The request being made.
+
+        Returns:
+            A response containing a serialized list of all available
+            verification actions.
+        """
+        serializer = serializers.EmailVerifiedActionSerializer(
+            models.EmailAddress.VERIFIED_ACTION_CHOICES,
+            many=True)
+
+        return Response(serializer.data)
 
 
 class EmailDetailView(generics.RetrieveUpdateDestroyAPIView):

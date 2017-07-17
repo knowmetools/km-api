@@ -9,7 +9,8 @@ def test_create_email(user_factory):
     """
     email = models.EmailAddress.objects.create(
         email='test@example.com',
-        user=user_factory())
+        user=user_factory(),
+        verified_action=models.EmailAddress.REPLACE_PRIMARY)
 
     assert not email.verified
 
@@ -105,3 +106,48 @@ def test_string_conversion(email_factory):
     email = email_factory()
 
     assert str(email) == email.email
+
+
+def test_verify_noop(email_factory, user_factory):
+    """
+    If the verified action is a noop, the email should be verified and
+    that's it.
+    """
+    user = user_factory()
+
+    # Create primary email
+    email_factory(primary=True, user=user, verified=True)
+    # Create unverified email
+    email = email_factory(user=user, verified=False)
+
+    email.verify()
+    email.refresh_from_db()
+
+    assert user.email_addresses.count() == 2
+    assert not email.primary
+    assert email.verified
+
+
+def test_verify_replace_primary(email_factory, user_factory):
+    """
+    If the verified action is ``REPLACE_PRIMARY``, the email should
+    replace the user's existing primary address when it is verified.
+    """
+    user = user_factory()
+
+    # Create old primary
+    email_factory(primary=True, user=user, verified=True)
+    # Create unverified email
+    email = email_factory(
+        user=user,
+        verified=False,
+        verified_action=models.EmailAddress.REPLACE_PRIMARY)
+
+    email.verify()
+    email.refresh_from_db()
+
+    assert user.email_addresses.count() == 1
+    assert user.email_addresses.get() == email
+
+    assert email.primary
+    assert email.verified

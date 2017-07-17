@@ -12,7 +12,7 @@ class EmailAddressAdmin(admin.ModelAdmin):
     """
     Admin for ``EmailAddress`` instances.
     """
-    fields = ('email', 'user', 'primary', 'verified')
+    fields = ('email', 'user', 'primary', 'verified', 'verified_action')
     list_display = ('email', 'user', 'verified', 'primary')
     search_fields = ('email', 'user__first_name', 'user__last_name')
 
