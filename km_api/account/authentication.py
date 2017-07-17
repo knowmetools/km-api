@@ -1,6 +1,8 @@
 """Authentication backends provided by the ``account`` module.
 """
 
+from django.contrib.auth import get_user_model
+
 from account import models
 
 
@@ -51,3 +53,20 @@ class AuthenticationBackend:
             return user
 
         return None
+
+    def get_user(self, id):
+        """
+        Get the user with the given ID.
+
+        Args:
+            id (int):
+                The ID of the user to get.
+
+        Returns:
+            The user with the given ID if they exist and ``None``
+            otherwise.
+        """
+        try:
+            return get_user_model().objects.get(id=id)
+        except get_user_model().DoesNotExist:
+            return None

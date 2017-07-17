@@ -1,3 +1,4 @@
+import pytest
 
 
 def test_authenticate_inactive_user(
@@ -86,3 +87,21 @@ def test_authenticate_valid_credentials(
     request = api_rf.get('/')
 
     assert auth_backend.authenticate(request, email.email, 'password') == user
+
+
+def test_get_user(auth_backend, user_factory):
+    """
+    The get user method should return the user with the provided ID.
+    """
+    user = user_factory()
+
+    assert auth_backend.get_user(user.id) == user
+
+
+@pytest.mark.django_db
+def test_get_user_invalid_id(auth_backend):
+    """
+    If there is no user with the provided ID, ``None`` should be
+    returned.
+    """
+    assert auth_backend.get_user(1) is None
