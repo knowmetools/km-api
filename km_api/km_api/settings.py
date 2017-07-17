@@ -84,11 +84,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'km_api.wsgi.application'
 
 
-# Authentication methods
+# Authentication configuration
 
 AUTHENTICATION_BACKENDS = (
     'account.authentication.AuthenticationBackend',
 )
+PASSWORD_RESET_KEY_LENGTH = 64
 
 
 # Custom user model

@@ -247,6 +247,34 @@ class EmailConfirmation(models.Model):
             subject=ugettext('Please Confirm Your Know Me Email'))
 
 
+class PasswordReset(models.Model):
+    """
+    A token allowing a user to reset their password.
+    """
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('created at'))
+    key = models.CharField(
+        max_length=settings.PASSWORD_RESET_KEY_LENGTH,
+        unique=True,
+        verbose_name=_('key'))
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='password_resets',
+        related_query_name='password_reset',
+        verbose_name=_('user'))
+
+    def __str__(self):
+        """
+        Get a string containing information about the instance.
+
+        Returns:
+            str:
+                A string containing the user that the reset is for.
+        """
+        return 'Password reset for {user}'.format(user=self.user)
+
+
 class User(PermissionsMixin, AbstractBaseUser):
     """
     A user's profile.

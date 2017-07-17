@@ -42,6 +42,31 @@ class EmailConfirmationAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(models.PasswordReset)
+class PasswordResetAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``PasswordReset`` model.
+    """
+    fields = ('user', 'created_at', 'key')
+    list_display = ('user', 'created_at')
+    readonly_fields = ('key',)
+    search_fields = ('user__email', 'user__first_name', 'user__last_name')
+
+    def has_add_permission(self, request):
+        """
+        Disable adding new password resets from the admin.
+
+        Args:
+            request:
+                The request being made.
+
+        Returns:
+            bool:
+                ``False``
+        """
+        return False
+
+
 @admin.register(models.User)
 class UserAdmin(admin.ModelAdmin):
     """

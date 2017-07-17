@@ -38,3 +38,14 @@ def email_factory(db):
         The factory class used to create ``EmailAddress`` instances.
     """
     return factories.EmailFactory
+
+
+@pytest.fixture
+def password_reset_factory(db):
+    """
+    Get the factory used to create password resets.
+
+    Returns:
+        The factory class used to create ``PasswordReset`` instances.
+    """
+    return factories.PasswordResetFactory
