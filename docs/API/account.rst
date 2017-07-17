@@ -96,6 +96,7 @@ The email list endpoint allows for listing of a user's email addresses as well a
     :>jsonarr int id: The ID of the email address.
     :>jsonarr string email: The email's address.
     :>jsonarr boolean verified: A boolean indicating if the address has been verified.
+    :>jsonarr int verified_action: An integer corresponding to an action to perform when the email is verified. See `Email Verification Actions <email-verification-actions_>`_ for more information.
     :>jsonarr boolean primary: A boolean indicating if the address is the user's primary email.
 
     :status 200: The user's email addresses were successfully retrieved.
@@ -112,6 +113,7 @@ The email list endpoint allows for listing of a user's email addresses as well a
     :>json string url: The URL of the email address' detail view.
     :>json string email: The email's address.
     :>json boolean verified: A boolean indicating if the address has been verified.
+    :>json int verified_action: An integer corresponding to an action to perform when the email is verified. See `Email Verification Actions <email-verification-actions_>`_ for more information.
     :>json boolean primary: A boolean indicating if the address is the user's primary email.
 
     :status 201: The email address was created successfully.
@@ -130,6 +132,7 @@ The email detail endpoint allows for retrieving and updating a specific email ad
     :>json string url: The URL of the email address' detail view.
     :>json string email: The email's address.
     :>json boolean verified: A boolean indicating if the address has been verified.
+    :>json int verified_action: An integer corresponding to an action to perform when the email is verified. See `Email Verification Actions <email-verification-actions_>`_ for more information.
     :>json boolean primary: A boolean indicating if the address is the user's primary email.
 
     :status 200: The email address' details were successfully retrieved.
@@ -159,6 +162,7 @@ The email detail endpoint allows for retrieving and updating a specific email ad
     :status 404: There is no email address with the given ``id`` accessible to the requesting user.
     :status 409: The email address is the user's primary address so it could not be deleted.
 
+.. _email-verification-actions:
 
 Email Verification Actions
 --------------------------

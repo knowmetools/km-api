@@ -1,6 +1,6 @@
 from unittest import mock
 
-from account import serializers
+from account import models, serializers
 
 
 def test_create_email(api_rf, user_factory):
@@ -14,6 +14,7 @@ def test_create_email(api_rf, user_factory):
 
     data = {
         'email': 'mycoolemail@example.com',
+        'verified_action': models.EmailAddress.REPLACE_PRIMARY,
     }
 
     serializer = serializers.EmailSerializer(
@@ -27,6 +28,7 @@ def test_create_email(api_rf, user_factory):
         email = serializer.save()
 
     assert email.email == data['email']
+    assert email.verified_action == data['verified_action']
     assert not email.verified
     assert email.confirmations.count() == 1
     assert mock_confirm.call_count == 1
@@ -69,6 +71,7 @@ def test_serialize_email(api_rf, email_factory, serializer_context):
         'url': url_request.build_absolute_uri(),
         'email': email.email,
         'verified': email.verified,
+        'verified_action': email.verified_action,
         'primary': email.primary,
     }
 
@@ -126,6 +129,21 @@ def test_update_primary_unverified(email_factory):
 
     data = {
         'primary': True,
+    }
+
+    serializer = serializers.EmailSerializer(email, data=data, partial=True)
+
+    assert not serializer.is_valid()
+
+
+def test_update_verified_action(email_factory):
+    """
+    Attempting to update the ``verified_action`` of an existing email
+    instance should cause the serializer to be invalid.
+    """
+    email = email_factory(verified_action=models.EmailAddress.NOOP)
+    data = {
+        'verified_action': models.EmailAddress.REPLACE_PRIMARY,
     }
 
     serializer = serializers.EmailSerializer(email, data=data, partial=True)
