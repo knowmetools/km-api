@@ -356,10 +356,7 @@ class PasswordResetSerializer(serializers.Serializer):
         """
         Send the password reset email.
         """
-        user = get_user_model().objects.get(
-            email_address__email=self.validated_data['email'])
-
-        models.PasswordReset.objects.create(key='key', user=user)
+        models.PasswordReset.create_and_send(self.validated_data['email'])
 
 
 class UserSerializer(serializers.ModelSerializer):

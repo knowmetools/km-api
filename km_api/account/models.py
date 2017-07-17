@@ -266,6 +266,36 @@ class PasswordReset(models.Model):
 
     objects = managers.PasswordResetManager()
 
+    @classmethod
+    def create_and_send(cls, email):
+        """
+        Create a password reset and send it to the user.
+
+        The email is only sent if there is verified email matching the
+        provided address present in the database.
+
+        Args:
+            email (str):
+                The email address to send the password reset to.
+
+        Returns:
+            The created password reset.
+        """
+        try:
+            email_instance = EmailAddress.objects.get(
+                email=email,
+                verified=True)
+        except EmailAddress.DoesNotExist:
+            logger.warn(
+                'Attempted to reset password for unverified email address: %s',
+                email)
+            return None
+
+        reset = cls.objects.create(user=email_instance.user)
+        reset.send_reset(email)
+
+        return reset
+
     def __str__(self):
         """
         Get a string containing information about the instance.
@@ -275,6 +305,30 @@ class PasswordReset(models.Model):
                 A string containing the user that the reset is for.
         """
         return 'Password reset for {user}'.format(user=self.user)
+
+    def send_reset(self, email):
+        """
+        Send the instance's reset email.
+
+        Args:
+            email (str):
+                The email address to send the password reset to.
+        """
+        text_content = render_to_string(
+            'account/email/reset-password.txt',
+            {
+                'reset_link': settings.PASSWORD_RESET_LINK_TEMPLATE.format(
+                    key=self.key),
+                'user': self.user,
+            })
+
+        mail.send_mail(
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            message=text_content,
+            recipient_list=[email],
+            subject=_('Instructions to Reset Your Know Me Password'))
+
+        logger.info('Sent password reset to %s', email)
 
 
 class User(PermissionsMixin, AbstractBaseUser):

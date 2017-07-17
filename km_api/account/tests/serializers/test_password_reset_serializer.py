@@ -1,3 +1,5 @@
+from unittest import mock
+
 from account import serializers
 
 
@@ -7,7 +9,6 @@ def test_save_password_reset_serializer(email_factory):
     should create a new password reset for that email.
     """
     email = email_factory(verified=True)
-    user = email.user
 
     data = {
         'email': email.email,
@@ -16,6 +17,9 @@ def test_save_password_reset_serializer(email_factory):
     serializer = serializers.PasswordResetSerializer(data=data)
     assert serializer.is_valid()
 
-    serializer.save()
+    with mock.patch(
+            'account.models.PasswordReset.create_and_send') as mock_send:
+        serializer.save()
 
-    assert user.password_resets.count() == 1
+    assert mock_send.call_count == 1
+    assert mock_send.call_args[0] == (email.email,)
