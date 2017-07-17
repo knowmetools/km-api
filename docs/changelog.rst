@@ -11,6 +11,9 @@ Breaking Changes
   * :issue:`41`: Users now log in by giving an ``email`` rather than a ``username``.
   * :issue:`42`: The user model was moved to the ``account`` app. This requires dropping any existing databases.
 
+Features
+  * :issue:`48`: Allow users to swap out their primary email address.
+
 
 v0.3
 ----
