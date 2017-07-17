@@ -14,6 +14,9 @@ Breaking Changes
 Features
   * :issue:`48`: Allow users to swap out their primary email address.
 
+Miscellaneous
+  * :issue:`52`: Developers are no longer required to have a local settings file.
+
 
 v0.3
 ----

@@ -20,6 +20,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
+
+# This should be overridden in production.
+SECRET_KEY = 'secret'
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -160,7 +165,14 @@ STATIC_URL = '/static/'
 # Layer Configuration
 
 LAYER_IDENTITY_EXPIRATION = datetime.timedelta(minutes=5)
+LAYER_KEY_ID = 'layer:///keys/sample'
+LAYER_PROVIDER_ID = 'layer:///provider/'
 LAYER_RSA_KEY_FILE_PATH = os.path.join(BASE_DIR, 'layer.pem')
+
+
+# Mailchimp Configuration
+
+MAILCHIMP_ENABLED = False
 
 
 # Rest Framework

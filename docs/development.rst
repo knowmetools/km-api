@@ -75,23 +75,8 @@ If you have not yet cloned the repository, do so and install the requirements::
 Local Dev Server
 ----------------
 
-Before running the dev server, you must create a file at ``km_api/km_api/local_settings.py``, relative to the project root, with the following content::
+The development server can be run using the following command::
 
-    # Extend from the base settings
-    from km_api.settings import *       # noqa
-
-    # A random string. This doesn't have to be anything complex for development
-    SECRET_KEY = '<some secret key>'
-
-    # Layer information can be found on Layer's dashboard.
-    LAYER_KEY_ID = 'layer:///keys/<key content>'
-    LAYER_PROVIDER_ID = 'layer:///providers/<provider id>'
-
-You must also have the private key referenced by ``LAYER_KEY_ID`` located at ``km_api/layer.pem``. If you want to change the location of this file, set ``LAYER_RSA_KEY_FILE_PATH`` to point to that location.
-
-Finally, run the dev server with::
-
-    $ export DJANGO_SETTINGS_MODULE='km_api.local_settings'
     $ km_api/manage.py runserver
 
 Running Tests
