@@ -85,7 +85,7 @@ Running Tests
 Tests are run with pytest_. To run the tests, make sure the requirements are installed and run the tests::
 
     $ pip install -r requirements/test.txt
-    $ pytest
+    $ pytest km_api/
 
 Building Docs
 -------------
