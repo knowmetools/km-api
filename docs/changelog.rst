@@ -8,10 +8,10 @@ v0.4
 Breaking Changes
   * :issue:`27`: Move user profile view from ``/auth/profile/`` to ``/account/profile``.
   * :issue:`36`: Emails must be verified before being able to log in.
-  * :issue:`41`: Users now log in by giving an ``email`` rather than a ``username``.
   * :issue:`42`: The user model was moved to the ``account`` app. This requires dropping any existing databases.
 
 Features
+  * :issue:`41`: Users can be authenticated by passing an ``email`` rather than a ``username`` to Django's ``authenticate`` function.
   * :issue:`48`: Allow users to swap out their primary email address.
 
 Miscellaneous
