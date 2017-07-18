@@ -49,6 +49,9 @@ MAILCHIMP_ENABLED (=False)
 MAILCHIMP_LIST_ID (='')
   The ID of the MailChimp list to sync users to. Can be found under the list's "Settings" menu in "List name and campaign defaults".
 
+PASSWORD_RESET_LINK_TEMPLATE (=https://example.com/change-password/?key={key})
+  A template for the URL a user should visit to complete the password reset process. The value ``{key}`` in the template string will be replaced with the password reset key.
+
 SECRET_KEY
   The secret key to use. This should be a long random string. See the `documentation <secret-key-docs_>`_ for details.
 
