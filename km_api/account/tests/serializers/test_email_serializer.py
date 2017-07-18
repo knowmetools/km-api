@@ -25,13 +25,27 @@ def test_create_email(api_rf, user_factory):
     with mock.patch(
             'account.models.EmailConfirmation.send_confirmation',
             autospec=True) as mock_confirm:
-        email = serializer.save()
+        with mock.patch(
+                'account.serializers.templated_email.send_email',
+                autospec=True) as mock_send_email:
+            email = serializer.save()
 
     assert email.email == data['email']
     assert email.verified_action == data['verified_action']
     assert not email.verified
     assert email.confirmations.count() == 1
     assert mock_confirm.call_count == 1
+
+    assert mock_send_email.call_count == 1
+    assert mock_send_email.call_args[1] == {
+        'context': {
+            'email': data['email'],
+            'user': user,
+        },
+        'subject': 'Email Added to Your Know Me Account',
+        'template': 'account/email/email-added',
+        'to': user.email,
+    }
 
 
 def test_create_primary(api_rf, email_factory, user_factory):

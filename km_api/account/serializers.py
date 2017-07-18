@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from account import models
+import templated_email
 
 
 logger = logging.getLogger(__name__)
@@ -46,12 +47,24 @@ class EmailSerializer(serializers.HyperlinkedModelSerializer):
         Returns:
             The newly created ``EmailAddress`` instance.
         """
-        data['user'] = self.context['request'].user
+        user = self.context['request'].user
+        data['user'] = user
 
         email = super().create(data)
 
         confirmation = models.EmailConfirmation.objects.create(email=email)
         confirmation.send_confirmation()
+
+        notification_context = {
+            'email': email.email,
+            'user': user,
+        }
+
+        templated_email.send_email(
+            context=notification_context,
+            subject=_('Email Added to Your Know Me Account'),
+            template='account/email/email-added',
+            to=user.email)
 
         return email
 
