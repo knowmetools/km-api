@@ -210,9 +210,12 @@ class EmailVerificationSerializer(serializers.Serializer):
                 associated with the confirmation.
         """
         confirmation = models.EmailConfirmation.objects.get(key=data['key'])
-        user = authenticate(
-            email=confirmation.email.email,
-            password=data['password'])
+
+        "user = authenticate( email=confirmation.email.email, password=data['password'])
+        email = confirmation.email.email
+        user = models.User.objects.get(email=email)
+
+        assert user.check_password(data['password']), user = null
 
         if not user:
             raise serializers.ValidationError(
