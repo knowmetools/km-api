@@ -254,8 +254,12 @@ class PasswordChangeSerializer(serializers.Serializer):
     """
     Serializer for changing a user's password.
     """
+    key = serializers.CharField(
+        required=False,
+        write_only=True)
     old_password = serializers.CharField(
         style={'input_type': 'password'},
+        required=False,
         write_only=True)
     new_password = serializers.CharField(
         style={'input_type': 'password'},
@@ -265,7 +269,7 @@ class PasswordChangeSerializer(serializers.Serializer):
         """
         Change the requesting user's password.
         """
-        user = self.context['request'].user
+        user = self.validated_data['user']
 
         user.set_password(self.validated_data['new_password'])
         user.save()
@@ -291,7 +295,19 @@ class PasswordChangeSerializer(serializers.Serializer):
                 If the user's new password is the same as their old
                 password.
         """
-        if data['new_password'] == data['old_password']:
+        if data.get('key'):
+            try:
+                reset = models.PasswordReset.objects.get(key=data['key'])
+            except models.PasswordReset.DoesNotExist:
+                raise serializers.ValidationError(
+                    _('The provided password reset key is invalid.'))
+
+            data['user'] = reset.user
+            reset.delete()
+        else:
+            data['user'] = self.context['request'].user
+
+        if data['new_password'] == data.get('old_password'):
             raise serializers.ValidationError(
                 _('The new password must be different from the current '
                   'password.'))

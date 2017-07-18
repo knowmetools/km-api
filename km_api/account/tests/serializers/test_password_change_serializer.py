@@ -2,7 +2,25 @@ from unittest import mock
 
 from django.core.exceptions import ValidationError
 
+import pytest
+
 from account import serializers
+
+
+@pytest.mark.django_db
+def test_invalid_key():
+    """
+    If there is no password reset with the given key, the serializer
+    should not be valid.
+    """
+    data = {
+        'key': 'invalidkey',
+        'new_password': 'newpassword',
+    }
+
+    serializer = serializers.PasswordChangeSerializer(data=data)
+
+    assert not serializer.is_valid()
 
 
 def test_invalid_new_password(api_rf, user_factory):
@@ -78,6 +96,29 @@ def test_save(api_rf, user_factory):
 
     assert user.check_password(data['new_password'])
     assert mock_send_mail.call_count == 1
+
+
+def test_save_with_key(password_reset_factory):
+    """
+    Providing a password reset key to the serializer should also allow
+    the user to change their password.
+    """
+    reset = password_reset_factory()
+    user = reset.user
+
+    data = {
+        'key': reset.key,
+        'new_password': 'newpassword',
+    }
+
+    serializer = serializers.PasswordChangeSerializer(data=data)
+    assert serializer.is_valid()
+
+    serializer.save()
+    user.refresh_from_db()
+
+    assert user.check_password(data['new_password'])
+    assert user.password_resets.count() == 0
 
 
 def test_validate_duplicate_passwords(api_rf, user_factory):

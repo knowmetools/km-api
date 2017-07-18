@@ -50,12 +50,15 @@ Change Password
 
     Change the password of the currently authenticated user.
 
-    :<json string old_password: The user's current password.
+    :<json string key: *(Optional)* The password reset key authorizing a password change. The key can be obtained from the `password reset view <password-reset-endpoint_>`_. Either this field or ``old_password`` must be given.
+    :<json string old_password: *(Optional)* The user's current password. Either this field or ``key`` must be given.
     :<json string new_password: The user's new password.
 
     :status 200: The user's password was successfully changed.
     :status 400: Invalid request. Check response data for details. This can happen when an invalid ``old_password`` is provided, or if ``new_password`` fails the password validation checks.
 
+
+.. _password-reset-endpoint:
 
 --------------
 Reset Password
