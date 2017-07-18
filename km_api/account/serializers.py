@@ -211,11 +211,10 @@ class EmailVerificationSerializer(serializers.Serializer):
         """
         confirmation = models.EmailConfirmation.objects.get(key=data['key'])
 
-        "user = authenticate( email=confirmation.email.email, password=data['password'])
         email = confirmation.email.email
         user = models.User.objects.get(email=email)
 
-        assert user.check_password(data['password']), user = null
+        assert user.check_password(data['password']), user is None
 
         if not user:
             raise serializers.ValidationError(
