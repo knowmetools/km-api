@@ -6,10 +6,8 @@ import datetime
 import logging
 
 from django.conf import settings
-from django.core import mail
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
-from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import ugettext, ugettext_lazy as _
 
@@ -18,6 +16,7 @@ from rest_framework.reverse import reverse
 from permission_utils import model_mixins as mixins
 
 from account import managers
+import templated_email
 
 
 logger = logging.getLogger(__name__)
@@ -236,15 +235,12 @@ class EmailConfirmation(models.Model):
             'confirmation_link': confirmation_link,
             'user': self.email.user,
         }
-        text_content = render_to_string(
-            'account/email/confirm-email.txt',
-            context)
 
-        mail.send_mail(
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            message=text_content,
-            recipient_list=[self.email.email],
-            subject=ugettext('Please Confirm Your Know Me Email'))
+        templated_email.send_email(
+            context=context,
+            subject=_('Please Confirm Your Know Me Email'),
+            template='account/email/confirm-email',
+            to=self.email.email)
 
 
 class PasswordReset(models.Model):
@@ -331,19 +327,17 @@ class PasswordReset(models.Model):
             email (str):
                 The email address to send the password reset to.
         """
-        text_content = render_to_string(
-            'account/email/reset-password.txt',
-            {
-                'reset_link': settings.PASSWORD_RESET_LINK_TEMPLATE.format(
-                    key=self.key),
-                'user': self.user,
-            })
+        context = {
+            'reset_link': settings.PASSWORD_RESET_LINK_TEMPLATE.format(
+                key=self.key),
+            'user': self.user,
+        }
 
-        mail.send_mail(
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            message=text_content,
-            recipient_list=[email],
-            subject=_('Instructions to Reset Your Know Me Password'))
+        templated_email.send_email(
+            context=context,
+            subject=_('Instructions to Reset Your Know Me Password'),
+            template='account/email/reset-password',
+            to=email)
 
         logger.info('Sent password reset to %s', email)
 
@@ -436,14 +430,10 @@ class User(PermissionsMixin, AbstractBaseUser):
         """
         Send an email notifying the user their password was changed.
         """
-        text_content = render_to_string(
-            'account/email/password-changed.txt',
-            {
-                'user': self,
-            })
+        context = {'user': self}
 
-        mail.send_mail(
-            _('Your Know Me Password was Changed'),
-            message=text_content,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[self.email])
+        templated_email.send_email(
+            context=context,
+            subject=_('Your Know Me Password was Changed'),
+            template='account/email/password-changed',
+            to=self.email)

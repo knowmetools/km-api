@@ -1,5 +1,4 @@
-from django.core import mail
-from django.template.loader import render_to_string
+from unittest import mock
 
 import pytest
 
@@ -47,19 +46,20 @@ def test_send_password_changed_email(settings, user_factory):
     their password has been changed.
     """
     user = user_factory()
-    expected_content = render_to_string(
-        'account/email/password-changed.txt',
-        {
-            'user': user,
-        })
 
-    user.send_password_changed_email()
+    expected_context = {
+        'user': user,
+    }
 
-    assert len(mail.outbox) == 1
+    with mock.patch(
+            'account.models.templated_email.send_email',
+            autospec=True) as mock_send_email:
+        user.send_password_changed_email()
 
-    email = mail.outbox[0]
-
-    assert email.subject == 'Your Know Me Password was Changed'
-    assert email.body == expected_content
-    assert email.from_email == settings.DEFAULT_FROM_EMAIL
-    assert email.to == [user.email]
+    assert mock_send_email.call_count == 1
+    assert mock_send_email.call_args[1] == {
+        'context': expected_context,
+        'subject': 'Your Know Me Password was Changed',
+        'template': 'account/email/password-changed',
+        'to': user.email,
+    }

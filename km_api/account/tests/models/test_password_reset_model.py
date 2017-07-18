@@ -1,5 +1,6 @@
+from unittest import mock
+
 from django.core import mail
-from django.template.loader import render_to_string
 from django.utils import timezone
 
 from account import models
@@ -25,25 +26,27 @@ def test_create_and_send(email_factory, settings):
 
     email = email_factory(verified=True)
 
-    reset = models.PasswordReset.create_and_send(email.email)
+    with mock.patch(
+            'account.models.templated_email.send_email',
+            autospec=True) as mock_send_email:
+        reset = models.PasswordReset.create_and_send(email.email)
 
     expected_link = settings.PASSWORD_RESET_LINK_TEMPLATE.format(
         key=reset.key)
-    expected_content = render_to_string(
-        'account/email/reset-password.txt',
-        {
-            'reset_link': expected_link,
-            'user': email.user,
-        })
+    expected_context = {
+        'reset_link': expected_link,
+        'user': email.user,
+    }
 
     assert reset.user == email.user
-    assert len(mail.outbox) == 1
 
-    sent = mail.outbox[0]
-
-    assert sent.subject == 'Instructions to Reset Your Know Me Password'
-    assert sent.body == expected_content
-    assert sent.to == [email.email]
+    assert mock_send_email.call_count == 1
+    assert mock_send_email.call_args[1] == {
+        'context': expected_context,
+        'subject': 'Instructions to Reset Your Know Me Password',
+        'template': 'account/email/reset-password',
+        'to': email.email,
+    }
 
 
 def test_create_and_send_unverified_email(email_factory):
