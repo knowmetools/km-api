@@ -49,7 +49,7 @@ class PasswordResetAdmin(admin.ModelAdmin):
     """
     fields = ('user', 'created_at', 'key')
     list_display = ('user', 'created_at')
-    readonly_fields = ('key',)
+    readonly_fields = ('user', 'created_at', 'key')
     search_fields = ('user__email', 'user__first_name', 'user__last_name')
 
     def has_add_permission(self, request):
