@@ -11,6 +11,7 @@ Breaking Changes
   * :issue:`42`: The user model was moved to the ``account`` app. This requires dropping any existing databases.
 
 Features
+  * :issue:`34`: Users can now request a password reset by email.
   * :issue:`41`: Users can be authenticated by passing an ``email`` rather than a ``username`` to Django's ``authenticate`` function.
   * :issue:`48`: Allow users to swap out their primary email address.
 

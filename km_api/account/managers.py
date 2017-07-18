@@ -66,6 +66,35 @@ class EmailConfirmationManager(models.Manager):
         return confirmation
 
 
+class PasswordResetManager(models.Manager):
+    """
+    Manager for password resets.
+    """
+
+    def create(self, user, key=None):
+        """
+        Create a new password reset.
+
+        Args:
+            user:
+                The user to create the password reset for.
+            key (:obj:`str`, optional):
+                The key to use to verify the password reset. Defaults to
+                a random string whose length is determined by the
+                ``PASSWORD_RESET_KEY_LENGTH`` setting.
+
+        Returns:
+            A new ``PasswordReset`` instance.
+        """
+        key = key or get_random_string(
+            length=settings.PASSWORD_RESET_KEY_LENGTH)
+
+        reset = self.model(key=key, user=user)
+        reset.save()
+
+        return reset
+
+
 class UserManager(BaseUserManager):
     """
     Manager for the ``User`` model.

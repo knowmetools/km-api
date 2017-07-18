@@ -31,3 +31,15 @@ class EmailConfirmationFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = models.EmailConfirmation
+
+
+class PasswordResetFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``PasswordReset`` instances.
+    """
+    key = factory.LazyFunction(lambda: get_random_string(
+        length=settings.PASSWORD_RESET_KEY_LENGTH))
+    user = factory.SubFactory('factories.UserFactory')
+
+    class Meta:
+        model = models.PasswordReset
