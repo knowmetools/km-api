@@ -306,6 +306,23 @@ class PasswordReset(models.Model):
         """
         return 'Password reset for {user}'.format(user=self.user)
 
+    def is_expired(self):
+        """
+        Determine if the instance has expired.
+
+        The duration a password reset is valid for is specified in the
+        ``PASSWORD_RESET_EXPIRATION_HOURS`` setting.
+
+        Returns:
+            bool:
+                ``True`` if the password is expired and ``False``
+                otherwise.
+        """
+        expiration = self.created_at + datetime.timedelta(
+            hours=settings.PASSWORD_RESET_EXPIRATION_HOURS)
+
+        return timezone.now() > expiration
+
     def send_reset(self, email):
         """
         Send the instance's reset email.

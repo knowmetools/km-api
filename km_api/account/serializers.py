@@ -302,6 +302,11 @@ class PasswordChangeSerializer(serializers.Serializer):
                 raise serializers.ValidationError(
                     _('The provided password reset key is invalid.'))
 
+            if reset.is_expired():
+                raise serializers.ValidationError(
+                    _('The provided key has expired. Please request a new '
+                      'password reset.'))
+
             data['user'] = reset.user
             reset.delete()
         else:

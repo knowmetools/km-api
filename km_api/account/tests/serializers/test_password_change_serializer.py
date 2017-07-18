@@ -7,6 +7,24 @@ import pytest
 from account import serializers
 
 
+def test_expired_key(password_reset_factory, settings):
+    """
+    If the provided key corresponds to a password reset that is expired,
+    the serializer should not validate.
+    """
+    settings.PASSWORD_RESET_EXPIRATION_HOURS = 0
+
+    reset = password_reset_factory()
+    data = {
+        'key': reset.key,
+        'new_password': 'newpassword',
+    }
+
+    serializer = serializers.PasswordChangeSerializer(data=data)
+
+    assert not serializer.is_valid()
+
+
 @pytest.mark.django_db
 def test_invalid_key():
     """

@@ -59,6 +59,32 @@ def test_create_and_send_unverified_email(email_factory):
     assert len(mail.outbox) == 0
 
 
+def test_is_expired(password_reset_factory, settings):
+    """
+    If the reset is older than the number of hours given in the
+    ``PASSWORD_RESET_EXPIRATION_HOURS`` setting, the reset should be
+    expired.
+    """
+    settings.PASSWORD_RESET_EXPIRATION_HOURS = 0
+
+    reset = password_reset_factory()
+
+    assert reset.is_expired()
+
+
+def test_is_expired_false(password_reset_factory, settings):
+    """
+    If the number of hours given in the
+    ``PASSWORD_RESET_EXPIRATION_HOURS`` setting has not yet passed since
+    the reset was created, the reset should not be expired.
+    """
+    settings.PASSWORD_RESET_EXPIRATION_HOURS = 1
+
+    reset = password_reset_factory()
+
+    assert not reset.is_expired()
+
+
 def test_string_conversion(password_reset_factory):
     """
     Converting a password reset into a string should return info about

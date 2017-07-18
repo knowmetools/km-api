@@ -63,6 +63,9 @@ DATABASES = {
 
 # Authentication Configuration
 
+PASSWORD_RESET_EXPIRATION_HOURS = int(os.environ.get(
+    'PASSWORD_RESET_EXPIRATION_HOURS',
+    '1'))
 PASSWORD_RESET_LINK_TEMPLATE = os.environ.get(
     'PASSWORD_RESET_LINK_TEMPLATE',
     'https://example.com/change-password/?key={key}')
