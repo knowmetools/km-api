@@ -57,6 +57,28 @@ Change Password
     :status 400: Invalid request. Check response data for details. This can happen when an invalid ``old_password`` is provided, or if ``new_password`` fails the password validation checks.
 
 
+--------------
+Reset Password
+--------------
+
+If a user forgets their password, sending their email address to this endpoint will send them an email with instructions to reset their password.
+
+.. warning::
+
+    Just because a :http:statuscode:`200` response was received does not mean that the provided email address was valid. We can't return any information about the validity of the email without giving away information about which accounts exist.
+
+.. http:post:: /account/reset-password/
+
+    Request a password reset for the account associated with the provided email address.
+
+    :<json string email: The email address to send a password reset email to.
+
+    :>json string email: The email address that the password reset was sent to.
+
+    :status 200: A valid email address was received.
+    :status 400: An invalid email address was received.
+
+
 ------------------
 Email Verification
 ------------------

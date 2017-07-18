@@ -147,6 +147,33 @@ class PasswordChangeView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class PasswordResetView(generics.GenericAPIView):
+    """
+    View for requesting a password reset.
+    """
+    serializer_class = serializers.PasswordResetSerializer
+
+    def post(self, request):
+        """
+        Submit a password reset request.
+
+        Args:
+            request:
+                The request being made.
+
+        Returns:
+            A response indicating if the request was successful.
+        """
+        serializer = self.get_serializer(data=request.POST)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retrieving and updating a user's information.
