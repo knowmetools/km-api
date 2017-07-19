@@ -22,9 +22,9 @@ class EmailConfirmationAdmin(admin.ModelAdmin):
     """
     Admin for ``EmailConfirmation`` instances.
     """
-    fields = ('email__email', 'created_at', 'key')
+    fields = ('email', 'created_at', 'key')
     list_display = ('email', 'created_at')
-    readonly_fields = ('created_at', 'key',)
+    readonly_fields = ('email', 'created_at', 'key',)
     search_fields = ('email__email',)
 
     def has_add_permission(self, request):
