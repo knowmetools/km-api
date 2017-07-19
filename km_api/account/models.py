@@ -386,6 +386,9 @@ class User(PermissionsMixin, AbstractBaseUser):
     last_name = models.CharField(
         max_length=255,
         verbose_name=_('last name'))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('created at'))
 
     # Let Django know about specific fields
     EMAIL_FIELD = 'email'
