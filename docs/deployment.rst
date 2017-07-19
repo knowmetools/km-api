@@ -11,11 +11,27 @@ Environment Variables
 
 The application uses the following environment variables. These can be set from the Elastic Beanstalk interface.
 
+ADMIN_EMAIL
+  The email address to use for the admin account.
+
+ADMIN_PASSWORD
+  The password to use for the admin account.
+
 ALLOWED_HOSTS (=[ ])
   A comma separated list of URLs that the app is accessible from.
 
+AWS_REGION (=us-east-1)
+  The region the project's AWS resources are running in.
+
 DEBUG (=False)
   Set to ``True`` (case insensitive) to enable Django's debug mode.
+
+EMAIL_CONFIRMATION_EXPIRATION_DAYS (=1)
+  An integer specifying the number of days an email confirmation is valid for.
+
+EMAIL_CONFIRMATION_LINK_TEMPLATE (=https://example.com/confirm-email?key={key})
+  A template for the URL a user should visit to validate their email. The value
+  ``{key}`` in the template string will be replaced with the confirmation key.
 
 LAYER_IDENTITY_EXPIRATION (=300)
   The expiration time of each Layer identity token in seconds. See Layer's `Identity Token documentation <layer-identity-token-docs_>`_ for more information.
@@ -38,6 +54,12 @@ MAILCHIMP_ENABLED (=False)
 
 MAILCHIMP_LIST_ID (='')
   The ID of the MailChimp list to sync users to. Can be found under the list's "Settings" menu in "List name and campaign defaults".
+
+PASSWORD_RESET_EXPIRATION_HOURS (=1)
+  The number of hours a password reset's key is valid for.
+
+PASSWORD_RESET_LINK_TEMPLATE (=https://example.com/change-password/?key={key})
+  A template for the URL a user should visit to complete the password reset process. The value ``{key}`` in the template string will be replaced with the password reset key.
 
 SECRET_KEY
   The secret key to use. This should be a long random string. See the `documentation <secret-key-docs_>`_ for details.

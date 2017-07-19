@@ -4,7 +4,7 @@
 from django.contrib.auth import get_user_model
 
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.views import ObtainAuthToken
 
 from km_auth import permissions, serializers
 
@@ -16,22 +16,14 @@ class LayerIdentityView(generics.CreateAPIView):
     serializer_class = serializers.LayerIdentitySerializer
 
 
-class UserDetailView(generics.RetrieveUpdateAPIView):
+class ObtainTokenView(ObtainAuthToken):
     """
-    View for retrieving and updating a user's details.
+    View for obtaining an authentication token.
+
+    This view builds upon the default token view from DRF to use our
+    custom token serializer.
     """
-    permission_classes = (IsAuthenticated,)
-    queryset = get_user_model().objects.all()
-    serializer_class = serializers.UserDetailSerializer
-
-    def get_object(self):
-        """
-        Get the user we're displaying the details of.
-
-        Returns:
-            The user making the current request.
-        """
-        return self.request.user
+    serializer_class = serializers.TokenSerializer
 
 
 class UserRegistrationView(generics.CreateAPIView):
@@ -40,4 +32,4 @@ class UserRegistrationView(generics.CreateAPIView):
     """
     permission_classes = (permissions.IsAnonymous,)
     queryset = get_user_model().objects.all()
-    serializer_class = serializers.UserDetailSerializer
+    serializer_class = serializers.UserRegistrationSerializer

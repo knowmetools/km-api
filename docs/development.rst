@@ -2,56 +2,13 @@
 Development
 ===========
 
-This project runs on Python 3.4 using the Django framework.
-
--------------------------------
-Configuring the Dev Environment
--------------------------------
-
-To get started, clone the repository and install the requirements::
-
-    $ git clone https://github.com/knowmetools/km-api
-    $ cd km-api
-    $ pip install -r requirements/base.txt
-
-Dev Server
-----------
-
-Before running the dev server, you must create a file at ``km_api/km_api/local_settings.py`` with the following content::
-
-    # A random string. This doesn't have to be anything complex for development
-    SECRET_KEY = '<some secret key>'
-
-    # Layer information can be found on Layer's dashboard.
-    LAYER_KEY_ID = 'layer:///keys/<key content>'
-    LAYER_PROVIDER_ID = 'layer:///providers/<provider id>'
-
-You must also have the private key referenced by ``LAYER_KEY_ID`` located at ``km_api/layer.pem``. If you want to change the location of this file, set ``LAYER_RSA_KEY_FILE_PATH`` to point to that location.
-
-Finally, run the dev server with::
-
-    $ km_api/manage.py devserver
-
-Running Tests
--------------
-
-Tests are run with pytest_. To run the tests, install the test requirements and run the tests::
-
-    $ pip install -r requirements/test.txt
-    $ pytest
-
-Building Docs
--------------
-
-We use sphinx for building documentation, and the docs are automatically published using ReadTheDocs. If you want to build the docs locally, install the requirements and run the build command::
-
-    $ pip install -r requirements/docs.txt
-    $ sphinx-build docs docs/_build/html
-
+The API is built with Python using Django and Django Rest Framework.
 
 -----------------------------------
 Recommended Development Environment
 -----------------------------------
+
+If you are comfortable with setting up a python development environment and cloning the project, feel free to skip to the `development environment overview <dev-overview_>`_.
 
 Prerequisites
 -------------
@@ -65,7 +22,11 @@ This project runs on Python 3.4, since that's the Python version available on El
 Project Setup
 -------------
 
-Before cloning the environment, create a virtual environment for the project's dependencies. *Note: The following commands assume virtualenvwrapper is installed*::
+.. note::
+
+    The following commands assume the ``virtualenvwrapper`` package is installed.
+
+Before cloning the environment, create a virtual environment for the project's dependencies::
 
     $ mkproject --python=python3.4 km-api
     $ workon km-api
@@ -74,13 +35,13 @@ You can now clone the project. Since the directory will have already been create
 
     $ git init
     $ git remote add origin https://github.com/knowmetools/km-api
-    $ git checkout develop
+    $ git pull origin develop
 
 If you installed the ``git-flow`` extension, you can now setup the repository to use it::
 
     $ git flow init -d
 
-Finally, install the project requirements appropriate for what you need. The ``base`` requirements are necessary for running the project, the ``test`` requirements are only used when running tests, and the ``docs`` requirements are only used for building documentation::
+Finally, install the project requirements appropriate for what you need. The ``test`` requirements should cover what you need, but if you want to build the documentation locally, install the ``docs`` requirements. If all you want to do is run the project locally, the ``base`` requirements are all you need.::
 
     $ pip install -r requirements/[base|docs|test].txt
 
@@ -98,6 +59,42 @@ If you want to run the linter on every commit, which is useful because our CI to
     $ git config flake8.strict true
 
 The configuration options ensure that only the code being committed is linted, and that linting errors will stop the commit process.
+
+.. _dev-overview:
+
+------------------------
+Dev Environment Overview
+------------------------
+
+If you have not yet cloned the repository, do so and install the requirements::
+
+    $ git clone https://github.com/knowmetools/km-api
+    $ cd km-api
+    $ pip install -r requirements/base.txt
+
+Local Dev Server
+----------------
+
+The development server can be run using the following command::
+
+    $ km_api/manage.py runserver
+
+Running Tests
+-------------
+
+Tests are run with pytest_. To run the tests, make sure the requirements are installed and run the tests::
+
+    $ pip install -r requirements/test.txt
+    $ pytest km_api/
+
+Building Docs
+-------------
+
+We use sphinx for building documentation, and the docs are automatically published using ReadTheDocs. If you want to build the docs locally, install the requirements and run the build command::
+
+    $ pip install -r requirements/docs.txt
+    $ cd docs
+    $ make html
 
 
 .. _flake8: http://flake8.pycqa.org/en/latest/

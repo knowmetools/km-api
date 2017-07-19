@@ -20,6 +20,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
+
+# This should be overridden in production.
+SECRET_KEY = 'secret'
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -37,22 +42,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third Party Apps
-    'corsheaders',
     'dry_rest_permissions',
-    'raven.contrib.django.raven_compat',
     'rest_framework',
     'rest_framework.authtoken',
-    'storages',
 
     # Custom Apps
-    'custom_storages',
+    'account',
     'km_auth',
     'know_me',
     'mailing_list',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -83,9 +84,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'km_api.wsgi.application'
 
 
+# Authentication configuration
+
+AUTHENTICATION_BACKENDS = (
+    'account.authentication.AuthenticationBackend',
+)
+PASSWORD_RESET_KEY_LENGTH = 64
+PASSWORD_RESET_EXPIRATION_HOURS = 1
+PASSWORD_RESET_LINK_TEMPLATE = 'example.com/reset-password/?key={key}'
+
+
 # Custom user model
 
-AUTH_USER_MODEL = 'km_auth.User'
+AUTH_USER_MODEL = 'account.User'
+DEFAULT_FROM_EMAIL = 'Know Me <no-reply@knowmetools.com>'
 
 
 # Database
@@ -118,6 +130,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# Email Configuration
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_CONFIRMATION_EXPIRATION_DAYS = 1
+EMAIL_CONFIRMATION_KEY_LENGTH = 64
+EMAIL_CONFIRMATION_LINK_TEMPLATE = 'example.com/confirm-email?key={key}'
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -145,16 +165,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
 
-# CORS Configurations
-# https://github.com/ottoyiu/django-cors-headers#configuration
-
-CORS_ORIGIN_ALLOW_ALL = True
-
-
 # Layer Configuration
 
 LAYER_IDENTITY_EXPIRATION = datetime.timedelta(minutes=5)
+LAYER_KEY_ID = 'layer:///keys/sample'
+LAYER_PROVIDER_ID = 'layer:///provider/'
 LAYER_RSA_KEY_FILE_PATH = os.path.join(BASE_DIR, 'layer.pem')
+
+
+# Mailchimp Configuration
+
+MAILCHIMP_ENABLED = False
 
 
 # Rest Framework
@@ -166,11 +187,3 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
 }
-
-
-# Use local settings if they exist
-
-try:
-    from km_api.local_settings import *     # noqa
-except ImportError:
-    pass

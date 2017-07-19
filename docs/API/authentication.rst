@@ -50,40 +50,15 @@ endpoints.
     :statuscode 400: The provided credentials were invalid.
 
 
-------------
-User Profile
-------------
-
-We store basic information about each user (provided when they register) that can be retrieved or updated from this endpoint.
-
-.. http:get:: /auth/profile/
-
-    Retrieve a user's information.
-
-    :>json int id: The user's ID.
-    :>json string email: The user's email address.
-    :>json string first_name: The user's first name.
-    :>json string last_name: The user's last name.
-
-    :statuscode 200: Request was successful.
-
-.. http:patch:: /auth/profile/
-
-    Update a user's profile.
-
-    :>json string email: *(Optional)* The user's new email address.
-    :>json string first_name: *(Optional)* The user's new first name.
-    :>json string last_name: *(Optional)* The user's new last name.
-
-    :statuscode 200: Successfully updated the user's information.
-    :statuscode 400: Invalid request. Check the response data for details.
-
-
 -----
 Layer
 -----
 
 For real time communications we use Layer_. Layer requires an identity token in order to authenticate with their services.
+
+.. warning::
+
+    The validity of the token returned from this endpoint is not guaranteed. If an invalid nonce was provided, the returned token will also be invalid.
 
 .. http:post:: /auth/layer/
 
@@ -95,10 +70,6 @@ For real time communications we use Layer_. Layer requires an identity token in 
 
     :statuscode 201: Identity token successfully created.
     :statuscode 400: Invalid request. Check the response data for details.
-
-.. warning::
-
-    Just because an identity token was received does not mean the identity token is valid. If an invalid nonce was provided, the returned token will also be invalid.
 
 
 .. _Layer: https://layer.com/
