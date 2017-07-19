@@ -57,7 +57,6 @@ def test_authenticate_unverified_email(
         password='password') is None
 
 
-
 def test_authenticate_missing_email(auth_backend, api_rf, user_factory):
     """
     If the provided email address doesn't exist, ``None`` should be

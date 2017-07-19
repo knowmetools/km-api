@@ -216,7 +216,7 @@ class EmailVerificationSerializer(serializers.Serializer):
 
         if not user.is_active:
             raise serializers.ValidationError(
-            _('This account is marked as inactive'))
+                _('This account is marked as inactive'))
 
         data['confirmation'] = confirmation
 
