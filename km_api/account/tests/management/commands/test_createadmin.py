@@ -37,3 +37,26 @@ def test_create_admin():
     assert email.email == os.environ['ADMIN_EMAIL']
     assert email.primary
     assert email.verified
+
+
+def test_create_admin_user_exists(email_factory, user_factory):
+    """
+    If the user already exists, their information should be updated.
+    """
+    user = user_factory(password='oldpassword')
+    email = email_factory(email=user.email, user=user)
+
+    os.environ['ADMIN_EMAIL'] = email.email
+    os.environ['ADMIN_PASSWORD'] = 'newpassword'
+
+    output = io.StringIO()
+    call_command('createadmin', out=output)
+
+    assert get_user_model().objects.count() == 1
+
+    user.refresh_from_db()
+    email.refresh_from_db()
+
+    assert user.check_password(os.environ['ADMIN_PASSWORD'])
+    assert user.is_staff
+    assert user.is_superuser
