@@ -37,6 +37,27 @@ def test_authenticate_invalid_password(
         'notpassword') is None
 
 
+def test_authenticate_unverified_email(
+        auth_backend,
+        api_rf,
+        user_factory,
+        email_factory):
+    """
+    If the user has not validated their email, None should be
+    returned.
+    """
+    user = user_factory(password='password')
+    email = email_factory(user=user, verified=False)
+
+    request = api_rf.get('/')
+
+    assert auth_backend.authenticate(
+        request,
+        username=email.email,
+        password='password') is None
+
+
+
 def test_authenticate_missing_email(auth_backend, api_rf, user_factory):
     """
     If the provided email address doesn't exist, ``None`` should be

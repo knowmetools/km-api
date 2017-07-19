@@ -7,8 +7,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model, password_validation
 from django.utils.translation import ugettext as _
 
-from django.contrib.auth import authenticate
-
 from rest_framework import serializers
 
 from account import models
@@ -210,15 +208,15 @@ class EmailVerificationSerializer(serializers.Serializer):
                 associated with the confirmation.
         """
         confirmation = models.EmailConfirmation.objects.get(key=data['key'])
+        user = confirmation.email.user
 
-        email = confirmation.email.email
-        user = models.User.objects.get(email=email)
-
-        assert user.check_password(data['password']), user is None
-
-        if not user:
+        if not user.check_password(data['password']):
             raise serializers.ValidationError(
                 _('The provided credentials were invalid.'))
+
+        if not user.is_active:
+            raise serializers.ValidationError(
+            _('This account is marked as inactive'))
 
         data['confirmation'] = confirmation
 
