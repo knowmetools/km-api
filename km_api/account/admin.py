@@ -84,7 +84,11 @@ class UserAdmin(admin.ModelAdmin):
         }),
     )
     filter_horizontal = ('groups', 'user_permissions')
-    list_display = ('email', 'first_name', 'last_name', 'is_staff')
-    list_filter = ('is_active', 'is_staff', 'is_superuser')
-    readonly_fields = ('email',)
+    list_display = ('email',
+                    'first_name',
+                    'last_name',
+                    'is_staff',
+                    'created_at')
+    list_filter = ('is_active', 'is_staff', 'is_superuser', 'created_at')
+    readonly_fields = ('email', 'created_at')
     search_fields = ('email', 'first_name', 'last_name')
