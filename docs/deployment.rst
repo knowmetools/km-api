@@ -11,6 +11,12 @@ Environment Variables
 
 The application uses the following environment variables. These can be set from the Elastic Beanstalk interface.
 
+ADMIN_EMAIL
+  The email address to use for the admin account.
+
+ADMIN_PASSWORD
+  The password to use for the admin account.
+
 ALLOWED_HOSTS (=[ ])
   A comma separated list of URLs that the app is accessible from.
 

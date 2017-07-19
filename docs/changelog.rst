@@ -13,6 +13,7 @@ Breaking Changes
 Features
   * :issue:`34`: Users can now request a password reset by email.
   * :issue:`41`: Users can be authenticated by passing an ``email`` rather than a ``username`` to Django's ``authenticate`` function.
+  * :issue:`46`: An admin user is created when the project is deployed.
   * :issue:`48`: Allow users to swap out their primary email address.
   * :issue:`50`: Users receive a notification when an email is added to their account.
 
