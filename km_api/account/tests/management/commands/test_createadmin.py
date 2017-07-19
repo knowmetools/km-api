@@ -60,3 +60,5 @@ def test_create_admin_user_exists(email_factory, user_factory):
     assert user.check_password(os.environ['ADMIN_PASSWORD'])
     assert user.is_staff
     assert user.is_superuser
+
+    assert email.verified

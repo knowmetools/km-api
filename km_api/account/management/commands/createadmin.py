@@ -31,14 +31,16 @@ class Command(BaseCommand):
 
         if models.EmailAddress.objects.filter(email=email).exists():
             email_instance = models.EmailAddress.objects.get(email=email)
+            email_instance.verified = True
+            email_instance.save()
+
             admin = email_instance.user
-
             admin.set_password(password)
-
             admin.is_staff = True
             admin.is_superuser = True
-
             admin.save()
+
+            self.stdout.write(self.style.NOTICE('Updated existing user.'))
         else:
             admin = get_user_model().objects.create_superuser(
                 email=email,
@@ -51,6 +53,8 @@ class Command(BaseCommand):
                 primary=True,
                 verified=True,
                 user=admin)
+
+            self.stdout.write(self.style.NOTICE('Created new admin user.'))
 
         self.stdout.write(self.style.SUCCESS(
             'Successfully created admin user with a verified email address.'))
