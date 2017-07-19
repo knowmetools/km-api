@@ -63,10 +63,6 @@ class TokenSerializer(serializers.Serializer):
                 _('Invalid credentials. Check your email and password and try'
                   'again.'))
 
-        if not user.email_addresses.get(email=data['email']).verified:
-            raise serializers.ValidationError(
-                _('You must verify this email address before logging in.'))
-
         data['user'] = user
 
         return data
