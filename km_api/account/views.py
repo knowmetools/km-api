@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from account import models, serializers
+import generic_rest_views
 
 
 class EmailActionListView(views.APIView):
@@ -88,90 +89,32 @@ class EmailListView(generics.ListCreateAPIView):
     serializer_class = serializers.EmailSerializer
 
 
-class EmailVerificationView(generics.GenericAPIView):
+class EmailVerificationView(generic_rest_views.SerializerSaveView):
     """
     View for verifying an email address.
     """
     serializer_class = serializers.EmailVerificationSerializer
 
-    def post(self, request):
-        """
-        Verify an email with a verification key.
 
-        Args:
-            request:
-                The request being made.
-
-        Returns:
-            A response with a status code indicating if the request was
-            successful.
-        """
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-
-            return Response(serializer.data)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class PasswordChangeView(generics.GenericAPIView):
+class PasswordChangeView(generic_rest_views.SerializerSaveView):
     """
     View for changing the user's password.
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.PasswordChangeSerializer
 
-    def post(self, request):
+    def post_save(self):
         """
-        Change the requesting user's password.
-
-        Args:
-            request:
-                The request being made.
-
-        Returns:
-            A response with a status code indicating if the request was
-            successful.
+        Update session auth hash after the user's password is changed.
         """
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-
-            update_session_auth_hash(request, request.user)
-
-            return Response(serializer.data)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        update_session_auth_hash(self.request, self.request.user)
 
 
-class PasswordResetView(generics.GenericAPIView):
+class PasswordResetView(generic_rest_views.SerializerSaveView):
     """
     View for requesting a password reset.
     """
     serializer_class = serializers.PasswordResetSerializer
-
-    def post(self, request):
-        """
-        Submit a password reset request.
-
-        Args:
-            request:
-                The request being made.
-
-        Returns:
-            A response indicating if the request was successful.
-        """
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-
-            return Response(serializer.data)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserDetailView(generics.RetrieveUpdateAPIView):
