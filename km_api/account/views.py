@@ -106,7 +106,7 @@ class EmailVerificationView(generics.GenericAPIView):
             A response with a status code indicating if the request was
             successful.
         """
-        serializer = self.get_serializer(data=request.POST)
+        serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
@@ -135,7 +135,7 @@ class PasswordChangeView(generics.GenericAPIView):
             A response with a status code indicating if the request was
             successful.
         """
-        serializer = self.get_serializer(data=request.POST)
+        serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
@@ -164,7 +164,7 @@ class PasswordResetView(generics.GenericAPIView):
         Returns:
             A response indicating if the request was successful.
         """
-        serializer = self.get_serializer(data=request.POST)
+        serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()

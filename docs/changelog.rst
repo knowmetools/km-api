@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v0.5
+----
+
+Bug Fixes
+  * :issue:`75`: Fix parsing of JSON requests.
+
 
 v0.4
 ----
