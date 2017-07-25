@@ -168,7 +168,6 @@ class EmailConfirmation(models.Model):
         verbose_name=_('created at'))
     email = models.ForeignKey(
         'account.EmailAddress',
-        null=True,
         related_name='confirmations',
         related_query_name='confirmation',
         verbose_name=_('email'))
