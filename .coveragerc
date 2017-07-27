@@ -2,6 +2,9 @@
 branch = True
 omit = \
     */tests/*,
-   km_api/manage.py,
-   km_api/km_api/wsgi.py
+    km_api/manage.py,
+    km_api/km_api/wsgi.py,
+    */migrations/*,
+    */admin.py,
+    km_api/km_api/*
 source = km_api
