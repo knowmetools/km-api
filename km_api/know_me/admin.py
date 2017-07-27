@@ -27,6 +27,32 @@ class KMUserAdmin(admin.ModelAdmin):
     search_fields = ('user__first_name', 'user__last_name')
 
 
+@admin.register(models.ListEntry)
+class ListEntryAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``ListEntry`` model.
+    """
+    fields = ('profile_item', 'text')
+    list_display = ('string_repr', 'profile_item')
+    search_fields = ('text',)
+
+    def string_repr(self, list_entry):
+        """
+        Get a string representation of a list entry.
+
+        Args:
+            list_entry:
+                The list entry to get a string representation of.
+
+        Returns:
+            str:
+                The provided list entry's string representation.
+        """
+        return str(list_entry)
+    string_repr.admin_order_field = 'text'
+    string_repr.short_description = _('text')
+
+
 @admin.register(models.Profile)
 class ProfileAdmin(admin.ModelAdmin):
     """

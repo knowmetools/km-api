@@ -166,6 +166,44 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         return self.user.get_short_name()
 
 
+class ListEntry(models.Model):
+    """
+    An entry in a profile item list.
+    """
+    profile_item = models.ForeignKey(
+        'know_me.ProfileItem',
+        on_delete=models.CASCADE,
+        related_name='list_entries',
+        related_query_name='list_entry',
+        verbose_name=_('profile item'))
+    """
+    The :class:`.ProfileItem` instance that the list entry belongs to.
+    """
+
+    text = models.TextField(verbose_name=_('text'))
+    """
+    str:
+        The text that the list entry contains.
+    """
+
+    class Meta:
+        verbose_name = _('profile list entry')
+        verbose_name_plural = _('profile list entry')
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            str:
+                The list entry's text truncated to 50 characters.
+        """
+        if len(self.text) > 50:
+            return '{}...'.format(self.text[:47])
+
+        return self.text
+
+
 class Profile(mixins.IsAuthenticatedMixin, models.Model):
     """
     A profile contains information about a specific user.

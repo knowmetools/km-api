@@ -42,6 +42,17 @@ class KMUserFactory(factory.django.DjangoModelFactory):
         model = models.KMUser
 
 
+class ListEntryFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``ListEntry`` instances.
+    """
+    profile_item = factory.SubFactory('know_me.factories.ProfileItemFactory')
+    text = 'Sample list entry text.'
+
+    class Meta:
+        model = models.ListEntry
+
+
 class ProfileFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``Profile`` instances.
