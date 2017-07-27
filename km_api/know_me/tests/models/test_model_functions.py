@@ -18,3 +18,18 @@ def test_get_gallery_item_upload_path():
         id=item.profile.id)
 
     assert models.get_gallery_item_upload_path(item, filename) == expected
+
+
+def test_km_user_image_upload_path():
+    """
+    """
+    km_user = mock.Mock(name='Mock KM User')
+    km_user.user.id = 1
+
+    imagename = 'bar.jpg'
+
+    expected = 'users/{id}/{file}'.format(
+            file=imagename,
+            id=km_user.user.id)
+
+    assert models.get_km_user_image_upload_path(km_user, imagename) == expected
