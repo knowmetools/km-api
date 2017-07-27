@@ -45,9 +45,9 @@ def get_km_user_image_upload_path(km_user, imagename):
             The original image filename prefixed with
             `users/<user_id>/{file}`.
     """
-    return 'users/{id}/{file}'.format(
+    return 'know-me/users/{id}/images/{file}'.format(
             file=imagename,
-            id=km_user.user.id)
+            id=km_user.id)
 
 
 class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
@@ -154,6 +154,16 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         on_delete=models.CASCADE,
         related_name='km_user',
         verbose_name=_('user'))
+
+    def __str__(self):
+        """
+        Get a string representation of the K.
+
+        Returns:
+            str:
+                The gallery item's name.
+        """
+        return self.user.get_short_name()
 
 
 class Profile(mixins.IsAuthenticatedMixin, models.Model):

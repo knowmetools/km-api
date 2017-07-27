@@ -24,12 +24,12 @@ def test_km_user_image_upload_path():
     """
     """
     km_user = mock.Mock(name='Mock KM User')
-    km_user.user.id = 1
+    km_user.id = 1
 
     imagename = 'bar.jpg'
 
-    expected = 'users/{id}/{file}'.format(
+    expected = 'know-me/users/{id}/images/{file}'.format(
             file=imagename,
-            id=km_user.user.id)
+            id=km_user.id)
 
     assert models.get_km_user_image_upload_path(km_user, imagename) == expected
