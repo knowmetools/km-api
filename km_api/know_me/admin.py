@@ -17,6 +17,16 @@ class GalleryItemAdmin(admin.ModelAdmin):
     search_fields = ('name', 'profile__name')
 
 
+@admin.register(models.KMUser)
+class KMUserAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``KMUser`` model.
+    """
+    fields = ('user', 'image', 'quote')
+    list_display = ('user',)
+    search_fields = ('user__first_name', 'user__last_name')
+
+
 @admin.register(models.Profile)
 class ProfileAdmin(admin.ModelAdmin):
     """
