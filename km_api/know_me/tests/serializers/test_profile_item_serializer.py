@@ -39,7 +39,7 @@ def test_create_other_user_media_resource(
         profile_factory,
         serializer_context):
     """
-    Users should not be able to attach a gallery resource from a different
+    Users should not be able to attach a media resource from a different
     profile to their profile item.
     """
     media_resource = media_resource_factory()
@@ -50,7 +50,7 @@ def test_create_other_user_media_resource(
     data = {
         'media_resource': media_resource.pk,
         'name': 'My Profile Item',
-        'text': 'I tried to attach a gallery resource from another profile.',
+        'text': 'I tried to attach a media resource from another profile.',
     }
 
     serializer = serializers.ProfileItemSerializer(

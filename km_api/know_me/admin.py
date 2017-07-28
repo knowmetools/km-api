@@ -12,7 +12,7 @@ class MediaResourceAdmin(admin.ModelAdmin):
     """
     Admin for the ``MediaResource`` model.
     """
-    fields = ('name', 'profile', 'resource')
+    fields = ('name', 'profile', 'file')
     list_display = ('name', 'profile')
     search_fields = ('name', 'profile__name')
 
