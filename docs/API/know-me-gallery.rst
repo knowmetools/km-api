@@ -46,7 +46,7 @@ Media Resource View
 
 This endpoint allows for retrieving and updating a specific media resource's information.
 
-.. http:get:: /know-me/gallery-items/(int:id)/
+.. http:get:: /know-me/media-resources/(int:id)/
 
     Get the information of a specific media resource.
 
@@ -60,7 +60,7 @@ This endpoint allows for retrieving and updating a specific media resource's inf
     :status 200: The media resource's information was succesfully retrieved.
     :status 404: There is no media resource with the given ``id`` accessible to the requesting user.
 
-.. http:patch:: /know-me/gallery-items/(int:id)/
+.. http:patch:: /know-me/media-resources/(int:id)/
 
     Update a specific media resource's information.
 
