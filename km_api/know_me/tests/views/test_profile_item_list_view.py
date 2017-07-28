@@ -18,7 +18,7 @@ def test_anonymous(api_rf, profile_topic_factory):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_create(api_rf, media_resource_factory, profile_topic_factory):
+def test_create(api_rf, profile_topic_factory):
     """
     Sending a POST request to the view with valid data should create a
     new profile item.
@@ -26,14 +26,11 @@ def test_create(api_rf, media_resource_factory, profile_topic_factory):
     topic = profile_topic_factory()
     group = topic.group
     profile = group.profile
-    media_resource = media_resource_factory(profile=profile)
 
     api_rf.user = profile.user
 
     data = {
-        'media_resource': media_resource.pk,
         'name': 'Test Item',
-        'text': 'Some sample text.',
     }
 
     request = api_rf.post(topic.get_item_list_url(), data)

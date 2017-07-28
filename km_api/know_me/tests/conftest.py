@@ -33,6 +33,19 @@ def media_resource_factory(db):
 
 
 @pytest.fixture
+def image_content_factory(db):
+    """
+    Fixture to get the factory used to create profile item image
+    content.
+
+    Returns:
+        The factory class used to create test ``ImageContent``
+        instances.
+    """
+    return factories.ImageContentFactory
+
+
+@pytest.fixture
 def km_user_factory(db):
     """
     Fixture to get the factory used to create a Know Me User.
