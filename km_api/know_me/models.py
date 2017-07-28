@@ -161,7 +161,7 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             str:
-                The gallery item's name.
+                The KMUser's name.
         """
         return self.user.get_short_name()
 
