@@ -32,6 +32,16 @@ class GalleryItemFactory(factory.django.DjangoModelFactory):
         model = models.GalleryItem
 
 
+class KMUserFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``KMUser`` instances.
+    """
+    user = factory.SubFactory('factories.UserFactory')
+
+    class Meta:
+        model = models.KMUser
+
+
 class ProfileFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``Profile`` instances.

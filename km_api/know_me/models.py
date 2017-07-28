@@ -157,7 +157,7 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
 
     def __str__(self):
         """
-        Get a string representation of the K.
+        Get a string representation of the KMUser.
 
         Returns:
             str:
