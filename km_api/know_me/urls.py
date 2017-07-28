@@ -7,7 +7,7 @@ from know_me import views
 
 
 urlpatterns = [
-    url(r'^gallery-items/(?P<pk>[0-9]+)/$', views.GalleryItemDetailView.as_view(), name='gallery-item-detail'),     # noqa
+    url(r'^media-resources/(?P<pk>[0-9]+)/$', views.MediaResourceDetailView.as_view(), name='media-resource-detail'), # noqa
     url(r'^groups/(?P<pk>[0-9]+)/$', views.ProfileGroupDetailView.as_view(), name='profile-group-detail'),          # noqa
     url(r'^groups/(?P<pk>[0-9]+)/rows/$', views.ProfileRowListView.as_view(), name='profile-row-list'),             # noqa
     url(r'^items/(?P<pk>[0-9]+)/$', views.ProfileItemDetailView.as_view(), name='profile-item-detail'),             # noqa

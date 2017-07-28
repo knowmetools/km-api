@@ -2,73 +2,73 @@
 Know Me - Gallery
 =================
 
-The gallery is used to store various files associated with a profile. Items in the gallery can be attached to a particular profile item.
+The gallery is used to store various files associated with a profile. Media resources (items in the gallery) can be attached to a particular profile item.
 
 .. note::
 
-    Currently there is no way to retrieve gallery items that are not attached to a profile item. This will be introduced later as a paid feature.
+    Currently there is no way to retrieve media resources that are not attached to a profile item. This will be introduced later as a paid feature.
 
 
 ------------
 Gallery View
 ------------
 
-This endpoint allows for creation of new gallery items.
+This endpoint allows for creation of new media resources.
 
 .. http:post:: /know-me/profiles/(int:id)/gallery/
 
-    Create a new gallery item.
+    Create a new media resource.
 
     .. note::
 
-        Since gallery items involve a file, the request be sent with the header ``Content-Type: multipart/form-data``.
+        Since media resources involve a file, the request be sent with the header ``Content-Type: multipart/form-data``.
 
-    :param int id: The ID of the profile to create a gallery item for.
+    :param int id: The ID of the profile to create a media resource for.
 
     :form string name: The name to give the file being uploaded.
     :form file resource: The file to upload.
 
-    :>header Location: The URL of the created gallery item's detail view.
+    :>header Location: The URL of the created media resource's detail view.
 
-    :>json int id: The ID of the created gallery item.
-    :>json string url: The URL of the created gallery item's detail view.
-    :>json string name: The name the gallery item was created with.
-    :>json string resource: The URL of the file attached to the gallery item.
+    :>json int id: The ID of the created media resource.
+    :>json string url: The URL of the created media resource's detail view.
+    :>json string name: The name the media resource was created with.
+    :>json string resource: The URL of the file attached to the media resource.
 
-    :status 201: The gallery item was succesfully created.
+    :status 201: The media resource was succesfully created.
     :status 400: Invalid request. Check the response data for details.
     :status 404: There is no profile with the given ``id`` accessible to the requesting user.
 
 
 -----------------
-Gallery Item View
+Media Resource View
 -----------------
 
-This endpoint allows for retrieving and updating a specific gallery item's information.
+This endpoint allows for retrieving and updating a specific media resource's information.
 
-.. http:get:: /know-me/gallery-items/(int:id)/
+.. http:get:: /know-me/media-resources/(int:id)/
 
-    Get the information of a specific gallery item.
+    Get the information of a specific media resource.
 
-    :param int id: The ID of the gallery item to retrieve.
+    :param int id: The ID of the media resource to retrieve.
 
-    :>json int id: The ID of the gallery item.
-    :>json string url: The URL of the gallery item's detail view.
-    :>json string name: The name of the gallery item.
-    :>json string resource: The URL of the file attached to the gallery item.
+    :>json int id: The ID of the media resource.
+    :>json string url: The URL of the media resource's detail view.
+    :>json string name: The name of the media resource.
+    :>json string resource: The URL of the file attached to the media resource.
 
-    :status 200: The gallery item's information was succesfully retrieved.
-    :status 404: There is no gallery item with the given ``id`` accessible to the requesting user.
+    :status 200: The media resource's information was succesfully retrieved.
+    :status 404: There is no media resource with the given ``id`` accessible to the requesting user.
 
-.. http:patch:: /know-me/gallery-items/(int:id)/
+.. http:patch:: /know-me/media-resources/(int:id)/
 
-    Update a specific gallery item's information.
+    Update a specific media resource's information.
 
-    :param int id: The ID of the gallery item to update.
+    :param int id: The ID of the media resource to update.
 
-    :<form string name: *(Optional)* A new name for the gallery item.
-    :<form file resource: *(Optional)* A new file to associate with the gallery item.
+    :<form string name: *(Optional)* A new name for the media resource.
+    :<form file resource: *(Optional)* A new file to associate with the media resource.
 
-    :status 200: The gallery item was succesfully updated.
+    :status 200: The media resource was succesfully updated.
     :status 400: Invalid request. Check the response data for details.
-    :status 404: There is no gallery item with the given ``id`` accessible to the requesting user.
+    :status 404: There is no media resource with the given ``id`` accessible to the requesting user.

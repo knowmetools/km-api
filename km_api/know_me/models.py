@@ -10,13 +10,13 @@ from rest_framework.reverse import reverse
 from permission_utils import model_mixins as mixins
 
 
-def get_gallery_item_upload_path(item, filename):
+def get_media_resource_upload_path(item, filename):
     """
-    Get the path to upload a gallery item's resource to.
+    Get the path to upload a media resource's file to.
 
     Args:
         item:
-            The gallery item whose resource is being uploaded.
+            The media resource whose file is being uploaded.
         filename (str):
             The original name of the file being uploaded.
 
@@ -50,16 +50,16 @@ def get_km_user_image_upload_path(km_user, imagename):
             id=km_user.id)
 
 
-class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
+class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
     """
-    A gallery item is an uploaded file attached to a profile.
+    A media resource is an uploaded file attached to a profile.
 
     Attributes:
         name:
             The name of the item.
         profile:
             The profile that the item is attached to.
-        resource:
+        file:
             A file containing some sort of content.
     """
     name = models.CharField(
@@ -67,25 +67,25 @@ class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('name'))
     profile = models.ForeignKey(
         'know_me.Profile',
-        related_name='gallery_items',
-        related_query_name='gallery_item',
+        related_name='media_resources',
+        related_query_name='media_resource',
         verbose_name=_('profile'))
-    resource = models.FileField(
+    file = models.FileField(
         max_length=255,
-        upload_to=get_gallery_item_upload_path,
-        verbose_name=_('resource'))
+        upload_to=get_media_resource_upload_path,
+        verbose_name=_('file'))
 
     class Meta:
-        verbose_name = _('gallery item')
-        verbose_name_plural = _('gallery items')
+        verbose_name = _('media resource')
+        verbose_name_plural = _('media resources')
 
     def __str__(self):
         """
-        Get a string representation of the gallery item.
+        Get a string representation of the media resource.
 
         Returns:
             str:
-                The gallery item's name.
+                The media resource's name.
         """
         return self.name
 
@@ -97,7 +97,7 @@ class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
             str:
                 The absolute URL of the instance's detail view.
         """
-        return reverse('know-me:gallery-item-detail', kwargs={'pk': self.pk})
+        return reverse('know-me:media-resource-detail', kwargs={'pk': self.pk})
 
     def has_object_read_permission(self, request):
         """
@@ -132,7 +132,8 @@ class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
 
 class KMUser(mixins.IsAuthenticatedMixin, models.Model):
     """
-    A KMUser tracks information associated with each user of the Know Me app.
+    A KMUser tracks information associated with each user of the
+    Know Me app.
 
     Attributes:
         user:
@@ -389,8 +390,8 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
     A profile item holds a piece of information for a profile row.
 
     Attributes:
-        gallery_item (optional):
-            A ``GalleryItem`` associated with the profile item.
+        media_resource (optional):
+            A ``MediaResource`` associated with the profile item.
         name (str);
             The item's name.
         row:
@@ -398,13 +399,13 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
         text (optional):
             The item's text. Defaults to an empty string.
     """
-    gallery_item = models.ForeignKey(
-        'know_me.GalleryItem',
+    media_resource = models.ForeignKey(
+        'know_me.MediaResource',
         blank=True,
         null=True,
         related_name='profile_items',
         related_query_name='profile_item',
-        verbose_name=_('gallery item'))
+        verbose_name=_('media resource'))
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))

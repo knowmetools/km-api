@@ -7,12 +7,12 @@ from django.utils.translation import ugettext_lazy as _
 from know_me import models
 
 
-@admin.register(models.GalleryItem)
-class GalleryItemAdmin(admin.ModelAdmin):
+@admin.register(models.MediaResource)
+class MediaResourceAdmin(admin.ModelAdmin):
     """
-    Admin for the ``GalleryItem`` model.
+    Admin for the ``MediaResource`` model.
     """
-    fields = ('name', 'profile', 'resource')
+    fields = ('name', 'profile', 'file')
     list_display = ('name', 'profile')
     search_fields = ('name', 'profile__name')
 
@@ -53,7 +53,7 @@ class ProfileItemAdmin(admin.ModelAdmin):
     """
     Admin for the ``ProfileItem`` model.
     """
-    fields = ('name', 'row', 'gallery_item', 'text')
+    fields = ('name', 'row', 'media_resource', 'text')
     list_display = ('name', 'get_profile', 'get_group', 'row')
     search_fields = ('name',)
 

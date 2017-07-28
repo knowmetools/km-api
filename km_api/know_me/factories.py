@@ -20,16 +20,16 @@ def create_file():
         name='foo.txt')
 
 
-class GalleryItemFactory(factory.django.DjangoModelFactory):
+class MediaResourceFactory(factory.django.DjangoModelFactory):
     """
-    Factory for generating ``GalleryItem`` instances.
+    Factory for generating ``MediaResource`` instances.
     """
-    name = factory.Sequence(lambda n: 'Gallery Item {n}'.format(n=n))
+    name = factory.Sequence(lambda n: 'Media Resource {n}'.format(n=n))
     profile = factory.SubFactory('know_me.factories.ProfileFactory')
-    resource = factory.LazyFunction(create_file)
+    file = factory.LazyFunction(create_file)
 
     class Meta:
-        model = models.GalleryItem
+        model = models.MediaResource
 
 
 class KMUserFactory(factory.django.DjangoModelFactory):

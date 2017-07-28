@@ -14,20 +14,20 @@ from know_me import filters, models, serializers
 
 class GalleryView(generics.CreateAPIView):
     """
-    View for creating gallery items.
+    View for creating media resources.
     """
-    serializer_class = serializers.GalleryItemSerializer
+    serializer_class = serializers.MediaResourceSerializer
 
     def perform_create(self, serializer):
         """
-        Create a new gallery item for the given profile.
+        Create a new media resource for the given profile.
 
         Args:
             serializer:
                 A serializer instance containing the submitted data.
 
         Returns:
-            The newly created ``GalleryItem`` instance.
+            The newly created ``MediaResource`` instance.
         """
         profile = models.Profile.objects.get(
             pk=self.kwargs.get('pk'))
@@ -35,13 +35,13 @@ class GalleryView(generics.CreateAPIView):
         return serializer.save(profile=profile)
 
 
-class GalleryItemDetailView(generics.RetrieveUpdateAPIView):
+class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
     """
-    View for retrieving and updating a specific gallery item.
+    View for retrieving and updating a specific media resource.
     """
     permission_classes = (DRYPermissions,)
-    queryset = models.GalleryItem.objects.all()
-    serializer_class = serializers.GalleryItemSerializer
+    queryset = models.MediaResource.objects.all()
+    serializer_class = serializers.MediaResourceSerializer
 
 
 class ProfileDetailView(generics.RetrieveUpdateAPIView):

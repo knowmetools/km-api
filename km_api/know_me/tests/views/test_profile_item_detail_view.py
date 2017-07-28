@@ -58,12 +58,12 @@ def test_update(api_rf, profile_item_factory):
     assert response.data == serializer.data
 
 
-def test_update_with_gallery_item(
+def test_update_with_media_resource(
         api_rf,
-        gallery_item_factory,
+        media_resource_factory,
         profile_item_factory):
     """
-    Users should be able to attach a gallery item to a profile item.
+    Users should be able to attach a media resource to a profile item.
 
     Regression test for #23
     """
@@ -74,9 +74,9 @@ def test_update_with_gallery_item(
 
     api_rf.user = profile.user
 
-    gallery_item = gallery_item_factory(profile=profile)
+    media_resource = media_resource_factory(profile=profile)
     data = {
-        'gallery_item': gallery_item.pk,
+        'media_resource': media_resource.pk,
     }
 
     request = api_rf.patch(item.get_absolute_url(), data)

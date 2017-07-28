@@ -3,12 +3,12 @@ from rest_framework.reverse import reverse
 from know_me import models
 
 
-def test_create(gallery_item_factory, profile_row_factory):
+def test_create(media_resource_factory, profile_row_factory):
     """
     Test creating a profile item.
     """
     models.ProfileItem.objects.create(
-        gallery_item=gallery_item_factory(),
+        media_resource=media_resource_factory(),
         name='Profile Item',
         row=profile_row_factory(),
         text='Some sample item text.')

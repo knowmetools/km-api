@@ -1,7 +1,7 @@
 """Serializers for the models from the ``know_me`` module.
 """
 
-from .gallery_item_serializers import GalleryItemSerializer     # noqa
+from .media_resource_serializers import MediaResourceSerializer     # noqa
 
 from .profile_serializers import (          # noqa
     ProfileDetailSerializer,
