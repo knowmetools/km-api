@@ -27,13 +27,23 @@ class KMUserAdmin(admin.ModelAdmin):
     search_fields = ('user__first_name', 'user__last_name')
 
 
+@admin.register(models.ListContent)
+class ListContentAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``ListContent`` model.
+    """
+    fields = ('profile_item',)
+    list_display = ('profile_item',)
+    search_fields = ('profile_item__name',)
+
+
 @admin.register(models.ListEntry)
 class ListEntryAdmin(admin.ModelAdmin):
     """
     Admin for the ``ListEntry`` model.
     """
-    fields = ('profile_item', 'text')
-    list_display = ('string_repr', 'profile_item')
+    fields = ('list_content', 'text')
+    list_display = ('string_repr', 'list_content')
     search_fields = ('text',)
 
     def string_repr(self, list_entry):

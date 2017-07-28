@@ -1,12 +1,12 @@
 from know_me import models
 
 
-def test_create_list_entry(profile_item_factory):
+def test_create_list_entry(list_content_factory):
     """
     Test creating a list entry.
     """
     models.ListEntry.objects.create(
-        profile_item=profile_item_factory(),
+        list_content=list_content_factory(),
         text='Test list entry')
 
 

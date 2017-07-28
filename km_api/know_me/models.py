@@ -166,18 +166,47 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         return self.user.get_short_name()
 
 
-class ListEntry(models.Model):
+class ListContent(models.Model):
     """
-    An entry in a profile item list.
+    Container for a list attached to a :class:`.ProfileItem` instance.
     """
-    profile_item = models.ForeignKey(
+    profile_item = models.OneToOneField(
         'know_me.ProfileItem',
         on_delete=models.CASCADE,
-        related_name='list_entries',
-        related_query_name='list_entry',
+        related_name='list_content',
         verbose_name=_('profile item'))
     """
-    The :class:`.ProfileItem` instance that the list entry belongs to.
+    The profile item that the list is attached to.
+    """
+
+    class Meta(object):
+        verbose_name = _('profile item list')
+        verbose_name_plural = _('profile item lists')
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            str:
+                A string containing information about which profile item
+                the list is attached to.
+        """
+        return "List for profile item '{item}'".format(item=self.profile_item)
+
+
+class ListEntry(models.Model):
+    """
+    An entry in a :class:`ListContent` instance.
+    """
+    list_content = models.ForeignKey(
+        'know_me.ListContent',
+        on_delete=models.CASCADE,
+        related_name='entries',
+        related_query_name='entry',
+        verbose_name=_('profile item list'))
+    """
+    The :class:`.ListContent` instance that the entry belongs to.
     """
 
     text = models.TextField(verbose_name=_('text'))
@@ -187,8 +216,8 @@ class ListEntry(models.Model):
     """
 
     class Meta:
-        verbose_name = _('profile list entry')
-        verbose_name_plural = _('profile list entry')
+        verbose_name = _('profile item list entry')
+        verbose_name_plural = _('profile item list entry')
 
     def __str__(self):
         """
