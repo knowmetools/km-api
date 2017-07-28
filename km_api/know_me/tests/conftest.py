@@ -33,6 +33,17 @@ def gallery_item_factory(db):
 
 
 @pytest.fixture
+def km_user_factory(db):
+    """
+    Fixture to get the factory used to create a Know Me User.
+
+    Returns:
+        The factory class used to create test ``KMUser`` instances.
+    """
+    return factories.KMUserFactory
+
+
+@pytest.fixture
 def profile_factory(db):
     """
     Fixture to get the factory used for generating ``Profile`` objects.

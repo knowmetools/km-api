@@ -30,6 +30,26 @@ def get_gallery_item_upload_path(item, filename):
         id=item.profile.id)
 
 
+def get_km_user_image_upload_path(km_user, imagename):
+    """
+    Get the path to upload the kmuser image to.
+
+    Args:
+        km_user:
+            The km_user whose image is being uploaded.
+        imagename (str):
+            The original name of the image being uploaded.
+
+    Returns:
+        str:
+            The original image filename prefixed with
+            `users/<user_id>/{file}`.
+    """
+    return 'know-me/users/{id}/images/{file}'.format(
+            file=imagename,
+            id=km_user.id)
+
+
 class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
     """
     A gallery item is an uploaded file attached to a profile.
@@ -108,6 +128,42 @@ class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
                 instance and ``False`` otherwise.
         """
         return self.profile.user == request.user
+
+
+class KMUser(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    A KMUser tracks information associated with each user of the Know Me app.
+
+    Attributes:
+        user:
+            The user who owns this profile.
+        image:
+            The user's main image.
+        quote (str) :
+            A quote from the user.
+    """
+    image = models.ImageField(
+        blank=True,
+        max_length=255,
+        null=True,
+        upload_to=get_km_user_image_upload_path,
+        verbose_name=_('image'))
+    quote = models.TextField(blank=True, null=True, verbose_name=_('quote'))
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='km_user',
+        verbose_name=_('user'))
+
+    def __str__(self):
+        """
+        Get a string representation of the KMUser.
+
+        Returns:
+            str:
+                The KMUser's name.
+        """
+        return self.user.get_short_name()
 
 
 class Profile(mixins.IsAuthenticatedMixin, models.Model):
