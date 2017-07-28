@@ -1,18 +1,21 @@
 from know_me import serializers
 
 
-def test_create(gallery_item_factory, profile_row_factory, serializer_context):
+def test_create(
+        media_resource_factory,
+        profile_row_factory,
+        serializer_context):
     """
     Saving a serializer with valid data should create a new profile
     item.
     """
     row = profile_row_factory()
-    gallery_item = gallery_item_factory(profile=row.group.profile)
+    media_resource = media_resource_factory(profile=row.group.profile)
 
     serializer_context['profile'] = row.group.profile
 
     data = {
-        'gallery_item': gallery_item.pk,
+        'media_resource': media_resource.pk,
         'name': 'My Profile Item',
         'text': 'Some sample text.',
     }
@@ -27,27 +30,27 @@ def test_create(gallery_item_factory, profile_row_factory, serializer_context):
     assert item.name == data['name']
     assert item.text == data['text']
 
-    assert item.gallery_item == gallery_item
+    assert item.media_resource == media_resource
     assert item.row == row
 
 
-def test_create_other_user_gallery_item(
-        gallery_item_factory,
+def test_create_other_user_media_resource(
+        media_resource_factory,
         profile_factory,
         serializer_context):
     """
-    Users should not be able to attach a gallery item from a different
+    Users should not be able to attach a gallery resource from a different
     profile to their profile item.
     """
-    gallery_item = gallery_item_factory()
+    media_resource = media_resource_factory()
     profile = profile_factory()
 
     serializer_context['profile'] = profile
 
     data = {
-        'gallery_item': gallery_item.pk,
+        'media_resource': media_resource.pk,
         'name': 'My Profile Item',
-        'text': 'I tried to attach a gallery item from another profile.',
+        'text': 'I tried to attach a gallery resource from another profile.',
     }
 
     serializer = serializers.ProfileItemSerializer(
@@ -59,20 +62,20 @@ def test_create_other_user_gallery_item(
 
 def test_serialize(
         api_rf,
-        gallery_item_factory,
+        media_resource_factory,
         profile_item_factory,
         serializer_context):
     """
     Test serializing a profile item.
     """
-    gallery_item = gallery_item_factory()
-    item = profile_item_factory(gallery_item=gallery_item)
+    media_resource = media_resource_factory()
+    item = profile_item_factory(media_resource=media_resource)
 
     serializer = serializers.ProfileItemSerializer(
         item,
         context=serializer_context)
-    gallery_item_serializer = serializers.GalleryItemSerializer(
-        gallery_item,
+    media_resource_serializer = serializers.MediaResourceSerializer(
+        media_resource,
         context=serializer_context)
 
     url_request = api_rf.get(item.get_absolute_url())
@@ -82,8 +85,8 @@ def test_serialize(
         'url': url_request.build_absolute_uri(),
         'name': item.name,
         'text': item.text,
-        'gallery_item': gallery_item.pk,
-        'gallery_item_info': gallery_item_serializer.data,
+        'media_resource': media_resource.pk,
+        'media_resource_info': media_resource_serializer.data,
     }
 
     assert serializer.data == expected

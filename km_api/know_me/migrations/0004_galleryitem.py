@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255, verbose_name='name')),
-                ('resource', models.FileField(max_length=255, upload_to=know_me.models.get_gallery_item_upload_path, verbose_name='resource')),
+                ('resource', models.FileField(max_length=255, upload_to=know_me.models.get_media_resource_upload_path, verbose_name='resource')),
                 ('profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='gallery_items', related_query_name='gallery_item', to='know_me.Profile', verbose_name='profile')),
             ],
             options={

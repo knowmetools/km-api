@@ -22,14 +22,14 @@ def file():
 
 
 @pytest.fixture
-def gallery_item_factory(db):
+def media_resource_factory(db):
     """
-    Fixture to get the factory used to create gallery items.
+    Fixture to get the factory used to create media resource.
 
     Returns:
-        The factory class used to create test ``GalleryItem`` instances.
+        The factory class used to create test ``MediaResource`` instances.
     """
-    return factories.GalleryItemFactory
+    return factories.MediaResourceFactory
 
 
 @pytest.fixture

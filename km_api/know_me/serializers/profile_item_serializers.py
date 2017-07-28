@@ -6,20 +6,20 @@ from rest_framework.reverse import reverse
 
 from know_me import models
 
-from .gallery_item_serializers import GalleryItemSerializer
+from .media_resource_serializers import MediaResourceSerializer
 
 
-class GalleryItemField(serializers.PrimaryKeyRelatedField):
+class MediaResourceField(serializers.PrimaryKeyRelatedField):
     """
-    Field for serializing a ``GalleryItem`` instance.
+    Field for serializing a ``MediaResource`` instance.
     """
 
     def get_queryset(self):
         """
-        Get a list of accessible gallery items.
+        Get a list of accessible media resources.
 
         Returns:
-            A list of ``GalleryItem`` instances that belong to the
+            A list of ``MediaResource`` instances that belong to the
             current profile.
         """
         assert 'profile' in self.context, (
@@ -28,7 +28,7 @@ class GalleryItemField(serializers.PrimaryKeyRelatedField):
             'class': self.__class__.__name__,
         }
 
-        return models.GalleryItem.objects.filter(
+        return models.MediaResource.objects.filter(
             profile=self.context['profile'])
 
 
@@ -59,14 +59,15 @@ class ProfileItemSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for ``ProfileItem`` instances.
     """
-    gallery_item = GalleryItemField(required=False)
-    gallery_item_info = GalleryItemSerializer(
+    media_resource = MediaResourceField(required=False)
+    media_resource_info = MediaResourceSerializer(
         read_only=True,
-        source='gallery_item')
+        source='media_resource')
     url = ItemHyperlinkedIdentityField(view_name='know-me:profile-item-detail')
 
     class Meta:
         fields = (
-            'id', 'url', 'name', 'text', 'gallery_item', 'gallery_item_info'
+            'id', 'url', 'name', 'text', 'media_resource',
+            'media_resource_info'
         )
         model = models.ProfileItem
