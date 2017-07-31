@@ -17,8 +17,8 @@ install:
   - pip install codecov
 
 script:
-  - coverage run -m pytest km_api/
   - flake8
+  - coverage run -m pytest km_api/
 
 after_success: codecov
 
