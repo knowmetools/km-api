@@ -130,6 +130,69 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
         return self.profile.user == request.user
 
 
+class ImageContent(models.Model):
+    """
+    Content for image-type :class:`.ProfileItem` instances.
+    """
+    description = models.TextField(
+        blank=True,
+        default='',
+        verbose_name=_('description'))
+    """
+    :obj:`str`, optional:
+        Text describing the associated :class:`.ProfileItem`.
+    """
+
+    image_resource = models.ForeignKey(
+        'know_me.MediaResource',
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='+',
+        verbose_name=_('image resource'))
+    """
+    An optional image-type :class:`.MediaResource` instance that
+    represents the item's contents.
+    """
+
+    media_resource = models.ForeignKey(
+        'know_me.MediaResource',
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='+',
+        verbose_name=_('media resource'))
+    """
+    An optional additional :class:`.MediaResource` instance associated
+    with the item's contents.
+    """
+
+    profile_item = models.OneToOneField(
+        'know_me.ProfileItem',
+        on_delete=models.CASCADE,
+        related_name='image_content',
+        verbose_name=_('profile item'))
+    """
+    The :class:`.ProfileItem` instance that the content is attached to.
+    """
+
+    class Meta(object):
+        verbose_name = _('profile item image content')
+        verbose_name_plural = _('profile item image content')
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            str:
+                A string indicating which profile item the instance
+                belongs to.
+        """
+        return "Image content for profile item '{item}'".format(
+            item=self.profile_item)
+
+
 class KMUser(mixins.IsAuthenticatedMixin, models.Model):
     """
     A KMUser tracks information associated with each user of the
@@ -392,37 +455,25 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
 class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
     """
     A profile item holds a piece of information for a profile topic.
-
-    Attributes:
-        media_resource (optional):
-            A ``MediaResource`` associated with the profile item.
-        name (str);
-            The item's name.
-        topic:
-            The profile topic the item is part of.
-        text (optional):
-            The item's text. Defaults to an empty string.
     """
-    media_resource = models.ForeignKey(
-        'know_me.MediaResource',
-        blank=True,
-        null=True,
-        related_name='profile_items',
-        related_query_name='profile_item',
-        verbose_name=_('media resource'))
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
+    """
+    str:
+        The profile item's name.
+    """
+
     topic = models.ForeignKey(
         'know_me.ProfileTopic',
         null=True,
         related_name='items',
         related_query_name='item',
         verbose_name=_('profile topic'))
-    text = models.TextField(
-        blank=True,
-        default='',
-        verbose_name=_('text'))
+    """
+    :class:`.ProfileTopic`:
+        The profile topic that the item belongs to.
+    """
 
     class Meta:
         verbose_name = _('profile item')

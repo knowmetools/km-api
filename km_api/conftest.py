@@ -1,7 +1,12 @@
 """Pytest fixtures for the entire project.
 """
 
+import io
+
 from django.contrib.auth.models import AnonymousUser
+from django.core.files.base import ContentFile
+
+import PIL
 
 import pytest
 
@@ -67,6 +72,24 @@ def api_rf():
         ``user`` attribute of the factory instance.
     """
     return UserAPIRequestFactory(user=AnonymousUser())
+
+
+@pytest.fixture
+def image():
+    """
+    Fixture to get an image suitable for an ``ImageField``.
+
+    Returns:
+        A ``ContentFile`` containing a simple image.
+    """
+    image = PIL.Image.new('RGB', (200, 200), 'red')
+
+    out_stream = io.BytesIO()
+    image.save(out_stream, format='JPEG')
+
+    return ContentFile(
+        content=out_stream.getvalue(),
+        name='foo.jpg')
 
 
 @pytest.fixture

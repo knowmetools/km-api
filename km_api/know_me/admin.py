@@ -17,6 +17,18 @@ class MediaResourceAdmin(admin.ModelAdmin):
     search_fields = ('name', 'profile__name')
 
 
+@admin.register(models.ImageContent)
+class ImageContentAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``ImageContent`` model.
+    """
+    fields = (
+        'profile_item', 'image_resource', 'media_resource', 'description'
+    )
+    list_display = ('profile_item',)
+    search_fields = ('profile_item__name',)
+
+
 @admin.register(models.KMUser)
 class KMUserAdmin(admin.ModelAdmin):
     """
@@ -53,8 +65,8 @@ class ProfileItemAdmin(admin.ModelAdmin):
     """
     Admin for the ``ProfileItem`` model.
     """
-    fields = ('name', 'topic', 'media_resource', 'text')
-    list_display = ('name', 'get_profile', 'get_group', 'topic')
+    fields = ('name', 'topic')
+    list_display = ('name', 'get_profile', 'get_group', 'row')
     search_fields = ('name',)
 
     def get_group(self, item):

@@ -4,6 +4,9 @@ Changelog
 v0.5
 ----
 
+Breaking Changes
+  * :issue:`85`: Move profile item content related to images to separate model.
+
 Bug Fixes
   * :issue:`75`: Fix parsing of JSON requests.
   * :issue:`95`: Renamed ProfileRow to ProfileTopic.

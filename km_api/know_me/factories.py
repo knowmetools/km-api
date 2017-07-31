@@ -32,6 +32,16 @@ class MediaResourceFactory(factory.django.DjangoModelFactory):
         model = models.MediaResource
 
 
+class ImageContentFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``ImageContent`` instances.
+    """
+    profile_item = factory.SubFactory('know_me.factories.ProfileItemFactory')
+
+    class Meta(object):
+        model = models.ImageContent
+
+
 class KMUserFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``KMUser`` instances.

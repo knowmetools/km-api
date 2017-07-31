@@ -2,72 +2,79 @@
 """
 
 from rest_framework import serializers
-from rest_framework.reverse import reverse
 
 from know_me import models
-
-from .media_resource_serializers import MediaResourceSerializer
-
-
-class MediaResourceField(serializers.PrimaryKeyRelatedField):
-    """
-    Field for serializing a ``MediaResource`` instance.
-    """
-
-    def get_queryset(self):
-        """
-        Get a list of accessible media resources.
-
-        Returns:
-            A list of ``MediaResource`` instances that belong to the
-            current profile.
-        """
-        assert 'profile' in self.context, (
-            "The field '%(class)s' requires a 'profile' as context."
-        ) % {
-            'class': self.__class__.__name__,
-        }
-
-        return models.MediaResource.objects.filter(
-            profile=self.context['profile'])
-
-
-class ItemHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
-    """
-    Field for serializing the detail URL of a profile item.
-    """
-
-    def get_url(self, item, view_name, request, *args):
-        """
-        Get the URL of the given item's detail view.
-
-        Args:
-            item:
-                The item to get the detail view of.
-            view_name (str):
-                The name of the profile item detail view.
-            request:
-                The request being made.
-
-        Returns:
-            The URL of the given profile item's detail view.
-        """
-        return reverse(view_name, kwargs={'pk': item.pk}, request=request)
+from know_me.serializers.profile_item_content_serializers import (
+    ImageContentSerializer
+)
 
 
 class ProfileItemSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for ``ProfileItem`` instances.
     """
-    media_resource = MediaResourceField(required=False)
-    media_resource_info = MediaResourceSerializer(
-        read_only=True,
-        source='media_resource')
-    url = ItemHyperlinkedIdentityField(view_name='know-me:profile-item-detail')
+    image_content = ImageContentSerializer(required=False)
+    url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:profile-item-detail')
 
     class Meta:
-        fields = (
-            'id', 'url', 'name', 'text', 'media_resource',
-            'media_resource_info'
-        )
+        fields = ('id', 'url', 'name', 'image_content')
         model = models.ProfileItem
+
+    def create(self, data):
+        """
+        Create a new profile item.
+
+        Since we can have different types of content for a profile item,
+        we have to split the data and create models separately.
+
+        Args:
+            data (dict):
+                The data to create the profile item from.
+
+        Returns:
+            :class:`.ProfileItem`:
+                A new profile item with the provided content.
+        """
+        image_content_data = data.pop('image_content', None)
+
+        item = super(ProfileItemSerializer, self).create(data)
+
+        if image_content_data is not None:
+            models.ImageContent.objects.create(
+                profile_item=item,
+                **image_content_data)
+
+        return item
+
+    def update(self, profile_item, data):
+        """
+        Update an existing profile item.
+
+        Updates to the item's content are handled by a content-specific
+        serializer.
+
+        Args:
+            profile_item (:class:`.ProfileItem`):
+                The profile item being updated.
+            data (dict):
+                The data to update the profile item with.
+
+        Returns:
+            :class:`.ProfileItem`:
+                The updated profile item instance.
+        """
+        image_content_data = data.pop('image_content', None)
+
+        item = super(ProfileItemSerializer, self).update(profile_item, data)
+
+        if image_content_data is not None:
+            image_content_serializer = ImageContentSerializer(
+                item.image_content,
+                context=self.context,
+                data=image_content_data)
+
+            image_content_serializer.is_valid(raise_exception=True)
+            image_content_serializer.save()
+
+        return item

@@ -3,15 +3,13 @@ from rest_framework.reverse import reverse
 from know_me import models
 
 
-def test_create(media_resource_factory, profile_topic_factory):
+def test_create(profile_topic_factory):
     """
     Test creating a profile item.
     """
     models.ProfileItem.objects.create(
-        media_resource=media_resource_factory(),
         name='Profile Item',
-        topic=profile_topic_factory(),
-        text='Some sample item text.')
+        topic=profile_topic_factory())
 
 
 def test_get_absolute_url(profile_item_factory):
