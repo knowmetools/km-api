@@ -16,9 +16,9 @@ install:
   - pip install -r requirements/test.txt
   - pip install codecov
 
-before_script: flake8
-
-script: coverage run -m pytest km_api/
+script:
+  - flake8
+  - coverage run -m pytest km_api/
 
 after_success: codecov
 
