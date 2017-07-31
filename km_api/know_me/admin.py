@@ -7,6 +7,16 @@ from django.utils.translation import ugettext_lazy as _
 from know_me import models
 
 
+@admin.register(models.EmergencyItem)
+class EmergencyItemAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``EmergencyItem`` model.
+    """
+    fields = ('name', 'km_user', 'media_resource', 'description')
+    list_display = ('name', 'km_user')
+    search_fields = ('name',)
+
+
 @admin.register(models.MediaResource)
 class MediaResourceAdmin(admin.ModelAdmin):
     """

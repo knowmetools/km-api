@@ -20,6 +20,17 @@ def create_file():
         name='foo.txt')
 
 
+class EmergencyItemFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``EmergencyItem`` instances.
+    """
+    name = factory.Sequence(lambda n: 'Profile Item {n}'.format(n=n))
+    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
+
+    class Meta:
+        model = models.EmergencyItem
+
+
 class MediaResourceFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``MediaResource`` instances.
