@@ -53,8 +53,8 @@ class ProfileItemAdmin(admin.ModelAdmin):
     """
     Admin for the ``ProfileItem`` model.
     """
-    fields = ('name', 'row', 'media_resource', 'text')
-    list_display = ('name', 'get_profile', 'get_group', 'row')
+    fields = ('name', 'topic', 'media_resource', 'text')
+    list_display = ('name', 'get_profile', 'get_group', 'topic')
     search_fields = ('name',)
 
     def get_group(self, item):
@@ -68,8 +68,8 @@ class ProfileItemAdmin(admin.ModelAdmin):
         Returns:
             The parent profile group of the given profile item.
         """
-        return item.row.group
-    get_group.admin_order_field = 'row__group'
+        return item.topic.group
+    get_group.admin_order_field = 'topic__group'
     get_group.short_description = _('group')
 
     def get_profile(self, item):
@@ -83,17 +83,17 @@ class ProfileItemAdmin(admin.ModelAdmin):
         Returns:
             The parent profile of the given profile item.
         """
-        return item.row.group.profile
-    get_profile.admin_order_field = 'row__group__profile'
+        return item.topic.group.profile
+    get_profile.admin_order_field = 'topic__group__profile'
     get_profile.short_description = _('profile')
 
 
-@admin.register(models.ProfileRow)
-class ProfileRowAdmin(admin.ModelAdmin):
+@admin.register(models.ProfileTopic)
+class ProfileTopicAdmin(admin.ModelAdmin):
     """
-    Admin for the ``ProfileRow`` model.
+    Admin for the ``ProfileTopic`` model.
     """
-    fields = ('name', 'group', 'row_type')
-    list_display = ('name', 'group', 'row_type')
-    list_filter = ('row_type',)
+    fields = ('name', 'group', 'topic_type')
+    list_display = ('name', 'group', 'topic_type')
+    list_filter = ('topic_type',)
     search_fields = ('group__name', 'name')

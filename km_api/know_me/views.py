@@ -138,7 +138,7 @@ class ProfileItemDetailView(generics.RetrieveUpdateAPIView):
         context = super().get_serializer_context()
 
         context['profile'] = models.Profile.objects.get(
-            group__row__pk=self.kwargs.get('pk'))
+            group__topic__pk=self.kwargs.get('pk'))
 
         return context
 
@@ -164,13 +164,13 @@ class ProfileItemListView(generics.ListCreateAPIView):
         context = super().get_serializer_context()
 
         context['profile'] = models.Profile.objects.get(
-            group__row__pk=self.kwargs.get('pk'))
+            group__topic__pk=self.kwargs.get('pk'))
 
         return context
 
     def perform_create(self, serializer):
         """
-        Create a new profile item for the given row.
+        Create a new profile item for the given topic.
 
         Args:
             serializer:
@@ -180,42 +180,42 @@ class ProfileItemListView(generics.ListCreateAPIView):
         Returns:
             The newly created ``ProfileItem`` instance.
         """
-        row = get_object_or_404(
-            models.ProfileRow,
+        topic = get_object_or_404(
+            models.ProfileTopic,
             group__profile__user=self.request.user,
             pk=self.kwargs.get('pk'))
 
-        return serializer.save(row=row)
+        return serializer.save(topic=topic)
 
 
-class ProfileRowDetailView(generics.RetrieveUpdateAPIView):
+class ProfileTopicDetailView(generics.RetrieveUpdateAPIView):
     """
-    View for retreiving and updating a profile row.
+    View for retreiving and updating a profile topic.
     """
     permission_classes = (DRYPermissions,)
-    queryset = models.ProfileRow.objects.all()
-    serializer_class = serializers.ProfileRowSerializer
+    queryset = models.ProfileTopic.objects.all()
+    serializer_class = serializers.ProfileTopicSerializer
 
 
-class ProfileRowListView(generics.ListCreateAPIView):
+class ProfileTopicListView(generics.ListCreateAPIView):
     """
-    View for listing and creating rows in a profile group.
+    View for listing and creating topics in a profile group.
     """
-    filter_backends = (filters.ProfileRowFilterBackend,)
+    filter_backends = (filters.ProfileTopicFilterBackend,)
     permission_classes = (DRYPermissions,)
-    queryset = models.ProfileRow.objects.all()
-    serializer_class = serializers.ProfileRowSerializer
+    queryset = models.ProfileTopic.objects.all()
+    serializer_class = serializers.ProfileTopicSerializer
 
     def perform_create(self, serializer):
         """
-        Create a new profile row for the given profile group.
+        Create a new profile topic for the given profile group.
 
         Args:
             serializer:
                 The serializer containing the received data.
 
         Returns:
-            The newly created ``ProfileRow`` instance.
+            The newly created ``ProfileTopic`` instance.
         """
         group = get_object_or_404(
             models.ProfileGroup,

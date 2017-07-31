@@ -3,14 +3,14 @@ from rest_framework.reverse import reverse
 from know_me import models
 
 
-def test_create(media_resource_factory, profile_row_factory):
+def test_create(media_resource_factory, profile_topic_factory):
     """
     Test creating a profile item.
     """
     models.ProfileItem.objects.create(
         media_resource=media_resource_factory(),
         name='Profile Item',
-        row=profile_row_factory(),
+        topic=profile_topic_factory(),
         text='Some sample item text.')
 
 
@@ -47,8 +47,8 @@ def test_has_object_read_permission_owner(api_rf, profile_item_factory):
     their own profile.
     """
     item = profile_item_factory()
-    row = item.row
-    group = row.group
+    topic = item.topic
+    group = topic.group
     profile = group.profile
 
     api_rf.user = profile.user
@@ -79,8 +79,8 @@ def test_has_object_write_permission_owner(api_rf, profile_item_factory):
     their own profile.
     """
     item = profile_item_factory()
-    row = item.row
-    group = row.group
+    topic = item.topic
+    group = topic.group
     profile = group.profile
 
     api_rf.user = profile.user

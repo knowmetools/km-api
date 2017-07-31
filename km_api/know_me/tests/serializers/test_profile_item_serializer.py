@@ -3,16 +3,16 @@ from know_me import serializers
 
 def test_create(
         media_resource_factory,
-        profile_row_factory,
+        profile_topic_factory,
         serializer_context):
     """
     Saving a serializer with valid data should create a new profile
     item.
     """
-    row = profile_row_factory()
-    media_resource = media_resource_factory(profile=row.group.profile)
+    topic = profile_topic_factory()
+    media_resource = media_resource_factory(profile=topic.group.profile)
 
-    serializer_context['profile'] = row.group.profile
+    serializer_context['profile'] = topic.group.profile
 
     data = {
         'media_resource': media_resource.pk,
@@ -25,13 +25,13 @@ def test_create(
         data=data)
     assert serializer.is_valid(), serializer.errors
 
-    item = serializer.save(row=row)
+    item = serializer.save(topic=topic)
 
     assert item.name == data['name']
     assert item.text == data['text']
 
     assert item.media_resource == media_resource
-    assert item.row == row
+    assert item.topic == topic
 
 
 def test_create_other_user_media_resource(

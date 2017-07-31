@@ -152,8 +152,8 @@ The profile group detail endpoint allows for viewing and updating a profile grou
     :>json string url: The URL of the profile group's detail view.
     :>json string name: The name of the profile group.
     :>json boolean is_default: A boolean representing if the group is the default for its profile.
-    :>json string rows_url: The URL of the group's row list.
-    :>json array rows: A list of the profile rows contained in the group.
+    :>json string topics_url: The URL of the group's topic list.
+    :>json array topics: A list of the profile topics contained in the group.
 
     :status 200: The profile group's details were retrieved succesfully.
     :status 404: There is no profile group with the given ``id`` accessible to the requesting user.
@@ -171,8 +171,8 @@ The profile group detail endpoint allows for viewing and updating a profile grou
     :>json string url: The URL of the profile group's detail view.
     :>json string name: The name of the profile group.
     :>json boolean is_default: A boolean representing if the group is the default for its profile.
-    :>json string rows_url: The URL of the group's row list.
-    :>json array rows: A list of the profile rows contained in the group.
+    :>json string topics_url: The URL of the group's topic list.
+    :>json array topics: A list of the profile topics contained in the group.
 
     :status 200: The profile group's information was succesfully updated.
     :status 400: Invalid request. Check the response data for details.
@@ -180,110 +180,110 @@ The profile group detail endpoint allows for viewing and updating a profile grou
 
 
 ------------
-Profile Rows
+Profile Topics
 ------------
 
-Profile rows hold specific categories of information for a profile group.
+Profile topics hold specific categories of information for a profile group.
 
-Profile Row List
+Profile Topic List
 ----------------
 
-.. http:get:: /know-me/groups/(int:id)/rows/
+.. http:get:: /know-me/groups/(int:id)/topics/
 
-    List the rows in a particular profile group.
+    List the topics in a particular profile group.
 
-    :param int id: The ID of the profile group to fetch the rows of.
+    :param int id: The ID of the profile group to fetch the topics of.
 
-    :>jsonarr int id: The ID of the row.
-    :>jsonarr string url: The URL of the row's detail view.
-    :>jsonarr string name: The name of the row.
-    :>jsonarr int row_type: An integer representing the type of the row.
-    :>jsonarr string items_url: The URL of the row's item list.
-    :>jsonarr array items: The items contained in the row.
+    :>jsonarr int id: The ID of the topic.
+    :>jsonarr string url: The URL of the topic's detail view.
+    :>jsonarr string name: The name of the topic.
+    :>jsonarr int topic_type: An integer representing the type of the topic.
+    :>jsonarr string items_url: The URL of the topic's item list.
+    :>jsonarr array items: The items contained in the topic.
 
-    :status 200: The profile row list was succesfully retrieved.
+    :status 200: The profile topic list was succesfully retrieved.
     :status 404: There is no profile group with the given ``id`` accessible to the requesting user.
 
-.. http:post:: /know-me/groups/(int:id)/rows/
+.. http:post:: /know-me/groups/(int:id)/topics/
 
-    Create a new profile row in a particular group.
+    Create a new profile topic in a particular group.
 
-    :param int id: The ID of the profile group to create a row for.
+    :param int id: The ID of the profile group to create a topic for.
 
-    :<json string name: A name for the row.
-    :<json int row_type: An integer representing which type of row to create.
+    :<json string name: A name for the topic.
+    :<json int topic_type: An integer representing which type of topic to create.
 
-    :>header Location: The URL of the created row's detail view.
+    :>header Location: The URL of the created topic's detail view.
 
-    :>json int id: The ID of the row.
-    :>json string url: The URL of the row's detail view.
-    :>json string name: The name of the row.
-    :>json int row_type: An integer representing the type of row.
-    :>json string items_url: The URL of the row's item list.
-    :>json array items: The items contained in the row.
+    :>json int id: The ID of the topic.
+    :>json string url: The URL of the topic's detail view.
+    :>json string name: The name of the topic.
+    :>json int topic_type: An integer representing the type of topic.
+    :>json string items_url: The URL of the topic's item list.
+    :>json array items: The items contained in the topic.
 
-    :status 201: The profile row was succesfully created.
+    :status 201: The profile topic was succesfully created.
     :status 400: Invalid request. Check the response data for details.
     :status 404: There is no profile group with the given ``id`` accessible to the requesting user.
 
-Profile Row Detail
+Profile Topic Detail
 ------------------
 
-This endpoint allows for viewing and updating a specific profile row's information.
+This endpoint allows for viewing and updating a specific profile topic's information.
 
-.. http:get:: /know-me/rows/(int:id)/
+.. http:get:: /know-me/topics/(int:id)/
 
-    Get a specific profile row's information.
+    Get a specific profile topic's information.
 
-    :param int id: The ID of the profile row to fetch.
+    :param int id: The ID of the profile topic to fetch.
 
-    :>json int id: The ID of the row.
-    :>json string url: The URL of the row's detail view.
-    :>json string name: The name of the row.
-    :>json int row_type: An integer representing the type of row.
-    :>json string items_url: The URL of the row's item list.
-    :>json array items: The items contained in the row.
+    :>json int id: The ID of the topic.
+    :>json string url: The URL of the topic's detail view.
+    :>json string name: The name of the topic.
+    :>json int topic_type: An integer representing the type of topic.
+    :>json string items_url: The URL of the topic's item list.
+    :>json array items: The items contained in the topic.
 
-    :status 200: The profile row's information was succesfully retrieved.
-    :status 404: There is no profile row with the given ``id`` accessible to the requesting user.
+    :status 200: The profile topic's information was succesfully retrieved.
+    :status 404: There is no profile topic with the given ``id`` accessible to the requesting user.
 
-.. http:patch:: /know-me/rows/(int:id)/
+.. http:patch:: /know-me/topics/(int:id)/
 
-    Update a specific profile row's details.
+    Update a specific profile topic's details.
 
-    :param int id: The ID of the row to update.
+    :param int id: The ID of the topic to update.
 
-    :<json string name: *(Optional)* A new name for the row.
-    :<json int row_type: *(Optional)* The row's new type, as an integer.
+    :<json string name: *(Optional)* A new name for the topic.
+    :<json int topic_type: *(Optional)* The topic's new type, as an integer.
 
-    :>json int id: The ID of the row.
-    :>json string url: The URL of the row's detail view.
-    :>json string name: The name of the row.
-    :>json int row_type: An integer representing the type of row.
-    :>json string items_url: The URL of the row's item list.
-    :>json array items: The items contained in the row.
+    :>json int id: The ID of the topic.
+    :>json string url: The URL of the topic's detail view.
+    :>json string name: The name of the topic.
+    :>json int topic_type: An integer representing the type of topic.
+    :>json string items_url: The URL of the topic's item list.
+    :>json array items: The items contained in the topic.
 
-    :status 200: The profile row's information was succesfully updated.
+    :status 200: The profile topic's information was succesfully updated.
     :status 400: Invalid request. Check the response data for details.
-    :status 404: There is no profile row with the given ``id`` accessible to the requesting user.
+    :status 404: There is no profile topic with the given ``id`` accessible to the requesting user.
 
 
 -------------
 Profile Items
 -------------
 
-Profile items contain specific pieces of the information in a profile row.
+Profile items contain specific pieces of the information in a profile topic.
 
 Profile Item List
 -----------------
 
-This endpoint allows for listing the items in a profile row and adding new items to the row.
+This endpoint allows for listing the items in a profile topic and adding new items to the topic.
 
-.. http:get:: /know-me/rows/(int:id)/items/
+.. http:get:: /know-me/topics/(int:id)/items/
 
-    List the items in a profile row.
+    List the items in a profile topic.
 
-    :param int id: The ID of the profile row to fetch the items for.
+    :param int id: The ID of the profile topic to fetch the items for.
 
     :>jsonarr int id: The ID of the item.
     :>jsonarr string url: The URL of the item's detail view.
@@ -293,13 +293,13 @@ This endpoint allows for listing the items in a profile row and adding new items
     :>jsonarr object media_resource_info: The attached media resource's information, if present.
 
     :status 200: The profile item list was succesfully retrieved.
-    :status 404: There is no profile row with the given ``id`` accessible to the requesting user.
+    :status 404: There is no profile topic with the given ``id`` accessible to the requesting user.
 
-.. http:post:: /know-me/rows/(int:id)/items/
+.. http:post:: /know-me/topics/(int:id)/items/
 
-    Create a new profile item in a particular row.
+    Create a new profile item in a particular topic.
 
-    :param int id: The ID of the profile row to create an item in.
+    :param int id: The ID of the profile topic to create an item in.
 
     :<json string name: The name of the item.
     :<json string text: The text the item will contain.
@@ -316,7 +316,7 @@ This endpoint allows for listing the items in a profile row and adding new items
 
     :status 201: The profile item was succesfully created.
     :status 400: Invalid request. Check the response data for details.
-    :status 404: There is no profile row with the given ``id`` accessible to the requesting user.
+    :status 404: There is no profile topic with the given ``id`` accessible to the requesting user.
 
 Profile Item Detail
 -------------------

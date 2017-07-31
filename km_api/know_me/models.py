@@ -339,9 +339,9 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
         """
         return reverse('know-me:profile-group-detail', kwargs={'pk': self.pk})
 
-    def get_row_list_url(self, request=None):
+    def get_topic_list_url(self, request=None):
         """
-        Get the URL of the instance's row list view.
+        Get the URL of the instance's topic list view.
 
         Args:
             request (optional):
@@ -351,10 +351,10 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             str:
-                The URL of the instance's row list view.
+                The URL of the instance's topic list view.
         """
         return reverse(
-            'know-me:profile-row-list',
+            'know-me:profile-topic-list',
             kwargs={'pk': self.pk},
             request=request)
 
@@ -391,15 +391,15 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
 
 class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
     """
-    A profile item holds a piece of information for a profile row.
+    A profile item holds a piece of information for a profile topic.
 
     Attributes:
         media_resource (optional):
             A ``MediaResource`` associated with the profile item.
         name (str);
             The item's name.
-        row:
-            The profile row the item is part of.
+        topic:
+            The profile topic the item is part of.
         text (optional):
             The item's text. Defaults to an empty string.
     """
@@ -413,11 +413,12 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
-    row = models.ForeignKey(
-        'know_me.ProfileRow',
+    topic = models.ForeignKey(
+        'know_me.ProfileTopic',
+        null=True,
         related_name='items',
         related_query_name='item',
-        verbose_name=_('profile row'))
+        verbose_name=_('profile topic'))
     text = models.TextField(
         blank=True,
         default='',
@@ -460,7 +461,7 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
                 ``True`` if the requesting user owns the profile the
                 instance belongs to and ``False`` otherwise.
         """
-        return request.user == self.row.group.profile.user
+        return request.user == self.topic.group.profile.user
 
     def has_object_write_permission(self, request):
         """
@@ -475,47 +476,47 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
                 ``True`` if the requesting user owns the profile the
                 instance belongs to and ``False`` otherwise.
         """
-        return request.user == self.row.group.profile.user
+        return request.user == self.topic.group.profile.user
 
 
-class ProfileRow(mixins.IsAuthenticatedMixin, models.Model):
+class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
     """
-    A profile row holds a category of information for a profile group.
+    A profile topic holds a category of information for a profile group.
 
     Attributes:
         group:
-            The row's parent ``ProfileGroup``.
+            The topic's parent ``ProfileGroup``.
         name (str):
-            The row's name.
+            The topic's name.
     """
     GROUPED = 1
     PAGED = 2
     TEXT = 3
     VISUAL = 4
 
-    ROW_TYPE_CHOICES = (
-        (GROUPED, _('grouped row')),
-        (PAGED, _('paged row')),
-        (TEXT, _('text row')),
-        (VISUAL, _('visual row')),
+    TOPIC_TYPE_CHOICES = (
+        (GROUPED, _('grouped topic')),
+        (PAGED, _('paged topic')),
+        (TEXT, _('text topic')),
+        (VISUAL, _('visual topic')),
     )
 
     group = models.ForeignKey(
         'know_me.ProfileGroup',
         on_delete=models.CASCADE,
-        related_name='rows',
-        related_query_name='row',
+        related_name='topics',
+        related_query_name='topic',
         verbose_name=_('profile group'))
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
-    row_type = models.PositiveSmallIntegerField(
-        choices=ROW_TYPE_CHOICES,
-        verbose_name=_('row type'))
+    topic_type = models.PositiveSmallIntegerField(
+        choices=TOPIC_TYPE_CHOICES,
+        verbose_name=_('topic type'))
 
     class Meta:
-        verbose_name = _('profile row')
-        verbose_name_plural = _('profile rows')
+        verbose_name = _('profile topic')
+        verbose_name_plural = _('profile topics')
 
     def __str__(self):
         """
@@ -535,11 +536,11 @@ class ProfileRow(mixins.IsAuthenticatedMixin, models.Model):
             str:
                 The absolute URL of the instance's detail view.
         """
-        return reverse('know-me:profile-row-detail', kwargs={'pk': self.pk})
+        return reverse('know-me:profile-topic-detail', kwargs={'pk': self.pk})
 
     def get_item_list_url(self, request=None):
         """
-        Get the URL of the row's item list view.
+        Get the URL of the topic's item list view.
 
         Args:
             request (optional):
@@ -550,7 +551,7 @@ class ProfileRow(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             str:
-                The URL of the row's item list view.
+                The URL of the topic's item list view.
         """
         return reverse(
             'know-me:profile-item-list',

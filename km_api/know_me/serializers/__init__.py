@@ -15,4 +15,4 @@ from .profile_group_serializers import (    # noqa
 
 from .profile_item_serializers import ProfileItemSerializer     # noqa
 
-from .profile_row_serializers import ProfileRowSerializer       # noqa
+from .profile_topic_serializers import ProfileTopicSerializer       # noqa

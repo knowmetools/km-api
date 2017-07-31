@@ -80,24 +80,24 @@ class ProfileItemFilterBackend(DRYPermissionFiltersBase):
 
         Returns:
             A queryset containing the profile items belonging to the
-            profile row whose primary key is specified in the view.
+            profile topic whose primary key is specified in the view.
         """
-        row = get_object_or_404(
-            models.ProfileRow,
+        topic = get_object_or_404(
+            models.ProfileTopic,
             group__profile__user=request.user,
             pk=view.kwargs.get('pk'))
 
-        return queryset.filter(row__pk=row.pk)
+        return queryset.filter(topic__pk=topic.pk)
 
 
-class ProfileRowFilterBackend(DRYPermissionFiltersBase):
+class ProfileTopicFilterBackend(DRYPermissionFiltersBase):
     """
-    Filter for listing profile rows.
+    Filter for listing profile topics.
     """
 
     def filter_list_queryset(self, request, queryset, view):
         """
-        Filter profile rows for a ``list`` action.
+        Filter profile topics for a ``list`` action.
 
         Args:
             request:
@@ -108,7 +108,7 @@ class ProfileRowFilterBackend(DRYPermissionFiltersBase):
                 The view being accessed.
 
         Returns:
-            A queryset containing the profile rows belonging to the
+            A queryset containing the profile topics belonging to the
             profile group whose primary key is specified in the view.
         """
         group = get_object_or_404(
