@@ -24,7 +24,7 @@ class EmergencyItemFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``EmergencyItem`` instances.
     """
-    name = factory.Sequence(lambda n: 'Profile Item {n}'.format(n=n))
+    name = factory.Sequence(lambda n: 'Emergency Item {n}'.format(n=n))
     km_user = factory.SubFactory('know_me.factories.KMUserFactory')
 
     class Meta:

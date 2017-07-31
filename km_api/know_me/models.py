@@ -77,8 +77,8 @@ class EmergencyItem(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('media resource'))
     km_user = models.ForeignKey(
         'know_me.KMUser',
-        related_name='items',
-        related_query_name='item',
+        related_name='emergency_items',
+        related_query_name='emergency_item',
         verbose_name=_('know me user'))
     name = models.CharField(
         max_length=255,
