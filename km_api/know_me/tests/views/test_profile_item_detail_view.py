@@ -11,8 +11,8 @@ def test_get_item(api_rf, profile_item_factory):
     Users should be able to access items in their own profile.
     """
     item = profile_item_factory()
-    row = item.row
-    group = row.group
+    topic = item.topic
+    group = topic.group
     profile = group.profile
 
     api_rf.user = profile.user
@@ -35,8 +35,8 @@ def test_update(api_rf, profile_item_factory):
     the profile item with the given primary key.
     """
     item = profile_item_factory(name='Old Name')
-    row = item.row
-    group = row.group
+    topic = item.topic
+    group = topic.group
     profile = group.profile
 
     api_rf.user = profile.user
@@ -68,8 +68,8 @@ def test_update_with_media_resource(
     Regression test for #23
     """
     item = profile_item_factory()
-    row = item.row
-    group = row.group
+    topic = item.topic
+    group = topic.group
     profile = group.profile
 
     api_rf.user = profile.user

@@ -72,19 +72,19 @@ class ProfileItemFactory(factory.django.DjangoModelFactory):
     Factory for generating ``ProfileItem`` instances.
     """
     name = factory.Sequence(lambda n: 'Profile Item {n}'.format(n=n))
-    row = factory.SubFactory('know_me.factories.ProfileRowFactory')
+    topic = factory.SubFactory('know_me.factories.ProfileTopicFactory')
 
     class Meta:
         model = models.ProfileItem
 
 
-class ProfileRowFactory(factory.django.DjangoModelFactory):
+class ProfileTopicFactory(factory.django.DjangoModelFactory):
     """
-    Factory for generating ``ProfileRow`` instances.
+    Factory for generating ``ProfileTopic`` instances.
     """
     group = factory.SubFactory('know_me.factories.ProfileGroupFactory')
-    name = factory.Sequence(lambda n: 'Profile Row {n}'.format(n=n))
-    row_type = models.ProfileRow.TEXT
+    name = factory.Sequence(lambda n: 'Profile Topic {n}'.format(n=n))
+    topic_type = models.ProfileTopic.TEXT
 
     class Meta:
-        model = models.ProfileRow
+        model = models.ProfileTopic

@@ -6,7 +6,7 @@ v0.5
 
 Bug Fixes
   * :issue:`75`: Fix parsing of JSON requests.
-
+  * :issue:`95`: Renamed ProfileRow to ProfileTopic.
 
 v0.4
 ----

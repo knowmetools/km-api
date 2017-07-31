@@ -4,33 +4,33 @@ from know_me import serializers
 def test_serialize(
         api_rf,
         profile_group_factory,
-        profile_row_factory,
+        profile_topic_factory,
         serializer_context):
     """
     Test serializing a profile group.
     """
     group = profile_group_factory()
-    profile_row_factory(group=group)
-    profile_row_factory(group=group)
+    profile_topic_factory(group=group)
+    profile_topic_factory(group=group)
 
     serializer = serializers.ProfileGroupDetailSerializer(
         group,
         context=serializer_context)
-    row_serializer = serializers.ProfileRowSerializer(
-        group.rows,
+    topic_serializer = serializers.ProfileTopicSerializer(
+        group.topics,
         context=serializer_context,
         many=True)
 
     url_request = api_rf.get(group.get_absolute_url())
-    row_list_request = api_rf.get(group.get_row_list_url())
+    topic_list_request = api_rf.get(group.get_topic_list_url())
 
     expected = {
         'id': group.id,
         'url': url_request.build_absolute_uri(),
         'name': group.name,
         'is_default': group.is_default,
-        'rows_url': row_list_request.build_absolute_uri(),
-        'rows': row_serializer.data,
+        'topics_url': topic_list_request.build_absolute_uri(),
+        'topics': topic_serializer.data,
     }
 
     assert serializer.data == expected

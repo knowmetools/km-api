@@ -7,15 +7,15 @@ import pytest
 from know_me import filters, models
 
 
-def test_filter_list_group_rows(api_rf, profile_row_factory):
+def test_filter_list_group_topics(api_rf, profile_topic_factory):
     """
-    The filter should return the rows belonging to the group whose
+    The filter should return the topics belonging to the group whose
     primary key is given in the view.
     """
-    row = profile_row_factory()
-    profile_row_factory()
+    topic = profile_topic_factory()
+    profile_topic_factory()
 
-    group = row.group
+    group = topic.group
     profile = group.profile
 
     api_rf.user = profile.user
@@ -24,13 +24,13 @@ def test_filter_list_group_rows(api_rf, profile_row_factory):
     view = mock.Mock(name='Mock View')
     view.kwargs = {'pk': group.pk}
 
-    backend = filters.ProfileRowFilterBackend()
+    backend = filters.ProfileTopicFilterBackend()
     results = backend.filter_list_queryset(
         request,
-        models.ProfileRow.objects.all(),
+        models.ProfileTopic.objects.all(),
         view)
 
-    expected = group.rows.all()
+    expected = group.topics.all()
 
     assert list(results) == list(expected)
 
@@ -40,7 +40,7 @@ def test_filter_list_inaccessible_group(
         profile_group_factory,
         user_factory):
     """
-    Attempting to access the rows of a group that a user doesn't have
+    Attempting to access the topics of a group that a user doesn't have
     access to should raise an ``Http404`` exception.
     """
     group = profile_group_factory()
@@ -51,12 +51,12 @@ def test_filter_list_inaccessible_group(
     view = mock.Mock(name='Mock View')
     view.kwargs = {'pk': group.pk}
 
-    backend = filters.ProfileRowFilterBackend()
+    backend = filters.ProfileTopicFilterBackend()
 
     with pytest.raises(Http404):
         backend.filter_list_queryset(
             request,
-            models.ProfileRow.objects.all(),
+            models.ProfileTopic.objects.all(),
             view)
 
 
@@ -71,10 +71,10 @@ def test_filter_list_non_existent_group(api_rf, user_factory):
     view = mock.Mock(name='Mock View')
     view.kwargs = {'pk': 1}
 
-    backend = filters.ProfileRowFilterBackend()
+    backend = filters.ProfileTopicFilterBackend()
 
     with pytest.raises(Http404):
         backend.filter_list_queryset(
             request,
-            models.ProfileRow.objects.all(),
+            models.ProfileTopic.objects.all(),
             view)

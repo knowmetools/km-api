@@ -24,15 +24,15 @@ def test_get_absolute_url(profile_group_factory):
     assert group.get_absolute_url() == expected
 
 
-def test_get_row_list_url(profile_group_factory):
+def test_get_topic_list_url(profile_group_factory):
     """
-    This method should return the URL of the profile group's row list
+    This method should return the URL of the profile group's topic list
     view.
     """
     group = profile_group_factory()
-    expected = reverse('know-me:profile-row-list', kwargs={'pk': group.pk})
+    expected = reverse('know-me:profile-topic-list', kwargs={'pk': group.pk})
 
-    assert group.get_row_list_url() == expected
+    assert group.get_topic_list_url() == expected
 
 
 def test_has_object_read_permission_other(
