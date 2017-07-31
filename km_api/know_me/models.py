@@ -50,6 +50,55 @@ def get_km_user_image_upload_path(km_user, imagename):
             id=km_user.id)
 
 
+class EmergencyItem(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    An emergency item holds emergency information for a KMUser.
+
+    Attributes:
+        description (optional, str):
+            The description for the KMUser.
+        media_resource (optional):
+            A ``Media Resource`` associated with the emergency item.
+        km_user:
+            The KMUser the item is connected with.
+        name:
+            The name of the item.
+    """
+    description = models.TextField(
+        blank=True,
+        default='',
+        verbose_name=_('description'))
+    media_resource = models.ForeignKey(
+        'know_me.MediaResource',
+        blank=True,
+        null=True,
+        related_name='emergency_items',
+        related_query_name='emergency_item',
+        verbose_name=_('media resource'))
+    km_user = models.ForeignKey(
+        'know_me.KMUser',
+        related_name='emergency_items',
+        related_query_name='emergency_item',
+        verbose_name=_('know me user'))
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'))
+
+    class Meta:
+        verbose_name = _('emergency item')
+        verbose_name_plural = _('emergency items')
+
+    def __str__(self):
+        """
+        Get a string representation of the emergency item.
+
+        Returns:
+            str:
+                The emergency item's name.
+        """
+        return self.name
+
+
 class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
     """
     A media resource is an uploaded file attached to a profile.
