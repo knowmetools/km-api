@@ -156,6 +156,10 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         related_name='km_user',
         verbose_name=_('user'))
 
+    class Meta:
+        verbose_name = _('Know Me user')
+        verbose_name_plural = _('Know Me users')
+
     def __str__(self):
         """
         Get a string representation of the KMUser.
