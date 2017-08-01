@@ -3,7 +3,7 @@
 
 from .media_resource_serializers import MediaResourceSerializer     # noqa
 
-from .profile_serializers import (          # noqa
+from .km_user_serializers import (          # noqa
     KMUserDetailSerializer,
     KMUserListSerializer,
 )
