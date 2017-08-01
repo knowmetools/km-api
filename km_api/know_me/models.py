@@ -98,6 +98,42 @@ class EmergencyItem(mixins.IsAuthenticatedMixin, models.Model):
         """
         return self.name
 
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        This check is actually performed by the instance's parent
+        :class:`.KMUser`.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                A boolean indicating if the request should have read
+                permissions for the instance.
+        """
+        return self.km_user.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        This check is actually performed by the instance's parent
+        :class:`.KMUser`.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                A boolean indicating if the request should have write
+                permissions for the instance.
+        """
+        return self.km_user.has_object_write_permission(request)
+
 
 class ImageContent(models.Model):
     """
