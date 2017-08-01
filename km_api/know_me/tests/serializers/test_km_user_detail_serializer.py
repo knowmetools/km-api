@@ -21,18 +21,22 @@ def test_serialize(
         context=serializer_context,
         many=True)
 
-    url_request = api_rf.get(km_user.get_absolute_url())
-    gallery_request = api_rf.get(km_user.get_gallery_url())
-    profile_list_request = api_rf.get(km_user.get_profile_list_url())
+    request = serializer_context['request']
+
+    url = api_rf.get(km_user.get_absolute_url()).build_absolute_uri()
+    emergency_items_url = km_user.get_emergency_item_list_url(request)
+    gallery_url = km_user.get_gallery_url(request)
+    profile_list_url = km_user.get_profile_list_url(request)
 
     expected = {
         'id': km_user.id,
-        'url': url_request.build_absolute_uri(),
+        'url': url,
         'name': km_user.name,
         'quote': km_user.quote,
-        'gallery_url': gallery_request.build_absolute_uri(),
-        'profiles_url': profile_list_request.build_absolute_uri(),
-        'profiles': profile_serializer.data
+        'emergency_items_url': emergency_items_url,
+        'gallery_url': gallery_url,
+        'profiles_url': profile_list_url,
+        'profiles': profile_serializer.data,
     }
 
     assert serializer.data == expected

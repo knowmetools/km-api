@@ -11,7 +11,7 @@ class EmergencyItemSerializer(serializers.ModelSerializer):
     """
     Serializer for emergency items.
     """
-    media_resource = MediaResourceField()
+    media_resource = MediaResourceField(required=False)
 
     class Meta(object):
         fields = ('id', 'name', 'description', 'media_resource')
