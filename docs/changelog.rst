@@ -5,6 +5,7 @@ v0.5
 ----
 
 Breaking Changes
+  * :issue:`65`: Renamed most models. This will cause existing data to disappear.
   * :issue:`85`: Move profile item content related to images to separate model.
 
 Bug Fixes
