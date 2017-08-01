@@ -8,7 +8,8 @@ km_user_detail_view = views.KMUserDetailView.as_view()
 
 def test_get_own_km_user(api_rf, km_user_factory, user_factory):
     """
-    A user should be able to get the details of their own km_user.
+    A user should be able to get the details of their own Know Me user
+    account.
     """
     user = user_factory()
     api_rf.user = user
@@ -29,7 +30,7 @@ def test_get_own_km_user(api_rf, km_user_factory, user_factory):
 def test_update(api_rf, km_user_factory, user_factory):
     """
     Sending a PATCH request to the view should update the specified
-    km_user.
+    Know Me user.
     """
     user = user_factory()
     api_rf.user = user
