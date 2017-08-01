@@ -6,27 +6,27 @@ from know_me import serializers, views
 profile_group_list_view = views.ProfileGroupListView.as_view()
 
 
-def test_create(api_rf, profile_factory):
+def test_create(api_rf, km_user_factory):
     """
     Sending a POST request with valid data to the view should create a
     new profile group.
     """
-    profile = profile_factory()
+    km_user = km_user_factory()
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     data = {
         'name': 'New Group',
         'is_default': True,
     }
 
-    request = api_rf.post(profile.get_group_list_url(), data)
-    response = profile_group_list_view(request, pk=profile.pk)
+    request = api_rf.post(km_user.get_group_list_url(), data)
+    response = profile_group_list_view(request, pk=km_user.pk)
 
     assert response.status_code == status.HTTP_201_CREATED
 
     serializer = serializers.ProfileGroupListSerializer(
-        profile.groups.get(),
+        km_user.groups.get(),
         context={'request': request})
 
     assert response.data == serializer.data
@@ -34,19 +34,19 @@ def test_create(api_rf, profile_factory):
 
 def test_get_own(api_rf, profile_group_factory):
     """
-    Users should be able to list their own profile's groups.
+    Users should be able to list their own km_user's groups.
     """
     group = profile_group_factory()
-    profile = group.profile
-    user = profile.user
+    km_user = group.km_user
+    user = km_user.user
 
     api_rf.user = user
 
-    request = api_rf.get(profile.get_group_list_url())
-    response = profile_group_list_view(request, pk=profile.pk)
+    request = api_rf.get(km_user.get_group_list_url())
+    response = profile_group_list_view(request, pk=km_user.pk)
 
     serializer = serializers.ProfileGroupListSerializer(
-        profile.groups,
+        km_user.groups,
         context={'request': request},
         many=True)
 

@@ -9,13 +9,13 @@ profile_topic_detail_view = views.ProfileTopicDetailView.as_view()
 def test_get_own_topic(api_rf, profile_topic_factory):
     """
     Users should be able to access topics that are part of their own
-    profile.
+    km_user.
     """
     topic = profile_topic_factory()
     group = topic.group
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     request = api_rf.get(topic.get_absolute_url())
     response = profile_topic_detail_view(request, pk=topic.pk)
@@ -36,9 +36,9 @@ def test_update(api_rf, profile_topic_factory):
     """
     topic = profile_topic_factory(name='Old Name')
     group = topic.group
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     data = {
         'name': 'New Name',

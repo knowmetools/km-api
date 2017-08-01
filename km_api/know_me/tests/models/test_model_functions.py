@@ -6,16 +6,16 @@ from know_me import models
 def test_get_media_resource_upload_path():
     """
     Media Resources should be stored with their original filename in a
-    folder titled ``profile/<id>/gallery``.
+    folder titled ``km_user/<id>/gallery``.
     """
     resource = mock.Mock(name='Mock Media Resource')
-    resource.profile.id = 1
+    resource.km_user.id = 1
 
     filename = 'foo.jpg'
 
-    expected = 'profile/{id}/gallery/{file}'.format(
+    expected = 'km_user/{id}/gallery/{file}'.format(
         file=filename,
-        id=resource.profile.id)
+        id=resource.km_user.id)
 
     result = models.get_media_resource_upload_path(resource, filename)
     assert result == expected

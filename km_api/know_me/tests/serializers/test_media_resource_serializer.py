@@ -1,12 +1,12 @@
 from know_me import serializers
 
 
-def test_create(file, profile_factory):
+def test_create(file, km_user_factory):
     """
     Saving a serializer containing valid data should create a new
-    media resource attached to the given profile.
+    media resource attached to the given km_user.
     """
-    profile = profile_factory()
+    km_user = km_user_factory()
     data = {
         'name': 'Test Media Resource',
         'file': file,
@@ -15,7 +15,7 @@ def test_create(file, profile_factory):
     serializer = serializers.MediaResourceSerializer(data=data)
     assert serializer.is_valid()
 
-    resource = serializer.save(profile=profile)
+    resource = serializer.save(km_user=km_user)
     file.seek(0)
 
     assert resource.name == data['name']

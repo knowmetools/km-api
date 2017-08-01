@@ -20,7 +20,7 @@ class GalleryView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         """
-        Create a new media resource for the given profile.
+        Create a new media resource for the given km_user.
 
         Args:
             serializer:
@@ -29,10 +29,10 @@ class GalleryView(generics.CreateAPIView):
         Returns:
             The newly created ``MediaResource`` instance.
         """
-        profile = models.Profile.objects.get(
+        km_user = models.KMUser.objects.get(
             pk=self.kwargs.get('pk'))
 
-        return serializer.save(profile=profile)
+        return serializer.save(km_user=km_user)
 
 
 class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
@@ -44,39 +44,39 @@ class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.MediaResourceSerializer
 
 
-class ProfileDetailView(generics.RetrieveUpdateAPIView):
+class KMUserDetailView(generics.RetrieveUpdateAPIView):
     """
-    View for retreiving and updating a specific profile.
+    View for retreiving and updating a specific km_user.
     """
     permission_classes = (DRYPermissions,)
-    queryset = models.Profile.objects.all()
-    serializer_class = serializers.ProfileDetailSerializer
+    queryset = models.KMUser.objects.all()
+    serializer_class = serializers.KMUserDetailSerializer
 
 
-class ProfileListView(generics.ListCreateAPIView):
+class KMUserListView(generics.ListCreateAPIView):
     """
-    View for listing and creating profiles.
+    View for listing and creating km_users.
     """
-    filter_backends = (filters.ProfileFilterBackend,)
+    filter_backends = (filters.KMUserFilterBackend,)
     permission_classes = (DRYPermissions,)
-    queryset = models.Profile.objects.all()
-    serializer_class = serializers.ProfileListSerializer
+    queryset = models.KMUser.objects.all()
+    serializer_class = serializers.KMUserListSerializer
 
     def perform_create(self, serializer):
         """
-        Create a new profile for the requesting user.
+        Create a new km_user for the requesting user.
 
         Returns:
-            A new ``Profile`` instance.
+            A new ``KMUser`` instance.
 
         Raises:
             ValidationError:
-                If the user making the request already has a profile.
+                If the user making the request already has a km_user.
         """
-        if hasattr(self.request.user, 'profile'):
+        if hasattr(self.request.user, 'km_user'):
             raise ValidationError(
-                code='duplicate_profile',
-                detail=_('Users may not have more than one profile.'))
+                code='duplicate_km_user',
+                detail=_('Users may not have more than one km_user.'))
 
         return serializer.save(user=self.request.user)
 
@@ -101,7 +101,7 @@ class ProfileGroupListView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         """
-        Create a new profile group for the given profile.
+        Create a new profile group for the given km_user.
 
         Args:
             serializer:
@@ -110,12 +110,12 @@ class ProfileGroupListView(generics.ListCreateAPIView):
         Returns:
             The newly created ``ProfileGroup`` instance.
         """
-        profile = get_object_or_404(
-            models.Profile,
+        km_user = get_object_or_404(
+            models.KMUser,
             pk=self.kwargs.get('pk'),
             user=self.request.user)
 
-        return serializer.save(profile=profile)
+        return serializer.save(km_user=km_user)
 
 
 class ProfileItemDetailView(generics.RetrieveUpdateAPIView):
@@ -132,12 +132,12 @@ class ProfileItemDetailView(generics.RetrieveUpdateAPIView):
 
         Returns:
             dict:
-                The superclass' serialzer context with the profile whose
+                The superclass' serialzer context with the km_user whose
                 primary key is passed to the view appended.
         """
         context = super().get_serializer_context()
 
-        context['profile'] = models.Profile.objects.get(
+        context['km_user'] = models.KMUser.objects.get(
             group__topic__pk=self.kwargs.get('pk'))
 
         return context
@@ -158,12 +158,12 @@ class ProfileItemListView(generics.ListCreateAPIView):
 
         Returns:
             dict:
-                The superclass' serialzer context with the profile whose
+                The superclass' serialzer context with the km_user whose
                 primary key is passed to the view appended.
         """
         context = super().get_serializer_context()
 
-        context['profile'] = models.Profile.objects.get(
+        context['km_user'] = models.KMUser.objects.get(
             group__topic__pk=self.kwargs.get('pk'))
 
         return context
@@ -182,7 +182,7 @@ class ProfileItemListView(generics.ListCreateAPIView):
         """
         topic = get_object_or_404(
             models.ProfileTopic,
-            group__profile__user=self.request.user,
+            group__km_user__user=self.request.user,
             pk=self.kwargs.get('pk'))
 
         return serializer.save(topic=topic)
@@ -220,6 +220,6 @@ class ProfileTopicListView(generics.ListCreateAPIView):
         group = get_object_or_404(
             models.ProfileGroup,
             pk=self.kwargs.get('pk'),
-            profile__user=self.request.user)
+            km_user__user=self.request.user)
 
         return serializer.save(group=group)

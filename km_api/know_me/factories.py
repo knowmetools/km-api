@@ -45,6 +45,8 @@ class KMUserFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``KMUser`` instances.
     """
+    quote = factory.LazyAttribute(lambda km_user: "Hi, I'm {name}".format(
+        name=km_user.user.get_short_name()))
     user = factory.SubFactory('factories.UserFactory')
 
     class Meta:
@@ -77,33 +79,19 @@ class MediaResourceFactory(factory.django.DjangoModelFactory):
     Factory for generating ``MediaResource`` instances.
     """
     name = factory.Sequence(lambda n: 'Media Resource {n}'.format(n=n))
-    profile = factory.SubFactory('know_me.factories.ProfileFactory')
+    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
     file = factory.LazyFunction(create_file)
 
     class Meta:
         model = models.MediaResource
 
 
-class ProfileFactory(factory.django.DjangoModelFactory):
-    """
-    Factory for generating ``Profile`` instances.
-    """
-    name = 'John'
-    quote = factory.LazyAttribute(lambda profile: "Hi, I'm {name}".format(
-        name=profile.name))
-    user = factory.SubFactory('factories.UserFactory')
-    welcome_message = 'Life is like a box of chocolates.'
-
-    class Meta:
-        model = models.Profile
-
-
 class ProfileGroupFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``ProfileGroup`` instances.
     """
-    name = 'Test Profile'
-    profile = factory.SubFactory('know_me.factories.ProfileFactory')
+    name = 'Test KMUser'
+    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
 
     class Meta:
         model = models.ProfileGroup

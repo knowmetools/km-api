@@ -12,9 +12,9 @@ def test_create_topic(api_rf, profile_group_factory):
     new topic.
     """
     group = profile_group_factory()
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     data = {
         'name': 'Test Topic',
@@ -35,13 +35,13 @@ def test_create_topic(api_rf, profile_group_factory):
 
 def test_list_own_topics(api_rf, profile_topic_factory):
     """
-    Users should be able to list the topics in their own profile.
+    Users should be able to list the topics in their own km_user.
     """
     topic = profile_topic_factory()
     group = topic.group
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     request = api_rf.get(group.get_topic_list_url())
     response = profile_topic_list_view(request, pk=group.pk)

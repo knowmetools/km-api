@@ -4,14 +4,14 @@ from rest_framework.reverse import reverse
 from know_me import serializers, views
 
 
-profile_list_view = views.ProfileListView.as_view()
-url = reverse('know-me:profile-list')
+km_user_list_view = views.KMUserListView.as_view()
+url = reverse('know-me:km-user-list')
 
 
 def test_create(api_rf, user_factory):
     """
     Sending a POST request with valid data to the view should create a
-    new profile for the user making the request.
+    new km_user for the user making the request.
     """
     user = user_factory()
     api_rf.user = user
@@ -19,58 +19,56 @@ def test_create(api_rf, user_factory):
     data = {
         'name': user.get_short_name(),
         'quote': "Hi, I'm {name}".format(name=user.get_short_name()),
-        'welcome_message': 'Welcome to my profile',
     }
 
     request = api_rf.post(url, data)
-    response = profile_list_view(request)
+    response = km_user_list_view(request)
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    serializer = serializers.ProfileListSerializer(
-        user.profile,
+    serializer = serializers.KMUserListSerializer(
+        user.km_user,
         context={'request': request})
 
     assert response.data == serializer.data
 
 
-def test_create_second_profile(api_rf, profile_factory, user_factory):
+def test_create_second_km_user(api_rf, km_user_factory, user_factory):
     """
-    A user who already has a profile should not be able to create a
+    A user who already has a km_user should not be able to create a
     second one.
     """
     user = user_factory()
     api_rf.user = user
 
-    profile_factory(user=user)
+    km_user_factory(user=user)
 
     data = {
         'name': user.get_short_name(),
         'quote': "Hi, I'm {name}".format(name=user.get_short_name()),
-        'welcome_message': 'Welcome to my profile',
     }
 
     request = api_rf.post(url, data)
-    response = profile_list_view(request)
+    response = km_user_list_view(request)
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_get_own_profile(api_rf, profile_factory, user_factory):
+def test_get_own_km_user(api_rf, km_user_factory, user_factory):
     """
-    If the requesting user has a profile, then a GET request to this
-    view should contain that profile.
+    If the requesting user has a km_user, then a GET request to this
+    view should contain that km_user.
     """
     user = user_factory()
     api_rf.user = user
 
-    profile = profile_factory(user=user)
+    km_user = km_user_factory(user=user)
 
     request = api_rf.get(url)
-    response = profile_list_view(request)
+    response = km_user_list_view(request)
 
-    serializer = serializers.ProfileListSerializer(
-        [profile],
+    serializer = serializers.KMUserListSerializer(
+        [km_user],
         context={'request': request},
         many=True)
 

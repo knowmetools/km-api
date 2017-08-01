@@ -9,14 +9,14 @@ media_resource_detail_view = views.MediaResourceDetailView.as_view()
 def test_get_media_resource(api_rf, media_resource_factory):
     """
     Users should be able to get the details of a media resource that
-    belongs to their own profile.
+    belongs to their own km_user.
     """
     resource = media_resource_factory()
-    profile = resource.profile
+    km_user = resource.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
-    request = api_rf.get(profile.get_absolute_url())
+    request = api_rf.get(km_user.get_absolute_url())
     response = media_resource_detail_view(request, pk=resource.pk)
     assert response.status_code == status.HTTP_200_OK
 
@@ -33,15 +33,15 @@ def test_update_media_resource(api_rf, media_resource_factory):
     the given media resource.
     """
     resource = media_resource_factory(name='Old Name')
-    profile = resource.profile
+    km_user = resource.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     data = {
         'name': 'New Name',
     }
 
-    request = api_rf.patch(profile.get_absolute_url(), data)
+    request = api_rf.patch(km_user.get_absolute_url(), data)
     response = media_resource_detail_view(request, pk=resource.pk)
     assert response.status_code == status.HTTP_200_OK
 

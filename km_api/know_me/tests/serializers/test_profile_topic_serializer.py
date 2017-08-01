@@ -27,7 +27,7 @@ def test_serialize(
         profile_topic_factory,
         serializer_context):
     """
-    Test serializing a profile.
+    Test serializing a km_user.
     """
     topic = profile_topic_factory()
     profile_item_factory(topic=topic)

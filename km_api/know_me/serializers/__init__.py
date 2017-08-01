@@ -3,9 +3,9 @@
 
 from .media_resource_serializers import MediaResourceSerializer     # noqa
 
-from .profile_serializers import (          # noqa
-    ProfileDetailSerializer,
-    ProfileListSerializer,
+from .km_user_serializers import (          # noqa
+    KMUserDetailSerializer,
+    KMUserListSerializer,
 )
 
 from .profile_group_serializers import (    # noqa

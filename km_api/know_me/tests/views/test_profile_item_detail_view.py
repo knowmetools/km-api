@@ -8,14 +8,14 @@ profile_item_detail_view = views.ProfileItemDetailView.as_view()
 
 def test_get_item(api_rf, profile_item_factory):
     """
-    Users should be able to access items in their own profile.
+    Users should be able to access items in their own km_user.
     """
     item = profile_item_factory()
     topic = item.topic
     group = topic.group
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     request = api_rf.get(item.get_absolute_url())
     response = profile_item_detail_view(request, pk=item.pk)
@@ -37,9 +37,9 @@ def test_update(api_rf, profile_item_factory):
     item = profile_item_factory(name='Old Name')
     topic = item.topic
     group = topic.group
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     data = {
         'name': 'New Name',
@@ -70,11 +70,11 @@ def test_update_with_media_resource(
     item = profile_item_factory()
     topic = item.topic
     group = topic.group
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
-    media_resource = media_resource_factory(profile=profile)
+    media_resource = media_resource_factory(km_user=km_user)
     data = {
         'media_resource': media_resource.pk,
     }
