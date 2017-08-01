@@ -9,6 +9,14 @@ from know_me import models
 
 # Inlines used in other admin objects
 
+class ImageContentInline(admin.StackedInline):
+    """
+    Inline admin for profile item image content.
+    """
+    fields = ('image_resource', 'media_resource', 'description')
+    model = models.ImageContent
+
+
 class ListEntryInline(admin.StackedInline):
     """
     Inline admin for list entries.
@@ -29,18 +37,6 @@ class EmergencyItemAdmin(admin.ModelAdmin):
     fields = ('name', 'km_user', 'media_resource', 'description')
     list_display = ('name', 'km_user')
     search_fields = ('name',)
-
-
-@admin.register(models.ImageContent)
-class ImageContentAdmin(admin.ModelAdmin):
-    """
-    Admin for the ``ImageContent`` model.
-    """
-    fields = (
-        'profile_item', 'image_resource', 'media_resource', 'description'
-    )
-    list_display = ('profile_item',)
-    search_fields = ('profile_item__name',)
 
 
 @admin.register(models.KMUser)
@@ -107,6 +103,7 @@ class ProfileItemAdmin(admin.ModelAdmin):
     """
     Admin for the ``ProfileItem`` model.
     """
+    inlines = (ImageContentInline,)
     fields = ('name', 'topic')
     list_display = ('name', 'get_km_user', 'get_group', 'topic')
     search_fields = ('name',)
@@ -139,7 +136,7 @@ class ProfileItemAdmin(admin.ModelAdmin):
         """
         return item.topic.group.km_user
     get_km_user.admin_order_field = 'topic__group__km_user'
-    get_km_user.short_description = _('km_user')
+    get_km_user.short_description = _('know me user')
 
 
 @admin.register(models.ProfileTopic)
