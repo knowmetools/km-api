@@ -1,12 +1,12 @@
 from know_me import serializers
 
 
-def test_create(profile_factory, serializer_context):
+def test_create(km_user_factory, serializer_context):
     """
     Saving a serializer instance with valid data should create a new
     profile group.
     """
-    profile = profile_factory()
+    km_user = km_user_factory()
     data = {
         'name': 'Profile Group',
         'is_default': True,
@@ -17,10 +17,10 @@ def test_create(profile_factory, serializer_context):
         data=data)
     assert serializer.is_valid()
 
-    group = serializer.save(profile=profile)
+    group = serializer.save(km_user=km_user)
 
     assert group.name == data['name']
-    assert group.profile == profile
+    assert group.km_user == km_user
     assert group.is_default == data['is_default']
 
 

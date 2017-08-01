@@ -1,4 +1,4 @@
-"""Serializers for the ``Profile`` model.
+"""Serializers for the ``KMUser`` model.
 """
 
 from rest_framework import serializers
@@ -8,23 +8,23 @@ from know_me import models
 from .profile_group_serializers import ProfileGroupListSerializer
 
 
-class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
+class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     """
-    Serializer for multiple ``Profile`` instances.
+    Serializer for multiple ``KMUser`` instances.
     """
     url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:profile-detail')
+        view_name='know-me:km-user-detail')
 
     class Meta:
-        fields = ('id', 'url', 'name', 'quote', 'welcome_message')
-        model = models.Profile
+        fields = ('id', 'url', 'name', 'quote')
+        model = models.KMUser
 
 
-class ProfileDetailSerializer(ProfileListSerializer):
+class KMUserDetailSerializer(KMUserListSerializer):
     """
-    Serializer for single ``Profile`` instances.
+    Serializer for single ``KMUser`` instances.
 
-    This serializer builds off of the ``ProfileListSerializer``.
+    This serializer builds off of the ``KMUserListSerializer``.
     """
     gallery_url = serializers.SerializerMethodField()
     groups = ProfileGroupListSerializer(many=True, read_only=True)
@@ -32,10 +32,10 @@ class ProfileDetailSerializer(ProfileListSerializer):
 
     class Meta:
         fields = (
-            'id', 'url', 'name', 'quote', 'welcome_message', 'gallery_url',
+            'id', 'url', 'name', 'quote', 'gallery_url',
             'groups_url', 'groups'
         )
-        model = models.Profile
+        model = models.KMUser
 
     def get_gallery_url(self, profile):
         """
@@ -44,7 +44,7 @@ class ProfileDetailSerializer(ProfileListSerializer):
 
         Args:
             profile:
-                The ``Profile`` instance being serialized.
+                The ``KMUser`` instance being serialized.
 
         Returns:
             str:
@@ -59,7 +59,7 @@ class ProfileDetailSerializer(ProfileListSerializer):
 
         Args:
             profile:
-                The ``Profile`` instance being serialized.
+                The ``KMUser`` instance being serialized.
 
         Returns:
             The URL of the profile's group list view.

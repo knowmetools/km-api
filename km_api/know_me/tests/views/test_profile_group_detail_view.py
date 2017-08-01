@@ -9,12 +9,12 @@ profile_group_detail_view = views.ProfileGroupDetailView.as_view()
 def test_get_own_group(api_rf, profile_group_factory):
     """
     Users should be able to access groups that are a part of their own
-    profile.
+    km_user.
     """
     group = profile_group_factory()
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     request = api_rf.get(group.get_absolute_url())
     response = profile_group_detail_view(request, pk=group.pk)
@@ -34,9 +34,9 @@ def test_update(api_rf, profile_group_factory):
     the specified profile group.
     """
     group = profile_group_factory(name='Old Name')
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     data = {
         'name': 'New Name',

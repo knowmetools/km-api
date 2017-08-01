@@ -8,14 +8,14 @@ from dry_rest_permissions.generics import DRYPermissionFiltersBase
 from know_me import models
 
 
-class ProfileFilterBackend(DRYPermissionFiltersBase):
+class KMUserFilterBackend(DRYPermissionFiltersBase):
     """
-    Filter for listing ``Profile`` instances.
+    Filter for listing ``KMUser`` instances.
     """
 
     def filter_list_queryset(self, request, queryset, view):
         """
-        Filter profiles for a ``list`` action.
+        Filter km_users for a ``list`` action.
 
         Args:
             request:
@@ -26,7 +26,7 @@ class ProfileFilterBackend(DRYPermissionFiltersBase):
                 The view being accessed.
 
         Returns:
-            A queryset containing the profiles accessible to the user
+            A queryset containing the km_users accessible to the user
             making the request.
         """
         return queryset.filter(user=request.user)
@@ -51,14 +51,14 @@ class ProfileGroupFilterBackend(DRYPermissionFiltersBase):
 
         Returns:
             A queryset containing the profile groups belonging to the
-            profile whose primary key is specified in the view.
+            km_user whose primary key is specified in the view.
         """
-        profile = get_object_or_404(
-            models.Profile,
+        km_user = get_object_or_404(
+            models.KMUser,
             pk=view.kwargs.get('pk'),
             user=request.user)
 
-        return queryset.filter(profile__pk=profile.pk)
+        return queryset.filter(km_user__pk=km_user.pk)
 
 
 class ProfileItemFilterBackend(DRYPermissionFiltersBase):
@@ -84,7 +84,7 @@ class ProfileItemFilterBackend(DRYPermissionFiltersBase):
         """
         topic = get_object_or_404(
             models.ProfileTopic,
-            group__profile__user=request.user,
+            group__km_user__user=request.user,
             pk=view.kwargs.get('pk'))
 
         return queryset.filter(topic__pk=topic.pk)
@@ -114,6 +114,6 @@ class ProfileTopicFilterBackend(DRYPermissionFiltersBase):
         group = get_object_or_404(
             models.ProfileGroup,
             pk=view.kwargs.get('pk'),
-            profile__user=request.user)
+            km_user__user=request.user)
 
         return queryset.filter(group__pk=group.pk)

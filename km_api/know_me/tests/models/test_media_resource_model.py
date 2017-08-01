@@ -3,13 +3,13 @@ from rest_framework.reverse import reverse
 from know_me import models
 
 
-def test_create(file, profile_factory):
+def test_create(file, km_user_factory):
     """
     Test creating a media resource.
     """
     models.MediaResource.objects.create(
         name='Media Resource',
-        profile=profile_factory(),
+        km_user=km_user_factory(),
         file=file)
 
 
@@ -44,12 +44,12 @@ def test_has_object_read_permission_other(
 def test_has_object_read_permission_owner(api_rf, media_resource_factory):
     """
     Users should have permission to read media resources in their own
-    profile.
+    km_user.
     """
     resource = media_resource_factory()
-    profile = resource.profile
+    km_user = resource.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     assert resource.has_object_read_permission(request)
@@ -74,12 +74,12 @@ def test_has_object_write_permission_other(
 def test_has_object_write_permission_owner(api_rf, media_resource_factory):
     """
     Users should have write permissions on media resource in their
-    own profile.
+    own km_user.
     """
     resource = media_resource_factory()
-    profile = resource.profile
+    km_user = resource.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     assert resource.has_object_write_permission(request)

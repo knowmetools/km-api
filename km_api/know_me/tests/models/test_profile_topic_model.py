@@ -39,7 +39,7 @@ def test_has_object_read_permission_other(
         user_factory):
     """
     Users should not have read permissions on profile topics that belong
-    to a profile they don't have access to.
+    to a km_user they don't have access to.
     """
     topic = profile_topic_factory()
 
@@ -52,13 +52,13 @@ def test_has_object_read_permission_other(
 def test_has_object_read_permission_owner(api_rf, profile_topic_factory):
     """
     Users should have read permissions on profile topics that belong to
-    their own profile.
+    their own km_user.
     """
     topic = profile_topic_factory()
     group = topic.group
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     assert topic.has_object_read_permission(request)
@@ -70,7 +70,7 @@ def test_has_object_write_permission_other(
         user_factory):
     """
     Users should not have write permissions on profile topics that
-    belong to a profile they don't have access to.
+    belong to a km_user they don't have access to.
     """
     topic = profile_topic_factory()
 
@@ -83,13 +83,13 @@ def test_has_object_write_permission_other(
 def test_has_object_write_permission_owner(api_rf, profile_topic_factory):
     """
     Users should have write permissions on profile topics that belong
-    to their own profile.
+    to their own km_user.
     """
     topic = profile_topic_factory()
     group = topic.group
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     assert topic.has_object_write_permission(request)

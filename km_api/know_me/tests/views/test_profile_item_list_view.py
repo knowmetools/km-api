@@ -25,9 +25,9 @@ def test_create(api_rf, profile_topic_factory):
     """
     topic = profile_topic_factory()
     group = topic.group
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     data = {
         'name': 'Test Item',
@@ -41,7 +41,7 @@ def test_create(api_rf, profile_topic_factory):
     serializer = serializers.ProfileItemSerializer(
         topic.items.get(),
         context={
-            'profile': profile,
+            'km_user': km_user,
             'request': request,
         })
 
@@ -58,9 +58,9 @@ def test_get_items(api_rf, profile_item_factory, profile_topic_factory):
     profile_item_factory(topic=topic)
 
     group = topic.group
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
 
     request = api_rf.get(topic.get_item_list_url())
     response = profile_item_list_view(request, pk=topic.pk)

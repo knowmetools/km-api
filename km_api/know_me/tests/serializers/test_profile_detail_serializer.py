@@ -3,34 +3,33 @@ from know_me import serializers
 
 def test_serialize(
         api_rf,
-        profile_factory,
+        km_user_factory,
         profile_group_factory,
         serializer_context):
     """
-    Test serializing a profile.
+    Test serializing a km_user.
     """
-    profile = profile_factory()
-    profile_group_factory(profile=profile)
-    profile_group_factory(profile=profile)
+    km_user = km_user_factory()
+    profile_group_factory(km_user=km_user)
+    profile_group_factory(km_user=km_user)
 
-    serializer = serializers.ProfileDetailSerializer(
-        profile,
+    serializer = serializers.KMUserDetailSerializer(
+        km_user,
         context=serializer_context)
     group_serializer = serializers.ProfileGroupListSerializer(
-        profile.groups,
+        km_user.groups,
         context=serializer_context,
         many=True)
 
-    url_request = api_rf.get(profile.get_absolute_url())
-    gallery_request = api_rf.get(profile.get_gallery_url())
-    group_list_request = api_rf.get(profile.get_group_list_url())
+    url_request = api_rf.get(km_user.get_absolute_url())
+    gallery_request = api_rf.get(km_user.get_gallery_url())
+    group_list_request = api_rf.get(km_user.get_group_list_url())
 
     expected = {
-        'id': profile.id,
+        'id': km_user.id,
         'url': url_request.build_absolute_uri(),
-        'name': profile.name,
-        'quote': profile.quote,
-        'welcome_message': profile.welcome_message,
+        'name': km_user.name,
+        'quote': km_user.quote,
         'gallery_url': gallery_request.build_absolute_uri(),
         'groups_url': group_list_request.build_absolute_uri(),
         'groups': group_serializer.data
@@ -39,23 +38,23 @@ def test_serialize(
     assert serializer.data == expected
 
 
-def test_update(profile_factory):
+def test_update(km_user_factory):
     """
-    Saving a bound serializer with valid data should update the profile
+    Saving a bound serializer with valid data should update the km_user
     the serializer is bound to.
     """
-    profile = profile_factory(name='Jim')
+    km_user = km_user_factory(quote='Old quote.')
     data = {
-        'name': 'John',
+        'quote': 'New quote.',
     }
 
-    serializer = serializers.ProfileDetailSerializer(
-        profile,
+    serializer = serializers.KMUserDetailSerializer(
+        km_user,
         data=data,
         partial=True)
     assert serializer.is_valid()
 
     serializer.save()
-    profile.refresh_from_db()
+    km_user.refresh_from_db()
 
-    assert profile.name == data['name']
+    assert km_user.quote == data['quote']

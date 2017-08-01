@@ -3,14 +3,14 @@ from rest_framework.reverse import reverse
 from know_me import models
 
 
-def test_create(profile_factory):
+def test_create(km_user_factory):
     """
     Test creating a profile group.
     """
     models.ProfileGroup.objects.create(
         is_default=True,
         name='Profile Group',
-        profile=profile_factory())
+        km_user=km_user_factory())
 
 
 def test_get_absolute_url(profile_group_factory):
@@ -41,7 +41,7 @@ def test_has_object_read_permission_other(
         user_factory):
     """
     Users should not have read permissions on profile groups that are
-    not part of a profile they have access to.
+    not part of a km_user they have access to.
     """
     group = profile_group_factory()
 
@@ -54,12 +54,12 @@ def test_has_object_read_permission_other(
 def test_has_object_read_permission_owner(api_rf, profile_group_factory):
     """
     Users should have read permissions on profile groups that belong to
-    their own profile.
+    their own km_user.
     """
     group = profile_group_factory()
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     assert group.has_object_read_permission(request)
@@ -71,7 +71,7 @@ def test_has_object_write_permission_other(
         user_factory):
     """
     Users should not have write permissions on profile groups that are
-    not part of a profile they have access to.
+    not part of a km_user they have access to.
     """
     group = profile_group_factory()
 
@@ -84,12 +84,12 @@ def test_has_object_write_permission_other(
 def test_has_object_write_permission_owner(api_rf, profile_group_factory):
     """
     Users should have write permissions on profile groups that belong to
-    their own profile.
+    their own km_user.
     """
     group = profile_group_factory()
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     assert group.has_object_write_permission(request)

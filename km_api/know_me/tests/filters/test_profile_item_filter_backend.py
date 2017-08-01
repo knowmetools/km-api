@@ -64,9 +64,9 @@ def test_filter_list_topic_items(api_rf, profile_item_factory):
 
     topic = item.topic
     group = topic.group
-    profile = group.profile
+    km_user = group.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
