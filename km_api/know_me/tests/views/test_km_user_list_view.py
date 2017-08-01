@@ -35,8 +35,8 @@ def test_create(api_rf, user_factory):
 
 def test_create_second_km_user(api_rf, km_user_factory, user_factory):
     """
-    A user who already has a km_user should not be able to create a
-    second one.
+    A user who already has an associated ``KMUser`` instance should not
+    be able to create a second one.
     """
     user = user_factory()
     api_rf.user = user

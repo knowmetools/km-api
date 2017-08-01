@@ -35,15 +35,6 @@ class GalleryView(generics.CreateAPIView):
         return serializer.save(km_user=km_user)
 
 
-class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
-    """
-    View for retrieving and updating a specific media resource.
-    """
-    permission_classes = (DRYPermissions,)
-    queryset = models.MediaResource.objects.all()
-    serializer_class = serializers.MediaResourceSerializer
-
-
 class KMUserDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific km_user.
@@ -64,21 +55,31 @@ class KMUserListView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         """
-        Create a new km_user for the requesting user.
+        Create a new Know Me specific user for the requesting user.
 
         Returns:
-            A new ``KMUser`` instance.
+            :class:`.KMUser`:
+                A new Know Me user.
 
         Raises:
             ValidationError:
-                If the user making the request already has a km_user.
+                If the user making the request already has a Know Me
+                specific account.
         """
         if hasattr(self.request.user, 'km_user'):
             raise ValidationError(
-                code='duplicate_km_user',
-                detail=_('Users may not have more than one km_user.'))
+                _('Users may not have more than one Know Me account.'))
 
         return serializer.save(user=self.request.user)
+
+
+class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
+    """
+    View for retrieving and updating a specific media resource.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.MediaResource.objects.all()
+    serializer_class = serializers.MediaResourceSerializer
 
 
 class ProfileGroupDetailView(generics.RetrieveUpdateAPIView):
