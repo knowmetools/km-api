@@ -99,87 +99,6 @@ class EmergencyItem(mixins.IsAuthenticatedMixin, models.Model):
         return self.name
 
 
-class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
-    """
-    A media resource is an uploaded file attached to a km_user.
-
-    Attributes:
-        name:
-            The name of the item.
-        km_user:
-            The km_user that the item is attached to.
-        file:
-            A file containing some sort of content.
-    """
-    name = models.CharField(
-        max_length=255,
-        verbose_name=_('name'))
-    km_user = models.ForeignKey(
-        'know_me.KMUser',
-        null=True,
-        related_name='media_resources',
-        related_query_name='media_resource',
-        verbose_name=_('km_user'))
-    file = models.FileField(
-        max_length=255,
-        upload_to=get_media_resource_upload_path,
-        verbose_name=_('file'))
-
-    class Meta:
-        verbose_name = _('media resource')
-        verbose_name_plural = _('media resources')
-
-    def __str__(self):
-        """
-        Get a string representation of the media resource.
-
-        Returns:
-            str:
-                The media resource's name.
-        """
-        return self.name
-
-    def get_absolute_url(self):
-        """
-        Get the URL of the instance's detail view.
-
-        Returns:
-            str:
-                The absolute URL of the instance's detail view.
-        """
-        return reverse('know-me:media-resource-detail', kwargs={'pk': self.pk})
-
-    def has_object_read_permission(self, request):
-        """
-        Check read permissions on the instance for a given request.
-
-        Args:
-            request:
-                The request to check permissions for.
-
-        Returns:
-            bool:
-                ``True`` if the request is allowed to read the instance
-                and ``False`` otherwise.
-        """
-        return self.km_user.user == request.user
-
-    def has_object_write_permission(self, request):
-        """
-        Check write permissions on the instance for a given request.
-
-        Args:
-            request:
-                The request to check permissions for.
-
-        Returns:
-            bool:
-                ``True`` if the request is allowed to write to the
-                instance and ``False`` otherwise.
-        """
-        return self.km_user.user == request.user
-
-
 class ImageContent(models.Model):
     """
     Content for image-type :class:`.ProfileItem` instances.
@@ -437,6 +356,87 @@ class ListEntry(models.Model):
                 The entry's text.
         """
         return self.text
+
+
+class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    A media resource is an uploaded file attached to a km_user.
+
+    Attributes:
+        name:
+            The name of the item.
+        km_user:
+            The km_user that the item is attached to.
+        file:
+            A file containing some sort of content.
+    """
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'))
+    km_user = models.ForeignKey(
+        'know_me.KMUser',
+        null=True,
+        related_name='media_resources',
+        related_query_name='media_resource',
+        verbose_name=_('km_user'))
+    file = models.FileField(
+        max_length=255,
+        upload_to=get_media_resource_upload_path,
+        verbose_name=_('file'))
+
+    class Meta:
+        verbose_name = _('media resource')
+        verbose_name_plural = _('media resources')
+
+    def __str__(self):
+        """
+        Get a string representation of the media resource.
+
+        Returns:
+            str:
+                The media resource's name.
+        """
+        return self.name
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the instance's detail view.
+        """
+        return reverse('know-me:media-resource-detail', kwargs={'pk': self.pk})
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to read the instance
+                and ``False`` otherwise.
+        """
+        return self.km_user.user == request.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to write to the
+                instance and ``False`` otherwise.
+        """
+        return self.km_user.user == request.user
 
 
 class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):

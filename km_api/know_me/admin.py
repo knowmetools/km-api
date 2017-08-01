@@ -31,16 +31,6 @@ class EmergencyItemAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-@admin.register(models.MediaResource)
-class MediaResourceAdmin(admin.ModelAdmin):
-    """
-    Admin for the ``MediaResource`` model.
-    """
-    fields = ('name', 'km_user', 'file')
-    list_display = ('name', 'km_user')
-    search_fields = ('name', 'km_user__user__name')
-
-
 @admin.register(models.ImageContent)
 class ImageContentAdmin(admin.ModelAdmin):
     """
@@ -89,6 +79,16 @@ class ListContentAdmin(admin.ModelAdmin):
         return str(list_content)
     string_repr.admin_order_field = 'profile_item__name'
     string_repr.short_description = _('list content')
+
+
+@admin.register(models.MediaResource)
+class MediaResourceAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``MediaResource`` model.
+    """
+    fields = ('name', 'km_user', 'file')
+    list_display = ('name', 'km_user')
+    search_fields = ('name', 'km_user__user__name')
 
 
 @admin.register(models.ProfileGroup)

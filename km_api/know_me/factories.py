@@ -31,18 +31,6 @@ class EmergencyItemFactory(factory.django.DjangoModelFactory):
         model = models.EmergencyItem
 
 
-class MediaResourceFactory(factory.django.DjangoModelFactory):
-    """
-    Factory for generating ``MediaResource`` instances.
-    """
-    name = factory.Sequence(lambda n: 'Media Resource {n}'.format(n=n))
-    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
-    file = factory.LazyFunction(create_file)
-
-    class Meta:
-        model = models.MediaResource
-
-
 class ImageContentFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``ImageContent`` instances.
@@ -84,6 +72,18 @@ class ListEntryFactory(factory.django.DjangoModelFactory):
 
     class Meta(object):
         model = models.ListEntry
+
+
+class MediaResourceFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``MediaResource`` instances.
+    """
+    name = factory.Sequence(lambda n: 'Media Resource {n}'.format(n=n))
+    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
+    file = factory.LazyFunction(create_file)
+
+    class Meta:
+        model = models.MediaResource
 
 
 class ProfileGroupFactory(factory.django.DjangoModelFactory):
