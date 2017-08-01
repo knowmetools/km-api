@@ -7,6 +7,20 @@ from django.utils.translation import ugettext_lazy as _
 from know_me import models
 
 
+# Inlines used in other admin objects
+
+class ListEntryInline(admin.StackedInline):
+    """
+    Inline admin for list entries.
+    """
+    extra = 1
+    fields = ('text',)
+    model = models.ListEntry
+
+
+# Standard admin objects
+
+
 @admin.register(models.EmergencyItem)
 class EmergencyItemAdmin(admin.ModelAdmin):
     """
@@ -15,16 +29,6 @@ class EmergencyItemAdmin(admin.ModelAdmin):
     fields = ('name', 'km_user', 'media_resource', 'description')
     list_display = ('name', 'km_user')
     search_fields = ('name',)
-
-
-@admin.register(models.MediaResource)
-class MediaResourceAdmin(admin.ModelAdmin):
-    """
-    Admin for the ``MediaResource`` model.
-    """
-    fields = ('name', 'profile', 'file')
-    list_display = ('name', 'profile')
-    search_fields = ('name', 'profile__name')
 
 
 @admin.register(models.ImageContent)
@@ -47,6 +51,44 @@ class KMUserAdmin(admin.ModelAdmin):
     fields = ('user', 'image', 'quote')
     list_display = ('user',)
     search_fields = ('user__first_name', 'user__last_name')
+
+
+@admin.register(models.ListContent)
+class ListContentAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``ListContent`` model.
+    """
+    fields = ('profile_item',)
+    inlines = (ListEntryInline,)
+    list_display = ('string_repr', 'profile_item')
+    search_fields = ('profile_item__name',)
+
+    def string_repr(self, list_content):
+        """
+        Get the string representation of a ``ListContent`` instance.
+
+        Args:
+            list_content (:class:`.ListContent`):
+                The list content instance to get a string representation
+                of.
+
+        Returns:
+            str:
+                The string representation of the provided list content.
+        """
+        return str(list_content)
+    string_repr.admin_order_field = 'profile_item__name'
+    string_repr.short_description = _('list content')
+
+
+@admin.register(models.MediaResource)
+class MediaResourceAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``MediaResource`` model.
+    """
+    fields = ('name', 'profile', 'file')
+    list_display = ('name', 'profile')
+    search_fields = ('name', 'profile__name')
 
 
 @admin.register(models.Profile)
