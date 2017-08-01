@@ -70,6 +70,19 @@ def list_content_factory(db):
 
 
 @pytest.fixture
+def list_entry_factory(db):
+    """
+    Fixture to get the factory used to create list entries.
+
+    Returns:
+        :class:`.ListEntryFactory`:
+            The factory class used to create test :class:`.ListEntry`
+            instances.
+    """
+    return factories.ListEntryFactory
+
+
+@pytest.fixture
 def media_resource_factory(db):
     """
     Fixture to get the factory used to create media resource.

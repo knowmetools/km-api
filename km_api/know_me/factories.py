@@ -61,6 +61,17 @@ class ListContentFactory(factory.django.DjangoModelFactory):
         model = models.ListContent
 
 
+class ListEntryFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``ListEntry`` instances.
+    """
+    list_content = factory.SubFactory('know_me.factories.ListContentFactory')
+    text = factory.Sequence(lambda n: 'List entry {n}'.format(n=n))
+
+    class Meta(object):
+        model = models.ListEntry
+
+
 class MediaResourceFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``MediaResource`` instances.

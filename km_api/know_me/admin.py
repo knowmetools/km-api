@@ -7,6 +7,20 @@ from django.utils.translation import ugettext_lazy as _
 from know_me import models
 
 
+# Inlines used in other admin objects
+
+class ListEntryInline(admin.StackedInline):
+    """
+    Inline admin for list entries.
+    """
+    extra = 1
+    fields = ('text',)
+    model = models.ListEntry
+
+
+# Standard admin objects
+
+
 @admin.register(models.EmergencyItem)
 class EmergencyItemAdmin(admin.ModelAdmin):
     """
@@ -45,6 +59,7 @@ class ListContentAdmin(admin.ModelAdmin):
     Admin for the ``ListContent`` model.
     """
     fields = ('profile_item',)
+    inlines = (ListEntryInline,)
     list_display = ('string_repr', 'profile_item')
     search_fields = ('profile_item__name',)
 

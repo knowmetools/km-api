@@ -234,6 +234,44 @@ class ListContent(models.Model):
             item=self.profile_item)
 
 
+class ListEntry(models.Model):
+    """
+    An entry in a list for a specific profile item.
+    """
+    list_content = models.ForeignKey(
+        'know_me.ListContent',
+        on_delete=models.CASCADE,
+        related_name='entries',
+        related_query_name='entry',
+        verbose_name=_('list content'))
+    """
+    :class:`.ListContent`:
+        The parent list that the entry is associated with.
+    """
+
+    text = models.CharField(
+        max_length=255,
+        verbose_name=_('text'))
+    """
+    str:
+        Text associated with the list entry.
+    """
+
+    class Meta(object):
+        verbose_name = _('list entry')
+        verbose_name_plural = _('list entries')
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            str:
+                The entry's text.
+        """
+        return self.text
+
+
 class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
     """
     A media resource is an uploaded file attached to a profile.
