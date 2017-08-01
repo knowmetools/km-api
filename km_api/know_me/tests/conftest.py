@@ -68,6 +68,28 @@ def km_user_factory(db):
 
 
 @pytest.fixture
+def list_content_factory(db):
+    """
+    Fixture to get the factory used to create a list for a profile item.
+
+    Returns:
+        The factory class used to create test ``ListContent`` instances.
+    """
+    return factories.ListContentFactory
+
+
+@pytest.fixture
+def list_entry_factory(db):
+    """
+    Fixture to get the factory used to create profile list entries.
+
+    Returns:
+        The factory class used to create ``ListEntry`` instances.
+    """
+    return factories.ListEntryFactory
+
+
+@pytest.fixture
 def profile_factory(db):
     """
     Fixture to get the factory used for generating ``Profile`` objects.
