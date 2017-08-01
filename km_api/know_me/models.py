@@ -99,86 +99,6 @@ class EmergencyItem(mixins.IsAuthenticatedMixin, models.Model):
         return self.name
 
 
-class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
-    """
-    A media resource is an uploaded file attached to a profile.
-
-    Attributes:
-        name:
-            The name of the item.
-        profile:
-            The profile that the item is attached to.
-        file:
-            A file containing some sort of content.
-    """
-    name = models.CharField(
-        max_length=255,
-        verbose_name=_('name'))
-    profile = models.ForeignKey(
-        'know_me.Profile',
-        related_name='media_resources',
-        related_query_name='media_resource',
-        verbose_name=_('profile'))
-    file = models.FileField(
-        max_length=255,
-        upload_to=get_media_resource_upload_path,
-        verbose_name=_('file'))
-
-    class Meta:
-        verbose_name = _('media resource')
-        verbose_name_plural = _('media resources')
-
-    def __str__(self):
-        """
-        Get a string representation of the media resource.
-
-        Returns:
-            str:
-                The media resource's name.
-        """
-        return self.name
-
-    def get_absolute_url(self):
-        """
-        Get the URL of the instance's detail view.
-
-        Returns:
-            str:
-                The absolute URL of the instance's detail view.
-        """
-        return reverse('know-me:media-resource-detail', kwargs={'pk': self.pk})
-
-    def has_object_read_permission(self, request):
-        """
-        Check read permissions on the instance for a given request.
-
-        Args:
-            request:
-                The request to check permissions for.
-
-        Returns:
-            bool:
-                ``True`` if the request is allowed to read the instance
-                and ``False`` otherwise.
-        """
-        return self.profile.user == request.user
-
-    def has_object_write_permission(self, request):
-        """
-        Check write permissions on the instance for a given request.
-
-        Args:
-            request:
-                The request to check permissions for.
-
-        Returns:
-            bool:
-                ``True`` if the request is allowed to write to the
-                instance and ``False`` otherwise.
-        """
-        return self.profile.user == request.user
-
-
 class ImageContent(models.Model):
     """
     Content for image-type :class:`.ProfileItem` instances.
@@ -281,6 +201,117 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
                 The KMUser's name.
         """
         return self.user.get_short_name()
+
+
+class ListContent(models.Model):
+    """
+    Model to store list content for a :class:`.ProfileItem`.
+    """
+    profile_item = models.OneToOneField(
+        'know_me.ProfileItem',
+        on_delete=models.CASCADE,
+        related_name='list_content',
+        verbose_name=_('profile item'))
+    """
+    :class:`.ProfileItem`:
+        The profile item that the list content is attached to.
+    """
+
+    class Meta(object):
+        verbose_name = _('profile item list content')
+        verbose_name_plural = _('profile item list content')
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            str:
+                A message indicating which profile item the list content
+                belongs to.
+        """
+        return "List content for profile item '{item}'".format(
+            item=self.profile_item)
+
+
+class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    A media resource is an uploaded file attached to a profile.
+
+    Attributes:
+        name:
+            The name of the item.
+        profile:
+            The profile that the item is attached to.
+        file:
+            A file containing some sort of content.
+    """
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'))
+    profile = models.ForeignKey(
+        'know_me.Profile',
+        related_name='media_resources',
+        related_query_name='media_resource',
+        verbose_name=_('profile'))
+    file = models.FileField(
+        max_length=255,
+        upload_to=get_media_resource_upload_path,
+        verbose_name=_('file'))
+
+    class Meta:
+        verbose_name = _('media resource')
+        verbose_name_plural = _('media resources')
+
+    def __str__(self):
+        """
+        Get a string representation of the media resource.
+
+        Returns:
+            str:
+                The media resource's name.
+        """
+        return self.name
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the instance's detail view.
+        """
+        return reverse('know-me:media-resource-detail', kwargs={'pk': self.pk})
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to read the instance
+                and ``False`` otherwise.
+        """
+        return self.profile.user == request.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to write to the
+                instance and ``False`` otherwise.
+        """
+        return self.profile.user == request.user
 
 
 class Profile(mixins.IsAuthenticatedMixin, models.Model):

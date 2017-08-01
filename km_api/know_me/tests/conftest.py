@@ -33,17 +33,6 @@ def file():
 
 
 @pytest.fixture
-def media_resource_factory(db):
-    """
-    Fixture to get the factory used to create media resource.
-
-    Returns:
-        The factory class used to create test ``MediaResource`` instances.
-    """
-    return factories.MediaResourceFactory
-
-
-@pytest.fixture
 def image_content_factory(db):
     """
     Fixture to get the factory used to create profile item image
@@ -65,6 +54,30 @@ def km_user_factory(db):
         The factory class used to create test ``KMUser`` instances.
     """
     return factories.KMUserFactory
+
+
+@pytest.fixture
+def list_content_factory(db):
+    """
+    Fixture to get the factory used to create profile item list content.
+
+    Returns:
+        :class:`.ListContentFactory`:
+            The factory class used to create test :class:`.ListContent`
+            instances.
+    """
+    return factories.ListContentFactory
+
+
+@pytest.fixture
+def media_resource_factory(db):
+    """
+    Fixture to get the factory used to create media resource.
+
+    Returns:
+        The factory class used to create test ``MediaResource`` instances.
+    """
+    return factories.MediaResourceFactory
 
 
 @pytest.fixture
