@@ -11,11 +11,21 @@ def test_create(user_factory):
        user=user_factory())
 
 
-def test_string_conversion(km_user_factory):
+def test_name(km_user_factory):
     """
-    Converting a KMUser to a string should return the associated user's
+    The know me user's name property should return the associated user's
     short name.
     """
     km_user = km_user_factory()
 
-    assert str(km_user) == km_user.user.get_short_name()
+    assert km_user.name == km_user.user.get_short_name()
+
+
+def test_string_conversion(km_user_factory):
+    """
+    Converting a know me user to a string should return the user's name
+    property.
+    """
+    km_user = km_user_factory()
+
+    assert str(km_user) == km_user.name
