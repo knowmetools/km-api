@@ -76,7 +76,7 @@ class ProfileItemAdmin(admin.ModelAdmin):
     Admin for the ``ProfileItem`` model.
     """
     fields = ('name', 'topic')
-    list_display = ('name', 'get_profile', 'get_group', 'row')
+    list_display = ('name', 'get_profile', 'get_group', 'topic')
     search_fields = ('name',)
 
     def get_group(self, item):
