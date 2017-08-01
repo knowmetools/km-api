@@ -4,13 +4,14 @@ Changelog
 v0.5
 ----
 
-Breaking Changes
-  * :issue:`65`: Renamed most models. This will cause existing data to disappear.
-  * :issue:`85`: Move profile item content related to images to separate model.
+This release was focused on renaming the components of a Know Me user's profile. As a result of this renaming, this release will break all existing data related to Know Me. This change also caused several endpoints to be renamed. The most relevant issue here is :issue:`65`.
+
+* ``/know-me/gallery-items/*`` to ``/know-me/media-resources/*``
+* ``/know-me/profiles/*`` to ``/know-me/users/*``
+* ``/know-me/rows/*`` to ``/know-me/topics/*``
 
 Bug Fixes
   * :issue:`75`: Fix parsing of JSON requests.
-  * :issue:`95`: Renamed ProfileRow to ProfileTopic.
 
 v0.4
 ----
