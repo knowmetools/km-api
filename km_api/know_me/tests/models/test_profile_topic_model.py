@@ -3,12 +3,12 @@ from rest_framework.reverse import reverse
 from know_me import models
 
 
-def test_create(profile_group_factory):
+def test_create(profile_factory):
     """
     Test creating a profile topic.
     """
     models.ProfileTopic.objects.create(
-        group=profile_group_factory(),
+        profile=profile_factory(),
         name='Test profile topic',
         topic_type=models.ProfileTopic.TEXT)
 
@@ -55,8 +55,8 @@ def test_has_object_read_permission_owner(api_rf, profile_topic_factory):
     their own km_user.
     """
     topic = profile_topic_factory()
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
     request = api_rf.get('/')
@@ -86,8 +86,8 @@ def test_has_object_write_permission_owner(api_rf, profile_topic_factory):
     to their own km_user.
     """
     topic = profile_topic_factory()
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
     request = api_rf.get('/')

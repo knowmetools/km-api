@@ -11,7 +11,7 @@ def test_create(profile_topic_factory, serializer_context):
     """
     topic = profile_topic_factory()
 
-    serializer_context['km_user'] = topic.group.km_user
+    serializer_context['km_user'] = topic.profile.km_user
 
     data = {
         'name': 'My Profile Item',

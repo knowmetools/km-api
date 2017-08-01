@@ -32,14 +32,14 @@ def test_get_gallery_url(km_user_factory):
     assert km_user.get_gallery_url() == expected
 
 
-def test_get_group_list_url(km_user_factory):
+def test_get_profile_list_url(km_user_factory):
     """
-    This method should return the URL of the profile's group list view.
+    This method should return the URL of the profile's profile list view.
     """
     km_user = km_user_factory()
-    expected = reverse('know-me:profile-group-list', kwargs={'pk': km_user.pk})
+    expected = reverse('know-me:profile-list', kwargs={'pk': km_user.pk})
 
-    assert km_user.get_group_list_url() == expected
+    assert km_user.get_profile_list_url() == expected
 
 
 def test_has_object_read_permission_other(

@@ -46,8 +46,8 @@ def test_has_object_read_permission_owner(api_rf, profile_item_factory):
     """
     item = profile_item_factory()
     topic = item.topic
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
     request = api_rf.get('/')
@@ -78,8 +78,8 @@ def test_has_object_write_permission_owner(api_rf, profile_item_factory):
     """
     item = profile_item_factory()
     topic = item.topic
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
     request = api_rf.get('/')

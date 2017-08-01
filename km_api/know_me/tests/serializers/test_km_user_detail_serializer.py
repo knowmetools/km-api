@@ -4,26 +4,26 @@ from know_me import serializers
 def test_serialize(
         api_rf,
         km_user_factory,
-        profile_group_factory,
+        profile_factory,
         serializer_context):
     """
     Test serializing a km_user.
     """
     km_user = km_user_factory()
-    profile_group_factory(km_user=km_user)
-    profile_group_factory(km_user=km_user)
+    profile_factory(km_user=km_user)
+    profile_factory(km_user=km_user)
 
     serializer = serializers.KMUserDetailSerializer(
         km_user,
         context=serializer_context)
-    group_serializer = serializers.ProfileGroupListSerializer(
-        km_user.groups,
+    profile_serializer = serializers.ProfileListSerializer(
+        km_user.profiles,
         context=serializer_context,
         many=True)
 
     url_request = api_rf.get(km_user.get_absolute_url())
     gallery_request = api_rf.get(km_user.get_gallery_url())
-    group_list_request = api_rf.get(km_user.get_group_list_url())
+    profile_list_request = api_rf.get(km_user.get_profile_list_url())
 
     expected = {
         'id': km_user.id,
@@ -31,8 +31,8 @@ def test_serialize(
         'name': km_user.name,
         'quote': km_user.quote,
         'gallery_url': gallery_request.build_absolute_uri(),
-        'groups_url': group_list_request.build_absolute_uri(),
-        'groups': group_serializer.data
+        'profiles_url': profile_list_request.build_absolute_uri(),
+        'profiles': profile_serializer.data
     }
 
     assert serializer.data == expected

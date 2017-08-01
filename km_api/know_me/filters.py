@@ -32,14 +32,14 @@ class KMUserFilterBackend(DRYPermissionFiltersBase):
         return queryset.filter(user=request.user)
 
 
-class ProfileGroupFilterBackend(DRYPermissionFiltersBase):
+class ProfileFilterBackend(DRYPermissionFiltersBase):
     """
-    Filter for listing ``ProfileGroup`` instances.
+    Filter for listing ``Profile`` instances.
     """
 
     def filter_list_queryset(self, request, queryset, view):
         """
-        Filter profile groups for a ``list`` action.
+        Filter profiles for a ``list`` action.
 
         Args:
             request:
@@ -50,7 +50,7 @@ class ProfileGroupFilterBackend(DRYPermissionFiltersBase):
                 The view being accessed.
 
         Returns:
-            A queryset containing the profile groups belonging to the
+            A queryset containing the profiles belonging to the
             km_user whose primary key is specified in the view.
         """
         km_user = get_object_or_404(
@@ -84,7 +84,7 @@ class ProfileItemFilterBackend(DRYPermissionFiltersBase):
         """
         topic = get_object_or_404(
             models.ProfileTopic,
-            group__km_user__user=request.user,
+            profile__km_user__user=request.user,
             pk=view.kwargs.get('pk'))
 
         return queryset.filter(topic__pk=topic.pk)
@@ -109,11 +109,11 @@ class ProfileTopicFilterBackend(DRYPermissionFiltersBase):
 
         Returns:
             A queryset containing the profile topics belonging to the
-            profile group whose primary key is specified in the view.
+            profile whose primary key is specified in the view.
         """
-        group = get_object_or_404(
-            models.ProfileGroup,
+        profile = get_object_or_404(
+            models.Profile,
             pk=view.kwargs.get('pk'),
             km_user__user=request.user)
 
-        return queryset.filter(group__pk=group.pk)
+        return queryset.filter(profile__pk=profile.pk)

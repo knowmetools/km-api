@@ -12,8 +12,8 @@ def test_get_own_topic(api_rf, profile_topic_factory):
     km_user.
     """
     topic = profile_topic_factory()
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
 
@@ -35,8 +35,8 @@ def test_update(api_rf, profile_topic_factory):
     the given topic.
     """
     topic = profile_topic_factory(name='Old Name')
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
 

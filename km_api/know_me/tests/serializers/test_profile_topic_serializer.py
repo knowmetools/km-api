@@ -1,11 +1,11 @@
 from know_me import models, serializers
 
 
-def test_create(profile_group_factory):
+def test_create(profile_factory):
     """
     Saving a serializer with valid data should create a new profile topic.
     """
-    group = profile_group_factory()
+    profile = profile_factory()
     data = {
         'name': 'Test Topic',
         'topic_type': models.ProfileTopic.TEXT,
@@ -14,11 +14,11 @@ def test_create(profile_group_factory):
     serializer = serializers.ProfileTopicSerializer(data=data)
     assert serializer.is_valid()
 
-    topic = serializer.save(group=group)
+    topic = serializer.save(profile=profile)
 
     assert topic.name == data['name']
     assert topic.topic_type == data['topic_type']
-    assert topic.group == group
+    assert topic.profile == profile
 
 
 def test_serialize(

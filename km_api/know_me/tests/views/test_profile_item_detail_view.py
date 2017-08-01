@@ -12,8 +12,8 @@ def test_get_item(api_rf, profile_item_factory):
     """
     item = profile_item_factory()
     topic = item.topic
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
 
@@ -36,8 +36,8 @@ def test_update(api_rf, profile_item_factory):
     """
     item = profile_item_factory(name='Old Name')
     topic = item.topic
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
 
@@ -69,8 +69,8 @@ def test_update_with_media_resource(
     """
     item = profile_item_factory()
     topic = item.topic
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
 

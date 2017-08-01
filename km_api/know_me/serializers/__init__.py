@@ -8,9 +8,9 @@ from .km_user_serializers import (          # noqa
     KMUserListSerializer,
 )
 
-from .profile_group_serializers import (    # noqa
-    ProfileGroupDetailSerializer,
-    ProfileGroupListSerializer,
+from .profile_serializers import (    # noqa
+    ProfileDetailSerializer,
+    ProfileListSerializer,
 )
 
 from .profile_item_serializers import ProfileItemSerializer     # noqa
