@@ -31,6 +31,19 @@ class EmergencyItemFactory(factory.django.DjangoModelFactory):
         model = models.EmergencyItem
 
 
+class EmergencyContactFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``EmergencyContact`` instances.
+    """
+    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
+    name = factory.Sequence(lambda n: 'Contact Name {n}'.format(n=n))
+    relation = 'Caregiver'
+    phone_number = '19193334444'
+
+    class Meta:
+        model = models.EmergencyContact
+
+
 class ImageContentFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``ImageContent`` instances.

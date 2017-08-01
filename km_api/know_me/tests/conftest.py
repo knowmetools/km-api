@@ -57,6 +57,17 @@ def km_user_factory(db):
 
 
 @pytest.fixture
+def emergency_contact_factory(db):
+    """
+    Fixture to get the factory used to create an Emergency Contact.
+
+    Returns:
+        The factory class used to create test ``EmergencyContact`` instances.
+    """
+    return factories.EmergencyContactFactory
+
+
+@pytest.fixture
 def list_content_factory(db):
     """
     Fixture to get the factory used to create profile item list content.
