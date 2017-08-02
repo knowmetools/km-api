@@ -105,7 +105,7 @@ def test_name(km_user_factory):
     """
     km_user = km_user_factory()
 
-    assert km_user.name == km_user.name
+    assert km_user.name == km_user.user.get_short_name()
 
 
 def test_string_conversion(km_user_factory):
