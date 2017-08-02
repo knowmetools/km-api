@@ -670,7 +670,7 @@ class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
     VISUAL = 4
 
     TOPIC_TYPE_CHOICES = (
-        (GROUPED, _('profileed topic')),
+        (GROUPED, _('grouped topic')),
         (PAGED, _('paged topic')),
         (TEXT, _('text topic')),
         (VISUAL, _('visual topic')),
