@@ -8,7 +8,7 @@ def test_create(km_user_factory, serializer_context):
     """
     km_user = km_user_factory()
     data = {
-        'name': 'Profile Group',
+        'name': 'Profile',
         'is_default': True,
     }
 
