@@ -98,10 +98,20 @@ def test_has_object_write_permission_owner(api_rf, km_user_factory):
     assert km_user.has_object_write_permission(request)
 
 
+def test_name(km_user_factory):
+    """
+    The know me user's name property should return the associated user's
+    short name.
+    """
+    km_user = km_user_factory()
+
+    assert km_user.name == km_user.name
+
+
 def test_string_conversion(km_user_factory):
     """
     Converting a km_user to a string should return the km_user's name.
     """
     km_user = km_user_factory()
 
-    assert str(km_user) == km_user.user.get_short_name()
+    assert str(km_user) == km_user.name
