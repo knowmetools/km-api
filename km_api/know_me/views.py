@@ -12,6 +12,15 @@ from rest_framework.exceptions import ValidationError
 from know_me import filters, models, serializers
 
 
+class EmergencyItemDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View for updating and deleting a specific emergency item.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.EmergencyItem.objects.all()
+    serializer_class = serializers.EmergencyItemSerializer
+
+
 class EmergencyItemListView(generics.ListCreateAPIView):
     """
     View for listing and creating emergency items.

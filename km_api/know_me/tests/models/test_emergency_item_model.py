@@ -1,5 +1,7 @@
 from unittest import mock
 
+from rest_framework.reverse import reverse
+
 from know_me import models
 
 
@@ -12,6 +14,16 @@ def test_create(media_resource_factory, km_user_factory):
             media_resource=media_resource_factory(),
             km_user=km_user_factory(),
             name='Emergency Item')
+
+
+def test_get_absolute_url(emergency_item_factory):
+    """
+    This method should return the URL of the instance's detail view.
+    """
+    item = emergency_item_factory()
+    expected = reverse('know-me:emergency-item-detail', kwargs={'pk': item.pk})
+
+    assert item.get_absolute_url() == expected
 
 
 def test_has_object_read_permission_with_user_permission(

@@ -10,6 +10,9 @@ This release was focused on renaming the components of a Know Me user's profile.
 * ``/know-me/profiles/*`` to ``/know-me/users/*``
 * ``/know-me/rows/*`` to ``/know-me/topics/*``
 
+Features
+  * :issue:`91,96`: Add ability for users to manage their emergency items.
+
 Bug Fixes
   * :issue:`75`: Fix parsing of JSON requests.
 

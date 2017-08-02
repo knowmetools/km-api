@@ -28,6 +28,7 @@ def test_create(km_user_factory, media_resource_factory):
 
 
 def test_serialize(
+        api_rf,
         emergency_item_factory,
         media_resource_factory,
         serializer_context):
@@ -45,8 +46,11 @@ def test_serialize(
         media_resource,
         context=serializer_context)
 
+    url_request = api_rf.get(item.get_absolute_url())
+
     expected = {
         'id': item.id,
+        'url': url_request.build_absolute_uri(),
         'name': item.name,
         'description': item.description,
         'media_resource': media_resource_serializer.data,
