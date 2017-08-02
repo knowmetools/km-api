@@ -13,7 +13,7 @@ def test_get_media_resource_upload_path():
 
     filename = 'foo.jpg'
 
-    expected = 'km_user/{id}/gallery/{file}'.format(
+    expected = 'know-me/users/{id}/images/{file}'.format(
         file=filename,
         id=resource.km_user.id)
 

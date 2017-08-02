@@ -25,7 +25,7 @@ def get_media_resource_upload_path(item, filename):
             The original filename prefixed with
             ``km_user/<id>/gallery/``.
     """
-    return 'km_user/{id}/gallery/{file}'.format(
+    return 'know-me/users/{id}/images/{file}'.format(
         file=filename,
         id=item.km_user.id)
 
