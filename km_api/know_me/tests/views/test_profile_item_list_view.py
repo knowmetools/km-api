@@ -31,9 +31,10 @@ def test_create(api_rf, profile_topic_factory):
 
     data = {
         'name': 'Test Item',
+        'image_content': {},
     }
 
-    request = api_rf.post(topic.get_item_list_url(), data)
+    request = api_rf.post(topic.get_item_list_url(), data, format='json')
     response = profile_item_list_view(request, pk=topic.pk)
 
     assert response.status_code == status.HTTP_201_CREATED

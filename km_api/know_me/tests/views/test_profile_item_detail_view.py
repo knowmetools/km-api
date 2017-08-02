@@ -29,7 +29,7 @@ def test_get_item(api_rf, profile_item_factory):
     assert response.data == serializer.data
 
 
-def test_update(api_rf, profile_item_factory):
+def test_update(api_rf, image_content_factory, profile_item_factory):
     """
     Sending a PATCH request to the view with valid data should update
     the profile item with the given primary key.
@@ -43,40 +43,6 @@ def test_update(api_rf, profile_item_factory):
 
     data = {
         'name': 'New Name',
-    }
-
-    request = api_rf.patch(item.get_absolute_url(), data)
-    response = profile_item_detail_view(request, pk=item.pk)
-
-    assert response.status_code == status.HTTP_200_OK
-
-    item.refresh_from_db()
-    serializer = serializers.ProfileItemSerializer(
-        item,
-        context={'request': request})
-
-    assert response.data == serializer.data
-
-
-def test_update_with_media_resource(
-        api_rf,
-        media_resource_factory,
-        profile_item_factory):
-    """
-    Users should be able to attach a media resource to a profile item.
-
-    Regression test for #23
-    """
-    item = profile_item_factory()
-    topic = item.topic
-    profile = topic.profile
-    km_user = profile.km_user
-
-    api_rf.user = km_user.user
-
-    media_resource = media_resource_factory(km_user=km_user)
-    data = {
-        'media_resource': media_resource.pk,
     }
 
     request = api_rf.patch(item.get_absolute_url(), data)
