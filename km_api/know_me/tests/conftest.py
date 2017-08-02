@@ -94,14 +94,14 @@ def media_resource_factory(db):
 
 
 @pytest.fixture
-def profile_group_factory(db):
+def profile_factory(db):
     """
-    Fixture to get the factory used to create profile groups.
+    Fixture to get the factory used to create profiles.
 
     Returns:
-        The factory class used to create ``ProfileGroup`` instances.
+        The factory class used to create ``Profile`` instances.
     """
-    return factories.ProfileGroupFactory
+    return factories.ProfileFactory
 
 
 @pytest.fixture

@@ -4,10 +4,10 @@ Account
 
 
 -------
-Profile
+KMUser
 -------
 
-A user's profile contains personal information about the user such as their email or name.
+A user's know me user contains personal information about the user such as their email or name.
 
 .. note::
 

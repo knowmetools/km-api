@@ -275,9 +275,9 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             kwargs={'pk': self.pk},
             request=request)
 
-    def get_group_list_url(self, request=None):
+    def get_profile_list_url(self, request=None):
         """
-        Get the absolute URL of the instance's group list view.
+        Get the absolute URL of the instance's profile list view.
 
         Args:
             request (optional):
@@ -287,10 +287,10 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             str:
-                The absolute URL of the instance's group list view.
+                The absolute URL of the instance's profile list view.
         """
         return reverse(
-            'know-me:profile-group-list',
+            'know-me:profile-list',
             kwargs={'pk': self.pk},
             request=request)
 
@@ -475,22 +475,22 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
         return self.km_user.user == request.user
 
 
-class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
+class Profile(mixins.IsAuthenticatedMixin, models.Model):
     """
-    A profile group contains a targeted subset of a ``KMUser``.
+    A profile contains a targeted subset of a ``KMUser``.
 
     Attributes:
         is_default (bool):
-            A boolean controlling if the group is the default for its
+            A boolean controlling if the profile is the default for its
             parent km_user.
         name (str):
-            The name of the group.
+            The name of the profile.
         km_user:
-            The ``KMUser`` instance the group belongs to.
+            The ``KMUser`` instance the profile belongs to.
     """
     is_default = models.BooleanField(
         default=False,
-        help_text=_('The default profile group is displayed initially.'),
+        help_text=_('The default profile is displayed initially.'),
         verbose_name=_('is default'))
     name = models.CharField(
         max_length=255,
@@ -499,21 +499,21 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
         'know_me.KMUser',
         null=True,
         on_delete=models.CASCADE,
-        related_name='groups',
-        related_query_name='group',
+        related_name='profiles',
+        related_query_name='profile',
         verbose_name=_('know me user'))
 
     class Meta:
-        verbose_name = _('profile group')
-        verbose_name_plural = _('profile groups')
+        verbose_name = _('profile')
+        verbose_name_plural = _('profiles')
 
     def __str__(self):
         """
-        Get a string representation of the profile group.
+        Get a string representation of the profile.
 
         Returns:
             str:
-                The profile group's name.
+                The profile's name.
         """
         return self.name
 
@@ -524,7 +524,7 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
         Returns:
             The URL of the instance's detail view.
         """
-        return reverse('know-me:profile-group-detail', kwargs={'pk': self.pk})
+        return reverse('know-me:profile-detail', kwargs={'pk': self.pk})
 
     def get_topic_list_url(self, request=None):
         """
@@ -555,7 +555,7 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the group's parent
+                ``True`` if the requesting user owns the profile's parent
                 km_user and ``False`` otherwise.
         """
         return request.user == self.km_user.user
@@ -570,7 +570,7 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the group's parent
+                ``True`` if the requesting user owns the profile's parent
                 km_user and ``False`` otherwise.
         """
         return request.user == self.km_user.user
@@ -636,7 +636,7 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
                 ``True`` if the requesting user owns the km_user the
                 instance belongs to and ``False`` otherwise.
         """
-        return request.user == self.topic.group.km_user.user
+        return request.user == self.topic.profile.km_user.user
 
     def has_object_write_permission(self, request):
         """
@@ -651,16 +651,16 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
                 ``True`` if the requesting user owns the km_user the
                 instance belongs to and ``False`` otherwise.
         """
-        return request.user == self.topic.group.km_user.user
+        return request.user == self.topic.profile.km_user.user
 
 
 class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
     """
-    A profile topic holds a category of information for a profile group.
+    A profile topic holds a category of information for a profile.
 
     Attributes:
-        group:
-            The topic's parent ``ProfileGroup``.
+        profile:
+            The topic's parent ``Profile``.
         name (str):
             The topic's name.
     """
@@ -676,12 +676,13 @@ class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
         (VISUAL, _('visual topic')),
     )
 
-    group = models.ForeignKey(
-        'know_me.ProfileGroup',
+    profile = models.ForeignKey(
+        'know_me.Profile',
+        null=True,
         on_delete=models.CASCADE,
         related_name='topics',
         related_query_name='topic',
-        verbose_name=_('profile group'))
+        verbose_name=_('profile'))
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
@@ -695,7 +696,7 @@ class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
 
     def __str__(self):
         """
-        Get a string representation of the profile group.
+        Get a string representation of the profile.
 
         Returns:
             str:
@@ -746,7 +747,7 @@ class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
                 ``True`` if the requesting user owns the km_user the
                 instance belongs to and ``False`` otherwise.
         """
-        return request.user == self.group.km_user.user
+        return request.user == self.profile.km_user.user
 
     def has_object_write_permission(self, request):
         """
@@ -761,4 +762,4 @@ class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
                 ``True`` if the requesting user owns the km_user the
                 instance belongs to and ``False`` otherwise.
         """
-        return request.user == self.group.km_user.user
+        return request.user == self.profile.km_user.user

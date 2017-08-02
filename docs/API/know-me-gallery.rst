@@ -2,7 +2,7 @@
 Know Me - Gallery
 =================
 
-The gallery is used to store various files associated with a profile. Media resources (items in the gallery) can be attached to a particular profile item.
+The gallery is used to store various files associated with a know me user. Media resources (items in the gallery) can be attached to a particular profile item.
 
 .. note::
 
@@ -23,7 +23,7 @@ This endpoint allows for creation of new media resources.
 
         Since media resources involve a file, the request be sent with the header ``Content-Type: multipart/form-data``.
 
-    :param int id: The ID of the profile to create a media resource for.
+    :param int id: The ID of the know me user to create a media resource for.
 
     :form string name: The name to give the file being uploaded.
     :form file resource: The file to upload.
@@ -37,7 +37,7 @@ This endpoint allows for creation of new media resources.
 
     :status 201: The media resource was succesfully created.
     :status 400: Invalid request. Check the response data for details.
-    :status 404: There is no profile with the given ``id`` accessible to the requesting user.
+    :status 404: There is no know me user with the given ``id`` accessible to the requesting user.
 
 
 -----------------

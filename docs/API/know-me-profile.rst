@@ -1,198 +1,198 @@
 =================
-Know Me - Profile
+Know Me - KMUser
 =================
 
 These endpoints provide data for the Know Me app.
 
 
 --------
-Profiles
+KMUsers
 --------
 
-Profiles are the basis of Know Me. They contain organized sets of information about a specific user.
+KMUsers are the basis of Know Me. They contain organized sets of information about a specific user.
 
-Profile List
+KMUser List
 ------------
 
 .. http:get:: /know-me/profiles/
 
-    Get the list of profiles that the requesting user has access to.
+    Get the list of know me users that the requesting user has access to.
 
-    :>jsonarr int id: The profile's ID.
-    :>jsonarr string url: The URL of the profile's detail view.
-    :>jsonarr string name: The name of the profile.
-    :>jsonarr string quote: A quote from the user who owns the profile.
-    :>jsonarr string welcome_message: A message welcoming other users to the profile.
+    :>jsonarr int id: The know me user's ID.
+    :>jsonarr string url: The URL of the know me user's detail view.
+    :>jsonarr string name: The name of the know me user.
+    :>jsonarr string quote: A quote from the user who owns the know me user.
+    :>jsonarr string welcome_message: A message welcoming other users to the know me user.
 
     :statuscode 200: The request was successful.
 
 .. http:post:: /know-me/profiles/
 
-    Create a new profile for the user making the request.
+    Create a new know me user for the user making the request.
 
-    :<json string name: A name for the profile.
+    :<json string name: A name for the know me user.
     :<json string quote: A quote from the user.
-    :<json string welcome_message: A message welcoming other people to the profile.
+    :<json string welcome_message: A message welcoming other people to the know me user.
 
-    :>header Location: The URL of the created profile's detail view.
+    :>header Location: The URL of the created know me user's detail view.
 
-    :>json int id: The profile's ID.
-    :>json string url: The URL of the profile's detail view.
-    :>json string name: The name of the profile.
-    :>json string quote: A quote from the user who owns the profile.
-    :>json string welcome_message: A message welcoming other users to the profile.
+    :>json int id: The know me user's ID.
+    :>json string url: The URL of the know me user's detail view.
+    :>json string name: The name of the know me user.
+    :>json string quote: A quote from the user who owns the know me user.
+    :>json string welcome_message: A message welcoming other users to the know me user.
 
-    :statuscode 201: The new profile was successfully created.
+    :statuscode 201: The new know me user was successfully created.
     :statuscode 400: Invalid request. Check the response data for details.
 
 .. note::
 
-    Currently, a user may only have one profile.
+    Currently, a user may only have one know me user.
 
-Profile Details
+KMUser Details
 ---------------
 
 .. http:get:: /know-me/profiles/(int:id)/
 
-    Get the details of a specific profile.
+    Get the details of a specific know me user.
 
-    :param id: The ID of the profile to get.
+    :param id: The ID of the know me user to get.
 
-    :>json int id: The profile's ID.
-    :>json string url: The URL of the profile's detail view.
-    :>json string name: The name of the profile.
-    :>json string quote: A quote from the user who owns the profile.
-    :>json string welcome_message: A message welcoming other users to the profile.
-    :>json string gallery_url: The URL of the profile's gallery.
-    :>json string groups_url: The URL of the profile's group list.
-    :>json array groups: A list of the groups contained in the profile.
+    :>json int id: The know me user's ID.
+    :>json string url: The URL of the know me user's detail view.
+    :>json string name: The name of the know me user.
+    :>json string quote: A quote from the user who owns the know me user.
+    :>json string welcome_message: A message welcoming other users to the know me user.
+    :>json string gallery_url: The URL of the know me user's gallery.
+    :>json string profiles_url: The URL of the know me user's profile list.
+    :>json array profiles: A list of the profiles contained in the know me user.
 
-    :statuscode 200: The profile's details were retrieved succesfully.
-    :statuscode 404: There is no profile with the given `id` accessible to the requesting user.
+    :statuscode 200: The know me user's details were retrieved succesfully.
+    :statuscode 404: There is no know me user with the given `id` accessible to the requesting user.
 
 .. http:patch:: /know-me/profiles/(int:id)/
 
-    Update a specific profile's details.
+    Update a specific know me user's details.
 
-    :param id: The ID of the profile to update.
+    :param id: The ID of the know me user to update.
 
-    :<json string name: *(Optional)* The profile's new name.
-    :<json string quote: *(Optional)* The profile's new quote.
-    :<json string welcome_message: *(Optional)* The profile's new welcome message.
+    :<json string name: *(Optional)* The know me user's new name.
+    :<json string quote: *(Optional)* The know me user's new quote.
+    :<json string welcome_message: *(Optional)* The know me user's new welcome message.
 
-    :>json int id: The profile's ID.
-    :>json string url: The URL of the profile's detail view.
-    :>json string name: The name of the profile.
-    :>json string quote: A quote from the user who owns the profile.
-    :>json string welcome_message: A message welcoming other users to the profile.
-    :>json string gallery_url: The URL of the profile's gallery.
-    :>json string groups_url: The URL of the profile's group list.
-    :>json array groups: A list of the groups contained in the profile.
+    :>json int id: The know me user's ID.
+    :>json string url: The URL of the know me user's detail view.
+    :>json string name: The name of the know me user.
+    :>json string quote: A quote from the user who owns the know me user.
+    :>json string welcome_message: A message welcoming other users to the know me user.
+    :>json string gallery_url: The URL of the know me user's gallery.
+    :>json string profiles_url: The URL of the know me user's profile list.
+    :>json array profiles: A list of the profiles contained in the know me user.
 
-    :statuscode 200: The profile's details were succesfully updated.
+    :statuscode 200: The know me user's details were succesfully updated.
     :statuscode 400: The update failed. Check the response data for details.
 
 
 --------------
-Profile Groups
+Profiles
 --------------
 
-Profile groups are the next step down in a profile. They contain information targeted towards a group of people.
+Profiles are the next step down in a know me user. They contain information targeted towards a profile of people.
 
-Profile Group List
+Profile List
 ------------------
 
-The profile group list endpoint allows for listing of a profile's groups as well as creation of new profile groups.
+The profile list endpoint allows for listing of a know me user's profiles as well as creation of new profiles.
 
 .. http:get:: /know-me/profiles/(int:id)/groups/
 
-    List the groups in a particular profile.
+    List the profiles in a particular know me user.
 
-    :param int id: The ID of the profile to fetch the groups of.
+    :param int id: The ID of the know me user to fetch the profiles of.
 
-    :>jsonarr int id: The ID of the profile group.
-    :>jsonarr string url: The URL of the profile group's detail view.
-    :>jsonarr string name: The name of the profile group.
-    :>jsonarr boolean is_default: A boolean representing if the group is the default for its profile.
+    :>jsonarr int id: The ID of the profile.
+    :>jsonarr string url: The URL of the profile's detail view.
+    :>jsonarr string name: The name of the profile.
+    :>jsonarr boolean is_default: A boolean representing if the profile is the default for its know me user.
 
-    :statuscode 200: The profile's groups were retrieved succesfully.
-    :statuscode 404: No profile with the given `id` was found.
+    :statuscode 200: The know me user's profiles were retrieved succesfully.
+    :statuscode 404: No know me user with the given `id` was found.
 
 .. http:post:: /know-me/profiles/(int:id)/groups/
 
-    Create a new profile group for the given profile.
+    Create a new profile for the given know me user.
 
-    :param int id: The ID of the profile to create a group for.
+    :param int id: The ID of the know me user to create a profile for.
 
-    :<json string name: The name of the profile group.
-    :<json boolean is_default: *(Optional)* A boolean determining if the group will be the default group for the profile. Defaults to ``false``.
+    :<json string name: The name of the profile.
+    :<json boolean is_default: *(Optional)* A boolean determining if the profile will be the default profile for the know me user. Defaults to ``false``.
 
-    :>header Location: The URL of the created profile group's detail view.
+    :>header Location: The URL of the created profile's detail view.
 
-    :>json int id: The ID of the profile group.
-    :>json string url: The URL of the profile group's detail view.
-    :>json string name: The name of the profile group.
-    :>json boolean is_default: A boolean representing if the group is the default for its profile.
+    :>json int id: The ID of the profile.
+    :>json string url: The URL of the profile's detail view.
+    :>json string name: The name of the profile.
+    :>json boolean is_default: A boolean representing if the profile is the default for its know me user.
 
-    :statuscode 201: The profile group was successfully created.
+    :statuscode 201: The profile was successfully created.
     :statuscode 400: Invalid request. Check the response data for details.
 
-Profile Group Detail
+Profile Detail
 --------------------
 
-The profile group detail endpoint allows for viewing and updating a profile group's information.
+The profile detail endpoint allows for viewing and updating a profile's information.
 
 .. http:get:: /know-me/groups/(int:id)/
 
-    Get the details of a particular profile group.
+    Get the details of a particular profile.
 
-    :param int id: The ID of the profile group to fetch.
+    :param int id: The ID of the profile to fetch.
 
-    :>json int id: The ID of the profile group.
-    :>json string url: The URL of the profile group's detail view.
-    :>json string name: The name of the profile group.
-    :>json boolean is_default: A boolean representing if the group is the default for its profile.
-    :>json string topics_url: The URL of the group's topic list.
-    :>json array topics: A list of the profile topics contained in the group.
+    :>json int id: The ID of the profile.
+    :>json string url: The URL of the profile's detail view.
+    :>json string name: The name of the profile.
+    :>json boolean is_default: A boolean representing if the profile is the default for its know me user.
+    :>json string topics_url: The URL of the profile's topic list.
+    :>json array topics: A list of the profile topics contained in the profile.
 
-    :status 200: The profile group's details were retrieved succesfully.
-    :status 404: There is no profile group with the given ``id`` accessible to the requesting user.
+    :status 200: The profile's details were retrieved succesfully.
+    :status 404: There is no profile with the given ``id`` accessible to the requesting user.
 
 .. http:patch:: /know-me/groups/(int:id)/
 
-    Update a specific profile group's information.
+    Update a specific profile's information.
 
-    :param int id: The ID of the profile group to update.
+    :param int id: The ID of the profile to update.
 
-    :<json string name: *(Optional)* A new name for the profile group.
-    :<json boolean is_default: *(Optional)* The new ``is_default`` status for the group.
+    :<json string name: *(Optional)* A new name for the profile.
+    :<json boolean is_default: *(Optional)* The new ``is_default`` status for the profile.
 
-    :>json int id: The ID of the profile group.
-    :>json string url: The URL of the profile group's detail view.
-    :>json string name: The name of the profile group.
-    :>json boolean is_default: A boolean representing if the group is the default for its profile.
-    :>json string topics_url: The URL of the group's topic list.
-    :>json array topics: A list of the profile topics contained in the group.
+    :>json int id: The ID of the profile.
+    :>json string url: The URL of the profile's detail view.
+    :>json string name: The name of the profile.
+    :>json boolean is_default: A boolean representing if the profile is the default for its know me user.
+    :>json string topics_url: The URL of the profile's topic list.
+    :>json array topics: A list of the know me user topics contained in the profile.
 
-    :status 200: The profile group's information was succesfully updated.
+    :status 200: The profile's information was succesfully updated.
     :status 400: Invalid request. Check the response data for details.
-    :status 404: There is no profile group with the given ``id`` accessible to the requesting user.
+    :status 404: There is no profile with the given ``id`` accessible to the requesting user.
 
 
 ------------
 Profile Topics
 ------------
 
-Profile topics hold specific categories of information for a profile group.
+Profile topics hold specific categories of information for a profile.
 
 Profile Topic List
 ----------------
 
 .. http:get:: /know-me/groups/(int:id)/topics/
 
-    List the topics in a particular profile group.
+    List the topics in a particular profile.
 
-    :param int id: The ID of the profile group to fetch the topics of.
+    :param int id: The ID of the profile to fetch the topics of.
 
     :>jsonarr int id: The ID of the topic.
     :>jsonarr string url: The URL of the topic's detail view.
@@ -202,13 +202,13 @@ Profile Topic List
     :>jsonarr array items: The items contained in the topic.
 
     :status 200: The profile topic list was succesfully retrieved.
-    :status 404: There is no profile group with the given ``id`` accessible to the requesting user.
+    :status 404: There is no profile with the given ``id`` accessible to the requesting user.
 
 .. http:post:: /know-me/groups/(int:id)/topics/
 
-    Create a new profile topic in a particular group.
+    Create a new profile topic in a particular profile.
 
-    :param int id: The ID of the profile group to create a topic for.
+    :param int id: The ID of the profile to create a topic for.
 
     :<json string name: A name for the topic.
     :<json int topic_type: An integer representing which type of topic to create.
@@ -224,7 +224,7 @@ Profile Topic List
 
     :status 201: The profile topic was succesfully created.
     :status 400: Invalid request. Check the response data for details.
-    :status 404: There is no profile group with the given ``id`` accessible to the requesting user.
+    :status 404: There is no profile with the given ``id`` accessible to the requesting user.
 
 Profile Topic Detail
 ------------------

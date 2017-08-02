@@ -87,10 +87,10 @@ class MediaResourceAdmin(admin.ModelAdmin):
     search_fields = ('name', 'km_user__user__name')
 
 
-@admin.register(models.ProfileGroup)
-class ProfileGroupAdmin(admin.ModelAdmin):
+@admin.register(models.Profile)
+class ProfileAdmin(admin.ModelAdmin):
     """
-    Admin for the ``ProfileGroup`` model.
+    Admin for the ``Profile`` model.
     """
     fields = ('name', 'km_user', 'is_default')
     list_display = ('name', 'km_user', 'is_default')
@@ -105,23 +105,23 @@ class ProfileItemAdmin(admin.ModelAdmin):
     """
     inlines = (ImageContentInline,)
     fields = ('name', 'topic')
-    list_display = ('name', 'get_km_user', 'get_group', 'topic')
+    list_display = ('name', 'get_km_user', 'get_profile', 'topic')
     search_fields = ('name',)
 
-    def get_group(self, item):
+    def get_profile(self, item):
         """
-        Get the profile group the profile item belongs to.
+        Get the profile the profile item belongs to.
 
         Args:
             item:
-                The profile item to get the parent group of.
+                The profile item to get the parent profile of.
 
         Returns:
-            The parent profile group of the given profile item.
+            The parent profile of the given profile item.
         """
-        return item.topic.group
-    get_group.admin_order_field = 'topic__group'
-    get_group.short_description = _('group')
+        return item.topic.profile
+    get_profile.admin_order_field = 'topic__profile'
+    get_profile.short_description = _('profile')
 
     def get_km_user(self, item):
         """
@@ -134,9 +134,9 @@ class ProfileItemAdmin(admin.ModelAdmin):
         Returns:
             The parent km_user of the given profile item.
         """
-        return item.topic.group.km_user
-    get_km_user.admin_order_field = 'topic__group__km_user'
-    get_km_user.short_description = _('know me user')
+        return item.topic.profile.km_user
+    get_km_user.admin_order_field = 'topic__profile__km_user'
+    get_km_user.short_description = _('km_user')
 
 
 @admin.register(models.ProfileTopic)
@@ -144,7 +144,7 @@ class ProfileTopicAdmin(admin.ModelAdmin):
     """
     Admin for the ``ProfileTopic`` model.
     """
-    fields = ('name', 'group', 'topic_type')
-    list_display = ('name', 'group', 'topic_type')
+    fields = ('name', 'profile', 'topic_type')
+    list_display = ('name', 'profile', 'topic_type')
     list_filter = ('topic_type',)
-    search_fields = ('group__name', 'name')
+    search_fields = ('profile__name', 'name')

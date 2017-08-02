@@ -86,15 +86,15 @@ class MediaResourceFactory(factory.django.DjangoModelFactory):
         model = models.MediaResource
 
 
-class ProfileGroupFactory(factory.django.DjangoModelFactory):
+class ProfileFactory(factory.django.DjangoModelFactory):
     """
-    Factory for generating ``ProfileGroup`` instances.
+    Factory for generating ``Profile`` instances.
     """
     name = 'Test KMUser'
     km_user = factory.SubFactory('know_me.factories.KMUserFactory')
 
     class Meta:
-        model = models.ProfileGroup
+        model = models.Profile
 
 
 class ProfileItemFactory(factory.django.DjangoModelFactory):
@@ -112,7 +112,7 @@ class ProfileTopicFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``ProfileTopic`` instances.
     """
-    group = factory.SubFactory('know_me.factories.ProfileGroupFactory')
+    profile = factory.SubFactory('know_me.factories.ProfileFactory')
     name = factory.Sequence(lambda n: 'Profile Topic {n}'.format(n=n))
     topic_type = models.ProfileTopic.TEXT
 

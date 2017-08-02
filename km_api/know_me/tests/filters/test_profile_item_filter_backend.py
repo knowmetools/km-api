@@ -63,8 +63,8 @@ def test_filter_list_topic_items(api_rf, profile_item_factory):
     profile_item_factory()
 
     topic = item.topic
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
     request = api_rf.get('/')

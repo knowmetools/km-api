@@ -3,105 +3,103 @@ from rest_framework.reverse import reverse
 from know_me import models
 
 
-def test_create(user_factory):
+def test_create(km_user_factory):
     """
-    Test creating a km_user.
+    Test creating a profile.
     """
-    models.KMUser.objects.create(
-        quote='Life is like a box of chocolates.',
-        user=user_factory())
+    models.Profile.objects.create(
+        is_default=True,
+        name='Profile',
+        km_user=km_user_factory())
 
 
-def test_get_absolute_url(km_user_factory):
+def test_get_absolute_url(profile_factory):
     """
-    This method should return the URL of the km_user's detail view.
+    This method should return the URL of the profile's detail
+    view.
     """
-    km_user = km_user_factory()
-    expected = reverse('know-me:km-user-detail', kwargs={'pk': km_user.pk})
+    profile = profile_factory()
+    expected = reverse('know-me:profile-detail', kwargs={'pk': profile.pk})
 
-    assert km_user.get_absolute_url() == expected
+    assert profile.get_absolute_url() == expected
 
 
-def test_get_gallery_url(km_user_factory):
+def test_get_topic_list_url(profile_factory):
     """
-    This method should return the URL of the km_user's gallery view.
+    This method should return the URL of the profile's topic list
+    view.
     """
-    km_user = km_user_factory()
-    expected = reverse('know-me:gallery', kwargs={'pk': km_user.pk})
+    profile = profile_factory()
+    expected = reverse('know-me:profile-topic-list', kwargs={'pk': profile.pk})
 
-    assert km_user.get_gallery_url() == expected
-
-
-def test_get_group_list_url(km_user_factory):
-    """
-    This method should return the URL of the profile's group list view.
-    """
-    km_user = km_user_factory()
-    expected = reverse('know-me:profile-group-list', kwargs={'pk': km_user.pk})
-
-    assert km_user.get_group_list_url() == expected
+    assert profile.get_topic_list_url() == expected
 
 
 def test_has_object_read_permission_other(
         api_rf,
-        km_user_factory,
+        profile_factory,
         user_factory):
     """
-    Other users should not have read permissions on km_users they don't
-    own.
+    Users should not have read permissions on profiles that are
+    not part of a km_user they have access to.
     """
-    km_user = km_user_factory()
+    profile = profile_factory()
 
     api_rf.user = user_factory()
     request = api_rf.get('/')
 
-    assert not km_user.has_object_read_permission(request)
+    assert not profile.has_object_read_permission(request)
 
 
-def test_has_object_read_permission_owner(api_rf, km_user_factory):
+def test_has_object_read_permission_owner(api_rf, profile_factory):
     """
-    Users should have read access on their own km_user.
+    Users should have read permissions on profiles that belong to
+    their own km_user.
     """
-    km_user = km_user_factory()
+    profile = profile_factory()
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
     request = api_rf.get('/')
 
-    assert km_user.has_object_read_permission(request)
+    assert profile.has_object_read_permission(request)
 
 
 def test_has_object_write_permission_other(
         api_rf,
-        km_user_factory,
+        profile_factory,
         user_factory):
     """
-    Other users should not have write permissions on km_users they don't
-    own.
+    Users should not have write permissions on profiles that are
+    not part of a km_user they have access to.
     """
-    km_user = km_user_factory()
+    profile = profile_factory()
 
     api_rf.user = user_factory()
     request = api_rf.get('/')
 
-    assert not km_user.has_object_write_permission(request)
+    assert not profile.has_object_write_permission(request)
 
 
-def test_has_object_write_permission_owner(api_rf, km_user_factory):
+def test_has_object_write_permission_owner(api_rf, profile_factory):
     """
-    Users should have write access on their own km_user.
+    Users should have write permissions on profiles that belong to
+    their own km_user.
     """
-    km_user = km_user_factory()
+    profile = profile_factory()
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
     request = api_rf.get('/')
 
-    assert km_user.has_object_write_permission(request)
+    assert profile.has_object_write_permission(request)
 
 
-def test_string_conversion(km_user_factory):
+def test_string_conversion(profile_factory):
     """
-    Converting a km_user to a string should return the km_user's name.
+    Converting a profile to a string should return the profile's
+    name.
     """
-    km_user = km_user_factory()
+    profile = profile_factory()
 
-    assert str(km_user) == km_user.user.get_short_name()
+    assert str(profile) == profile.name

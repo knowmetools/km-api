@@ -24,8 +24,8 @@ def test_create(api_rf, profile_topic_factory):
     new profile item.
     """
     topic = profile_topic_factory()
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
 
@@ -57,8 +57,8 @@ def test_get_items(api_rf, profile_item_factory, profile_topic_factory):
     profile_item_factory(topic=topic)
     profile_item_factory(topic=topic)
 
-    group = topic.group
-    km_user = group.km_user
+    profile = topic.profile
+    km_user = profile.km_user
 
     api_rf.user = km_user.user
 
