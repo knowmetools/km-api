@@ -108,15 +108,6 @@ class GalleryView(generics.CreateAPIView):
         return serializer.save(km_user=km_user)
 
 
-class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
-    """
-    View for retrieving and updating a specific media resource.
-    """
-    permission_classes = (DRYPermissions,)
-    queryset = models.MediaResource.objects.all()
-    serializer_class = serializers.MediaResourceSerializer
-
-
 class KMUserDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific km_user.
@@ -153,6 +144,34 @@ class KMUserListView(generics.ListCreateAPIView):
                 _('Users may not have more than one Know Me account.'))
 
         return serializer.save(user=self.request.user)
+
+
+class ListEntryListView(generics.ListCreateAPIView):
+    """
+    View for listing and creating list entries.
+    """
+    filter_backends = (filters.ListEntryFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.ListEntry.objects.all()
+    serializer_class = serializers.ListEntrySerializer
+
+
+class ListEntryDetailView(generics.RetrieveUpdateAPIView):
+    """
+    View for retrieving and updating a specific list entry.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.ListEntry.objects.all()
+    serializer_class = serializers.ListEntrySerializer
+
+
+class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
+    """
+    View for retrieving and updating a specific media resource.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.MediaResource.objects.all()
+    serializer_class = serializers.MediaResourceSerializer
 
 
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
