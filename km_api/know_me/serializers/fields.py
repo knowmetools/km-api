@@ -17,6 +17,25 @@ class MediaResourceField(serializers.RelatedField):
     """
     queryset = models.MediaResource.objects.all()
 
+    def get_queryset(self):
+        """
+        Limit the available resources using the serializer's context.
+
+        The queryset returned includes only the media resources owned by
+        the Know Me user given as context to the field.
+
+        Returns:
+            A queryset containing the media resources owned by the Know
+            Me user given as context to the field.
+        """
+        assert 'km_user' in self.context, (
+            "The serializer class '%s' requires 'km_user' to be provided as "
+            "context.") % self.__class__.__name__
+
+        queryset = super(MediaResourceField, self).get_queryset()
+
+        return queryset.filter(km_user=self.context['km_user'])
+
     def to_internal_value(self, data):
         """
         Retrieve the media resource with the provided ID.
