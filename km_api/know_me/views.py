@@ -53,6 +53,7 @@ class GalleryView(generics.CreateAPIView):
     """
     View for creating media resources.
     """
+    filter_backends = (filters.MediaResourceFilterBackend,)
     serializer_class = serializers.MediaResourceSerializer
 
     def perform_create(self, serializer):
