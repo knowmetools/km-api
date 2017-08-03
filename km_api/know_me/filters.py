@@ -8,6 +8,35 @@ from dry_rest_permissions.generics import DRYPermissionFiltersBase
 from know_me import models
 
 
+class EmergencyItemFilterBackend(DRYPermissionFiltersBase):
+    """
+    Filter for listing emergency items for a user.
+    """
+
+    def filter_list_queryset(self, request, queryset, view):
+        """
+        Filter emergency items for a list action.
+
+        Args:
+            request:
+                The request being made.
+            queryset:
+                A queryset containing the objects to filter.
+            view:
+                The view being accessed.
+
+        Returns:
+            The provided queryset filtered to only include items owned
+            by the user specified in the provided views arguments.
+        """
+        km_user = get_object_or_404(
+            models.KMUser,
+            pk=view.kwargs.get('pk'),
+            user=request.user)
+
+        return queryset.filter(km_user=km_user)
+
+
 class KMUserFilterBackend(DRYPermissionFiltersBase):
     """
     Filter for listing ``KMUser`` instances.
