@@ -18,7 +18,6 @@ Welcome to Know Me API's documentation!
    api-endpoints
    development
    deployment
-   internal-api
    changelog
 
 

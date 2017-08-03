@@ -41,9 +41,9 @@ If you installed the ``git-flow`` extension, you can now setup the repository to
 
     $ git flow init -d
 
-Finally, install the project requirements appropriate for what you need. The ``test`` requirements should cover what you need, but if you want to build the documentation locally, install the ``docs`` requirements. If all you want to do is run the project locally, the ``base`` requirements are all you need.::
+Finally, install the project requirements appropriate for what you need. The ``test`` requirements should cover what you need. If all you want to do is run the project locally, the ``base`` requirements are all you need.::
 
-    $ pip install -r requirements/[base|docs|test].txt
+    $ pip install -r requirements/[base|test].txt
 
 Linting
 -------
