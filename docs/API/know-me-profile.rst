@@ -93,14 +93,14 @@ KMUser Details
     :statuscode 400: The update failed. Check the response data for details.
 
 
---------------
+--------
 Profiles
---------------
+--------
 
 Profiles are the next step down in a know me user. They contain information targeted towards a profile of people.
 
 Profile List
-------------------
+------------
 
 The profile list endpoint allows for listing of a know me user's profiles as well as creation of new profiles.
 
@@ -138,7 +138,7 @@ The profile list endpoint allows for listing of a know me user's profiles as wel
     :statuscode 400: Invalid request. Check the response data for details.
 
 Profile Detail
---------------------
+--------------
 
 The profile detail endpoint allows for viewing and updating a profile's information.
 
@@ -179,14 +179,14 @@ The profile detail endpoint allows for viewing and updating a profile's informat
     :status 404: There is no profile with the given ``id`` accessible to the requesting user.
 
 
-------------
+--------------
 Profile Topics
-------------
+--------------
 
 Profile topics hold specific categories of information for a profile.
 
 Profile Topic List
-----------------
+------------------
 
 .. http:get:: /know-me/groups/(int:id)/topics/
 
@@ -227,7 +227,7 @@ Profile Topic List
     :status 404: There is no profile with the given ``id`` accessible to the requesting user.
 
 Profile Topic Detail
-------------------
+--------------------
 
 This endpoint allows for viewing and updating a specific profile topic's information.
 
@@ -288,9 +288,8 @@ This endpoint allows for listing the items in a profile topic and adding new ite
     :>jsonarr int id: The ID of the item.
     :>jsonarr string url: The URL of the item's detail view.
     :>jsonarr string name: The name of the item.
-    :>jsonarr string text: The text the item contains.
-    :>jsonarr int media_resource: The ID of the media resource attached to the profile item. Not present if the profile item doesn't have an attached media resource.
-    :>jsonarr object media_resource_info: The attached media resource's information, if present.
+    :>jsonarr object image_content: An object containing the item's image content. May be ``null``.
+    :>jsonarr object list_content: An object containing the item's list content. May be ``null`.
 
     :status 200: The profile item list was succesfully retrieved.
     :status 404: There is no profile topic with the given ``id`` accessible to the requesting user.
@@ -302,17 +301,16 @@ This endpoint allows for listing the items in a profile topic and adding new ite
     :param int id: The ID of the profile topic to create an item in.
 
     :<json string name: The name of the item.
-    :<json string text: The text the item will contain.
-    :<json int media_resource: *(Optional)* The ID of a media resource to attach to the profile item.
+    :<json object image_content: An object containing the item's image content. Mutually exclusive with ``list_content``.
+    :<json object list_content: An object containing the item's list content. Mutually exclusive with ``image_content``.
 
     :>header Location: The URL of the created item's detail view.
 
     :>json int id: The ID of the item.
     :>json string url: The URL of the item's detail view.
     :>json string name: The name of the item.
-    :>json string text: The text the item contains.
-    :>json int media_resource: The ID of the media resource attached to the profile item. Not present if the profile item doesn't have an attached media resource.
-    :>json object media_resource_info: The attached media resource's information, if present.
+    :>json object image_content: An object containing the item's image content. May be ``null``.
+    :>json object list_content: An object containing the item's list content. May be ``null`.
 
     :status 201: The profile item was succesfully created.
     :status 400: Invalid request. Check the response data for details.
@@ -332,9 +330,8 @@ This endpoint allows for retrieving and updating a specific profile item's infor
     :>json int id: The ID of the item.
     :>json string url: The URL of the item's detail view.
     :>json string name: The name of the item.
-    :>json string text: The text the item contains.
-    :>json int media_resource: The ID of the media resource attached to the profile item. Not present if the profile item doesn't have an attached media resource.
-    :>json object media_resource_info: The attached media resource's information, if present.
+    :>json object image_content: An object containing the item's image content. May be ``null``.
+    :>json object list_content: An object containing the item's list content. May be ``null`.
 
     :status 200: The profile item's information was succesfully retrieved.
     :status 404: There is no profile item with the given ``id`` accessible to the requesting user.
@@ -346,14 +343,14 @@ This endpoint allows for retrieving and updating a specific profile item's infor
     :param int id: The ID of the profile item to update.
 
     :<json string name: *(Optional)* A new name for the item.
-    :<json string text: *(Optional)* New text for the item.
+    :>json object image_content: *(Optional)* An object containing the item's image content. May be ``null``.
+    :>json object list_content: *(Optional)* An object containing the item's list content. May be ``null`.
 
     :>json int id: The ID of the item.
     :>json string url: The URL of the item's detail view.
     :>json string name: The name of the item.
-    :>json string text: The text the item contains.
-    :>json int media_resource: The ID of the media resource attached to the profile item. Not present if the profile item doesn't have an attached media resource.
-    :>json object media_resource_info: The attached media resource's information, if present.
+    :>json object image_content: An object containing the item's image content. May be ``null``.
+    :>json object list_content: An object containing the item's list content. May be ``null`.
 
     :status 200: The profile item's information was succesfully updated.
     :status 404: There is no profile item with the given ``id`` accessible to the requesting user.

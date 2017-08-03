@@ -17,3 +17,24 @@ class ImageContentSerializer(serializers.ModelSerializer):
     class Meta(object):
         fields = ('id', 'description', 'image_resource', 'media_resource')
         model = models.ImageContent
+
+
+class ListEntrySerializer(serializers.ModelSerializer):
+    """
+    Serializer for entries in a profile item list.
+    """
+
+    class Meta(object):
+        fields = ('id', 'text')
+        model = models.ListEntry
+
+
+class ListContentSerializer(serializers.ModelSerializer):
+    """
+    Serializer for profile list content.
+    """
+    entries = ListEntrySerializer(many=True, read_only=True)
+
+    class Meta(object):
+        fields = ('id', 'entries')
+        model = models.ListContent
