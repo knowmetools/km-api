@@ -12,6 +12,42 @@ from rest_framework.exceptions import ValidationError
 from know_me import filters, models, serializers
 
 
+class EmergencyItemDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View for updating and deleting a specific emergency item.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.EmergencyItem.objects.all()
+    serializer_class = serializers.EmergencyItemSerializer
+
+
+class EmergencyItemListView(generics.ListCreateAPIView):
+    """
+    View for listing and creating emergency items.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.EmergencyItem.objects.all()
+    serializer_class = serializers.EmergencyItemSerializer
+
+    def perform_create(self, serializer):
+        """
+        Create a new emergency item from the provided data.
+
+        Args:
+            serializer:
+                A serializer instance containing the data given to the
+                view.
+
+        Returns:
+            :class:`.EmergencyItem`:
+                The emergency item that was created from the provided
+                data.
+        """
+        km_user = models.KMUser.objects.get(pk=self.kwargs.get('pk'))
+
+        return serializer.save(km_user=km_user)
+
+
 class GalleryView(generics.CreateAPIView):
     """
     View for creating media resources.

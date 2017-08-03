@@ -98,6 +98,16 @@ class EmergencyItem(mixins.IsAuthenticatedMixin, models.Model):
         """
         return self.name
 
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the instance's detail view.
+        """
+        return reverse('know-me:emergency-item-detail', kwargs={'pk': self.pk})
+
     def has_object_read_permission(self, request):
         """
         Check read permissions on the instance for a request.
@@ -255,6 +265,26 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
                 The absolute URL of the instance's detail view.
         """
         return reverse('know-me:km-user-detail', kwargs={'pk': self.pk})
+
+    def get_emergency_item_list_url(self, request=None):
+        """
+        Get the URL of the instance's emergency item list.
+
+        Args:
+            request (:class:`django.http.HttpRequest`, optional):
+                The request to use as context when constructing the URL.
+
+        Returns:
+            str:
+                The URL of the instance's emergency item list view. If
+                ``request`` is not ``None``, the URL will include a
+                protocol and domain, otherwise it will be an absolute
+                URL.
+        """
+        return reverse(
+            'know-me:emergency-item-list',
+            kwargs={'pk': self.pk},
+            request=request)
 
     def get_gallery_url(self, request=None):
         """
