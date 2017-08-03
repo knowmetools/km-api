@@ -17,9 +17,12 @@ def test_create(
     ``ImageContent`` instance.
     """
     profile_item = profile_item_factory()
+    km_user = profile_item.topic.profile.km_user
 
-    image_resource = media_resource_factory(file=image)
-    media_resource = media_resource_factory()
+    serializer_context['km_user'] = km_user
+
+    image_resource = media_resource_factory(file=image, km_user=km_user)
+    media_resource = media_resource_factory(km_user=km_user)
 
     data = {
         'description': 'Test image content description.',
@@ -81,7 +84,11 @@ def test_update(
     content the serializer is bound to.
     """
     content = image_content_factory()
-    media_resource = media_resource_factory()
+    km_user = content.profile_item.topic.profile.km_user
+
+    serializer_context['km_user'] = km_user
+
+    media_resource = media_resource_factory(km_user=km_user)
 
     data = {
         'media_resource': media_resource.id,
@@ -100,11 +107,13 @@ def test_update(
 
 
 @pytest.mark.django_db
-def test_validate_invalid_resource_pk(serializer_context):
+def test_validate_invalid_resource_pk(km_user_factory, serializer_context):
     """
     If there is no media resource corresponding to the ID given to the
     serializer, the serializer should not be valid.
     """
+    serializer_context['km_user'] = km_user_factory()
+
     data = {
         'media_resource': 1,
     }

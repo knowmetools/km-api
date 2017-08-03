@@ -1,12 +1,14 @@
 from know_me import serializers
 
 
-def test_create(km_user_factory, media_resource_factory):
+def test_create(km_user_factory, media_resource_factory, serializer_context):
     """
     Saving a serializer with valid data should create a new emergency
     item.
     """
     km_user = km_user_factory()
+    serializer_context['km_user'] = km_user
+
     media_resource = media_resource_factory(km_user=km_user)
 
     data = {
@@ -15,7 +17,9 @@ def test_create(km_user_factory, media_resource_factory):
         'media_resource': media_resource.id,
     }
 
-    serializer = serializers.EmergencyItemSerializer(data=data)
+    serializer = serializers.EmergencyItemSerializer(
+        context=serializer_context,
+        data=data)
     assert serializer.is_valid()
 
     item = serializer.save(km_user=km_user)
