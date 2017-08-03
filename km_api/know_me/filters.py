@@ -61,6 +61,41 @@ class KMUserFilterBackend(DRYPermissionFiltersBase):
         return queryset.filter(user=request.user)
 
 
+class MediaResourceFilterBackend(DRYPermissionFiltersBase):
+    """
+    Filter for listing media resources.
+    """
+
+    def filter_list_queryset(self, request, queryset, view):
+        """
+        Filter media resources for a 'list' action.
+
+        Args:
+            request:
+                The request being made.
+            queryset:
+                The queryset containing the objects to filter.
+            view:
+                The view being accessed.
+
+        Returns:
+            The provided queryset filtered to contain only the media
+            resources belonging to the requesting user.
+
+        Raises:
+            Http404:
+                If there is no Know Me user with the primary key
+                specified in the view or if the requesting user does not
+                have access the the media resources for that user.
+        """
+        km_user = get_object_or_404(
+            models.KMUser,
+            pk=view.kwargs.get('pk'),
+            user=request.user)
+
+        return queryset.filter(km_user=km_user)
+
+
 class ProfileFilterBackend(DRYPermissionFiltersBase):
     """
     Filter for listing ``Profile`` instances.
