@@ -694,14 +694,12 @@ class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
         name (str):
             The topic's name.
     """
-    GROUPED = 1
-    PAGED = 2
+    # The numbering for these fields is augmented due to the previous
+    # presence of page and group rows.
     TEXT = 3
     VISUAL = 4
 
     TOPIC_TYPE_CHOICES = (
-        (GROUPED, _('grouped topic')),
-        (PAGED, _('paged topic')),
         (TEXT, _('text topic')),
         (VISUAL, _('visual topic')),
     )
