@@ -1,0 +1,9 @@
+---
+aws_application_name: km-api-dev
+aws_region: us-east-1
+
+db_instance_sg_rules:
+  - proto: tcp
+    from_port: 5432
+    to_port: 5432
+    group_id: sg-75c9b004
