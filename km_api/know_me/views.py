@@ -12,6 +12,41 @@ from rest_framework.exceptions import ValidationError
 from know_me import filters, models, serializers
 
 
+class EmergencyContactDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View for retrieving and updating a specific emergency contact.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.EmergencyContact.objects.all()
+    serializer_class = serializers.EmergencyContactSerializer
+
+
+class EmergencyContactListView(generics.ListCreateAPIView):
+    """
+    View for listing and creating a specific emergency contact.
+    """
+    filter_backends = (filters.EmergencyContactFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.EmergencyContact.objects.all()
+    serializer_class = serializers.EmergencyContactSerializer
+
+    def perform_create(self, serializer):
+        """
+        Create a new emergency contact for the given km_user.
+
+        Args:
+            serializer:
+                A serializer instance containing the submitted data.
+
+        Returns:
+            The newly created ``EmergencyContact`` instance.
+        """
+        km_user = models.KMUser.objects.get(
+            pk=self.kwargs.get('pk'))
+
+        return serializer.save(km_user=km_user)
+
+
 class EmergencyItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     View for updating and deleting a specific emergency item.
@@ -73,6 +108,15 @@ class GalleryView(generics.CreateAPIView):
         return serializer.save(km_user=km_user)
 
 
+class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
+    """
+    View for retrieving and updating a specific media resource.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.MediaResource.objects.all()
+    serializer_class = serializers.MediaResourceSerializer
+
+
 class KMUserDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific km_user.
@@ -111,15 +155,6 @@ class KMUserListView(generics.ListCreateAPIView):
         return serializer.save(user=self.request.user)
 
 
-class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
-    """
-    View for retrieving and updating a specific media resource.
-    """
-    permission_classes = (DRYPermissions,)
-    queryset = models.MediaResource.objects.all()
-    serializer_class = serializers.MediaResourceSerializer
-
-
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile.
@@ -127,34 +162,6 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = (DRYPermissions,)
     queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileDetailSerializer
-
-
-class ProfileListView(generics.ListCreateAPIView):
-    """
-    View for listing and creating profiles.
-    """
-    filter_backends = (filters.ProfileFilterBackend,)
-    permission_classes = (DRYPermissions,)
-    queryset = models.Profile.objects.all()
-    serializer_class = serializers.ProfileListSerializer
-
-    def perform_create(self, serializer):
-        """
-        Create a new profile for the given km_user.
-
-        Args:
-            serializer:
-                The serializer containing the data received.
-
-        Returns:
-            The newly created ``Profile`` instance.
-        """
-        km_user = get_object_or_404(
-            models.KMUser,
-            pk=self.kwargs.get('pk'),
-            user=self.request.user)
-
-        return serializer.save(km_user=km_user)
 
 
 class ProfileItemDetailView(generics.RetrieveUpdateAPIView):
@@ -225,6 +232,34 @@ class ProfileItemListView(generics.ListCreateAPIView):
             pk=self.kwargs.get('pk'))
 
         return serializer.save(topic=topic)
+
+
+class ProfileListView(generics.ListCreateAPIView):
+    """
+    View for listing and creating profiles.
+    """
+    filter_backends = (filters.ProfileFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.Profile.objects.all()
+    serializer_class = serializers.ProfileListSerializer
+
+    def perform_create(self, serializer):
+        """
+        Create a new profile for the given km_user.
+
+        Args:
+            serializer:
+                The serializer containing the data received.
+
+        Returns:
+            The newly created ``Profile`` instance.
+        """
+        km_user = get_object_or_404(
+            models.KMUser,
+            pk=self.kwargs.get('pk'),
+            user=self.request.user)
+
+        return serializer.save(km_user=km_user)
 
 
 class ProfileTopicDetailView(generics.RetrieveUpdateAPIView):
