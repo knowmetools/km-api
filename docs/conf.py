@@ -49,8 +49,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Know Me API'
-copyright = '2017, Chathan Driehuys'
-author = 'Chathan Driehuys'
+copyright = '2017, Know Me Inc'
+author = 'Know Me Inc'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
