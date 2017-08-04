@@ -16,6 +16,7 @@ class EmergencyItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     View for updating and deleting a specific emergency item.
     """
+    filter_backends = (filters.EmergencyItemFilterBackend,)
     permission_classes = (DRYPermissions,)
     queryset = models.EmergencyItem.objects.all()
     serializer_class = serializers.EmergencyItemSerializer
