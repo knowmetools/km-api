@@ -500,6 +500,26 @@ class ListContent(models.Model):
         verbose_name = _('profile item list content')
         verbose_name_plural = _('profile item list content')
 
+    def get_entry_list_url(self, request=None):
+        """
+        Get the URL of the content's entry list view.
+
+        Args:
+            request (optional):
+                The request to use when constructing the URL. If it is
+                provided, the resulting URL will include a protocol and
+                domain. Otherwise the resulting URL will be an absolute
+                URL (beginning with a ``'/'``). Defaults to ``None``.
+
+        Returns:
+            str:
+                The URL of the content's entry list view.
+        """
+        return reverse(
+            'know-me:list-entry-list',
+            kwargs={'pk': self.pk},
+            request=request)
+
     def __str__(self):
         """
         Get a string representation of the instance.
@@ -513,7 +533,7 @@ class ListContent(models.Model):
             item=self.profile_item)
 
 
-class ListEntry(models.Model):
+class ListEntry(mixins.IsAuthenticatedMixin, models.Model):
     """
     An entry in a list for a specific profile item.
     """
@@ -549,6 +569,44 @@ class ListEntry(models.Model):
                 The entry's text.
         """
         return self.text
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the km_user the
+                instance belongs to and ``False`` otherwise.
+        """
+        profile_item = self.list_content.profile_item
+        topic = profile_item.topic
+        profile = topic.profile
+        km_user = profile.km_user
+        return request.user == km_user.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user owns the km_user the
+                instance belongs to and ``False`` otherwise.
+        """
+        profile_item = self.list_content.profile_item
+        topic = profile_item.topic
+        profile = topic.profile
+        km_user = profile.km_user
+        return request.user == km_user.user
 
 
 class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
