@@ -107,12 +107,12 @@ class ListEntryFilterBackend(DRYPermissionFiltersBase):
             A queryset containing the list entries accessible to the
             user making the request.
         """
-        item = get_object_or_404(
-            models.ProfileItem,
+        content = get_object_or_404(
+            models.ListContent,
             pk=view.kwargs.get('pk'),
-            profile__km_user__user=request.user)
+            profile_item__topic__profile__km_user__user=request.user)
 
-        return queryset.filter(item__pk=item.pk)
+        return queryset.filter(list_content=content)
 
 
 class MediaResourceFilterBackend(DRYPermissionFiltersBase):
