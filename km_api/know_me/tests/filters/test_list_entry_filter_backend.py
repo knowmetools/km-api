@@ -25,7 +25,7 @@ def test_filter_list_content_entries(api_rf, list_entry_factory):
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': content.pk}
+    view.kwargs = {'pk': item.pk}
 
     backend = filters.ListEntryFilterBackend()
     results = backend.filter_list_queryset(
@@ -47,12 +47,13 @@ def test_filter_list_inaccessible_list_content(
     raise an ``Http404`` exception.
     """
     content = list_content_factory()
+    item = content.profile_item
 
     api_rf.user = user_factory()
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': content.pk}
+    view.kwargs = {'pk': item.pk}
 
     backend = filters.ListEntryFilterBackend()
 
