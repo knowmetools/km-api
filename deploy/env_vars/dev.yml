@@ -1,5 +1,5 @@
 ---
-aws_application_name: km-api-dev
+aws_application_name: km-api-test
 aws_region: us-east-1
 
 db_instance_sg_rules:

@@ -9,3 +9,7 @@ db_map:
   kmapi:
     users:
       "{{ db_username }}": "{{ vault_db_password }}"
+
+
+# Base AMIs off of Ubuntu 16.04
+ami_builder_base: ami-9a0c088c
