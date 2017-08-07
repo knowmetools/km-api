@@ -14,7 +14,7 @@ KMUsers are the basis of Know Me. They contain organized sets of information abo
 KMUser List
 ------------
 
-.. http:get:: /know-me/profiles/
+.. http:get:: /know-me/users/
 
     Get the list of know me users that the requesting user has access to.
 
@@ -22,17 +22,15 @@ KMUser List
     :>jsonarr string url: The URL of the know me user's detail view.
     :>jsonarr string name: The name of the know me user.
     :>jsonarr string quote: A quote from the user who owns the know me user.
-    :>jsonarr string welcome_message: A message welcoming other users to the know me user.
 
     :statuscode 200: The request was successful.
 
-.. http:post:: /know-me/profiles/
+.. http:post:: /know-me/users/
 
     Create a new know me user for the user making the request.
 
     :<json string name: A name for the know me user.
     :<json string quote: A quote from the user.
-    :<json string welcome_message: A message welcoming other people to the know me user.
 
     :>header Location: The URL of the created know me user's detail view.
 
@@ -40,7 +38,6 @@ KMUser List
     :>json string url: The URL of the know me user's detail view.
     :>json string name: The name of the know me user.
     :>json string quote: A quote from the user who owns the know me user.
-    :>json string welcome_message: A message welcoming other users to the know me user.
 
     :statuscode 201: The new know me user was successfully created.
     :statuscode 400: Invalid request. Check the response data for details.
@@ -62,7 +59,7 @@ KMUser Details
     :>json string url: The URL of the know me user's detail view.
     :>json string name: The name of the know me user.
     :>json string quote: A quote from the user who owns the know me user.
-    :>json string welcome_message: A message welcoming other users to the know me user.
+    :>json string emergency_items_url: The URL of the user's emergency item list.
     :>json string gallery_url: The URL of the know me user's gallery.
     :>json string profiles_url: The URL of the know me user's profile list.
     :>json array profiles: A list of the profiles contained in the know me user.
@@ -78,13 +75,12 @@ KMUser Details
 
     :<json string name: *(Optional)* The know me user's new name.
     :<json string quote: *(Optional)* The know me user's new quote.
-    :<json string welcome_message: *(Optional)* The know me user's new welcome message.
 
     :>json int id: The know me user's ID.
     :>json string url: The URL of the know me user's detail view.
     :>json string name: The name of the know me user.
     :>json string quote: A quote from the user who owns the know me user.
-    :>json string welcome_message: A message welcoming other users to the know me user.
+    :>json string emergency_items_url: The URL of the know me user's emergency item list.
     :>json string gallery_url: The URL of the know me user's gallery.
     :>json string profiles_url: The URL of the know me user's profile list.
     :>json array profiles: A list of the profiles contained in the know me user.
@@ -104,7 +100,7 @@ Profile List
 
 The profile list endpoint allows for listing of a know me user's profiles as well as creation of new profiles.
 
-.. http:get:: /know-me/profiles/(int:id)/groups/
+.. http:get:: /know-me/users/(int:id)/profiles/
 
     List the profiles in a particular know me user.
 
@@ -118,7 +114,7 @@ The profile list endpoint allows for listing of a know me user's profiles as wel
     :statuscode 200: The know me user's profiles were retrieved succesfully.
     :statuscode 404: No know me user with the given `id` was found.
 
-.. http:post:: /know-me/profiles/(int:id)/groups/
+.. http:post:: /know-me/users/(int:id)/profiles/
 
     Create a new profile for the given know me user.
 
@@ -142,7 +138,7 @@ Profile Detail
 
 The profile detail endpoint allows for viewing and updating a profile's information.
 
-.. http:get:: /know-me/groups/(int:id)/
+.. http:get:: /know-me/profiles/(int:id)/
 
     Get the details of a particular profile.
 
@@ -158,7 +154,7 @@ The profile detail endpoint allows for viewing and updating a profile's informat
     :status 200: The profile's details were retrieved succesfully.
     :status 404: There is no profile with the given ``id`` accessible to the requesting user.
 
-.. http:patch:: /know-me/groups/(int:id)/
+.. http:patch:: /know-me/profiles/(int:id)/
 
     Update a specific profile's information.
 
@@ -188,7 +184,7 @@ Profile topics hold specific categories of information for a profile.
 Profile Topic List
 ------------------
 
-.. http:get:: /know-me/groups/(int:id)/topics/
+.. http:get:: /know-me/profiles/(int:id)/topics/
 
     List the topics in a particular profile.
 
@@ -204,12 +200,14 @@ Profile Topic List
     :status 200: The profile topic list was succesfully retrieved.
     :status 404: There is no profile with the given ``id`` accessible to the requesting user.
 
-.. http:post:: /know-me/groups/(int:id)/topics/
+.. http:post:: /know-me/profiles/(int:id)/topics/
 
     Create a new profile topic in a particular profile.
 
     :param int id: The ID of the profile to create a topic for.
 
+    :>jsonarr string topics_url: The URL of the given topic's list.  
+    :>jsonarr object topics: An object containing the profile's topic. 
     :<json string name: A name for the topic.
     :<json int topic_type: An integer representing which type of topic to create.
 
