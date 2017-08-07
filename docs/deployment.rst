@@ -61,25 +61,6 @@ PASSWORD_RESET_EXPIRATION_HOURS (=1)
 PASSWORD_RESET_LINK_TEMPLATE (=https://example.com/change-password/?key={key})
   A template for the URL a user should visit to complete the password reset process. The value ``{key}`` in the template string will be replaced with the password reset key.
 
-SECRET_KEY
-  The secret key to use. This should be a long random string. See the `documentation <secret-key-docs_>`_ for details.
-
-SENTRY_DSN
-  The DSN to use for sentry logging. See the `documentation <sentry-dsn-docs_>`_ for details.
-
-SENTRY_ENVIRONMENT (=staging)
-  The environment to use when logging errors to sentry. This allows for differentiating between production and staging errors. For simplicity, this should be either ``staging`` or ``production``.
-
-STATIC_BUCKET
-  The name of the S3 bucket to store static and media files in. The IAM role that the webservers use must have access to this bucket. This bucket must be in the ``us-east-1`` region.
-
-
---------------------
-Database Credentials
---------------------
-
-If an RDS database is attached to the Elastic Beanstalk environment then these values will be set automatically. To use a different database, set the following environment variables. *This must be a PostgreSQL database.*
-
 RDS_DB_NAME
   The database's name.
 
@@ -95,7 +76,58 @@ RDS_PORT:
 RDS_USERNAME:
   The username to connect to the database with.
 
+SECRET_KEY
+  The secret key to use. This should be a long random string. See the `documentation <secret-key-docs_>`_ for details.
 
+SENTRY_DSN
+  The DSN to use for sentry logging. See the `documentation <sentry-dsn-docs_>`_ for details.
+
+SENTRY_ENVIRONMENT (=staging)
+  The environment to use when logging errors to sentry. This allows for differentiating between production and staging errors. For simplicity, this should be either ``staging`` or ``production``.
+
+STATIC_BUCKET
+  The name of the S3 bucket to store static and media files in. The IAM role that the webservers use must have access to this bucket. This bucket must be in the ``us-east-1`` region.
+
+
+---------------------
+Database Provisioning
+---------------------
+
+Database provisioning is handled with Ansible_ using the playbooks in the ``deploy`` directory.
+
+Prerequisites
+-------------
+
+To run the playbook, you need Ansible installed as well as some helper python packages::
+
+    $ pip install ansible boto psycopg2
+
+.. note::
+
+    It is assumed that these packages are installed for the system-wide python install. If you would like to run ansible with an arbitrary python interpreter, pass in the ``--ansible-python-interpreter=<path to python>`` flag to any ansible command.
+
+In order to run the playbook, you must also have valid credentials. AWS credentials must either be set as environment variables or passed to Ansible with the ``--extra-vars`` flag. Finally you must have the Ansible vault password.
+
+Running The Playbook
+--------------------
+
+To run the playbook and provision a database::
+
+    $ ansible-playbook deploy/deploy.yml
+
+If you want to target the production environment::
+
+    $ ansible-playbook --extra-vars '"env"="prod"' deploy/deploy.yml
+
+Configuring the Application
+---------------------------
+
+After running the playbook, you **must** update the application configuration in Elastic Beanstalk. Specifically, you must ensure that the ``RDS_*`` settings are correct. If the database was recreated, you must also ensure that the migrations have been run. The simplest way to do that is to trigger a deployment::
+
+    $ eb deploy <env-name>
+
+
+.. _Ansible: http://docs.ansible.com/ansible/latest/index.html
 .. _layer-identity-token-docs: https://docs.layer.com/sdk/web/authentication#identity-token
 .. _secret-key-docs: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 .. _sentry-dsn-docs: https://docs.sentry.io/quickstart/#configure-the-dsn

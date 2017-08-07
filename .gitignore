@@ -121,3 +121,7 @@ layer.pem
 
 # Mac Development Environments
 **/.DS_Store
+
+# Ansible Files
+*.retry
+VAULT_PASSWORD_FILE
