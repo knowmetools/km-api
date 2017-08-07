@@ -2,13 +2,14 @@
 db_admin_username: dbadmin
 db_admin_password: "{{ vault_db_admin_password }}"
 
+db_name: kmapi
 db_username: django
 db_password: "{{ vault_db_password }}"
 
 db_map:
-  kmapi:
+  "{{ db_name }}":
     users:
-      "{{ db_username }}": "{{ vault_db_password }}"
+      "{{ db_username }}": "{{ db_password }}"
 
 
 # Base AMIs off of Ubuntu 16.04

@@ -19,8 +19,18 @@
 - hosts: amibuilder
   gather_facts: no
 
+  become: yes
   become_user: root
   remote_user: ubuntu
+
+  vars:
+    # Default to dev environment
+    env: dev
+
+  vars_files:
+    - env_vars/base.yml
+    - env_vars/{{ env }}.yml
+    - env_vars/{{ env }}-vault.yml
 
   pre_tasks:
     - name: Install python 2
@@ -33,6 +43,13 @@
       until: output.rc == 0
       retries: 3
       delay: 1
+
+    - name: Restore database instance reference
+      set_fact:
+        db_instance: "{{ hostvars['localhost'].db_instance }}"
+
+  roles:
+    - cdriehuys.django-app
 
 - hosts: localhost
   connection: local

@@ -7,24 +7,12 @@ import os
 from km_api.settings import *       # noqa
 
 
-# Set the secret key from an environment variable. We use the bracket
-# notation so that a ``KeyError`` will be raised if we forget to set the
-# variable.
-
-SECRET_KEY = os.environ['SECRET_KEY']
-
-
-# Set the hosts allowed to access the application
-
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
-ALLOWED_HOSTS.extend([
+ALLOWED_HOSTS = [
+    '.new-api.knowmetools.com',
     'localhost',
-])
+]
 
-
-# Enable debugging only if the appropriate environment variable is set.
-
-DEBUG = os.environ.get('DEBUG', '').lower() == 'true'
+DEBUG = False
 
 
 # Production only apps
@@ -47,40 +35,18 @@ MIDDLEWARE = [
 ] + MIDDLEWARE              # noqa
 
 
-# Use an external Postgres database.
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ['RDS_DB_NAME'],
-        'USER': os.environ['RDS_USERNAME'],
-        'PASSWORD': os.environ['RDS_PASSWORD'],
-        'HOST': os.environ['RDS_HOSTNAME'],
-        'PORT': os.environ['RDS_PORT'],
-    }
-}
-
-
 # Authentication Configuration
 
-PASSWORD_RESET_EXPIRATION_HOURS = int(os.environ.get(
-    'PASSWORD_RESET_EXPIRATION_HOURS',
-    '1'))
-PASSWORD_RESET_LINK_TEMPLATE = os.environ.get(
-    'PASSWORD_RESET_LINK_TEMPLATE',
-    'https://example.com/change-password/?key={key}')
+PASSWORD_RESET_EXPIRATION_HOURS = 1
+PASSWORD_RESET_LINK_TEMPLATE = 'https://example.com/change-password/?key={key}'
 
 
 # Email Settings
 
-AWS_SES_REGION_NAME = os.environ.get('AWS_REGION', 'us-east-1')
+AWS_SES_REGION_NAME = 'us-east-1'
 EMAIL_BACKEND = 'django_ses.SESBackend'
-EMAIL_CONFIRMATION_EXPIRATION_DAYS = int(os.environ.get(
-    'EMAIL_CONFIRMATION_EXPIRATION_DAYS',
-    '1'))
-EMAIL_CONFIRMATION_LINK_TEMPLATE = os.environ.get(
-    'EMAIL_CONFIRMATION_LINK_TEMPLATE',
-    'https://example.com/confirm-email?key={key}')
+EMAIL_CONFIRMATION_EXPIRATION_DAYS = 1
+EMAIL_CONFIRMATION_LINK_TEMPLATE = 'https://example.com/confirm-email?key={key}'    # noqa
 
 
 # SSL Settings
@@ -110,81 +76,19 @@ AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=31536000',
 }
 AWS_S3_REGION_NAME = 'us-east-1'
-AWS_STORAGE_BUCKET_NAME = os.environ['STATIC_BUCKET']
 
 
 # Layer Configuration
 
-LAYER_IDENTITY_EXPIRATION = datetime.timedelta(
-    seconds=os.environ.get('LAYER_IDENTITY_EXPIRATION', 300))
-LAYER_KEY_ID = os.environ['LAYER_KEY_ID']
-LAYER_PROVIDER_ID = os.environ['LAYER_PROVIDER_ID']
+LAYER_IDENTITY_EXPIRATION = datetime.timedelta(seconds=300)
 LAYER_RSA_KEY_FILE_PATH = os.environ.get(
     'LAYER_RSA_KEY_FILE_PATH',
     os.path.join(BASE_DIR, 'layer.pem'))        # noqa
 
 
-# MailChimp Configuration
+# Attempt to use settings uploaded by Ansible
 
-MAILCHIMP_API_KEY = os.environ.get('MAILCHIMP_API_KEY', '')
-MAILCHIMP_ENABLED = os.environ.get('MAILCHIMP_ENABLED', '').lower() == 'true'
-MAILCHIMP_LIST_ID = os.environ.get('MAILCHIMP_LIST_ID', '')
-
-
-# Sentry Configuration (for logging)
-
-RAVEN_CONFIG = {
-    'dsn': os.environ['SENTRY_DSN'],
-    'environment': os.environ.get('SENTRY_ENVIRONMENT', 'staging'),
-}
-
-
-# Logging Configuration
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'root': {
-        'level': 'INFO',
-        'handlers': ['file', 'sentry'],
-    },
-    'formatters': {
-        'standard': {
-            'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',  # noqa
-            'datefmt': '%d/%b/%Y %H:%M:%S',
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/km-api/django-info.log',
-            'formatter': 'standard',
-            'backupCount': 5,
-            'maxBytes': 5000000,    # 5 megabytes
-        },
-        'null': {
-            'level': 'DEBUG',
-            'class': 'logging.NullHandler',
-        },
-        'sentry': {
-            'level': 'WARNING',
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',        # noqa
-            'formatter': 'standard',
-        },
-    },
-    'loggers': {
-        'boto3.resources.action': {
-            'handlers': ['null'],
-            'propagate': False,
-        },
-        'django.request': {
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'django.security.DisallowedHost': {
-            'handlers': ['null'],
-            'propagate': False,
-        },
-    },
-}
+try:
+    from km_api.local_settings import *     # noqa
+except ImportError:
+    pass
