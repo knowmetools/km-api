@@ -15,7 +15,7 @@ Gallery View
 
 This endpoint allows for creation of new media resources.
 
-.. http:post:: /know-me/profiles/(int:id)/gallery/
+.. http:post:: /know-me/users/(int:id)/gallery/
 
     Create a new media resource.
 
