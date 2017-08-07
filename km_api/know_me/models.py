@@ -482,7 +482,7 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         return request.user == self.user
 
 
-class ListContent(models.Model):
+class ListContent(mixins.IsAuthenticatedMixin, models.Model):
     """
     Model to store list content for a :class:`.ProfileItem`.
     """
@@ -500,7 +500,7 @@ class ListContent(models.Model):
         verbose_name = _('profile item list content')
         verbose_name_plural = _('profile item list content')
 
-    def get_entry_list_url(self, request=None):
+    def get_list_entry_list_url(self, request=None):
         """
         Get the URL of the content's entry list view.
 
@@ -519,6 +519,36 @@ class ListContent(models.Model):
             'know-me:list-entry-list',
             kwargs={'pk': self.pk},
             request=request)
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user is allowed to read from
+                the instance and ``False`` otherwise.
+        """
+        return self.profile_item.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to write to the
+                instance and ``False`` otherwise.
+        """
+        return self.profile_item.has_object_write_permission(request)
 
     def __str__(self):
         """
@@ -570,6 +600,16 @@ class ListEntry(mixins.IsAuthenticatedMixin, models.Model):
         """
         return self.text
 
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's list entry.
+
+        Returns:
+            str:
+                The absolute URL of the instance's list entry.
+        """
+        return reverse('know-me:list-entry-detail', kwargs={'pk': self.pk})
+
     def has_object_read_permission(self, request):
         """
         Check read permissions on the instance for a request.
@@ -580,14 +620,10 @@ class ListEntry(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the km_user the
-                instance belongs to and ``False`` otherwise.
+                ``True`` if the requesting user is allowed to read from
+                the instance and ``False`` otherwise.
         """
-        profile_item = self.list_content.profile_item
-        topic = profile_item.topic
-        profile = topic.profile
-        km_user = profile.km_user
-        return request.user == km_user.user
+        return self.list_content.has_object_read_permission(request)
 
     def has_object_write_permission(self, request):
         """
@@ -599,14 +635,10 @@ class ListEntry(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the km_user the
-                instance belongs to and ``False`` otherwise.
+                ``True`` if the requesting user is allowed to write to
+                the instance and ``False`` otherwise.
         """
-        profile_item = self.list_content.profile_item
-        topic = profile_item.topic
-        profile = topic.profile
-        km_user = profile.km_user
-        return request.user == km_user.user
+        return self.list_content.has_object_write_permission(request)
 
 
 class MediaResource(mixins.IsAuthenticatedMixin, models.Model):

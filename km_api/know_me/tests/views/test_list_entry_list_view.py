@@ -23,7 +23,7 @@ def test_create(api_rf, list_content_factory):
     }
 
     request = api_rf.post(
-            list_content.get_entry_list_url(),
+            list_content.get_list_entry_list_url(),
             data,
             format='json')
     response = list_entry_list_view(request, pk=list_content.pk)
@@ -53,7 +53,7 @@ def test_get_entries(api_rf, list_entry_factory, list_content_factory):
 
     api_rf.user = km_user.user
 
-    request = api_rf.get(content.get_entry_list_url())
+    request = api_rf.get(content.get_list_entry_list_url())
     response = list_entry_list_view(request, pk=content.pk)
 
     assert response.status_code == status.HTTP_200_OK
