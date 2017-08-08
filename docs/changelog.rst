@@ -1,6 +1,14 @@
 Changelog
 =========
 
+
+v0.5.1
+------
+
+Bug Fixes
+  * :issue:`143`: Fix missing field on emergency contact admin page.
+
+
 v0.5
 ----
 

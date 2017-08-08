@@ -44,7 +44,10 @@ class EmergencyContactAdmin(admin.ModelAdmin):
     """
     Admin for the ``EmergencyContact`` model.
     """
-    fields = ('name', 'relation', 'phone_number', 'alt_phone_number', 'email')
+    fields = (
+        'km_user', 'name', 'relation', 'phone_number', 'alt_phone_number',
+        'email'
+    )
     list_display = ('name', 'km_user')
     search_fields = ('name',)
 
