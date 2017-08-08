@@ -13,6 +13,7 @@ def test_create():
     models.User.objects.create(
         email='test@example.com',
         is_active=True,
+        is_pending=False,
         is_staff=True,
         is_superuser=True,
         first_name='John',
