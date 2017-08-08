@@ -482,6 +482,64 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         return request.user == self.user
 
 
+class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    Model to store KMUser access information.
+
+    Attributes:
+        accepted (boolean):
+            Whether or not the accessor has been accepted by the user.
+        can_read_everywhere (boolean):
+            Whether or not the user has can read everywhere access.
+        can_write_everywhere (boolean):
+            Whether or not the user has can write everywhere access.
+        km_user:
+            The KMUser sharing access.
+        user_with_access:
+            The user recieving access.
+    """
+    accepted = models.BooleanField(
+        default=False,
+        help_text=_('The KMUser has accepted the access.'),
+        verbose_name=_('is accepted'))
+    can_read_everywhere = models.BooleanField(
+        default=False,
+        help_text=_('The user has can read everywhere access.'),
+        verbose_name=_('can read everywhere'))
+    can_write_everywhere = models.BooleanField(
+        default=False,
+        help_text=_('The user has write everywhere access.'),
+        verbose_name=_('can write everywhere'))
+    km_user = models.ForeignKey(
+        'know_me.KMUser',
+        null=True,
+        related_name='km_user_accessors',
+        related_query_name='km_user_accessor',
+        verbose_name=_('Know Me user'))
+    user_with_access = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='km_user_accessors',
+        related_query_name='km_user_accessor',
+        verbose_name=_('user'))
+
+    class Meta(object):
+        unique_together = ('km_user', 'user_with_access')
+        verbose_name = _('Know Me user accessor')
+        verbose_name_plural = _('Know Me user accessors')
+
+    def __str__(self):
+        """
+        Get a string representation of the KMUserAccessor.
+
+        Returns:
+            str:
+                A string stating which Know Me user the instance gives
+                access to.
+        """
+        return 'Accessor for {user}'.format(user=self.km_user.name)
+
+
 class ListContent(mixins.IsAuthenticatedMixin, models.Model):
     """
     Model to store list content for a :class:`.ProfileItem`.

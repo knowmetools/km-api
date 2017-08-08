@@ -54,6 +54,17 @@ class ImageContentFactory(factory.django.DjangoModelFactory):
         model = models.ImageContent
 
 
+class KMUserAccessorFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``KMUserAccessor`` instances.
+    """
+    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
+    user_with_access = factory.SubFactory('factories.UserFactory')
+
+    class Meta(object):
+        model = models.KMUserAccessor
+
+
 class KMUserFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``KMUser`` instances.

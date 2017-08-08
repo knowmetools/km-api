@@ -62,6 +62,30 @@ class KMUserAdmin(admin.ModelAdmin):
     search_fields = ('user__first_name', 'user__last_name')
 
 
+@admin.register(models.KMUserAccessor)
+class KMUserAccessor(admin.ModelAdmin):
+    """
+    Admin for the ``KMUserAccessor`` model.
+    """
+    fields = (
+        'km_user',
+        'user_with_access',
+        'accepted',
+        'can_read_everywhere',
+        'can_write_everywhere')
+    list_display = (
+        'km_user',
+        'user_with_access',
+        'accepted',
+        'can_read_everywhere',
+        'can_write_everywhere')
+    search_fields = (
+        'km_user__user__first_name',
+        'km_user__user__last_name',
+        'user_with_access__first_name',
+        'user_with_access__last_name')
+
+
 @admin.register(models.ListContent)
 class ListContentAdmin(admin.ModelAdmin):
     """
