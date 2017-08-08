@@ -7,21 +7,21 @@ import pytest
 from know_me import filters, models
 
 
-def test_filter_list_inaccessible_row(
+def test_filter_list_inaccessible_topic(
         api_rf,
-        profile_row_factory,
+        profile_topic_factory,
         user_factory):
     """
-    If a user does not have access to the given row, the filter should
+    If a user does not have access to the given topic, the filter should
     raise an ``Http404`` exception.
     """
-    row = profile_row_factory()
+    topic = profile_topic_factory()
 
     api_rf.user = user_factory()
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': row.pk}
+    view.kwargs = {'pk': topic.pk}
 
     backend = filters.ProfileItemFilterBackend()
 
@@ -32,11 +32,11 @@ def test_filter_list_inaccessible_row(
             view)
 
 
-def test_filter_list_nonexistent_row(
+def test_filter_list_nonexistent_topic(
         api_rf,
         user_factory):
     """
-    If there is no row with the given primary key, the filter should
+    If there is no topic with the given primary key, the filter should
     raise an ``Http404`` exception.
     """
     api_rf.user = user_factory()
@@ -54,23 +54,23 @@ def test_filter_list_nonexistent_row(
             view)
 
 
-def test_filter_list_row_items(api_rf, profile_item_factory):
+def test_filter_list_topic_items(api_rf, profile_item_factory):
     """
-    The filter should only return profile items that belong to the row
+    The filter should only return profile items that belong to the topic
     with the given primary key.
     """
     item = profile_item_factory()
     profile_item_factory()
 
-    row = item.row
-    group = row.group
-    profile = group.profile
+    topic = item.topic
+    profile = topic.profile
+    km_user = profile.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': row.pk}
+    view.kwargs = {'pk': topic.pk}
 
     backend = filters.ProfileItemFilterBackend()
     results = backend.filter_list_queryset(
@@ -78,6 +78,6 @@ def test_filter_list_row_items(api_rf, profile_item_factory):
         models.ProfileItem.objects.all(),
         view)
 
-    expected = row.items.all()
+    expected = topic.items.all()
 
     assert list(results) == list(expected)

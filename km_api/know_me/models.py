@@ -4,68 +4,204 @@
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.core.validators import RegexValidator
 
 from rest_framework.reverse import reverse
 
 from permission_utils import model_mixins as mixins
 
 
-def get_gallery_item_upload_path(item, filename):
+def get_media_resource_upload_path(item, filename):
     """
-    Get the path to upload a gallery item's resource to.
+    Get the path to upload a media resource's file to.
 
     Args:
         item:
-            The gallery item whose resource is being uploaded.
+            The media resource whose file is being uploaded.
         filename (str):
             The original name of the file being uploaded.
 
     Returns:
         str:
             The original filename prefixed with
-            ``profile/<id>/gallery/``.
+            ``km_user/<id>/gallery/``.
     """
-    return 'profile/{id}/gallery/{file}'.format(
+    return 'know-me/users/{id}/media-resources/{file}'.format(
         file=filename,
-        id=item.profile.id)
+        id=item.km_user.id)
 
 
-class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
+def get_km_user_image_upload_path(km_user, imagename):
     """
-    A gallery item is an uploaded file attached to a profile.
+    Get the path to upload the kmuser image to.
+
+    Args:
+        km_user:
+            The km_user whose image is being uploaded.
+        imagename (str):
+            The original name of the image being uploaded.
+
+    Returns:
+        str:
+            The original image filename prefixed with
+            `users/<user_id>/{file}`.
+    """
+    return 'know-me/users/{id}/images/{file}'.format(
+            file=imagename,
+            id=km_user.id)
+
+
+class EmergencyContact(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    An emergency contact holds contact information for emergency situations
 
     Attributes:
-        name:
-            The name of the item.
-        profile:
-            The profile that the item is attached to.
-        resource:
-            A file containing some sort of content.
+        km_user:
+            Emergency Contacts parent ``KMUser``.
+        name (str):
+            The emergency contact's name.
+        relation (str):
+            Emergency contact's relationship with the profile owner.
+        phone_number (big int):
+            The emergency contacts phone number.
+        alt_phone_number (optional):
+            Second optional phone number for the emergency contact.
+        email (optional):
+            The emergency contact's email address.
     """
+    km_user = models.ForeignKey(
+        'know_me.KMUser',
+        related_name='emergency_contacts',
+        related_query_name='emergency_contact',
+        verbose_name=_('know me user'))
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
-    profile = models.ForeignKey(
-        'know_me.Profile',
-        related_name='gallery_items',
-        related_query_name='gallery_item',
-        verbose_name=_('profile'))
-    resource = models.FileField(
+    relation = models.TextField(
         max_length=255,
-        upload_to=get_gallery_item_upload_path,
-        verbose_name=_('resource'))
+        verbose_name=_('relation'))
+    phone_number = models.CharField(
+        max_length=15,
+        validators=[
+            RegexValidator(regex='^1?\d{9,15}$',
+                           message='Enter valid phone number',
+                           code='invalid_phone_number'), ],
+        verbose_name=_('phone number'))
+    alt_phone_number = models.CharField(
+        blank=True,
+        max_length=15,
+        validators=[
+            RegexValidator(regex='^1?\d{9,15}$',
+                           message='Enter valid phone number',
+                           code='invalid_phone_number'), ],
+        verbose_name=_('alternate phone number'))
+    email = models.EmailField(
+        blank=True,
+        default='',
+        verbose_name=_('email'))
 
     class Meta:
-        verbose_name = _('gallery item')
-        verbose_name_plural = _('gallery items')
+        verbose_name = _('emergency contact')
+        verbose_name_plural = _('emergency contact')
 
     def __str__(self):
         """
-        Get a string representation of the gallery item.
+        Get a string representation of the emergency contact.
 
         Returns:
             str:
-                The gallery item's name.
+                The emergency contact's name.
+        """
+        return self.name
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the profile item's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the profile item's detail view.
+        """
+        return reverse(
+            'know-me:emergency-contact-detail',
+            kwargs={'pk': self.pk})
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user has reads permissions for the
+                profile and ``False`` otherwise.
+        """
+        return self.km_user.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user has write permissions for the
+                profile and ``False`` otherwise.
+        """
+        return self.km_user.has_object_write_permission(request)
+
+
+class EmergencyItem(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    An emergency item holds emergency information for a KMUser.
+
+    Attributes:
+        description (optional, str):
+            The description for the KMUser.
+        media_resource (optional):
+            A ``Media Resource`` associated with the emergency item.
+        km_user:
+            The KMUser the item is connected with.
+        name:
+            The name of the item.
+    """
+    description = models.TextField(
+        blank=True,
+        default='',
+        verbose_name=_('description'))
+    media_resource = models.ForeignKey(
+        'know_me.MediaResource',
+        blank=True,
+        null=True,
+        related_name='emergency_items',
+        related_query_name='emergency_item',
+        verbose_name=_('media resource'))
+    km_user = models.ForeignKey(
+        'know_me.KMUser',
+        related_name='emergency_items',
+        related_query_name='emergency_item',
+        verbose_name=_('know me user'))
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'))
+
+    class Meta:
+        verbose_name = _('emergency item')
+        verbose_name_plural = _('emergency items')
+
+    def __str__(self):
+        """
+        Get a string representation of the emergency item.
+
+        Returns:
+            str:
+                The emergency item's name.
         """
         return self.name
 
@@ -77,11 +213,14 @@ class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
             str:
                 The absolute URL of the instance's detail view.
         """
-        return reverse('know-me:gallery-item-detail', kwargs={'pk': self.pk})
+        return reverse('know-me:emergency-item-detail', kwargs={'pk': self.pk})
 
     def has_object_read_permission(self, request):
         """
-        Check read permissions on the instance for a given request.
+        Check read permissions on the instance for a request.
+
+        This check is actually performed by the instance's parent
+        :class:`.KMUser`.
 
         Args:
             request:
@@ -89,14 +228,17 @@ class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the request is allowed to read the instance
-                and ``False`` otherwise.
+                A boolean indicating if the request should have read
+                permissions for the instance.
         """
-        return self.profile.user == request.user
+        return self.km_user.has_object_read_permission(request)
 
     def has_object_write_permission(self, request):
         """
-        Check write permissions on the instance for a given request.
+        Check write permissions on the instance for a request.
+
+        This check is actually performed by the instance's parent
+        :class:`.KMUser`.
 
         Args:
             request:
@@ -104,50 +246,122 @@ class GalleryItem(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the request is allowed to write to the
-                instance and ``False`` otherwise.
+                A boolean indicating if the request should have write
+                permissions for the instance.
         """
-        return self.profile.user == request.user
+        return self.km_user.has_object_write_permission(request)
 
 
-class Profile(mixins.IsAuthenticatedMixin, models.Model):
+class ImageContent(models.Model):
     """
-    A profile contains information about a specific user.
-
-    Attributes:
-        name (str):
-            The user's name.
-        quote (str):
-            A quote from the user.
-        user:
-            The user who owns this profile.
-        welcome_message (str):
-            A message to welcome other users to the profile.
+    Content for image-type :class:`.ProfileItem` instances.
     """
-    name = models.CharField(
-        max_length=255,
-        verbose_name=_('name'))
-    quote = models.TextField(verbose_name=_('quote'))
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
+    description = models.TextField(
+        blank=True,
+        default='',
+        verbose_name=_('description'))
+    """
+    :obj:`str`, optional:
+        Text describing the associated :class:`.ProfileItem`.
+    """
+
+    image_resource = models.ForeignKey(
+        'know_me.MediaResource',
+        blank=True,
+        null=True,
         on_delete=models.CASCADE,
-        related_name='profile',
-        verbose_name=_('user'))
-    welcome_message = models.TextField(verbose_name=_('welcome message'))
+        related_name='+',
+        verbose_name=_('image resource'))
+    """
+    An optional image-type :class:`.MediaResource` instance that
+    represents the item's contents.
+    """
 
-    class Meta:
-        verbose_name = _('profile')
-        verbose_name_plural = _('profiles')
+    media_resource = models.ForeignKey(
+        'know_me.MediaResource',
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='+',
+        verbose_name=_('media resource'))
+    """
+    An optional additional :class:`.MediaResource` instance associated
+    with the item's contents.
+    """
+
+    profile_item = models.OneToOneField(
+        'know_me.ProfileItem',
+        on_delete=models.CASCADE,
+        related_name='image_content',
+        verbose_name=_('profile item'))
+    """
+    The :class:`.ProfileItem` instance that the content is attached to.
+    """
+
+    class Meta(object):
+        verbose_name = _('profile item image content')
+        verbose_name_plural = _('profile item image content')
 
     def __str__(self):
         """
-        Get a string representation of the profile.
+        Get a string representation of the instance.
 
         Returns:
             str:
-                The profile's name.
+                A string indicating which profile item the instance
+                belongs to.
         """
-        return self.name
+        return "Image content for profile item '{item}'".format(
+            item=self.profile_item)
+
+
+class KMUser(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    A KMUser tracks information associated with each user of the
+    Know Me app.
+
+    Attributes:
+        user:
+            The user who owns this km_user.
+        image:
+            The user's main image.
+        quote (str) :
+            A quote from the user.
+    """
+    image = models.ImageField(
+        blank=True,
+        max_length=255,
+        null=True,
+        upload_to=get_km_user_image_upload_path,
+        verbose_name=_('image'))
+    quote = models.TextField(blank=True, null=True, verbose_name=_('quote'))
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='km_user',
+        verbose_name=_('user'))
+
+    class Meta:
+        verbose_name = _('Know Me user')
+        verbose_name_plural = _('Know Me users')
+
+    def __str__(self):
+        """
+        Get a string representation of the KMUser.
+
+        Returns:
+            str:
+                The KMUser's name.
+        """
+        return self.user.get_short_name()
+
+    @property
+    def name(self):
+        """
+        str:
+            The parent user's name.
+        """
+        return self.user.get_short_name()
 
     def get_absolute_url(self):
         """
@@ -157,7 +371,47 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
             str:
                 The absolute URL of the instance's detail view.
         """
-        return reverse('know-me:profile-detail', kwargs={'pk': self.pk})
+        return reverse('know-me:km-user-detail', kwargs={'pk': self.pk})
+
+    def get_emergency_contact_list_url(self, request=None):
+        """
+        Get the absolute URL of the instance's emergency contact list view.
+
+        Args:
+            request (optional):
+                A request used as context when constructing the URL. If
+                given, the resulting URL will be a full URI with a
+                protocol and domain name.
+
+        Returns:
+            str:
+                The absolute URL of the instance's emeregency contact list
+                view.
+        """
+        return reverse(
+            'know-me:emergency-contact-list',
+            kwargs={'pk': self.pk},
+            request=request)
+
+    def get_emergency_item_list_url(self, request=None):
+        """
+        Get the URL of the instance's emergency item list.
+
+        Args:
+            request (:class:`django.http.HttpRequest`, optional):
+                The request to use as context when constructing the URL.
+
+        Returns:
+            str:
+                The URL of the instance's emergency item list view. If
+                ``request`` is not ``None``, the URL will include a
+                protocol and domain, otherwise it will be an absolute
+                URL.
+        """
+        return reverse(
+            'know-me:emergency-item-list',
+            kwargs={'pk': self.pk},
+            request=request)
 
     def get_gallery_url(self, request=None):
         """
@@ -178,9 +432,9 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
             kwargs={'pk': self.pk},
             request=request)
 
-    def get_group_list_url(self, request=None):
+    def get_profile_list_url(self, request=None):
         """
-        Get the absolute URL of the instance's group list view.
+        Get the absolute URL of the instance's profile list view.
 
         Args:
             request (optional):
@@ -190,10 +444,10 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             str:
-                The absolute URL of the instance's group list view.
+                The absolute URL of the instance's profile list view.
         """
         return reverse(
-            'know-me:profile-group-list',
+            'know-me:profile-list',
             kwargs={'pk': self.pk},
             request=request)
 
@@ -207,7 +461,7 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the profile and
+                ``True`` if the requesting user owns the km_user and
                 ``False`` otherwise.
         """
         return request.user == self.user
@@ -222,50 +476,291 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the profile and
+                ``True`` if the requesting user owns the km_user and
                 ``False`` otherwise.
         """
         return request.user == self.user
 
 
-class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
+class ListContent(mixins.IsAuthenticatedMixin, models.Model):
     """
-    A profile group contains a targeted subset of a ``Profile``.
+    Model to store list content for a :class:`.ProfileItem`.
+    """
+    profile_item = models.OneToOneField(
+        'know_me.ProfileItem',
+        on_delete=models.CASCADE,
+        related_name='list_content',
+        verbose_name=_('profile item'))
+    """
+    :class:`.ProfileItem`:
+        The profile item that the list content is attached to.
+    """
+
+    class Meta(object):
+        verbose_name = _('profile item list content')
+        verbose_name_plural = _('profile item list content')
+
+    def get_list_entry_list_url(self, request=None):
+        """
+        Get the URL of the content's entry list view.
+
+        Args:
+            request (optional):
+                The request to use when constructing the URL. If it is
+                provided, the resulting URL will include a protocol and
+                domain. Otherwise the resulting URL will be an absolute
+                URL (beginning with a ``'/'``). Defaults to ``None``.
+
+        Returns:
+            str:
+                The URL of the content's entry list view.
+        """
+        return reverse(
+            'know-me:list-entry-list',
+            kwargs={'pk': self.pk},
+            request=request)
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user is allowed to read from
+                the instance and ``False`` otherwise.
+        """
+        return self.profile_item.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to write to the
+                instance and ``False`` otherwise.
+        """
+        return self.profile_item.has_object_write_permission(request)
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            str:
+                A message indicating which profile item the list content
+                belongs to.
+        """
+        return "List content for profile item '{item}'".format(
+            item=self.profile_item)
+
+
+class ListEntry(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    An entry in a list for a specific profile item.
+    """
+    list_content = models.ForeignKey(
+        'know_me.ListContent',
+        on_delete=models.CASCADE,
+        related_name='entries',
+        related_query_name='entry',
+        verbose_name=_('list content'))
+    """
+    :class:`.ListContent`:
+        The parent list that the entry is associated with.
+    """
+
+    text = models.CharField(
+        max_length=255,
+        verbose_name=_('text'))
+    """
+    str:
+        Text associated with the list entry.
+    """
+
+    class Meta(object):
+        verbose_name = _('list entry')
+        verbose_name_plural = _('list entries')
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            str:
+                The entry's text.
+        """
+        return self.text
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's list entry.
+
+        Returns:
+            str:
+                The absolute URL of the instance's list entry.
+        """
+        return reverse('know-me:list-entry-detail', kwargs={'pk': self.pk})
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user is allowed to read from
+                the instance and ``False`` otherwise.
+        """
+        return self.list_content.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user is allowed to write to
+                the instance and ``False`` otherwise.
+        """
+        return self.list_content.has_object_write_permission(request)
+
+
+class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    A media resource is an uploaded file attached to a km_user.
+
+    Attributes:
+        name:
+            The name of the item.
+        km_user:
+            The km_user that the item is attached to.
+        file:
+            A file containing some sort of content.
+    """
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'))
+    km_user = models.ForeignKey(
+        'know_me.KMUser',
+        null=True,
+        related_name='media_resources',
+        related_query_name='media_resource',
+        verbose_name=_('km_user'))
+    file = models.FileField(
+        max_length=255,
+        upload_to=get_media_resource_upload_path,
+        verbose_name=_('file'))
+
+    class Meta:
+        verbose_name = _('media resource')
+        verbose_name_plural = _('media resources')
+
+    def __str__(self):
+        """
+        Get a string representation of the media resource.
+
+        Returns:
+            str:
+                The media resource's name.
+        """
+        return self.name
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the instance's detail view.
+        """
+        return reverse('know-me:media-resource-detail', kwargs={'pk': self.pk})
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to read the instance
+                and ``False`` otherwise.
+        """
+        return self.km_user.user == request.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to write to the
+                instance and ``False`` otherwise.
+        """
+        return self.km_user.user == request.user
+
+
+class Profile(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    A profile contains a targeted subset of a ``KMUser``.
 
     Attributes:
         is_default (bool):
-            A boolean controlling if the group is the default for its
-            parent profile.
+            A boolean controlling if the profile is the default for its
+            parent km_user.
         name (str):
-            The name of the group.
-        profile:
-            The ``Profile`` instance the group belongs to.
+            The name of the profile.
+        km_user:
+            The ``KMUser`` instance the profile belongs to.
     """
     is_default = models.BooleanField(
         default=False,
-        help_text=_('The default profile group is displayed initially.'),
+        help_text=_('The default profile is displayed initially.'),
         verbose_name=_('is default'))
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
-    profile = models.ForeignKey(
-        'know_me.Profile',
+    km_user = models.ForeignKey(
+        'know_me.KMUser',
+        null=True,
         on_delete=models.CASCADE,
-        related_name='groups',
-        related_query_name='group',
-        verbose_name=_('profile'))
+        related_name='profiles',
+        related_query_name='profile',
+        verbose_name=_('know me user'))
 
     class Meta:
-        verbose_name = _('profile group')
-        verbose_name_plural = _('profile groups')
+        verbose_name = _('profile')
+        verbose_name_plural = _('profiles')
 
     def __str__(self):
         """
-        Get a string representation of the profile group.
+        Get a string representation of the profile.
 
         Returns:
             str:
-                The profile group's name.
+                The profile's name.
         """
         return self.name
 
@@ -276,11 +771,11 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
         Returns:
             The URL of the instance's detail view.
         """
-        return reverse('know-me:profile-group-detail', kwargs={'pk': self.pk})
+        return reverse('know-me:profile-detail', kwargs={'pk': self.pk})
 
-    def get_row_list_url(self, request=None):
+    def get_topic_list_url(self, request=None):
         """
-        Get the URL of the instance's row list view.
+        Get the URL of the instance's topic list view.
 
         Args:
             request (optional):
@@ -290,10 +785,10 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             str:
-                The URL of the instance's row list view.
+                The URL of the instance's topic list view.
         """
         return reverse(
-            'know-me:profile-row-list',
+            'know-me:profile-topic-list',
             kwargs={'pk': self.pk},
             request=request)
 
@@ -307,10 +802,10 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the group's parent
-                profile and ``False`` otherwise.
+                ``True`` if the requesting user owns the profile's parent
+                km_user and ``False`` otherwise.
         """
-        return request.user == self.profile.user
+        return request.user == self.km_user.user
 
     def has_object_write_permission(self, request):
         """
@@ -322,45 +817,34 @@ class ProfileGroup(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the group's parent
-                profile and ``False`` otherwise.
+                ``True`` if the requesting user owns the profile's parent
+                km_user and ``False`` otherwise.
         """
-        return request.user == self.profile.user
+        return request.user == self.km_user.user
 
 
 class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
     """
-    A profile item holds a piece of information for a profile row.
-
-    Attributes:
-        gallery_item (optional):
-            A ``GalleryItem`` associated with the profile item.
-        name (str);
-            The item's name.
-        row:
-            The profile row the item is part of.
-        text (optional):
-            The item's text. Defaults to an empty string.
+    A profile item holds a piece of information for a profile topic.
     """
-    gallery_item = models.ForeignKey(
-        'know_me.GalleryItem',
-        blank=True,
-        null=True,
-        related_name='profile_items',
-        related_query_name='profile_item',
-        verbose_name=_('gallery item'))
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
-    row = models.ForeignKey(
-        'know_me.ProfileRow',
+    """
+    str:
+        The profile item's name.
+    """
+
+    topic = models.ForeignKey(
+        'know_me.ProfileTopic',
+        null=True,
         related_name='items',
         related_query_name='item',
-        verbose_name=_('profile row'))
-    text = models.TextField(
-        blank=True,
-        default='',
-        verbose_name=_('text'))
+        verbose_name=_('profile topic'))
+    """
+    :class:`.ProfileTopic`:
+        The profile topic that the item belongs to.
+    """
 
     class Meta:
         verbose_name = _('profile item')
@@ -396,10 +880,10 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the profile the
+                ``True`` if the requesting user owns the km_user the
                 instance belongs to and ``False`` otherwise.
         """
-        return request.user == self.row.group.profile.user
+        return request.user == self.topic.profile.km_user.user
 
     def has_object_write_permission(self, request):
         """
@@ -411,54 +895,53 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the profile the
+                ``True`` if the requesting user owns the km_user the
                 instance belongs to and ``False`` otherwise.
         """
-        return request.user == self.row.group.profile.user
+        return request.user == self.topic.profile.km_user.user
 
 
-class ProfileRow(mixins.IsAuthenticatedMixin, models.Model):
+class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
     """
-    A profile row holds a category of information for a profile group.
+    A profile topic holds a category of information for a profile.
 
     Attributes:
-        group:
-            The row's parent ``ProfileGroup``.
+        profile:
+            The topic's parent ``Profile``.
         name (str):
-            The row's name.
+            The topic's name.
     """
-    GROUPED = 1
-    PAGED = 2
+    # The numbering for these fields is augmented due to the previous
+    # presence of page and group rows.
     TEXT = 3
     VISUAL = 4
 
-    ROW_TYPE_CHOICES = (
-        (GROUPED, _('grouped row')),
-        (PAGED, _('paged row')),
-        (TEXT, _('text row')),
-        (VISUAL, _('visual row')),
+    TOPIC_TYPE_CHOICES = (
+        (TEXT, _('text topic')),
+        (VISUAL, _('visual topic')),
     )
 
-    group = models.ForeignKey(
-        'know_me.ProfileGroup',
+    profile = models.ForeignKey(
+        'know_me.Profile',
+        null=True,
         on_delete=models.CASCADE,
-        related_name='rows',
-        related_query_name='row',
-        verbose_name=_('profile group'))
+        related_name='topics',
+        related_query_name='topic',
+        verbose_name=_('profile'))
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
-    row_type = models.PositiveSmallIntegerField(
-        choices=ROW_TYPE_CHOICES,
-        verbose_name=_('row type'))
+    topic_type = models.PositiveSmallIntegerField(
+        choices=TOPIC_TYPE_CHOICES,
+        verbose_name=_('topic type'))
 
     class Meta:
-        verbose_name = _('profile row')
-        verbose_name_plural = _('profile rows')
+        verbose_name = _('profile topic')
+        verbose_name_plural = _('profile topics')
 
     def __str__(self):
         """
-        Get a string representation of the profile group.
+        Get a string representation of the profile.
 
         Returns:
             str:
@@ -474,11 +957,11 @@ class ProfileRow(mixins.IsAuthenticatedMixin, models.Model):
             str:
                 The absolute URL of the instance's detail view.
         """
-        return reverse('know-me:profile-row-detail', kwargs={'pk': self.pk})
+        return reverse('know-me:profile-topic-detail', kwargs={'pk': self.pk})
 
     def get_item_list_url(self, request=None):
         """
-        Get the URL of the row's item list view.
+        Get the URL of the topic's item list view.
 
         Args:
             request (optional):
@@ -489,7 +972,7 @@ class ProfileRow(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             str:
-                The URL of the row's item list view.
+                The URL of the topic's item list view.
         """
         return reverse(
             'know-me:profile-item-list',
@@ -506,10 +989,10 @@ class ProfileRow(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the profile the
+                ``True`` if the requesting user owns the km_user the
                 instance belongs to and ``False`` otherwise.
         """
-        return request.user == self.group.profile.user
+        return request.user == self.profile.km_user.user
 
     def has_object_write_permission(self, request):
         """
@@ -521,7 +1004,7 @@ class ProfileRow(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the profile the
+                ``True`` if the requesting user owns the km_user the
                 instance belongs to and ``False`` otherwise.
         """
-        return request.user == self.group.profile.user
+        return request.user == self.profile.km_user.user

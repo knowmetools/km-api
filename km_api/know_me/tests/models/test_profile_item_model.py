@@ -3,15 +3,13 @@ from rest_framework.reverse import reverse
 from know_me import models
 
 
-def test_create(gallery_item_factory, profile_row_factory):
+def test_create(profile_topic_factory):
     """
     Test creating a profile item.
     """
     models.ProfileItem.objects.create(
-        gallery_item=gallery_item_factory(),
         name='Profile Item',
-        row=profile_row_factory(),
-        text='Some sample item text.')
+        topic=profile_topic_factory())
 
 
 def test_get_absolute_url(profile_item_factory):
@@ -31,7 +29,7 @@ def test_has_object_read_permission_other(
         user_factory):
     """
     Users should not have read permissions on profile items that belong
-    to a profile they don't have access to.
+    to a km_user they don't have access to.
     """
     item = profile_item_factory()
 
@@ -44,14 +42,14 @@ def test_has_object_read_permission_other(
 def test_has_object_read_permission_owner(api_rf, profile_item_factory):
     """
     Users should have read permissions on profile items belonging to
-    their own profile.
+    their own km_user.
     """
     item = profile_item_factory()
-    row = item.row
-    group = row.group
-    profile = group.profile
+    topic = item.topic
+    profile = topic.profile
+    km_user = profile.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     assert item.has_object_read_permission(request)
@@ -63,7 +61,7 @@ def test_has_object_write_permission_other(
         user_factory):
     """
     Users should not have write permissions on profile items that belong
-    to a profile they don't have access to.
+    to a km_user they don't have access to.
     """
     item = profile_item_factory()
 
@@ -76,14 +74,14 @@ def test_has_object_write_permission_other(
 def test_has_object_write_permission_owner(api_rf, profile_item_factory):
     """
     Users should have write permissions on profile items belonging to
-    their own profile.
+    their own km_user.
     """
     item = profile_item_factory()
-    row = item.row
-    group = row.group
-    profile = group.profile
+    topic = item.topic
+    profile = topic.profile
+    km_user = profile.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     assert item.has_object_write_permission(request)

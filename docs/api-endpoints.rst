@@ -26,5 +26,6 @@ API Endpoints
 
     API/authentication
     API/account
+    API/know-me-emergency
     API/know-me-gallery
     API/know-me-profile

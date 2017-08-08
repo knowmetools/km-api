@@ -10,15 +10,17 @@ env:
     - AWS_BUCKET_NAME=elasticbeanstalk-us-east-1-656952694364
     - AWS_REGION=us-east-1
     - secure: "YARJiZmaMEM18Be1h8AUtB7xl9mK/Fcvm6FR8BTrQuNv9xRrLzlJ2Lhsl6+RpP/ifX72CUbXubwIX6h0KDgZriVE3SV/jQ0Ium6jQRbhnkTYE7xrE1FgTJIRhdDnNMD3Qhy7EEFROYkLXmiVf3wDA24twn7ez/8W/In6rIJkt48yGLxeGcPMq/7xCiXg0pyWOiibiZKzxHyFpqW37XZLsynjMTrX75FXEiVifmp6Pc0UVu7TbcOLQxS1by/HT/EbMYzLZJmJCwdP/Kq7rCfc4AMpacFJJQQuQH7GhQikdxd1priiqqtFYGeAKXRXKjTAr0iR4Pr95exo9GKysBox8mvfPFHJmwmBYrlhazIUkUeZOhj0IigOHjDMn/vNS/4vHI0ZDuecJvSHD8CmpmNcy8yPXHT/ywyQy/KlA10YkaFrFqFB5kLIqFZaARyJ9MDoP7bjkGU46ArJmcR14OIjAER+39S9jwaXtSFCmKn4+M7jyawe5Pm3O6meSHK6dGMj+rPPbH6VIpKZjxo4gT19EIt7tCy0l26pJDGNT3LtbTp48mSZTCnVmufFYuHgB1dEu77Jsxca++Non8rG1R9LegY/VH7h/CZMACsa/wsxiQM4U81x/Zg5HHOZanH7t/MjaxZUBanRXWA95N6JMfJL5bd/2ChCeHJT61IN8nDLhDU="
+    # Don't run tests in parallel. This fixes an issue with code coverage.
+    - PYTEST_ADDOPTS="-n0"
 
 install:
   - pip install --upgrade pip
   - pip install -r requirements/test.txt
   - pip install codecov
 
-before_script: flake8
-
-script: coverage run -m pytest km_api/
+script:
+  - flake8
+  - coverage run -m pytest km_api/
 
 after_success: codecov
 
@@ -44,3 +46,11 @@ deploy:
     skip_cleanup: yes
     on:
       tags: yes
+
+notifications:
+  slack:
+    on_failure: always
+    on_success: change
+    rooms:
+      - secure: "cjksoOfssYAooxxBDXTpSwKx89IqMAAb7VPi1xQnxzuO2Kwb7y5T44wQZ14INtKhkp00rE2IhasZbvYvEBv0RLuA99XMaILbcluspF9HQzOsmckG6HdadE4s258PV2hkclzv5MCxO8xkyA9VorNv9lQLKeAxdnoC3XH8WJ3zc2ljduduz5ebtkz4YF/W6+PWESEQWUWgWfznrGGJcwYwNR3KNmgGAfBSRQWLACNhdtOEFFJczmH0IyrfXFZUt38gkbpBZPHcTw+gjTeRUoHRI2lwA7r/6uza68LvmDtVNjT8qLQNx0T5J8GApq42A7d8uZQBv2BO8Qt+vKUmEw5M5O9gAb03NzqcJw7dyDMD2ncx52zaGtFGImsPZyC5V5N9v+8s7ZlbrpFgXer7cPHVISxZXoc+xSf6fdQwOTa9GsNzSiMWhVzfQn6A9QHwBVFGERwXnia8chNgFlovpsBJWYn9OkpS8gUng6JwW9O+Ehs0hkxVooUESA0jp2WRBhzWkckMmUIxHhIQsnkEAFiJ/na+uZJBz+/xkm68cizbS/rtvD0ucPkqxdiu2Nf9R46ddGz/FwVsE39SEGxX1uWUNhzsUAZ3dcQqwChI8DOeb7gI9tabUknRYqfU5b1Y6M1pAEegi3ipKjozhnSokeAtS1Zz/2xWa+8pD9O5rO+De5M="
+

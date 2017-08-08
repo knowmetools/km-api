@@ -8,6 +8,145 @@ from dry_rest_permissions.generics import DRYPermissionFiltersBase
 from know_me import models
 
 
+class EmergencyContactFilterBackend(DRYPermissionFiltersBase):
+    """
+    Filter for listing ``EmergencyContact`` instances.
+    """
+
+    def filter_list_queryset(self, request, queryset, view):
+        """
+        Filter emergency items for a list action.
+        Args:
+            request:
+                The request being made.
+            queryset:
+                A queryset containing the objects to filter.
+            view:
+                The view being accessed.
+        Returns:
+            The provided queryset filtered to only include items owned
+            by the user specified in the provided views arguments.
+        """
+        km_user = get_object_or_404(
+            models.KMUser,
+            pk=view.kwargs.get('pk'),
+            user=request.user)
+
+        return queryset.filter(km_user=km_user)
+
+
+class EmergencyItemFilterBackend(DRYPermissionFiltersBase):
+    """
+    Filter for listing emergency items for a user.
+    """
+
+    def filter_list_queryset(self, request, queryset, view):
+        """
+        Filter emergency items for a list action.
+        Args:
+            request:
+                The request being made.
+            queryset:
+                A queryset containing the objects to filter.
+            view:
+                The view being accessed.
+        Returns:
+            The provided queryset filtered to only include items owned
+            by the user specified in the provided views arguments.
+        """
+        km_user = get_object_or_404(
+            models.KMUser,
+            pk=view.kwargs.get('pk'),
+            user=request.user)
+
+        return queryset.filter(km_user=km_user)
+
+
+class KMUserFilterBackend(DRYPermissionFiltersBase):
+    """
+    Filter for listing ``KMUser`` instances.
+    """
+
+    def filter_list_queryset(self, request, queryset, view):
+        """
+        Filter km_users for a ``list`` action.
+
+        Args:
+            request:
+                The request being made.
+            queryset:
+                A queryset containing the objects to filter.
+            view:
+                The view being accessed.
+
+        Returns:
+            A queryset containing the km_users accessible to the user
+            making the request.
+        """
+        return queryset.filter(user=request.user)
+
+
+class ListEntryFilterBackend(DRYPermissionFiltersBase):
+    """
+    Filter for listing ``ListEntry`` instances.
+    """
+
+    def filter_list_queryset(self, request, queryset, view):
+        """
+        Filter list entries for a ``list`` action.
+
+        Args:
+            request:
+                The request being made:
+            queryset:
+                A queryset containing the objects to filter.
+            view:
+                The view being accessed.
+
+        Returns:
+            A queryset containing the list entries accessible to the
+            user making the request.
+        """
+        item = get_object_or_404(
+            models.ProfileItem,
+            topic__profile__km_user__user=request.user,
+            pk=view.kwargs.get('pk'))
+
+        return queryset.filter(list_content__profile_item=item)
+
+
+class MediaResourceFilterBackend(DRYPermissionFiltersBase):
+    """
+    Filter for listing media resources.
+    """
+
+    def filter_list_queryset(self, request, queryset, view):
+        """
+        Filter media resources for a 'list' action.
+        Args:
+            request:
+                The request being made.
+            queryset:
+                The queryset containing the objects to filter.
+            view:
+                The view being accessed.
+        Returns:
+            The provided queryset filtered to contain only the media
+            resources belonging to the requesting user.
+        Raises:
+            Http404:
+                If there is no Know Me user with the primary key
+                specified in the view or if the requesting user does not
+                have access the the media resources for that user.
+        """
+        km_user = get_object_or_404(
+            models.KMUser,
+            pk=view.kwargs.get('pk'),
+            user=request.user)
+
+        return queryset.filter(km_user=km_user)
+
+
 class ProfileFilterBackend(DRYPermissionFiltersBase):
     """
     Filter for listing ``Profile`` instances.
@@ -26,39 +165,15 @@ class ProfileFilterBackend(DRYPermissionFiltersBase):
                 The view being accessed.
 
         Returns:
-            A queryset containing the profiles accessible to the user
-            making the request.
+            A queryset containing the profiles belonging to the
+            km_user whose primary key is specified in the view.
         """
-        return queryset.filter(user=request.user)
-
-
-class ProfileGroupFilterBackend(DRYPermissionFiltersBase):
-    """
-    Filter for listing ``ProfileGroup`` instances.
-    """
-
-    def filter_list_queryset(self, request, queryset, view):
-        """
-        Filter profile groups for a ``list`` action.
-
-        Args:
-            request:
-                The request being made.
-            queryset:
-                A queryset containing the objects to filter.
-            view:
-                The view being accessed.
-
-        Returns:
-            A queryset containing the profile groups belonging to the
-            profile whose primary key is specified in the view.
-        """
-        profile = get_object_or_404(
-            models.Profile,
+        km_user = get_object_or_404(
+            models.KMUser,
             pk=view.kwargs.get('pk'),
             user=request.user)
 
-        return queryset.filter(profile__pk=profile.pk)
+        return queryset.filter(km_user__pk=km_user.pk)
 
 
 class ProfileItemFilterBackend(DRYPermissionFiltersBase):
@@ -80,24 +195,24 @@ class ProfileItemFilterBackend(DRYPermissionFiltersBase):
 
         Returns:
             A queryset containing the profile items belonging to the
-            profile row whose primary key is specified in the view.
+            profile topic whose primary key is specified in the view.
         """
-        row = get_object_or_404(
-            models.ProfileRow,
-            group__profile__user=request.user,
+        topic = get_object_or_404(
+            models.ProfileTopic,
+            profile__km_user__user=request.user,
             pk=view.kwargs.get('pk'))
 
-        return queryset.filter(row__pk=row.pk)
+        return queryset.filter(topic__pk=topic.pk)
 
 
-class ProfileRowFilterBackend(DRYPermissionFiltersBase):
+class ProfileTopicFilterBackend(DRYPermissionFiltersBase):
     """
-    Filter for listing profile rows.
+    Filter for listing profile topics.
     """
 
     def filter_list_queryset(self, request, queryset, view):
         """
-        Filter profile rows for a ``list`` action.
+        Filter profile topics for a ``list`` action.
 
         Args:
             request:
@@ -108,12 +223,12 @@ class ProfileRowFilterBackend(DRYPermissionFiltersBase):
                 The view being accessed.
 
         Returns:
-            A queryset containing the profile rows belonging to the
-            profile group whose primary key is specified in the view.
+            A queryset containing the profile topics belonging to the
+            profile whose primary key is specified in the view.
         """
-        group = get_object_or_404(
-            models.ProfileGroup,
+        profile = get_object_or_404(
+            models.Profile,
             pk=view.kwargs.get('pk'),
-            profile__user=request.user)
+            km_user__user=request.user)
 
-        return queryset.filter(group__pk=group.pk)
+        return queryset.filter(profile__pk=profile.pk)

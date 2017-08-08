@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from know_me import models
 
-from .profile_group_serializers import ProfileGroupListSerializer
+from .profile_topic_serializers import ProfileTopicSerializer
 
 
 class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
@@ -16,7 +16,7 @@ class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
         view_name='know-me:profile-detail')
 
     class Meta:
-        fields = ('id', 'url', 'name', 'quote', 'welcome_message')
+        fields = ('id', 'url', 'name', 'is_default')
         model = models.Profile
 
 
@@ -24,44 +24,24 @@ class ProfileDetailSerializer(ProfileListSerializer):
     """
     Serializer for single ``Profile`` instances.
 
-    This serializer builds off of the ``ProfileListSerializer``.
+    Based off ``ProfileListSerializer``.
     """
-    gallery_url = serializers.SerializerMethodField()
-    groups = ProfileGroupListSerializer(many=True, read_only=True)
-    groups_url = serializers.SerializerMethodField()
+    topics_url = serializers.SerializerMethodField()
+    topics = ProfileTopicSerializer(many=True, read_only=True)
 
     class Meta:
-        fields = (
-            'id', 'url', 'name', 'quote', 'welcome_message', 'gallery_url',
-            'groups_url', 'groups'
-        )
+        fields = ('id', 'url', 'name', 'is_default', 'topics_url', 'topics')
         model = models.Profile
 
-    def get_gallery_url(self, profile):
+    def get_topics_url(self, profile):
         """
-        Get the URL for the gallery view of the profile being
-        serialized.
+        Get the URL of the given profile's topic list.
 
         Args:
             profile:
-                The ``Profile`` instance being serialized.
+                The profile being serialized.
 
         Returns:
-            str:
-                The URL of the profile's gallery view.
+            The URL of the given profile's topic list.
         """
-        return profile.get_gallery_url(self.context['request'])
-
-    def get_groups_url(self, profile):
-        """
-        Get the URL for the group list view of the profile being
-        serialized.
-
-        Args:
-            profile:
-                The ``Profile`` instance being serialized.
-
-        Returns:
-            The URL of the profile's group list view.
-        """
-        return profile.get_group_list_url(self.context['request'])
+        return profile.get_topic_list_url(self.context['request'])

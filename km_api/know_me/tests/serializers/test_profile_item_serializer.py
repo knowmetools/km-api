@@ -1,20 +1,20 @@
 from know_me import serializers
 
 
-def test_create(gallery_item_factory, profile_row_factory, serializer_context):
+def test_create_image_item(profile_topic_factory, serializer_context):
     """
-    Saving a serializer with valid data should create a new profile
-    item.
+    Saving a serializer with valid image content should create a new
+    profile item.
     """
-    row = profile_row_factory()
-    gallery_item = gallery_item_factory(profile=row.group.profile)
+    topic = profile_topic_factory()
 
-    serializer_context['profile'] = row.group.profile
+    serializer_context['km_user'] = topic.profile.km_user
 
     data = {
-        'gallery_item': gallery_item.pk,
         'name': 'My Profile Item',
-        'text': 'Some sample text.',
+        'image_content': {
+            'description': 'Sample image content description.',
+        }
     }
 
     serializer = serializers.ProfileItemSerializer(
@@ -22,57 +22,58 @@ def test_create(gallery_item_factory, profile_row_factory, serializer_context):
         data=data)
     assert serializer.is_valid(), serializer.errors
 
-    item = serializer.save(row=row)
+    item = serializer.save(topic=topic)
 
     assert item.name == data['name']
-    assert item.text == data['text']
+    assert item.topic == topic
 
-    assert item.gallery_item == gallery_item
-    assert item.row == row
+    content = item.image_content
+
+    assert content.description == data['image_content']['description']
 
 
-def test_create_other_user_gallery_item(
-        gallery_item_factory,
-        profile_factory,
-        serializer_context):
+def test_create_list_item(profile_topic_factory, serializer_context):
     """
-    Users should not be able to attach a gallery item from a different
-    profile to their profile item.
+    Saving a serializer with valid list content should create a new
+    profile item.
     """
-    gallery_item = gallery_item_factory()
-    profile = profile_factory()
-
-    serializer_context['profile'] = profile
+    topic = profile_topic_factory()
 
     data = {
-        'gallery_item': gallery_item.pk,
-        'name': 'My Profile Item',
-        'text': 'I tried to attach a gallery item from another profile.',
+        'name': 'List Profile Item',
+        'list_content': {},
     }
 
     serializer = serializers.ProfileItemSerializer(
         context=serializer_context,
         data=data)
+    assert serializer.is_valid()
 
-    assert not serializer.is_valid()
+    item = serializer.save(topic=topic)
+
+    assert item.name == data['name']
+    assert item.topic == topic
+
+    assert item.list_content is not None
 
 
-def test_serialize(
+def test_serialize_image_item(
         api_rf,
-        gallery_item_factory,
+        image_content_factory,
         profile_item_factory,
         serializer_context):
     """
-    Test serializing a profile item.
+    Test serializing a profile item with image content.
     """
-    gallery_item = gallery_item_factory()
-    item = profile_item_factory(gallery_item=gallery_item)
+    item = profile_item_factory()
+    image_content_factory(profile_item=item)
 
     serializer = serializers.ProfileItemSerializer(
         item,
         context=serializer_context)
-    gallery_item_serializer = serializers.GalleryItemSerializer(
-        gallery_item,
+
+    image_content_serializer = serializers.ImageContentSerializer(
+        item.image_content,
         context=serializer_context)
 
     url_request = api_rf.get(item.get_absolute_url())
@@ -81,9 +82,39 @@ def test_serialize(
         'id': item.id,
         'url': url_request.build_absolute_uri(),
         'name': item.name,
-        'text': item.text,
-        'gallery_item': gallery_item.pk,
-        'gallery_item_info': gallery_item_serializer.data,
+        'image_content': image_content_serializer.data,
+        'list_content': None,
+    }
+
+    assert serializer.data == expected
+
+
+def test_serialize_list_item(
+        api_rf,
+        list_content_factory,
+        profile_item_factory,
+        serializer_context):
+    """
+    Test serializing a profile item with list content.
+    """
+    item = profile_item_factory()
+    list_content_factory(profile_item=item)
+
+    serializer = serializers.ProfileItemSerializer(
+        item,
+        context=serializer_context)
+
+    list_content_serializer = serializers.ListContentSerializer(
+        item.list_content)
+
+    url_request = api_rf.get(item.get_absolute_url())
+
+    expected = {
+        'id': item.id,
+        'url': url_request.build_absolute_uri(),
+        'name': item.name,
+        'image_content': None,
+        'list_content': list_content_serializer.data,
     }
 
     assert serializer.data == expected
@@ -110,3 +141,93 @@ def test_update(profile_item_factory, serializer_context):
     item.refresh_from_db()
 
     assert item.name == data['name']
+
+
+def test_update_image_content(image_content_factory, serializer_context):
+    """
+    Updating a profile item's image content with nested data should work
+    properly.
+    """
+    content = image_content_factory(description='Old description.')
+    item = content.profile_item
+
+    data = {
+        'image_content': {
+            'description': 'New description.',
+        },
+    }
+
+    serializer = serializers.ProfileItemSerializer(
+        item,
+        context=serializer_context,
+        data=data,
+        partial=True)
+    assert serializer.is_valid()
+
+    serializer.save()
+    content.refresh_from_db()
+
+    assert content.description == data['image_content']['description']
+
+
+def test_validate_content_type_change(
+        image_content_factory,
+        profile_item_factory,
+        serializer_context):
+    """
+    If a profile item was created with a certain content type and a
+    different type of content data was given to the serializer, the
+    serializer should not be valid.
+    """
+    item = profile_item_factory()
+    image_content_factory(profile_item=item)
+
+    data = {
+        'list_content': {},
+    }
+
+    serializer = serializers.ProfileItemSerializer(
+        item,
+        context=serializer_context,
+        data=data,
+        partial=True)
+
+    assert not serializer.is_valid()
+
+
+def test_validate_multiple_content_types(
+        profile_item_factory,
+        serializer_context):
+    """
+    If multiple types of content are provided to the serializer, it
+    should not be valid.
+    """
+    data = {
+        'name': 'Invalid Item',
+        'image_content': {
+            'description': 'Description...',
+        },
+        'list_content': {},
+    }
+
+    serializer = serializers.ProfileItemSerializer(
+        context=serializer_context,
+        data=data)
+
+    assert not serializer.is_valid()
+
+
+def test_validate_no_content(profile_item_factory, serializer_context):
+    """
+    If no content is provided for the profile item, the serializer
+    should not be valid.
+    """
+    data = {
+        'name': 'Invalid Item',
+    }
+
+    serializer = serializers.ProfileItemSerializer(
+        context=serializer_context,
+        data=data)
+
+    assert not serializer.is_valid()

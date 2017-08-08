@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    # Default to dev environment
+    env: dev
+
+  vars_files:
+    - env_vars/base.yml
+    - env_vars/{{ env }}.yml
+    - env_vars/{{ env }}-vault.yml
+
+  roles:
+    - cdriehuys.rds-postgres

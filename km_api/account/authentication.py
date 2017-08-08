@@ -43,8 +43,7 @@ class AuthenticationBackend:
         email = email or username
 
         try:
-            email_instance = models.EmailAddress.objects.get(
-                email=email, verified=True)
+            email_instance = models.EmailAddress.objects.get(email=email)
         except models.EmailAddress.DoesNotExist:
             return None
 

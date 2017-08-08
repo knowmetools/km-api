@@ -20,41 +20,94 @@ def create_file():
         name='foo.txt')
 
 
-class GalleryItemFactory(factory.django.DjangoModelFactory):
+class EmergencyItemFactory(factory.django.DjangoModelFactory):
     """
-    Factory for generating ``GalleryItem`` instances.
+    Factory for generating ``EmergencyItem`` instances.
     """
-    name = factory.Sequence(lambda n: 'Gallery Item {n}'.format(n=n))
-    profile = factory.SubFactory('know_me.factories.ProfileFactory')
-    resource = factory.LazyFunction(create_file)
+    name = factory.Sequence(lambda n: 'Emergency Item {n}'.format(n=n))
+    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
 
     class Meta:
-        model = models.GalleryItem
+        model = models.EmergencyItem
+
+
+class EmergencyContactFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``EmergencyContact`` instances.
+    """
+    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
+    name = factory.Sequence(lambda n: 'Contact Name {n}'.format(n=n))
+    relation = 'Caregiver'
+    phone_number = '19193334444'
+
+    class Meta:
+        model = models.EmergencyContact
+
+
+class ImageContentFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``ImageContent`` instances.
+    """
+    profile_item = factory.SubFactory('know_me.factories.ProfileItemFactory')
+
+    class Meta(object):
+        model = models.ImageContent
+
+
+class KMUserFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``KMUser`` instances.
+    """
+    quote = factory.LazyAttribute(lambda km_user: "Hi, I'm {name}".format(
+        name=km_user.user.get_short_name()))
+    user = factory.SubFactory('factories.UserFactory')
+
+    class Meta:
+        model = models.KMUser
+
+
+class ListContentFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``ListContent`` instances.
+    """
+    profile_item = factory.SubFactory('know_me.factories.ProfileItemFactory')
+
+    class Meta(object):
+        model = models.ListContent
+
+
+class ListEntryFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``ListEntry`` instances.
+    """
+    list_content = factory.SubFactory('know_me.factories.ListContentFactory')
+    text = factory.Sequence(lambda n: 'List entry {n}'.format(n=n))
+
+    class Meta(object):
+        model = models.ListEntry
+
+
+class MediaResourceFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``MediaResource`` instances.
+    """
+    name = factory.Sequence(lambda n: 'Media Resource {n}'.format(n=n))
+    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
+    file = factory.LazyFunction(create_file)
+
+    class Meta:
+        model = models.MediaResource
 
 
 class ProfileFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``Profile`` instances.
     """
-    name = 'John'
-    quote = factory.LazyAttribute(lambda profile: "Hi, I'm {name}".format(
-        name=profile.name))
-    user = factory.SubFactory('factories.UserFactory')
-    welcome_message = 'Life is like a box of chocolates.'
+    name = 'Test KMUser'
+    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
 
     class Meta:
         model = models.Profile
-
-
-class ProfileGroupFactory(factory.django.DjangoModelFactory):
-    """
-    Factory for generating ``ProfileGroup`` instances.
-    """
-    name = 'Test Profile'
-    profile = factory.SubFactory('know_me.factories.ProfileFactory')
-
-    class Meta:
-        model = models.ProfileGroup
 
 
 class ProfileItemFactory(factory.django.DjangoModelFactory):
@@ -62,19 +115,19 @@ class ProfileItemFactory(factory.django.DjangoModelFactory):
     Factory for generating ``ProfileItem`` instances.
     """
     name = factory.Sequence(lambda n: 'Profile Item {n}'.format(n=n))
-    row = factory.SubFactory('know_me.factories.ProfileRowFactory')
+    topic = factory.SubFactory('know_me.factories.ProfileTopicFactory')
 
     class Meta:
         model = models.ProfileItem
 
 
-class ProfileRowFactory(factory.django.DjangoModelFactory):
+class ProfileTopicFactory(factory.django.DjangoModelFactory):
     """
-    Factory for generating ``ProfileRow`` instances.
+    Factory for generating ``ProfileTopic`` instances.
     """
-    group = factory.SubFactory('know_me.factories.ProfileGroupFactory')
-    name = factory.Sequence(lambda n: 'Profile Row {n}'.format(n=n))
-    row_type = models.ProfileRow.TEXT
+    profile = factory.SubFactory('know_me.factories.ProfileFactory')
+    name = factory.Sequence(lambda n: 'Profile Topic {n}'.format(n=n))
+    topic_type = models.ProfileTopic.TEXT
 
     class Meta:
-        model = models.ProfileRow
+        model = models.ProfileTopic

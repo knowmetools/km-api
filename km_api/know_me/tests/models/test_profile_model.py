@@ -3,20 +3,20 @@ from rest_framework.reverse import reverse
 from know_me import models
 
 
-def test_create(user_factory):
+def test_create(km_user_factory):
     """
     Test creating a profile.
     """
     models.Profile.objects.create(
-        name='John',
-        quote='Life is like a box of chocolates.',
-        user=user_factory(),
-        welcome_message="Hi, I'm John")
+        is_default=True,
+        name='Profile',
+        km_user=km_user_factory())
 
 
 def test_get_absolute_url(profile_factory):
     """
-    This method should return the URL of the profile's detail view.
+    This method should return the URL of the profile's detail
+    view.
     """
     profile = profile_factory()
     expected = reverse('know-me:profile-detail', kwargs={'pk': profile.pk})
@@ -24,24 +24,15 @@ def test_get_absolute_url(profile_factory):
     assert profile.get_absolute_url() == expected
 
 
-def test_get_gallery_url(profile_factory):
+def test_get_topic_list_url(profile_factory):
     """
-    This method should return the URL of the profile's gallery view.
-    """
-    profile = profile_factory()
-    expected = reverse('know-me:gallery', kwargs={'pk': profile.pk})
-
-    assert profile.get_gallery_url() == expected
-
-
-def test_get_group_list_url(profile_factory):
-    """
-    This method should return the URL of the profile's group list view.
+    This method should return the URL of the profile's topic list
+    view.
     """
     profile = profile_factory()
-    expected = reverse('know-me:profile-group-list', kwargs={'pk': profile.pk})
+    expected = reverse('know-me:profile-topic-list', kwargs={'pk': profile.pk})
 
-    assert profile.get_group_list_url() == expected
+    assert profile.get_topic_list_url() == expected
 
 
 def test_has_object_read_permission_other(
@@ -49,8 +40,8 @@ def test_has_object_read_permission_other(
         profile_factory,
         user_factory):
     """
-    Other users should not have read permissions on profiles they don't
-    own.
+    Users should not have read permissions on profiles that are
+    not part of a km_user they have access to.
     """
     profile = profile_factory()
 
@@ -62,11 +53,13 @@ def test_has_object_read_permission_other(
 
 def test_has_object_read_permission_owner(api_rf, profile_factory):
     """
-    Users should have read access on their own profile.
+    Users should have read permissions on profiles that belong to
+    their own km_user.
     """
     profile = profile_factory()
+    km_user = profile.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     assert profile.has_object_read_permission(request)
@@ -77,8 +70,8 @@ def test_has_object_write_permission_other(
         profile_factory,
         user_factory):
     """
-    Other users should not have write permissions on profiles they don't
-    own.
+    Users should not have write permissions on profiles that are
+    not part of a km_user they have access to.
     """
     profile = profile_factory()
 
@@ -90,11 +83,13 @@ def test_has_object_write_permission_other(
 
 def test_has_object_write_permission_owner(api_rf, profile_factory):
     """
-    Users should have write access on their own profile.
+    Users should have write permissions on profiles that belong to
+    their own km_user.
     """
     profile = profile_factory()
+    km_user = profile.km_user
 
-    api_rf.user = profile.user
+    api_rf.user = km_user.user
     request = api_rf.get('/')
 
     assert profile.has_object_write_permission(request)
@@ -102,7 +97,8 @@ def test_has_object_write_permission_owner(api_rf, profile_factory):
 
 def test_string_conversion(profile_factory):
     """
-    Converting a profile to a string should return the profile's name.
+    Converting a profile to a string should return the profile's
+    name.
     """
     profile = profile_factory()
 

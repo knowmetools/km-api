@@ -1,0 +1,11 @@
+---
+db_admin_username: dbadmin
+db_admin_password: "{{ vault_db_admin_password }}"
+
+db_username: django
+db_password: "{{ vault_db_password }}"
+
+db_map:
+  kmapi:
+    users:
+      "{{ db_username }}": "{{ vault_db_password }}"
