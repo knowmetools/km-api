@@ -10,10 +10,17 @@ This release was focused on renaming the components of a Know Me user's profile.
 * ``/know-me/profiles/*`` to ``/know-me/users/*``
 * ``/know-me/rows/*`` to ``/know-me/topics/*``
 
+Breaking Changes
+  * :issue:`66`: Remove grouped and paged row types.
+  * :issue:`85`: Separated content for different types of profile items into different models. This means the data (other than name) from existing profile items is lost.
+
 Features
-  * :issue:`91,96`: Add ability for users to manage their emergency items.
+  * :issue:`67`: Add emergency contacts for Know Me users.
+  * :issue:`68,100,112`: Add list-type profile items.
+  * :issue:`79,91,96`: Add ability for users to manage their emergency items.
 
 Bug Fixes
+  * :issue:`70`: Fixed regression in the error returned when attempting to log in with an unverified email address.
   * :issue:`75`: Fix parsing of JSON requests.
 
 v0.4
