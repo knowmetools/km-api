@@ -15,7 +15,7 @@ Gallery View
 
 This endpoint allows for creation of new media resources.
 
-.. http:post:: /know-me/profiles/(int:id)/gallery/
+.. http:post:: /know-me/users/(int:id)/gallery/
 
     Create a new media resource.
 
@@ -26,14 +26,14 @@ This endpoint allows for creation of new media resources.
     :param int id: The ID of the know me user to create a media resource for.
 
     :form string name: The name to give the file being uploaded.
-    :form file resource: The file to upload.
+    :form file file: The file to upload.
 
     :>header Location: The URL of the created media resource's detail view.
 
     :>json int id: The ID of the created media resource.
     :>json string url: The URL of the created media resource's detail view.
     :>json string name: The name the media resource was created with.
-    :>json string resource: The URL of the file attached to the media resource.
+    :>json string file: The URL of the file attached to the media resource.
 
     :status 201: The media resource was succesfully created.
     :status 400: Invalid request. Check the response data for details.
@@ -55,7 +55,7 @@ This endpoint allows for retrieving and updating a specific media resource's inf
     :>json int id: The ID of the media resource.
     :>json string url: The URL of the media resource's detail view.
     :>json string name: The name of the media resource.
-    :>json string resource: The URL of the file attached to the media resource.
+    :>json string file: The URL of the file attached to the media resource.
 
     :status 200: The media resource's information was succesfully retrieved.
     :status 404: There is no media resource with the given ``id`` accessible to the requesting user.
@@ -67,7 +67,7 @@ This endpoint allows for retrieving and updating a specific media resource's inf
     :param int id: The ID of the media resource to update.
 
     :<form string name: *(Optional)* A new name for the media resource.
-    :<form file resource: *(Optional)* A new file to associate with the media resource.
+    :<form file file: *(Optional)* A new file to associate with the media resource.
 
     :status 200: The media resource was succesfully updated.
     :status 400: Invalid request. Check the response data for details.
