@@ -128,7 +128,6 @@ class ProfileAccessorFactory(factory.django.DjangoModelFactory):
     km_user_accessor = factory.SubFactory(
         'know_me.factories.KMUserAccessorFactory')
     profile = factory.SubFactory('know_me.factories.ProfileFactory')
-    can_write = False
 
     class Meta:
         model = models.ProfileAccessor

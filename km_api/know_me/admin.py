@@ -130,10 +130,11 @@ class ProfileAccessorAdmin(admin.ModelAdmin):
     Admin for the ``ProfileAccessor`` model.
     """
     fields = ('km_user_accessor', 'profile', 'can_write')
-    list_display = ('km_user_accessor', 'profile', 'can_write')
+    list_display = ('profile', 'can_write')
     search_fields = (
-        'km_user_accessor__user__first_name',
-        'km_user_accessor__user__last_name')
+        'profile__name',
+        'km_user_accessor__user_with_access__first_name',
+        'km_user_accessor__user_with_access__last_name')
 
 
 @admin.register(models.Profile)

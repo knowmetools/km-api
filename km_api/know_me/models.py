@@ -916,8 +916,8 @@ class ProfileAccessor(mixins.IsAuthenticatedMixin, models.Model):
             str:
                 The profile's name.
         """
-        user = self.profile.name
-        return 'Profile accessor for {user}'.format(user=user)
+        profile_name = self.profile.name
+        return 'Profile accessor for {name}'.format(name=profile_name)
 
 
 class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
