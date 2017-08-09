@@ -20,7 +20,7 @@ def mailchimp_sync(instance, **kwargs):
         instance:
             The user instance that was saved.
     """
-    if settings.MAILCHIMP_ENABLED:
+    if settings.MAILCHIMP_ENABLED and not instance.is_pending:
         mailchimp_utils.sync_mailchimp_data(
             settings.MAILCHIMP_LIST_ID,
             instance)
