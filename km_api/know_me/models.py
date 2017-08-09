@@ -716,7 +716,6 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('name'))
     km_user = models.ForeignKey(
         'know_me.KMUser',
-        null=True,
         related_name='media_resources',
         related_query_name='media_resource',
         verbose_name=_('km_user'))
@@ -934,7 +933,6 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
 
     topic = models.ForeignKey(
         'know_me.ProfileTopic',
-        null=True,
         related_name='items',
         related_query_name='item',
         verbose_name=_('profile topic'))
@@ -1020,7 +1018,6 @@ class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
 
     profile = models.ForeignKey(
         'know_me.Profile',
-        null=True,
         on_delete=models.CASCADE,
         related_name='topics',
         related_query_name='topic',
