@@ -20,6 +20,20 @@ def test_create():
         last_name='Doe')
 
 
+@pytest.mark.django_db
+def test_create_pending():
+    """
+    The ``create_pending`` class method should create a user where
+    ``is_pending`` is set to ``True``.
+    """
+    email = 'test@example.com'
+    user = models.User.create_pending(email=email)
+
+    assert user.email == email
+    assert not user.has_usable_password()
+    assert user.is_pending
+
+
 def test_get_full_name(user_factory):
     """
     A user's full name should be composed of their first and last name.

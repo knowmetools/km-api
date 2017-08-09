@@ -418,6 +418,30 @@ class User(PermissionsMixin, AbstractBaseUser):
         verbose_name = _('user')
         verbose_name_plural = _('users')
 
+    @classmethod
+    def create_pending(cls, email):
+        """
+        Create a pending user.
+
+        The pending user is a placeholder until a user with the same
+        email registers. At that point, the pending user's information
+        will be merged with the information given by the registering
+        user.
+
+        Args:
+            email (str):
+                The email address to give the user.
+
+        Returns:
+            The newly created pending user.
+        """
+        return cls.objects.create_user(
+            email=email,
+            first_name='Pending',
+            is_pending=True,
+            last_name='User',
+            password=None)
+
     def get_full_name(self):
         """
         Get the user's full name.
