@@ -12,6 +12,11 @@ aws_application_name: km-api-test
 ami_builder_instance_role: km-api-dev-web-role
 
 
+# Autoscaling Group Configuration
+
+asg_instance_profile: km-api-dev-web-role
+
+
 # Django Configuration
 
 app_repo_version: develop

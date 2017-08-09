@@ -8,4 +8,5 @@
     name: "{{ item.name }}"
     region: "{{ aws_region | default(omit) }}"
     rules: "{{ item.rules }}"
+    rules_egress: "{{ item.rules_egress | default(omit) }}"
   with_items: "{{ sg_list }}"

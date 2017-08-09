@@ -67,3 +67,4 @@
 
   roles:
     - { role: cdriehuys.ami-builder, ami_builder_task: finalize }
+    - provision-autoscaling-group

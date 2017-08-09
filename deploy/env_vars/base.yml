@@ -6,6 +6,9 @@ aws_region: us-east-1
 
 # Security Group Configuration
 
+lb_sg_name: "{{ aws_application_name }}-lb-sg"
+lb_sg_description: Security group for {{ aws_application_name }} load balancers.
+
 webserver_sg_name: "{{ aws_application_name }}-webserver-sg"
 webserver_sg_description: Security group for {{ aws_application_name }} webservers.
 
@@ -27,13 +30,26 @@ db_sg_rules:
     group_desc: "{{ webserver_sg_description }}"
 
 sg_list:
+  - name: "{{ lb_sg_name }}"
+    description: "{{ lb_sg_description }}"
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
   - name: "{{ webserver_sg_name }}"
     description: "{{ webserver_sg_description }}"
     rules:
       - proto: tcp
         from_port: 80
         to_port: 80
-        cidr_ip: 0.0.0.0/0
+        group_name: "{{ lb_sg_name }}"
+        group_desc: "{{ lb_sg_description }}"
   - name: "{{ ami_builder_sg_name }}"
     description: "{{ ami_builder_sg_description }}"
     rules:
@@ -64,5 +80,25 @@ db_map:
       "{{ db_username }}": "{{ db_password }}"
 
 
-# Base AMIs off of Ubuntu 16.04
+# AMI Configuration
+
 ami_builder_base: ami-9a0c088c
+
+
+
+# Autoscaling Group Settings
+
+asg_image_id: "{{ application_ami.image_id }}"
+asg_security_groups:
+  - "{{ webserver_sg_name }}"
+
+asg_lb_security_groups:
+  - "{{ lb_sg_name }}"
+asg_lb_zones:
+  - us-east-1a
+  - us-east-1b
+  - us-east-1c
+  - us-east-1e
+
+asg_route53_record: "{{ domain_name }}"
+asg_route53_zone: knowmetools.com
