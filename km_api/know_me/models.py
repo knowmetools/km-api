@@ -881,6 +881,45 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         return request.user == self.km_user.user
 
 
+class ProfileAccessor(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    A profile accessor.
+    """
+    km_user_accessor = models.ForeignKey(
+        'know_me.KMUserAccessor',
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='profile_accessors',
+        related_query_name='profile_accessor',
+        verbose_name=_('know me user accessor'))
+    profile = models.ForeignKey(
+        'know_me.Profile',
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='profile_accessors',
+        related_query_name='profile_accessor',
+        verbose_name=_('profile'))
+    can_write = models.BooleanField(
+        default=False,
+        help_text=_('Does the user have write access.'),
+        verbose_name=_('can write'))
+
+    class Meta:
+        verbose_name = _('profile accessor')
+        verbose_name_plural = _('profile accessors')
+
+    def __str__(self):
+        """
+        Get a string representation of the profile accessor.
+
+        Returns:
+            str:
+                The profile's name.
+        """
+        user = self.profile.name
+        return 'Profile accessor for {user}'.format(user=user)
+
+
 class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
     """
     A profile item holds a piece of information for a profile topic.
