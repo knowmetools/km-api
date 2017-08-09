@@ -124,6 +124,19 @@ class MediaResourceAdmin(admin.ModelAdmin):
     search_fields = ('name', 'km_user__user__name')
 
 
+@admin.register(models.ProfileAccessor)
+class ProfileAccessorAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``ProfileAccessor`` model.
+    """
+    fields = ('km_user_accessor', 'profile', 'can_write')
+    list_display = ('profile', 'can_write')
+    search_fields = (
+        'profile__name',
+        'km_user_accessor__user_with_access__first_name',
+        'km_user_accessor__user_with_access__last_name')
+
+
 @admin.register(models.Profile)
 class ProfileAdmin(admin.ModelAdmin):
     """
