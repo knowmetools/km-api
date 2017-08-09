@@ -1,4 +1,56 @@
 ---
+# Generic AWS Settings
+
+aws_region: us-east-1
+
+
+# Security Group Configuration
+
+webserver_sg_name: "{{ aws_application_name }}-webserver-sg"
+webserver_sg_description: Security group for {{ aws_application_name }} webservers.
+
+ami_builder_sg_name: "{{ aws_application_name }}-amibuilder-sg"
+ami_builder_sg_description: Security group for {{ aws_application_name }} AMI builder.
+
+db_sg_name: "{{ aws_application_name }}-db-sg"
+db_sg_description: "Security group for {{ aws_application_name }} databases."
+db_sg_rules:
+  - proto: tcp
+    from_port: 5432
+    to_port: 5432
+    group_name: "{{ ami_builder_sg_name }}"
+    group_desc: "{{ ami_builder_sg_description }}"
+  - proto: tcp
+    from_port: 5432
+    to_port: 5432
+    group_name: "{{ webserver_sg_name }}"
+    group_desc: "{{ webserver_sg_description }}"
+
+sg_list:
+  - name: "{{ webserver_sg_name }}"
+    description: "{{ webserver_sg_description }}"
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+  - name: "{{ ami_builder_sg_name }}"
+    description: "{{ ami_builder_sg_description }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+  - name: "{{ db_sg_name }}"
+    description: "{{ db_sg_description }}"
+    rules: "{{ db_sg_rules }}"
+
+
+# Database Configuration
+
+db_instance_sg_name: "{{ db_sg_name }}"
+db_instance_sg_rules: "{{ db_sg_rules }}"
+
 db_admin_username: dbadmin
 db_admin_password: "{{ vault_db_admin_password }}"
 

@@ -13,6 +13,7 @@
     - env_vars/{{ env }}-vault.yml
 
   roles:
+    - create-security-groups
     - cdriehuys.rds-postgres
     - { role: cdriehuys.ami-builder, ami_builder_task: create }
 

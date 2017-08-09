@@ -55,7 +55,7 @@ django_project_settings:
   LAYER_KEY_ID: "'{{ layer_key_id }}'"
   LAYER_PROVIDER_ID: "'{{ layer_provider_id }}'"
   MAILCHIMP_API_KEY: "'{{ mailchimp_api_key }}'"
-  MAILCHIMP_ENABLED: "{{ mailchimp_enabled }}"
+  MAILCHIMP_ENABLED: yes
   MAILCHIMP_LIST_ID: "'{{ mailchimp_list_id }}'"
   RAVEN_CONFIG:
     dsn: "{{ vault_sentry_dsn }}"

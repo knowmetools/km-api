@@ -5,21 +5,6 @@ domain_name: dev.new-api.knowmetools.com
 # General AWS configuration
 
 aws_application_name: km-api-test
-aws_region: us-east-1
-
-
-# Database configuration
-
-db_instance_sg_rules:
-  - proto: tcp
-    from_port: 5432
-    to_port: 5432
-    group_id: sg-75c9b004
-  - proto: tcp
-    from_port: 5432
-    to_port: 5432
-    group_name: "{{ ami_builder_sg_name }}"
-    group_desc: Security group for {{ aws_application_name }} AMI builder
 
 
 # AMI Builder Configuration
@@ -31,17 +16,12 @@ ami_builder_instance_role: km-api-dev-web-role
 
 app_repo_version: develop
 
-django_allowed_hosts:
-  - dev.new-api.knowmetools.com
-  - localhost
-
 
 # Environment specific settings
 layer_key_id: "{{ vault_layer_key_id }}"
 layer_provider_id: "{{ vault_layer_provider_id }}"
 
 mailchimp_api_key: "{{ vault_mailchimp_api_key }}"
-mailchimp_enabled: yes
 mailchimp_list_id: 1211e9598f
 
 sentry_environment: staging

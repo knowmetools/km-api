@@ -1,0 +1,11 @@
+---
+- name: Create security groups
+  local_action:
+    module: ec2_group
+    aws_access_key: "{{ aws_access_key | default(omit) }}"
+    aws_secret_key: "{{ aws_secret_key | default(omit) }}"
+    description: "{{ item.description }}"
+    name: "{{ item.name }}"
+    region: "{{ aws_region | default(omit) }}"
+    rules: "{{ item.rules }}"
+  with_items: "{{ sg_list }}"
