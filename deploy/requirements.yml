@@ -6,6 +6,9 @@
 - name: cdriehuys.django-app
   version: v1.0.1
 
+- name: cdriehuys.nginx
+  version: v0.1
+
 - name: cdriehuys.rds-postgres
   src: https://github.com/cdriehuys/ansible-role-rds-postgres
   version: cda2a4b6cb060a841ca06b9e3a2e446e8ec5701c

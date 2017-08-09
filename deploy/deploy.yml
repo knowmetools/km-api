@@ -50,6 +50,7 @@
 
   roles:
     - cdriehuys.django-app
+    - cdriehuys.nginx
 
 - hosts: localhost
   connection: local

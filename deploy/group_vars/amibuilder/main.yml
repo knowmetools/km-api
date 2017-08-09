@@ -1,4 +1,23 @@
 ---
+# NGINX Configuration
+
+nginx_site_conf_name: "{{ domain_name }}.conf"
+nginx_socket: 'http://{{ gunicorn_socket_unix }}'
+
+nginx_site_servers:
+  - name: "{{ domain_name }}"
+    listen: 80
+    extra_params: |
+          location = /favicon.ico {
+            access_log off;
+          }
+
+          location / {
+            include proxy_params;
+            proxy_pass {{ nginx_socket }};
+          }
+
+
 # Django Configuration
 
 app_name: km-api

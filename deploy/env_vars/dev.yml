@@ -1,4 +1,7 @@
 ---
+domain_name: dev.new-api.knowmetools.com
+
+
 # General AWS configuration
 
 aws_application_name: km-api-test
