@@ -35,6 +35,11 @@ def test_serialize(api_rf, emergency_contact_factory, serializer_context):
 
     url_request = api_rf.get(emergencycontact.get_absolute_url())
 
+    serializer_request = serializer_context['request']
+    has_read = emergencycontact.has_object_read_permission(serializer_request)
+    has_write = emergencycontact.has_object_write_permission(
+        serializer_request)
+
     expected = {
         'id': emergencycontact.id,
         'url': url_request.build_absolute_uri(),
@@ -42,7 +47,11 @@ def test_serialize(api_rf, emergency_contact_factory, serializer_context):
         'relation': emergencycontact.relation,
         'phone_number': emergencycontact.phone_number,
         'alt_phone_number': emergencycontact.alt_phone_number,
-        'email': emergencycontact.email
+        'email': emergencycontact.email,
+        'permissions': {
+            'read': has_read,
+            'write': has_write,
+        }
     }
 
     assert serializer.data == expected

@@ -302,6 +302,36 @@ class ImageContent(models.Model):
         verbose_name = _('profile item image content')
         verbose_name_plural = _('profile item image content')
 
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user is allowed to read from
+                the instance and ``False`` otherwise.
+        """
+        return self.profile_item.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to write to the
+                instance and ``False`` otherwise.
+        """
+        return self.profile_item.has_object_write_permission(request)
+
     def __str__(self):
         """
         Get a string representation of the instance.

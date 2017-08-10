@@ -31,6 +31,10 @@ def test_serialize(
         'is_default': profile.is_default,
         'topics_url': topic_list_request.build_absolute_uri(),
         'topics': topic_serializer.data,
+        'permissions': {
+            'read': profile.has_object_read_permission(topic_list_request),
+            'write': profile.has_object_write_permission(topic_list_request),
+        }
     }
 
     assert serializer.data == expected
