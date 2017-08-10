@@ -2,7 +2,7 @@
 domain_name: dev.new-api.knowmetools.com
 
 
-# General AWS configuration
+# General AWS Configuration
 
 aws_application_name: km-api-test
 
@@ -21,12 +21,6 @@ asg_instance_profile: km-api-dev-web-role
 
 app_repo_version: develop
 
-
-# Environment specific settings
-layer_key_id: "{{ vault_layer_key_id }}"
-layer_provider_id: "{{ vault_layer_provider_id }}"
-
-mailchimp_api_key: "{{ vault_mailchimp_api_key }}"
 mailchimp_list_id: 1211e9598f
 
 sentry_environment: staging

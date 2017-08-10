@@ -52,9 +52,9 @@ django_manage_commands:
 
 django_project_settings:
   AWS_STORAGE_BUCKET_NAME: "'{{ static_bucket }}'"
-  LAYER_KEY_ID: "'{{ layer_key_id }}'"
-  LAYER_PROVIDER_ID: "'{{ layer_provider_id }}'"
-  MAILCHIMP_API_KEY: "'{{ mailchimp_api_key }}'"
+  LAYER_KEY_ID: "'{{ vault_layer_key_id }}'"
+  LAYER_PROVIDER_ID: "'{{ vault_layer_provider_id }}'"
+  MAILCHIMP_API_KEY: "'{{ vault_mailchimp_api_key }}'"
   MAILCHIMP_ENABLED: yes
   MAILCHIMP_LIST_ID: "'{{ mailchimp_list_id }}'"
   RAVEN_CONFIG:
