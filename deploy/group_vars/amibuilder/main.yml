@@ -1,0 +1,110 @@
+---
+# NGINX Configuration
+
+nginx_site_conf_name: "{{ domain_name }}.conf"
+nginx_socket: 'http://{{ gunicorn_socket_unix }}'
+
+nginx_site_servers:
+  - name: "{{ domain_name }}"
+    listen: 80
+    extra_params: |
+          location = /favicon.ico {
+            access_log off;
+          }
+
+          location / {
+            include proxy_params;
+            proxy_pass {{ nginx_socket }};
+          }
+
+
+# Layer Configuration
+
+layer_private_key: "{{ vault_layer_private_key }}"
+layer_private_key_owner: "{{ gunicorn_user }}"
+
+
+# Django Configuration
+
+app_name: km-api
+app_package: km_api
+
+app_repo: https://github.com/knowmetools/km-api
+
+app_required_packages:
+  - build-essential
+  - libjpeg-turbo8
+  - libpq-dev
+  - python3-dev
+  - zlib1g
+
+django_settings_module: km_api.production_settings
+
+django_debug: no
+django_secret_key: "{{ vault_django_secret_key }}"
+
+django_databases:
+  default:
+    ENGINE: django.db.backends.postgresql_psycopg2
+    NAME: "{{ db_name }}"
+    USER: "{{ db_username }}"
+    PASSWORD: "{{ db_password }}"
+    HOST: "{{ db_instance.endpoint }}"
+    PORT: 5432
+
+django_manage_commands:
+  - 'collectstatic --no-input'
+
+
+django_project_settings:
+  AWS_STORAGE_BUCKET_NAME: "'{{ static_bucket }}'"
+  LAYER_KEY_ID: "'{{ vault_layer_key_id }}'"
+  LAYER_PROVIDER_ID: "'{{ vault_layer_provider_id }}'"
+  LAYER_RSA_KEY_FILE_PATH: "'{{ layer_private_key_dest }}'"
+  MAILCHIMP_API_KEY: "'{{ vault_mailchimp_api_key }}'"
+  MAILCHIMP_ENABLED: yes
+  MAILCHIMP_LIST_ID: "'{{ mailchimp_list_id }}'"
+  RAVEN_CONFIG:
+    dsn: "{{ vault_sentry_dsn }}"
+    environment: "{{ sentry_environment }}"
+
+
+django_logging:
+  version: 1
+  disable_existing_loggers: no
+  root:
+    level: INFO
+    handlers:
+      - 'file'
+      - 'sentry'
+  formatters:
+    standard:
+      datefmt: '%d/%b/%Y %H:%M:%S'
+      format: '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s'
+  handlers:
+    file:
+      level: INFO
+      class: logging.handlers.RotatingFileHandler
+      filename: "{{ django_log_file }}"
+      formatter: standard
+      backupCount: 5
+      maxBytes: 5000000
+    'null':
+      level: DEBUG
+      class: logging.NullHandler
+    sentry:
+      level: WARNING
+      class: raven.contrib.django.raven_compat.handlers.SentryHandler
+      formatter: standard
+  loggers:
+    boto3.resources.action:
+      handlers:
+        - 'null'
+      propagate: no
+    django.request:
+      level: ERROR
+      propagate: yes
+    django.security.DisallowedHost:
+      handlers:
+        - 'null'
+      propagate: no

@@ -1,4 +1,14 @@
 ---
+- name: cdriehuys.ami-builder
+  src: https://github.com/cdriehuys/ansible-role-ami-builder
+  version: 3e1daa697c748c1c8f87237410419f3997d2db74
+
+- name: cdriehuys.django-app
+  version: v1.0.1
+
+- name: cdriehuys.nginx
+  version: v0.1
+
 - name: cdriehuys.rds-postgres
   src: https://github.com/cdriehuys/ansible-role-rds-postgres
   version: cda2a4b6cb060a841ca06b9e3a2e446e8ec5701c
