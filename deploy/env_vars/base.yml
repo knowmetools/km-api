@@ -98,7 +98,9 @@ asg_lb_zones:
   - us-east-1a
   - us-east-1b
   - us-east-1c
+  - us-east-1d
   - us-east-1e
+  - us-east-1f
 
 asg_route53_record: "{{ domain_name }}"
 asg_route53_zone: knowmetools.com

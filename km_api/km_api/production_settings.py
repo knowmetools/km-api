@@ -2,7 +2,6 @@
 """
 
 import datetime
-import os
 
 from km_api.settings import *       # noqa
 
@@ -81,9 +80,6 @@ AWS_S3_REGION_NAME = 'us-east-1'
 # Layer Configuration
 
 LAYER_IDENTITY_EXPIRATION = datetime.timedelta(seconds=300)
-LAYER_RSA_KEY_FILE_PATH = os.environ.get(
-    'LAYER_RSA_KEY_FILE_PATH',
-    os.path.join(BASE_DIR, 'layer.pem'))        # noqa
 
 
 # Attempt to use settings uploaded by Ansible

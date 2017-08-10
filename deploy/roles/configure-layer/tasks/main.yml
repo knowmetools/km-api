@@ -1,0 +1,16 @@
+---
+- name: Create directory for Layer key
+  become: yes
+  file:
+    mode: 0700
+    owner: "{{ layer_private_key_owner }}"
+    path: "{{ layer_private_key_dest | dirname }}"
+    state: directory
+
+- name: Upload Layer private key
+  become: yes
+  copy:
+    content: "{{ layer_private_key }}"
+    dest: "{{ layer_private_key_dest }}"
+    mode: 0400
+    owner: "{{ layer_private_key_owner }}"
