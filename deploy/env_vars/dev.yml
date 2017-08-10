@@ -4,7 +4,7 @@ domain_name: dev.new-api.knowmetools.com
 
 # General AWS Configuration
 
-aws_application_name: km-api-test
+aws_application_name: km-api-dev
 
 
 # AMI Builder Configuration
