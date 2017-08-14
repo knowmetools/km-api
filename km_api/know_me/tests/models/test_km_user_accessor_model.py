@@ -7,7 +7,6 @@ def test_create(km_user_factory, user_factory):
     """
     models.KMUserAccessor.objects.create(
         accepted=False,
-        can_read_everywhere=False,
         can_write_everywhere=False,
         km_user=km_user_factory(),
         user_with_access=user_factory())
