@@ -25,19 +25,25 @@ def test_create(serializer_context, user_factory):
     assert km_user.user == user
 
 
-def test_serialize(api_rf, km_user_factory, serializer_context):
+def test_serialize(
+        api_rf,
+        image,
+        km_user_factory,
+        serializer_context):
     """
     Test serializing a km_user.
     """
-    km_user = km_user_factory()
+    km_user = km_user_factory(image=image)
     serializer = serializers.KMUserListSerializer(
         km_user,
         context=serializer_context)
 
+    image_url = api_rf.get(km_user.image.url).build_absolute_uri()
     url_request = api_rf.get(km_user.get_absolute_url())
 
     expected = {
         'id': km_user.id,
+        'image': image_url,
         'url': url_request.build_absolute_uri(),
         'name': km_user.user.get_short_name(),
         'quote': km_user.quote,
