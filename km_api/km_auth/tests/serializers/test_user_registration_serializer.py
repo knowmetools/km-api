@@ -58,6 +58,25 @@ def test_register_pending_user(user_factory):
     serializer = serializers.UserRegistrationSerializer(data=data)
     assert serializer.is_valid(), serializer.errors
 
+    with mock.patch(
+            'km_auth.serializers.EmailConfirmation.send_confirmation',
+            autospec=True) as mock_confirm:
+        serializer.save()
+
+    user.refresh_from_db()
+
+    assert user.first_name == data['first_name']
+    assert user.last_name == data['last_name']
+    assert user.check_password(data['password'])
+
+    # Ensure we created an email address for the user
+    assert EmailAddress.objects.count() == 1
+    assert user.email_addresses.get().email == data['email']
+
+    # Ensure we sent the user an email confirmation
+    assert EmailConfirmation.objects.count() == 1
+    assert mock_confirm.call_count == 1
+
 
 def test_serialize(user_factory):
     """

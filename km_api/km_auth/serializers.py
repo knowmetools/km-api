@@ -1,6 +1,8 @@
 """Serializers for authentication views.
 """
 
+import logging
+
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth import password_validation
 from django.utils.translation import ugettext_lazy as _
@@ -9,6 +11,9 @@ from rest_framework import serializers
 
 from account.models import EmailAddress, EmailConfirmation
 from km_auth import layer
+
+
+logger = logging.getLogger(__name__)
 
 
 class LayerIdentitySerializer(serializers.Serializer):
@@ -107,7 +112,29 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         Returns:
             The newly created ``User`` instance.
         """
-        user = get_user_model().objects.create_user(**validated_data)
+        pending_qs = get_user_model().objects.filter(
+            email=validated_data['email'],
+            is_pending=True)
+
+        if pending_qs.exists():
+            logger.info(
+                'Registering pending user with email: %s',
+                validated_data['email'])
+
+            user = pending_qs.get()
+
+            user.first_name = validated_data['first_name']
+            user.last_name = validated_data['last_name']
+
+            user.set_password(validated_data['password'])
+
+            user.save()
+        else:
+            logger.info(
+                'Registering new user with email: %s',
+                validated_data['email'])
+
+            user = get_user_model().objects.create_user(**validated_data)
 
         email = EmailAddress.objects.create(
             email=self.validated_data['email'],
