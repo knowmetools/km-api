@@ -16,7 +16,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
         view_name='know-me:km-user-detail')
 
     class Meta:
-        fields = ('id', 'url', 'name', 'quote')
+        fields = ('id', 'url', 'name', 'image', 'quote')
         model = models.KMUser
 
 
@@ -33,8 +33,8 @@ class KMUserDetailSerializer(KMUserListSerializer):
 
     class Meta:
         fields = (
-            'id', 'url', 'name', 'quote', 'emergency_items_url', 'gallery_url',
-            'profiles_url', 'profiles'
+            'id', 'url', 'name', 'image', 'quote', 'emergency_items_url',
+            'gallery_url', 'profiles_url', 'profiles'
         )
         model = models.KMUser
 
