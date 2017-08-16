@@ -57,6 +57,7 @@ def test_serialize(
     serializer = ImageContentSerializer(
         img_content,
         context=serializer_context)
+    request = serializer_context['request']
 
     image_serializer = serializers.MediaResourceSerializer(
         img_content.image_resource,
@@ -70,6 +71,10 @@ def test_serialize(
         'description': img_content.description,
         'image_resource': image_serializer.data,
         'media_resource': media_serializer.data,
+        'permissions': {
+            'read': img_content.has_object_read_permission(request),
+            'write': img_content.has_object_write_permission(request),
+        }
     }
 
     assert serializer.data == expected

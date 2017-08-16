@@ -51,6 +51,10 @@ def test_serialize(
         'topic_type': topic.topic_type,
         'items_url': item_list_request.build_absolute_uri(),
         'items': item_serializer.data,
+        'permissions': {
+            'read': topic.has_object_read_permission(item_list_request),
+            'write': topic.has_object_write_permission(item_list_request),
+        }
     }
 
     assert serializer.data == expected

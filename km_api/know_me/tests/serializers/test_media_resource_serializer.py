@@ -33,12 +33,17 @@ def test_serialize(api_rf, media_resource_factory, serializer_context):
 
     resource_request = api_rf.get(resource.get_absolute_url())
     file_request = api_rf.get(resource.file.url)
+    serializer_request = serializer_context['request']
 
     expected = {
         'id': resource.id,
         'url': resource_request.build_absolute_uri(),
         'name': resource.name,
         'file': file_request.build_absolute_uri(),
+        'permissions': {
+            'read': resource.has_object_read_permission(serializer_request),
+            'write': resource.has_object_write_permission(serializer_request),
+        }
     }
 
     assert serializer.data == expected

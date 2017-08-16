@@ -19,16 +19,23 @@ def test_create(list_content_factory):
     assert entry.text == data['text']
 
 
-def test_serialize(list_entry_factory):
+def test_serialize(list_entry_factory, serializer_context):
     """
     Test serializing a list entry.
     """
     entry = list_entry_factory()
-    serializer = serializers.ListEntrySerializer(entry)
+    serializer = serializers.ListEntrySerializer(
+        entry,
+        context=serializer_context)
+    request = serializer_context['request']
 
     expected = {
         'id': entry.id,
         'text': entry.text,
+        'permissions': {
+            'read': entry.has_object_read_permission(request),
+            'write': entry.has_object_write_permission(request),
+        }
     }
 
     assert serializer.data == expected
@@ -40,6 +47,7 @@ def test_update(list_entry_factory):
     serializer is bound to with the provided data.
     """
     entry = list_entry_factory(text='Old text.')
+
     data = {
         'text': 'New text.',
     }
