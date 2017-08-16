@@ -517,10 +517,11 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
     Model to store KMUser access information.
 
     Attributes:
-        accepted (boolean):
-            Whether or not the accessor has been accepted by the user.
-        can_write_everywhere (boolean):
-            Whether or not the user has can write everywhere access.
+        accepted (bool):
+            A boolean indicating if the share has been accepted yet.
+        can_write (bool):
+            A boolean indicating if the user has write access to the
+            Know Me user's profiles.
         km_user:
             The KMUser sharing access.
         user_with_access:
@@ -530,10 +531,14 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         default=False,
         help_text=_('The KMUser has accepted the access.'),
         verbose_name=_('is accepted'))
-    can_write_everywhere = models.BooleanField(
+    can_write = models.BooleanField(
         default=False,
-        help_text=_('The user has write everywhere access.'),
-        verbose_name=_('can write everywhere'))
+        help_text=_('Users with write access can make changes to the profiles '
+                    'they are invited to.'),
+        verbose_name=_('can write'))
+    has_private_profile_access = models.BooleanField(
+        default=False,
+        verbose_name=_('has private profile access'))
     km_user = models.ForeignKey(
         'know_me.KMUser',
         null=True,
