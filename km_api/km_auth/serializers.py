@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
 
-from account.models import EmailAddress, EmailConfirmation
+from account.models import EmailAddress, EmailConfirmation, User
 from km_auth import layer
 
 
@@ -102,6 +102,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """
         Create a new user from the serializer's validated data.
 
+        If there is a pending user with the provided email address, the
+        pending user is confirmed using the provided information.
+
         This also sends out an email to the user confirming their email
         address.
 
@@ -112,29 +115,22 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         Returns:
             The newly created ``User`` instance.
         """
-        pending_qs = get_user_model().objects.filter(
+        pending_qs = User.objects.filter(
             email=validated_data['email'],
             is_pending=True)
 
         if pending_qs.exists():
-            logger.info(
-                'Registering pending user with email: %s',
-                validated_data['email'])
-
             user = pending_qs.get()
-
-            user.first_name = validated_data['first_name']
-            user.last_name = validated_data['last_name']
-
-            user.set_password(validated_data['password'])
-
-            user.save()
+            user.confirm_pending(
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name'],
+                password=validated_data['password'])
         else:
             logger.info(
                 'Registering new user with email: %s',
                 validated_data['email'])
 
-            user = get_user_model().objects.create_user(**validated_data)
+            user = User.objects.create_user(**validated_data)
 
         email = EmailAddress.objects.create(
             email=self.validated_data['email'],

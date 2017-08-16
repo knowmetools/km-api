@@ -442,6 +442,28 @@ class User(PermissionsMixin, AbstractBaseUser):
             last_name='User',
             password=None)
 
+    def confirm_pending(self, first_name, last_name, password):
+        """
+        Confirm a pending user's account.
+
+        This marks the user as 'no longer pending' and merges the
+        existing information with the data provided when the user
+        registered.
+        """
+        assert self.is_pending, (
+            "'confirm_pending' may only be called on users with "
+            "'is_pending = True'.")
+
+        self.first_name = first_name
+        self.last_name = last_name
+        self.is_pending = False
+
+        self.set_password(password)
+
+        self.save()
+
+        logger.info('Confirmed pending user with email: %s', self.email)
+
     def get_full_name(self):
         """
         Get the user's full name.
