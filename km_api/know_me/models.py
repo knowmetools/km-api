@@ -489,8 +489,6 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
     Attributes:
         accepted (boolean):
             Whether or not the accessor has been accepted by the user.
-        can_read_everywhere (boolean):
-            Whether or not the user has can read everywhere access.
         can_write_everywhere (boolean):
             Whether or not the user has can write everywhere access.
         km_user:
@@ -502,10 +500,6 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         default=False,
         help_text=_('The KMUser has accepted the access.'),
         verbose_name=_('is accepted'))
-    can_read_everywhere = models.BooleanField(
-        default=False,
-        help_text=_('The user has can read everywhere access.'),
-        verbose_name=_('can read everywhere'))
     can_write_everywhere = models.BooleanField(
         default=False,
         help_text=_('The user has write everywhere access.'),
@@ -787,6 +781,8 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         is_default (bool):
             A boolean controlling if the profile is the default for its
             parent km_user.
+        is_private (bool):
+            This a private profile with admin only access.
         name (str):
             The name of the profile.
         km_user:
@@ -796,9 +792,10 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         default=False,
         help_text=_('The default profile is displayed initially.'),
         verbose_name=_('is default'))
-    name = models.CharField(
-        max_length=255,
-        verbose_name=_('name'))
+    is_private = models.BooleanField(
+        default=False,
+        help_text=_('Private profiles are only visable to admin.'),
+        verbose_name=_('is private'))
     km_user = models.ForeignKey(
         'know_me.KMUser',
         null=True,
@@ -806,6 +803,9 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         related_name='profiles',
         related_query_name='profile',
         verbose_name=_('know me user'))
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'))
 
     class Meta:
         verbose_name = _('profile')
