@@ -79,6 +79,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         extra_kwargs = {
+            'email': {
+                # Override the default validation for email addresses.
+                # This allows us to validate email addresses of a
+                # pending user.
+                'validators': [],
+            },
             'password': {
                 'style': {'input_type': 'password'},
                 'write_only': True,
@@ -111,6 +117,24 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         confirmation.send_confirmation()
 
         return user
+
+    def validate_email(self, email):
+        """
+        Validate the provided email address.
+
+        Returns:
+            str:
+                The validated email address.
+
+        Raises:
+            ValidationError:
+                If that email exists and is verified already.
+        """
+        if EmailAddress.objects.filter(email=email, verified=True).exists():
+            raise serializers.ValidationError(
+                _('An account with that email address already exists.'))
+
+        return email
 
     def validate_password(self, password):
         """

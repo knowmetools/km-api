@@ -2,7 +2,7 @@ from unittest import mock
 
 import pytest
 
-from account.models import EmailAddress, EmailConfirmation
+from account.models import EmailAddress, EmailConfirmation, User
 from km_auth import serializers
 
 
@@ -40,6 +40,25 @@ def test_create():
     assert mock_confirm.call_count == 1
 
 
+def test_register_pending_user(user_factory):
+    """
+    If a user attempts to register with the email address of a pending
+    user, then the info they provided should be merged with the existing
+    pending user.
+    """
+    user = User.create_pending('test@example.com')
+
+    data = {
+        'email': user.email,
+        'first_name': 'John',
+        'last_name': 'Doe',
+        'password': 'p455w0rd',
+    }
+
+    serializer = serializers.UserRegistrationSerializer(data=data)
+    assert serializer.is_valid(), serializer.errors
+
+
 def test_serialize(user_factory):
     """
     Test serializing a user.
@@ -55,3 +74,41 @@ def test_serialize(user_factory):
     }
 
     assert serializer.data == expected
+
+
+def test_validate_duplicate_email(email_factory):
+    """
+    If the provided email address already exists in our database, the
+    serializer should not be valid.
+    """
+    email = email_factory(verified=True)
+
+    data = {
+        'email': email.email,
+        'first_name': 'John',
+        'last_name': 'Doe',
+        'password': 'p455w0rd',
+    }
+
+    serializer = serializers.UserRegistrationSerializer(data=data)
+
+    assert not serializer.is_valid()
+
+
+def test_validate_duplicate_email_unverified(email_factory):
+    """
+    If the provided email address already exists but it has not been
+    verified, the serializer should be valid.
+    """
+    email = email_factory(verified=False)
+
+    data = {
+        'email': email.email,
+        'first_name': 'John',
+        'last_name': 'Doe',
+        'password': 'p455w0rd',
+    }
+
+    serializer = serializers.UserRegistrationSerializer(data=data)
+
+    assert serializer.is_valid()
