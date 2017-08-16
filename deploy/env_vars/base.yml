@@ -100,8 +100,7 @@ db_map:
 
 # AMI Configuration
 
-ami_builder_base: ami-9a0c088c
-
+ami_builder_base: ami-b391b9c8
 
 
 # Autoscaling Group Settings
