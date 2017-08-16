@@ -30,17 +30,6 @@ def email_confirmation_factory(db):
 
 
 @pytest.fixture
-def email_factory(db):
-    """
-    Get the factory used to create email addresses.
-
-    Returns:
-        The factory class used to create ``EmailAddress`` instances.
-    """
-    return factories.EmailFactory
-
-
-@pytest.fixture
 def password_reset_factory(db):
     """
     Get the factory used to create password resets.

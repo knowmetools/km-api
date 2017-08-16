@@ -1,6 +1,8 @@
 """Models for the Know Me app.
 """
 
+import logging
+
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -8,7 +10,11 @@ from django.core.validators import RegexValidator
 
 from rest_framework.reverse import reverse
 
+from account.models import EmailAddress, User
 from permission_utils import model_mixins as mixins
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_media_resource_upload_path(item, filename):
@@ -510,6 +516,30 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
                 ``False`` otherwise.
         """
         return request.user == self.user
+
+    def share(self, email, can_write=False, has_private_profile_access=False):
+        """
+        Share a Know Me account with another user.
+
+        If there is no user with the provided email address, a pending
+        user is created instead.
+        """
+        try:
+            user = EmailAddress.objects.get(email=email).user
+        except EmailAddress.DoesNotExist:
+            user = User.create_pending(email)
+
+        KMUserAccessor.objects.create(
+            can_write=can_write,
+            has_private_profile_access=has_private_profile_access,
+            km_user=self,
+            user_with_access=user)
+
+        logger.info(
+            'Shared Know Me user %s (ID %d) with %s',
+            self.name,
+            self.id,
+            email)
 
 
 class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
