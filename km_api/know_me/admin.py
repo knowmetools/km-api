@@ -71,12 +71,15 @@ class KMUserAccessor(admin.ModelAdmin):
         'km_user',
         'user_with_access',
         'accepted',
-        'can_write_everywhere')
+        'can_write',
+        'has_private_profile_access')
     list_display = (
         'km_user',
         'user_with_access',
         'accepted',
-        'can_write_everywhere')
+        'can_write',
+        'has_private_profile_access')
+    list_filter = ('accepted', 'can_write', 'has_private_profile_access')
     search_fields = (
         'km_user__user__first_name',
         'km_user__user__last_name',
