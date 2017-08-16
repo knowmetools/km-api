@@ -77,7 +77,7 @@ class EmergencyContact(mixins.IsAuthenticatedMixin, models.Model):
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
-    relation = models.TextField(
+    relation = models.CharField(
         max_length=255,
         verbose_name=_('relation'))
     phone_number = models.CharField(
