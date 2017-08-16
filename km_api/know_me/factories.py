@@ -121,18 +121,6 @@ class ProfileFactory(factory.django.DjangoModelFactory):
         model = models.Profile
 
 
-class ProfileAccessorFactory(factory.django.DjangoModelFactory):
-    """
-    Factory for generating ``ProfileAccessor`` instances.
-    """
-    km_user_accessor = factory.SubFactory(
-        'know_me.factories.KMUserAccessorFactory')
-    profile = factory.SubFactory('know_me.factories.ProfileFactory')
-
-    class Meta:
-        model = models.ProfileAccessor
-
-
 class ProfileItemFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``ProfileItem`` instances.

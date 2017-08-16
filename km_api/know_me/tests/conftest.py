@@ -127,17 +127,6 @@ def profile_factory(db):
 
 
 @pytest.fixture
-def profile_accessor_factory(db):
-    """
-    Fixture to get the factory used to create the profile accessors.
-
-    Returns:
-        The factory class used to create ``Profile Accessor`` instances.
-    """
-    return factories.ProfileAccessorFactory
-
-
-@pytest.fixture
 def profile_item_factory(db):
     """
     Fixture to get the factory used to create profile items.
