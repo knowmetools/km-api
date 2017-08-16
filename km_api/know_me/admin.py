@@ -71,13 +71,11 @@ class KMUserAccessor(admin.ModelAdmin):
         'km_user',
         'user_with_access',
         'accepted',
-        'can_read_everywhere',
         'can_write_everywhere')
     list_display = (
         'km_user',
         'user_with_access',
         'accepted',
-        'can_read_everywhere',
         'can_write_everywhere')
     search_fields = (
         'km_user__user__first_name',
@@ -142,9 +140,9 @@ class ProfileAdmin(admin.ModelAdmin):
     """
     Admin for the ``Profile`` model.
     """
-    fields = ('name', 'km_user', 'is_default')
-    list_display = ('name', 'km_user', 'is_default')
-    list_filter = ('is_default',)
+    fields = ('name', 'km_user', 'is_default', 'is_private')
+    list_display = ('name', 'km_user', 'is_default', 'is_private')
+    list_filter = ('is_default', 'is_private')
     search_fields = ('name', 'km_user__user__name')
 
 

@@ -9,6 +9,7 @@ def test_create(km_user_factory):
     """
     models.Profile.objects.create(
         is_default=True,
+        is_private=False,
         name='Profile',
         km_user=km_user_factory())
 
