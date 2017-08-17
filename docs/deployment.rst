@@ -2,132 +2,107 @@
 Deployment
 ==========
 
-Deployment is handled through AWS' Elastic Beanstalk service. Tagged releases and commits on the ``develop`` branch are automatically deployed to production and staging, respectively.
+Deployment is handled with Ansible_ and deployed continuously with `Travis CI <travis-ci_>`_. Tagged releases are deployed to production and the ``develop``, ``hotfix/*``, and ``release/*`` branches are deployed to the staging environment.
 
 
----------------------
-Environment Variables
----------------------
+--------
+Overview
+--------
 
-The application uses the following environment variables. These can be set from the Elastic Beanstalk interface.
+The deployment is split into 3 main parts. First we provision the required infrastructure, then we bake the application into a reusable image, and finally we set up the webservers to use that image.
 
-ADMIN_EMAIL
-  The email address to use for the admin account.
+The provisioning process first creates all the security groups that we will use and configures rules for them so they can talk to each other. Next we create an RDS instance and set up our database on it.
 
-ADMIN_PASSWORD
-  The password to use for the admin account.
+The next part of the process is creating an image to launch our webservers from. To do this, we spin up an EC2 instance and set it up to serve our application. We then create an AMI from this machine.
 
-ALLOWED_HOSTS (=[ ])
-  A comma separated list of URLs that the app is accessible from.
-
-AWS_REGION (=us-east-1)
-  The region the project's AWS resources are running in.
-
-DEBUG (=False)
-  Set to ``True`` (case insensitive) to enable Django's debug mode.
-
-EMAIL_CONFIRMATION_EXPIRATION_DAYS (=1)
-  An integer specifying the number of days an email confirmation is valid for.
-
-EMAIL_CONFIRMATION_LINK_TEMPLATE (=https://example.com/confirm-email?key={key})
-  A template for the URL a user should visit to validate their email. The value
-  ``{key}`` in the template string will be replaced with the confirmation key.
-
-LAYER_IDENTITY_EXPIRATION (=300)
-  The expiration time of each Layer identity token in seconds. See Layer's `Identity Token documentation <layer-identity-token-docs_>`_ for more information.
-
-LAYER_KEY_ID
-  The ID of the key located at ``LAYER_RSA_KEY_FILE_PATH``. This can be found
-  in Layer's organization dashboard. It should have the format ``layer:///keys/<key-content>``.
-
-LAYER_PROVIDER_ID
-  The provider ID of the Layer organization. This can be found in Layer's organization dashboard. It should have the format ``layer:///providers/<provider-id>``.
-
-LAYER_RSA_KEY_FILE_PATH (=/etc/km-api/certs/layer-dev.pem)
-  The path to the RSA key used to encode the identity tokens for Layer.
-
-MAILCHIMP_API_KEY (='')
-  The API key to use when using the MailChimp API.
-
-MAILCHIMP_ENABLED (=False)
-  Set to ``True`` (case insensitive) to enable syncing of user data to a MailChimp list. Requires ``MAILCHIMP_API_KEY`` and ``MAILCHIMP_LIST_ID`` to be set.
-
-MAILCHIMP_LIST_ID (='')
-  The ID of the MailChimp list to sync users to. Can be found under the list's "Settings" menu in "List name and campaign defaults".
-
-PASSWORD_RESET_EXPIRATION_HOURS (=1)
-  The number of hours a password reset's key is valid for.
-
-PASSWORD_RESET_LINK_TEMPLATE (=https://example.com/change-password/?key={key})
-  A template for the URL a user should visit to complete the password reset process. The value ``{key}`` in the template string will be replaced with the password reset key.
-
-RDS_DB_NAME
-  The database's name.
-
-RDS_HOSTNAME:
-  The hostname of the database.
-
-RDS_PASSWORD:
-  The password to connect to the database with.
-
-RDS_PORT:
-  The port to connect to the database on. This is usually 5432.
-
-RDS_USERNAME:
-  The username to connect to the database with.
-
-SECRET_KEY
-  The secret key to use. This should be a long random string. See the `documentation <secret-key-docs_>`_ for details.
-
-SENTRY_DSN
-  The DSN to use for sentry logging. See the `documentation <sentry-dsn-docs_>`_ for details.
-
-SENTRY_ENVIRONMENT (=staging)
-  The environment to use when logging errors to sentry. This allows for differentiating between production and staging errors. For simplicity, this should be either ``staging`` or ``production``.
-
-STATIC_BUCKET
-  The name of the S3 bucket to store static and media files in. The IAM role that the webservers use must have access to this bucket. This bucket must be in the ``us-east-1`` region.
+The last part of the process is creating an autoscaling group using the AMI we just created. The autoscaling group handles the termination of existing instances running old versions and spinning up an appropriate number of servers with the new version. This group is then placed behind a load balancer.
 
 
----------------------
-Database Provisioning
----------------------
+--------------------------
+Customizing the Deployment
+--------------------------
 
-Database provisioning is handled with Ansible_ using the playbooks in the ``deploy`` directory.
+There are a few places containing settings controlling the deployment process .
+
+Non-sensitive information that affects only the application's behaviour is stored in ``km_api/km_api/production_settings.py``.
+
+The rest of the deployment configuration is expressed using Ansible variables.
+
+Infrastructure configuration is stored in the ``deploy/env_vars/`` folder. ``base.yml`` holds variables that are shared accross environments, while ``dev.yml`` and ``prod.yml`` store information specific to each environment.
+
+The webserver configuration is stored in ``deploy/group_vars/amibuilder/``. These variables only apply to the software on the webservers.
+
+
+-----------------
+Manual Deployment
+-----------------
 
 Prerequisites
 -------------
 
-To run the playbook, you need Ansible installed as well as some helper python packages::
-
-    $ pip install ansible boto psycopg2
+In order to run a deployment, you must first install the requirements.
 
 .. note::
 
-    It is assumed that these packages are installed for the system-wide python install. If you would like to run ansible with an arbitrary python interpreter, pass in the ``--ansible-python-interpreter=<path to python>`` flag to any ansible command.
+    Ansible defaults to using the system-wide python installation. This means that the requirements must be installed for that python version, or you can point Ansible at a different python interpreter with the ``--ansible-python-interpreter /path/to/python`` flag.
 
-In order to run the playbook, you must also have valid credentials. AWS credentials must either be set as environment variables or passed to Ansible with the ``--extra-vars`` flag. Finally you must have the Ansible vault password.
+The deployment requirements are listed in ``requirements/deploy.txt``::
 
-Running The Playbook
+    $ pip install requirements/deploy.txt
+
+After installing the deployment requirements, you must also install the required Ansible roles::
+
+    $ cd deploy
+    $ ansible-galaxy install -r requirements.yml
+
+
+Credentials
+-----------
+
+The deployment process requires a password to decrypt the vault used to store other credentials as well as AWS credentials with permissions for the resources we use.
+
+The vault password can be found in our team password vault. Pass it to Ansible with::
+
+    $ echo "myvaultpass" > VAULT_PASSWORD_FILE
+    $ export ANSIBLE_VAULT_PASSWORD_FILE=VAULT_PASSWORD_FILE
+
+AWS credentials can also be specified as environment variables::
+
+    $ export AWS_ACCESS_KEY_ID=your-access-key
+    $ export AWS_SECRET_ACCESS_KEY=your-secret-key
+
+The AWS credentials must have the following permissions:
+
+* EC2
+
+  * Create and edit security groups
+  * Start and stop EC2 instances
+  * Create AMIs
+  * Create and edit load balancers
+  * Create launch configurations
+  * Create and edit autoscaling groups
+
+* RDS
+
+  * Create and edit RDS instances
+
+* Route 53
+
+  * Create and edit domain entries
+
+Running the Playbook
 --------------------
 
-To run the playbook and provision a database::
+Before deploying, make sure you are in the ``deploy/`` directory.
 
-    $ ansible-playbook deploy/deploy.yml
+To deploy to staging::
 
-If you want to target the production environment::
+    $ ansible-playbook deploy.yml
 
-    $ ansible-playbook --extra-vars '"env"="prod"' deploy/deploy.yml
+To deploy to production::
 
-Configuring the Application
----------------------------
-
-After running the playbook, you **must** update the application configuration in Elastic Beanstalk. Specifically, you must ensure that the ``RDS_*`` settings are correct. If the database was recreated, you must also ensure that the migrations have been run. The simplest way to do that is to trigger a deployment::
-
-    $ eb deploy <env-name>
+    $ ansible-playbook -e 'env=prod' deploy.yml
 
 
 .. _Ansible: http://docs.ansible.com/ansible/latest/index.html
-.. _layer-identity-token-docs: https://docs.layer.com/sdk/web/authentication#identity-token
-.. _secret-key-docs: https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-.. _sentry-dsn-docs: https://docs.sentry.io/quickstart/#configure-the-dsn
+.. _travis-ci: https://travis-ci.org/knowmetools/km-api
