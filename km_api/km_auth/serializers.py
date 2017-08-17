@@ -1,14 +1,19 @@
 """Serializers for authentication views.
 """
 
+import logging
+
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth import password_validation
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
 
-from account.models import EmailAddress, EmailConfirmation
+from account.models import EmailAddress, EmailConfirmation, User
 from km_auth import layer
+
+
+logger = logging.getLogger(__name__)
 
 
 class LayerIdentitySerializer(serializers.Serializer):
@@ -79,6 +84,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         extra_kwargs = {
+            'email': {
+                # Override the default validation for email addresses.
+                # This allows us to validate email addresses of a
+                # pending user.
+                'validators': [],
+            },
             'password': {
                 'style': {'input_type': 'password'},
                 'write_only': True,
@@ -91,6 +102,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """
         Create a new user from the serializer's validated data.
 
+        If there is a pending user with the provided email address, the
+        pending user is confirmed using the provided information.
+
         This also sends out an email to the user confirming their email
         address.
 
@@ -101,7 +115,22 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         Returns:
             The newly created ``User`` instance.
         """
-        user = get_user_model().objects.create_user(**validated_data)
+        pending_qs = User.objects.filter(
+            email=validated_data['email'],
+            is_pending=True)
+
+        if pending_qs.exists():
+            user = pending_qs.get()
+            user.confirm_pending(
+                first_name=validated_data['first_name'],
+                last_name=validated_data['last_name'],
+                password=validated_data['password'])
+        else:
+            logger.info(
+                'Registering new user with email: %s',
+                validated_data['email'])
+
+            user = User.objects.create_user(**validated_data)
 
         email = EmailAddress.objects.create(
             email=self.validated_data['email'],
@@ -111,6 +140,24 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         confirmation.send_confirmation()
 
         return user
+
+    def validate_email(self, email):
+        """
+        Validate the provided email address.
+
+        Returns:
+            str:
+                The validated email address.
+
+        Raises:
+            ValidationError:
+                If that email exists and is verified already.
+        """
+        if EmailAddress.objects.filter(email=email, verified=True).exists():
+            raise serializers.ValidationError(
+                _('An account with that email address already exists.'))
+
+        return email
 
     def validate_password(self, password):
         """

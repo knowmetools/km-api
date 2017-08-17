@@ -6,6 +6,43 @@ from account import models
 
 
 @pytest.mark.django_db
+def test_confirm_pending():
+    """
+    Confirming a pending user should update the user's information with
+    the data provided.
+    """
+    user = models.User.create_pending('test@example.com')
+
+    first_name = 'John'
+    last_name = 'Doe'
+    password = 'p455w0rd'
+
+    user.confirm_pending(
+        first_name=first_name,
+        last_name=last_name,
+        password=password)
+
+    user.refresh_from_db()
+
+    assert user.first_name == first_name
+    assert user.last_name == last_name
+    assert user.check_password(password)
+
+    assert not user.is_pending
+
+
+def test_confirm_pending_not_pending(user_factory):
+    """
+    If we attempt to confirm a user who is not pending, an error should
+    be raised.
+    """
+    user = user_factory()
+
+    with pytest.raises(AssertionError):
+        user.confirm_pending(first_name='foo', last_name='bar', password='baz')
+
+
+@pytest.mark.django_db
 def test_create():
     """
     Test creating a new user.
