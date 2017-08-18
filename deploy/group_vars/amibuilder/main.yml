@@ -9,12 +9,13 @@ nginx_site_servers:
     listen: 80
     extra_params: |
           location = /favicon.ico {
-            access_log off;
+              access_log off;
           }
 
           location / {
-            include proxy_params;
-            proxy_pass {{ nginx_socket }};
+              include proxy_params;
+              proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+              proxy_pass {{ nginx_socket }};
           }
 
 
