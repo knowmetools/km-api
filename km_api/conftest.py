@@ -12,6 +12,7 @@ import pytest
 
 from rest_framework.test import APIRequestFactory
 
+from account.factories import EmailFactory
 import factories
 
 
@@ -72,6 +73,17 @@ def api_rf():
         ``user`` attribute of the factory instance.
     """
     return UserAPIRequestFactory(user=AnonymousUser())
+
+
+@pytest.fixture
+def email_factory(db):
+    """
+    Get the factory used to create email addresses.
+
+    Returns:
+        The factory class used to create ``EmailAddress`` instances.
+    """
+    return EmailFactory
 
 
 @pytest.fixture

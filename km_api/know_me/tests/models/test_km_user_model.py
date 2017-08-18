@@ -145,6 +145,42 @@ def test_name(km_user_factory):
     assert km_user.name == km_user.user.get_short_name()
 
 
+def test_share_existing_user(email_factory, km_user_factory, user_factory):
+    """
+    If the provided email address belongs to an existing user, an
+    accessor should be created for that user.
+    """
+    km_user = km_user_factory()
+
+    user = user_factory()
+    email_factory(email=user.email, user=user)
+
+    km_user.share(user.email, can_write=True, has_private_profile_access=True)
+
+    assert km_user.km_user_accessors.count() == 1
+
+    accessor = km_user.km_user_accessors.get()
+
+    assert accessor.can_write
+    assert accessor.has_private_profile_access
+    assert accessor.user_with_access == user
+
+
+def test_share_nonexistent_user(km_user_factory):
+    """
+    If there is no user with the provided email address, a pending user
+    should be created and the accessor should be linked to them.
+    """
+    km_user = km_user_factory()
+    km_user.share('test-share@example.com')
+
+    assert km_user.km_user_accessors.count() == 1
+
+    accessor = km_user.km_user_accessors.get()
+
+    assert accessor.user_with_access.is_pending
+
+
 def test_string_conversion(km_user_factory):
     """
     Converting a km_user to a string should return the km_user's name.
