@@ -74,23 +74,11 @@ django_project_settings:
 django_logging:
   version: 1
   disable_existing_loggers: no
-  root:
-    level: INFO
-    handlers:
-      - 'file'
-      - 'sentry'
   formatters:
     standard:
       datefmt: '%d/%b/%Y %H:%M:%S'
       format: '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s'
   handlers:
-    file:
-      level: INFO
-      class: logging.handlers.RotatingFileHandler
-      filename: "{{ django_log_file }}"
-      formatter: standard
-      backupCount: 5
-      maxBytes: 5000000
     'null':
       level: DEBUG
       class: logging.NullHandler
@@ -98,10 +86,26 @@ django_logging:
       level: WARNING
       class: raven.contrib.django.raven_compat.handlers.SentryHandler
       formatter: standard
+    watchtower:
+      level: INFO
+      class: watchtower.CloudWatchLogHandler
+      log_group: "{{ aws_application_name }}"
   loggers:
-    boto3.resources.action:
+    account:
+      level: INFO
       handlers:
-        - 'null'
+        - sentry
+        - watchtower
+    custom_storages:
+      level: INFO
+      handlers:
+        - sentry
+        - watchtower
+    django:
+      level: WARNING
+      handlers:
+        - sentry
+        - watchtower
       propagate: no
     django.request:
       level: ERROR
@@ -110,3 +114,39 @@ django_logging:
       handlers:
         - 'null'
       propagate: no
+    generic_rest_views:
+      level: INFO
+      handlers:
+        - sentry
+        - watchtower
+    km_auth:
+      level: INFO
+      handlers:
+        - sentry
+        - watchtower
+    know_me:
+      level: INFO
+      handlers:
+        - sentry
+        - watchtower
+    mailing_list:
+      level: INFO
+      handlers:
+        - sentry
+        - watchtower
+    permission_utils:
+      level: INFO
+      handlers:
+        - sentry
+        - watchtower
+    templated_email:
+      level: INFO
+      handlers:
+        - sentry
+        - watchtower
+
+
+# Gunicorn Configuration
+
+gunicorn_environment:
+  AWS_DEFAULT_REGION: "{{ aws_region }}"
