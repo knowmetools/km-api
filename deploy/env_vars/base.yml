@@ -37,6 +37,10 @@ sg_list:
         from_port: 80
         to_port: 80
         cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
     rules_egress:
       - proto: tcp
         from_port: 80
@@ -50,6 +54,20 @@ sg_list:
         to_port: 80
         group_name: "{{ lb_sg_name }}"
         group_desc: "{{ lb_sg_description }}"
+    rules_egress:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 5432
+        to_port: 5432
+        group_name: "{{ db_sg_name }}"
+        group_desc: "{{ db_sg_description }}"
   - name: "{{ ami_builder_sg_name }}"
     description: "{{ ami_builder_sg_description }}"
     rules:
@@ -101,6 +119,16 @@ asg_lb_zones:
   - us-east-1d
   - us-east-1e
   - us-east-1f
+
+asg_lb_listeners:
+  - protocol: http
+    load_balancer_port: 80
+    instance_port: 80
+  - protocol: https
+    load_balancer_port: 443
+    instance_protocol: http
+    instance_port: 80
+    ssl_certificate_id: "arn:aws:acm:us-east-1:656952694364:certificate/dbf1b90e-8a68-4962-bd06-a116830f87a2"
 
 asg_route53_record: "{{ domain_name }}"
 asg_route53_zone: knowmetools.com
