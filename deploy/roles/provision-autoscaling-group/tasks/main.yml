@@ -19,10 +19,7 @@
     aws_access_key: "{{ aws_access_key | default(omit) }}"
     aws_secret_key: "{{ aws_secret_key | default(omit) }}"
     connection_draining_timeout: 20
-    listeners:
-      - protocol: http
-        load_balancer_port: 80
-        instance_port: 80
+    listeners: "{{ asg_lb_listeners }}"
     name: "{{ asg_lb_name }}"
     region: "{{ aws_region | default(omit) }}"
     security_group_names: "{{ asg_lb_security_groups }}"

@@ -120,5 +120,15 @@ asg_lb_zones:
   - us-east-1e
   - us-east-1f
 
+asg_lb_listeners:
+  - protocol: http
+    load_balancer_port: 80
+    instance_port: 80
+  - protocol: https
+    load_balancer_port: 443
+    instance_protocol: http
+    instance_port: 80
+    ssl_certificate_id: "arn:aws:acm:us-east-1:656952694364:certificate/dbf1b90e-8a68-4962-bd06-a116830f87a2"
+
 asg_route53_record: "{{ domain_name }}"
 asg_route53_zone: knowmetools.com
