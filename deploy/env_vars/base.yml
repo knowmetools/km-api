@@ -37,6 +37,10 @@ sg_list:
         from_port: 80
         to_port: 80
         cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
     rules_egress:
       - proto: tcp
         from_port: 80
@@ -50,6 +54,20 @@ sg_list:
         to_port: 80
         group_name: "{{ lb_sg_name }}"
         group_desc: "{{ lb_sg_description }}"
+    rules_egress:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 5432
+        to_port: 5432
+        group_name: "{{ db_sg_name }}"
+        group_desc: "{{ db_sg_description }}"
   - name: "{{ ami_builder_sg_name }}"
     description: "{{ ami_builder_sg_description }}"
     rules:
