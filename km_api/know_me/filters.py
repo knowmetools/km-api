@@ -1,6 +1,7 @@
 """Filter backends for the ``know_me`` module.
 """
 
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from dry_rest_permissions.generics import DRYPermissionFiltersBase
@@ -83,7 +84,10 @@ class KMUserFilterBackend(DRYPermissionFiltersBase):
             A queryset containing the km_users accessible to the user
             making the request.
         """
-        return queryset.filter(user=request.user)
+        query = Q(user=request.user)
+        query |= Q(km_user_accessor__user_with_access=request.user)
+
+        return queryset.filter(query)
 
 
 class ListEntryFilterBackend(DRYPermissionFiltersBase):
