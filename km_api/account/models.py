@@ -39,7 +39,6 @@ class EmailAddress(mixins.IsAuthenticatedMixin, models.Model):
 
     email = models.EmailField(
         max_length=255,
-        unique=True,
         verbose_name=_('email'))
     primary = models.BooleanField(
         default=False,

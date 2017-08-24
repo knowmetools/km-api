@@ -52,6 +52,26 @@ def test_authenticate_missing_email(auth_backend, api_rf, user_factory):
         'password') is None
 
 
+def test_authenticate_multiple_emails(
+        auth_backend,
+        email_factory,
+        user_factory):
+    """
+    If there are multiple email instances with the same address, we
+    should loop through them and check each one.
+    """
+    user = user_factory(password='password')
+    other_user = user_factory(password='otherpassword')
+
+    email = email_factory(email=user.email, user=user)
+    email_factory(email=user.email, user=other_user)
+
+    assert auth_backend.authenticate(
+        None,
+        email=email.email,
+        password='password') == user
+
+
 def test_authenticate_username(
         auth_backend,
         api_rf,

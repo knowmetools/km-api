@@ -34,6 +34,30 @@ def test_save_valid_key(
     assert mock_confirm.call_count == 1
 
 
+def test_validate_duplicate(
+        email_confirmation_factory,
+        email_factory,
+        user_factory):
+    """
+    If the email has already been verified, the serializer should not be
+    valid.
+    """
+    user = user_factory(password='password')
+    email_factory(email=user.email, verified=True)
+
+    email = email_factory(email=user.email, verified=False)
+    confirmation = email_confirmation_factory(email=email)
+
+    data = {
+        'key': confirmation.key,
+        'password': 'password',
+    }
+
+    serializer = serializers.EmailVerificationSerializer(data=data)
+
+    assert not serializer.is_valid()
+
+
 def test_validate_expired(
         email_confirmation_factory,
         email_factory,

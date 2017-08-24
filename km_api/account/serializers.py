@@ -244,6 +244,12 @@ class EmailVerificationSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 _('This key is invalid.'))
 
+        if models.EmailAddress.objects.filter(
+                email=confirmation.email.email,
+                verified=True).exists():
+            raise serializers.ValidationError(
+                _('That email address has already been used.'))
+
         if confirmation.is_expired():
             raise serializers.ValidationError(
                 _('This key has expired. Please send a new verification email '
