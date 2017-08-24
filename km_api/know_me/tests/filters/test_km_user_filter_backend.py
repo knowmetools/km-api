@@ -35,7 +35,10 @@ def test_filter_list_shared(
     km_user = km_user_factory()
     user = user_factory()
 
-    km_user_accessor_factory(km_user=km_user, user_with_access=user)
+    km_user_accessor_factory(
+        accepted=True,
+        km_user=km_user,
+        user_with_access=user)
 
     api_rf.user = user
     request = api_rf.get('/')
@@ -50,3 +53,33 @@ def test_filter_list_shared(
         km_user_accessor__user_with_access=user)
 
     assert list(filtered) == list(expected)
+
+
+def test_filter_list_shared_not_accepted(
+        api_rf,
+        km_user_accessor_factory,
+        km_user_factory,
+        user_factory):
+    """
+    If there is a ``KMUserAccessor`` giving the requesting user access
+    to a ``KMUser`` but it hasn't been accepted yet, it should not be
+    included.
+    """
+    km_user = km_user_factory()
+    user = user_factory()
+
+    km_user_accessor_factory(
+        accepted=False,
+        km_user=km_user,
+        user_with_access=user)
+
+    api_rf.user = user
+    request = api_rf.get('/')
+
+    backend = filters.KMUserFilterBackend()
+    filtered = backend.filter_list_queryset(
+        request,
+        models.KMUser.objects.all(),
+        None)
+
+    assert not filtered.exists()

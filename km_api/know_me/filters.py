@@ -84,8 +84,12 @@ class KMUserFilterBackend(DRYPermissionFiltersBase):
             A queryset containing the km_users accessible to the user
             making the request.
         """
-        query = Q(user=request.user)
-        query |= Q(km_user_accessor__user_with_access=request.user)
+        # Filter for shared profiles
+        query = Q(km_user_accessor__user_with_access=request.user)
+        query &= Q(km_user_accessor__accepted=True)
+
+        # Also include user owned by requesting user if they exist
+        query |= Q(user=request.user)
 
         return queryset.filter(query)
 
