@@ -28,10 +28,17 @@ class EmergencyContactFilterBackend(DRYPermissionFiltersBase):
             The provided queryset filtered to only include items owned
             by the user specified in the provided views arguments.
         """
+        # Requesting user has access to KMUser
+        query = Q(km_user_accessor__user_with_access=request.user)
+        query &= Q(km_user_accessor__accepted=True)
+
+        # Requesting user is KMUser
+        query |= Q(user=request.user)
+
         km_user = get_object_or_404(
             models.KMUser,
-            pk=view.kwargs.get('pk'),
-            user=request.user)
+            query,
+            pk=view.kwargs.get('pk'))
 
         return queryset.filter(km_user=km_user)
 

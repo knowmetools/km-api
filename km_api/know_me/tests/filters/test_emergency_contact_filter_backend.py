@@ -84,3 +84,38 @@ def test_filter_list_inaccessible_user(
             request,
             models.EmergencyContact.objects.all(),
             view)
+
+
+def test_filter_list_shared(
+        api_rf,
+        emergency_contact_factory,
+        km_user_accessor_factory,
+        user_factory):
+    """
+    Users who have been invited to a Know Me user's account should be
+    able to view that user's emergency contacts.
+    """
+    ec = emergency_contact_factory()
+    km_user = ec.km_user
+
+    user = user_factory()
+    km_user_accessor_factory(
+        accepted=True,
+        km_user=km_user,
+        user_with_access=user)
+
+    api_rf.user = user
+    request = api_rf.get('/')
+
+    view = mock.Mock(name='Mock View')
+    view.kwargs = {'pk': km_user.pk}
+
+    backend = filters.EmergencyContactFilterBackend()
+    filtered = backend.filter_list_queryset(
+        request,
+        models.EmergencyContact.objects.all(),
+        view)
+
+    expected = km_user.emergency_contacts.all()
+
+    assert list(filtered) == list(expected)
