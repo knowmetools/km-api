@@ -20,11 +20,15 @@ def test_serialize(
         km_user_accessor,
         context=serializer_context)
 
+    km_user_serializer = serializers.KMUserDetailSerializer(
+        km_user,
+        context=serializer_context)
+
     expected = {
         'accepted': False,
         'can_write': False,
         'has_private_profile_access': False,
-        'km_user': km_user,
+        'km_user': km_user_serializer.data,
         'user_with_access_email': user.email,
     }
 
