@@ -11,3 +11,9 @@ class KnowMeConfig(AppConfig):
     """
     name = 'know_me'
     verbose_name = _('Know Me')
+
+    def ready(self):
+        """
+        Perform app initialization tasks.
+        """
+        import know_me.signals      # noqa
