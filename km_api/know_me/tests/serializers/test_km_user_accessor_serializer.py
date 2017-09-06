@@ -62,3 +62,19 @@ def test_serialize(
     }
 
     assert serializer.data == expected
+
+
+def test_validate_new_email(km_user_accessor_factory):
+    """
+    Trying to set a new email on an existing accessor should cause the
+    serializer to be invalid.
+    """
+    accessor = km_user_accessor_factory(email='old@example.com')
+    data = {
+        'email': 'new@example.com',
+    }
+
+    serializer = serializers.KMUserAccessorSerializer(accessor, data=data)
+
+    assert not serializer.is_valid()
+    assert set(serializer.errors.keys()) == {'email'}
