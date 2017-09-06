@@ -191,8 +191,8 @@ def test_share_existing_user_unverified_email(
 
 def test_share_nonexistent_user(km_user_factory):
     """
-    If there is no user with the provided email address, a pending user
-    should be created and the accessor should be linked to them.
+    If there is no user with the provided email address, The created
+    accessor should only be linked to an email address.
     """
     km_user = km_user_factory()
     email = 'test-share@example.com'

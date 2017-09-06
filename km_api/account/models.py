@@ -353,10 +353,6 @@ class User(PermissionsMixin, AbstractBaseUser):
             EmailAddress is marked as the primary address.
         is_active (bool):
             Inactive users are not able to log in.
-        is_pending (bool):
-            A pending user is one that is automatically created. When a
-            user signs up with the email attached to a pending user, the
-            account is 'finalized'.
         is_staff (bool):
             Staff users are allowed to log in to the admin site.
         is_superuser (bool):
@@ -377,12 +373,6 @@ class User(PermissionsMixin, AbstractBaseUser):
         default=True,
         help_text=_('Inactive users are not able to log in.'),
         verbose_name=_('is active'))
-    is_pending = models.BooleanField(
-        default=False,
-        help_text=_('A pending user holds placeholder information until a '
-                    'user registers with the email address of the pending '
-                    'user.'),
-        verbose_name=('is pending'))
     is_staff = models.BooleanField(
         default=False,
         help_text=_('Staff users are allowed to access the admin site.'),
@@ -415,52 +405,6 @@ class User(PermissionsMixin, AbstractBaseUser):
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
-
-    @classmethod
-    def create_pending(cls, email):
-        """
-        Create a pending user.
-
-        The pending user is a placeholder until a user with the same
-        email registers. At that point, the pending user's information
-        will be merged with the information given by the registering
-        user.
-
-        Args:
-            email (str):
-                The email address to give the user.
-
-        Returns:
-            The newly created pending user.
-        """
-        return cls.objects.create_user(
-            email=email,
-            first_name='Pending',
-            is_pending=True,
-            last_name='User',
-            password=None)
-
-    def confirm_pending(self, first_name, last_name, password):
-        """
-        Confirm a pending user's account.
-
-        This marks the user as 'no longer pending' and merges the
-        existing information with the data provided when the user
-        registered.
-        """
-        assert self.is_pending, (
-            "'confirm_pending' may only be called on users with "
-            "'is_pending = True'.")
-
-        self.first_name = first_name
-        self.last_name = last_name
-        self.is_pending = False
-
-        self.set_password(password)
-
-        self.save()
-
-        logger.info('Confirmed pending user with email: %s', self.email)
 
     def get_full_name(self):
         """

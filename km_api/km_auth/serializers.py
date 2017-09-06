@@ -84,12 +84,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         extra_kwargs = {
-            'email': {
-                # Override the default validation for email addresses.
-                # This allows us to validate email addresses of a
-                # pending user.
-                'validators': [],
-            },
             'password': {
                 'style': {'input_type': 'password'},
                 'write_only': True,
@@ -102,9 +96,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """
         Create a new user from the serializer's validated data.
 
-        If there is a pending user with the provided email address, the
-        pending user is confirmed using the provided information.
-
         This also sends out an email to the user confirming their email
         address.
 
@@ -115,23 +106,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         Returns:
             The newly created ``User`` instance.
         """
-        pending_qs = User.objects.filter(
-            email=validated_data['email'],
-            is_pending=True)
+        logger.info(
+            'Registering new user with email: %s',
+            validated_data['email'])
 
-        if pending_qs.exists():
-            user = pending_qs.get()
-            user.confirm_pending(
-                first_name=validated_data['first_name'],
-                last_name=validated_data['last_name'],
-                password=validated_data['password'])
-        else:
-            logger.info(
-                'Registering new user with email: %s',
-                validated_data['email'])
-
-            user = User.objects.create_user(**validated_data)
-
+        user = User.objects.create_user(**validated_data)
         email = EmailAddress.objects.create(
             email=self.validated_data['email'],
             user=user)
