@@ -10,7 +10,7 @@ from django.core.validators import RegexValidator
 
 from rest_framework.reverse import reverse
 
-from account.models import EmailAddress, User
+from account.models import EmailAddress
 from permission_utils import model_mixins as mixins
 
 
@@ -521,16 +521,29 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         """
         Share a Know Me account with another user.
 
-        If there is no user with the provided email address, a pending
-        user is created instead.
+        Args:
+            email (str):
+                The email address of the user to share with.
+            can_write (bool):
+                A boolean indicating if the invited user has write
+                access for profiles.
+            has_private_profile_access (bool):
+                A boolean indicating if the invited user has access to
+                profiles marked as private.
+
+        Returns:
+            The created ``KMUserAccessor`` instance.
         """
         try:
-            user = EmailAddress.objects.get(email=email).user
+            user = EmailAddress.objects.get(
+                email=email,
+                verified=True).user
         except EmailAddress.DoesNotExist:
-            user = User.create_pending(email)
+            user = None
 
-        KMUserAccessor.objects.create(
+        accessor = KMUserAccessor.objects.create(
             can_write=can_write,
+            email=email,
             has_private_profile_access=has_private_profile_access,
             km_user=self,
             user_with_access=user)
@@ -540,6 +553,8 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             self.name,
             self.id,
             email)
+
+        return accessor
 
 
 class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
@@ -566,6 +581,10 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         help_text=_('Users with write access can make changes to the profiles '
                     'they are invited to.'),
         verbose_name=_('can write'))
+    email = models.EmailField(
+        help_text=_('The email address used to invite the user.'),
+        null=True,
+        verbose_name=_('email'))
     has_private_profile_access = models.BooleanField(
         default=False,
         verbose_name=_('has private profile access'))
@@ -577,6 +596,7 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('Know Me user'))
     user_with_access = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        null=True,
         on_delete=models.CASCADE,
         related_name='km_user_accessors',
         related_query_name='km_user_accessor',

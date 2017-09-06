@@ -16,21 +16,6 @@ def test_mailchimp_disabled(settings, user_factory):
     assert mock_sync.call_count == 0
 
 
-def test_pending_user(settings, user_factory):
-    """
-    If the saved user has ``is_pending == True``, no user data should be
-    synced.
-    """
-    settings.MAILCHIMP_ENABLED = True
-
-    with mock.patch(
-            'mailing_list.signals.mailchimp_utils.sync_mailchimp_data',
-            autospec=True) as mock_sync:
-        user_factory(is_pending=True)
-
-    assert mock_sync.call_count == 0
-
-
 def test_user_creation(settings, user_factory):
     """
     When a user is created, their data should be synced to MailChimp.

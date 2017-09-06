@@ -5,12 +5,15 @@ def test_create(km_user_factory, user_factory):
     """
     Test creating a KMUserAccessor.
     """
+    user = user_factory()
+
     models.KMUserAccessor.objects.create(
         accepted=False,
         can_write=False,
+        email=user.email,
         has_private_profile_access=False,
         km_user=km_user_factory(),
-        user_with_access=user_factory())
+        user_with_access=user)
 
 
 def test_string_conversion(km_user_accessor_factory):

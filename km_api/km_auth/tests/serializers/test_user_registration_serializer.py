@@ -2,7 +2,7 @@ from unittest import mock
 
 import pytest
 
-from account.models import EmailAddress, EmailConfirmation, User
+from account.models import EmailAddress, EmailConfirmation
 from km_auth import serializers
 
 
@@ -30,51 +30,6 @@ def test_create():
     assert user.first_name == data['first_name']
     assert user.last_name == data['last_name']
     assert user.check_password(data['password'])
-
-    # Ensure we created an email address for the user
-    assert EmailAddress.objects.count() == 1
-    assert user.email_addresses.get().email == data['email']
-
-    # Ensure we sent the user an email confirmation
-    assert EmailConfirmation.objects.count() == 1
-    assert mock_confirm.call_count == 1
-
-
-def test_register_pending_user(user_factory):
-    """
-    If a user attempts to register with the email address of a pending
-    user, then the info they provided should be merged with the existing
-    pending user.
-    """
-    user = User.create_pending('test@example.com')
-
-    data = {
-        'email': user.email,
-        'first_name': 'John',
-        'last_name': 'Doe',
-        'password': 'p455w0rd',
-    }
-
-    serializer = serializers.UserRegistrationSerializer(data=data)
-    assert serializer.is_valid(), serializer.errors
-
-    with mock.patch(
-            'km_auth.serializers.EmailConfirmation.send_confirmation',
-            autospec=True) as mock_confirm:
-        with mock.patch(
-                'km_auth.serializers.User.confirm_pending',
-                autospec=True) as mock_confirm_pending:
-            serializer.save()
-
-    user.refresh_from_db()
-
-    # Ensure we confirmed the user
-    assert mock_confirm_pending.call_count == 1
-    assert mock_confirm_pending.call_args[1] == {
-        'first_name': data['first_name'],
-        'last_name': data['last_name'],
-        'password': data['password'],
-    }
 
     # Ensure we created an email address for the user
     assert EmailAddress.objects.count() == 1
