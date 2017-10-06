@@ -12,6 +12,62 @@ from rest_framework.exceptions import ValidationError
 from know_me import filters, models, serializers
 
 
+class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View for modifying a specific Know Me user accessor.
+    """
+    serializer_class = serializers.KMUserAccessorSerializer
+
+    def get_queryset(self):
+        """
+        Get the accessors accessible to the requesting user.
+
+        Returns:
+            A queryset containing the ``KMUserAccessor`` instances
+            belonging to the requesting user.
+        """
+        km_user = get_object_or_404(
+            models.KMUser,
+            user=self.request.user)
+
+        return km_user.km_user_accessors.all()
+
+
+class AccessorListView(generics.ListCreateAPIView):
+    """
+    View for listing and creating new accessors for a Know Me user.
+    """
+    serializer_class = serializers.KMUserAccessorSerializer
+
+    def get_queryset(self):
+        """
+        Get the accessors for the user with the given PK.
+
+        Returns:
+            A queryset containing the ``KMUserAccessor`` instances
+            belonging to the Know Me user whose PK was passed to the
+            view.
+        """
+        km_user = get_object_or_404(models.KMUser, user=self.request.user)
+
+        return km_user.km_user_accessors.all()
+
+    def perform_create(self, serializer):
+        """
+        Create a new accessor for the current user.
+
+        Args:
+            serializer:
+                The serializer containing the received data.
+
+        Returns:
+            The newly created ``KMUserAccessor`` instance.
+        """
+        km_user = get_object_or_404(models.KMUser, user=self.request.user)
+
+        return serializer.save(km_user=km_user)
+
+
 class EmergencyContactDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     View for retrieving and updating a specific emergency contact.
