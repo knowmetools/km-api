@@ -2,6 +2,13 @@ Changelog
 =========
 
 
+v0.5.2
+------
+
+Bug Fixes
+  * :issue:`195`: Fix issue with some endpoints only accepting a single-digit ID.
+
+
 v0.5.1
 ------
 
