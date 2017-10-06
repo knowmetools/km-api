@@ -20,9 +20,9 @@ urlpatterns = [
     url(r'^topics/(?P<pk>[0-9]+)/items/$' ,views.ProfileItemListView.as_view(), name='profile-item-list'),                          # noqa
     url(r'^users/$', views.KMUserListView.as_view(), name='km-user-list'),
     url(r'^users/accessors/$', views.AccessorListView.as_view(), name='accessor-list'),                                             # noqa
-    url(r'^users/(?P<pk>[0-9])/$', views.KMUserDetailView.as_view(), name='km-user-detail'),                                        # noqa
+    url(r'^users/(?P<pk>[0-9]+)/$', views.KMUserDetailView.as_view(), name='km-user-detail'),                                       # noqa
     url(r'^users/(?P<pk>[0-9]+)/emergency-contacts/$', views.EmergencyContactListView.as_view(), name='emergency-contact-list'),    # noqa
-    url(r'^users/(?P<pk>[0-9])/emergency-items/$', views.EmergencyItemListView.as_view(), name='emergency-item-list'),              # noqa
-    url(r'^users/(?P<pk>[0-9])/gallery/$', views.GalleryView.as_view(), name='gallery'),                                            # noqa
-    url(r'^users/(?P<pk>[0-9])/profiles/$', views.ProfileListView.as_view(), name='profile-list'),                                  # noqa
+    url(r'^users/(?P<pk>[0-9]+)/emergency-items/$', views.EmergencyItemListView.as_view(), name='emergency-item-list'),             # noqa
+    url(r'^users/(?P<pk>[0-9]+)/gallery/$', views.GalleryView.as_view(), name='gallery'),                                           # noqa
+    url(r'^users/(?P<pk>[0-9]+)/profiles/$', views.ProfileListView.as_view(), name='profile-list'),                                 # noqa
 ]
