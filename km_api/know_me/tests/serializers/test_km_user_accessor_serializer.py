@@ -3,6 +3,68 @@ from unittest import mock
 from know_me import serializers
 
 
+def test_accept(
+        api_rf,
+        km_user_accessor_factory,
+        user_factory):
+    """
+    The user who is invited through the accessor should be able to mark
+    the accessor as accepted.
+    """
+    user = user_factory()
+    accessor = km_user_accessor_factory(user_with_access=user)
+
+    api_rf.user = user
+    request = api_rf.get('/')
+
+    data = {'accepted': True}
+
+    serializer = serializers.KMUserAccessorSerializer(
+        accessor,
+        context={'request': request},
+        data=data)
+    assert serializer.is_valid()
+
+    serializer.save()
+    accessor.refresh_from_db()
+
+    assert accessor.accepted
+
+
+def test_accept_by_unauthorized_user(api_rf, km_user_accessor_factory):
+    """
+    Any user other than the user granted access by the accessor should
+    not be able to accept the accessor.
+    """
+    accessor = km_user_accessor_factory()
+
+    api_rf.user = accessor.km_user.user
+    request = api_rf.get('/')
+
+    data = {'accepted': True}
+
+    serializer = serializers.KMUserAccessorSerializer(
+        accessor,
+        context={'request': request},
+        data=data)
+
+    assert not serializer.is_valid()
+    assert set(serializer.errors.keys()) == {'accepted'}
+
+
+def test_accept_on_create(db):
+    """
+    Attempt to create an accessor with ``accepted == True`` should fail.
+    """
+    data = {
+        'accepted': True,
+        'email': 'test@example.com',
+    }
+
+    serializer = serializers.KMUserAccessorSerializer(data=data)
+    assert not serializer.is_valid()
+
+
 def test_create(km_user_factory):
     """
     Saving the serializer should use the Know Me user's ``share`` method

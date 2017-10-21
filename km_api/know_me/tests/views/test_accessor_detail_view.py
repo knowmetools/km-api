@@ -60,6 +60,20 @@ def test_get_accessor_other_user(
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
+def test_get_accessor_shared(api_rf, km_user_accessor_factory, user_factory):
+    """
+    Users should be able to access an accessor that grants them access
+    to an account.
+    """
+    accessor = km_user_accessor_factory(user_with_access=user_factory())
+    api_rf.user = accessor.user_with_access
+
+    request = api_rf.get('/')
+    response = accessor_detail_view(request, pk=accessor.pk)
+
+    assert response.status_code == status.HTTP_200_OK
+
+
 def test_patch_accessor(api_rf, km_user_accessor_factory):
     """
     Sending a PATCH request to the view should update the accessor with

@@ -28,11 +28,10 @@ class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
             A queryset containing the ``KMUserAccessor`` instances
             belonging to the requesting user.
         """
-        km_user = get_object_or_404(
-            models.KMUser,
-            user=self.request.user)
+        query = Q(km_user__user=self.request.user)
+        query |= Q(user_with_access=self.request.user)
 
-        return km_user.km_user_accessors.all()
+        return models.KMUserAccessor.objects.filter(query)
 
 
 class AccessorListView(generics.ListCreateAPIView):
