@@ -2,6 +2,12 @@ Changelog
 =========
 
 
+v0.5.3
+------
+
+Update dependency versions.
+
+
 v0.5.2
 ------
 
