@@ -1,9 +1,9 @@
 -r requirements/base.txt
 
-boto3 == 1.4.4
+boto3 == 1.4.7
 django-cors-headers == 2.1.0
-django-ses == 0.8.2
-django-storages == 1.6.4
-psycopg2 == 2.7.2
-raven == 6.1.0
+django-ses == 0.8.3.1
+django-storages == 1.6.5
+psycopg2 == 2.7.3.1
+raven == 6.2.1
 watchtower == 0.4.0

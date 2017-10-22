@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 
 from rest_framework.exceptions import ValidationError
@@ -18,12 +20,19 @@ def test_get_queryset(km_user_factory, media_resource_factory):
 
     media_resource_factory()
 
-    field = fields.MediaResourceField()
-    field.context = {
-        'km_user': km_user,
-    }
+    with mock.patch(
+            'know_me.serializers.fields.MediaResourceField.context',
+            new_callable=mock.PropertyMock) as mock_context:
+        mock_context.return_value = {
+            'km_user': km_user,
+        }
 
-    assert list(field.get_queryset()) == list(km_user.media_resources.all())
+        field = fields.MediaResourceField()
+
+        result = field.get_queryset()
+        expected = km_user.media_resources.all()
+
+        assert list(result) == list(expected)
 
 
 def test_get_queryset_invalid_context():
@@ -43,12 +52,16 @@ def test_to_internal_value(media_resource_factory):
     the provided ID.
     """
     resource = media_resource_factory()
-    field = fields.MediaResourceField()
-    field.context = {
-        'km_user': resource.km_user,
-    }
 
-    assert field.to_internal_value(resource.id) == resource
+    with mock.patch(
+            'know_me.serializers.fields.MediaResourceField.context',
+            new_callable=mock.PropertyMock) as mock_context:
+        mock_context.return_value = {
+            'km_user': resource.km_user,
+        }
+        field = fields.MediaResourceField()
+
+        assert field.to_internal_value(resource.id) == resource
 
 
 def test_to_internal_value_non_existent(km_user_factory):
@@ -56,13 +69,17 @@ def test_to_internal_value_non_existent(km_user_factory):
     If there is no media resource matching the provided ID, a
     ``ValidationError`` should be raised.
     """
-    field = fields.MediaResourceField()
-    field.context = {
-        'km_user': km_user_factory(),
-    }
+    with mock.patch(
+            'know_me.serializers.fields.MediaResourceField.context',
+            new_callable=mock.PropertyMock) as mock_context:
+        mock_context.return_value = {
+            'km_user': km_user_factory(),
+        }
 
-    with pytest.raises(ValidationError):
-        field.to_internal_value(1)
+        field = fields.MediaResourceField()
+
+        with pytest.raises(ValidationError):
+            field.to_internal_value(1)
 
 
 def test_to_representation(media_resource_factory, serializer_context):
@@ -73,7 +90,11 @@ def test_to_representation(media_resource_factory, serializer_context):
     resource = media_resource_factory()
     serializer = MediaResourceSerializer(resource, context=serializer_context)
 
-    field = fields.MediaResourceField()
-    field.context = serializer_context
+    with mock.patch(
+            'know_me.serializers.fields.MediaResourceField.context',
+            new_callable=mock.PropertyMock) as mock_context:
+        mock_context.return_value = serializer_context
 
-    assert field.to_representation(resource) == serializer.data
+        field = fields.MediaResourceField()
+
+        assert field.to_representation(resource) == serializer.data
