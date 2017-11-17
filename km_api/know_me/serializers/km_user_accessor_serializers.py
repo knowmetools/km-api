@@ -6,14 +6,14 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 
 from know_me import models
-from .km_user_serializers import KMUserDetailSerializer
+from .km_user_serializers import KMUserListSerializer
 
 
 class KMUserAccessorSerializer(serializers.ModelSerializer):
     """
     Serializer for ``KMUserAccessor`` instances.
     """
-    km_user = KMUserDetailSerializer(read_only=True)
+    km_user = KMUserListSerializer(read_only=True)
     url = serializers.SerializerMethodField()
 
     class Meta:

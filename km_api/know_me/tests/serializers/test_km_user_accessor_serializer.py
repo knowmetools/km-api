@@ -111,7 +111,7 @@ def test_serialize(
         km_user_accessor,
         context=serializer_context)
 
-    km_user_serializer = serializers.KMUserDetailSerializer(
+    km_user_serializer = serializers.KMUserListSerializer(
         km_user,
         context=serializer_context)
 
