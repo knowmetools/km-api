@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.reverse import reverse
 
 from know_me import serializers, views
 
@@ -72,6 +73,20 @@ def test_get_accessor_shared(api_rf, km_user_accessor_factory, user_factory):
     response = accessor_detail_view(request, pk=accessor.pk)
 
     assert response.status_code == status.HTTP_200_OK
+
+
+def test_get_accessor_unauthenticated(api_client, km_user_accessor_factory):
+    """
+    An unauthenticated GET request should result in a 403 response.
+
+    Regression test for #201.
+    """
+    accessor = km_user_accessor_factory()
+
+    url = reverse('know-me:accessor-detail', kwargs={'pk': accessor.pk})
+    response = api_client.get(url)
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_patch_accessor(api_rf, km_user_accessor_factory):

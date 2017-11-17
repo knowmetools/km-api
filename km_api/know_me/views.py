@@ -10,6 +10,7 @@ from dry_rest_permissions.generics import DRYPermissions
 
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 
 from know_me import filters, models, serializers
 
@@ -18,6 +19,7 @@ class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     View for modifying a specific Know Me user accessor.
     """
+    permission_classes = (IsAuthenticated,)
     serializer_class = serializers.KMUserAccessorSerializer
 
     def get_queryset(self):
