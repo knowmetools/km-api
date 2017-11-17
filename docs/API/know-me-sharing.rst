@@ -86,3 +86,21 @@ The accessor detail view allows for retrieving, updating, or deleting a specific
 
     :status 204: Request successful.
     :status 404: There is no accessor with the provided ``id``.
+
+Pending Accessor List View
+--------------------------
+
+This view allows listing of the accessors that have not yet been accepted by
+the user the accessor grants access to.
+
+.. http:get:: /know-me/accessors/pending/
+
+    Get the pending accessors for the requesting user.
+
+    :>jsonarr can_write accepted: A boolean indicating if the accessor has been accepted yet. This will be ``false`` for all elements in the list.
+    :>jsonarr boolean can_write: A boolean indicating if the accessor grants the user write permission on the shared profiles.
+    :>jsonarr string email: The email address used to invite the user.
+    :>jsonarr boolean has_private_profile_access: A boolean indicating if the accessor grants access to profiles marked as private.
+    :>jsonarr object km_user: An object containing details about the Know Me user the accessor grants access to.
+
+    :status 200: The request was successful.

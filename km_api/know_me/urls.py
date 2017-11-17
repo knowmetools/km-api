@@ -7,6 +7,7 @@ from know_me import views
 
 
 urlpatterns = [
+    url(r'^accessors/pending/$', views.PendingAccessorListView.as_view(), name='pending-accessor-list'),                            # noqa
     url(r'^accessors/(?P<pk>[0-9]+)/$', views.AccessorDetailView.as_view(), name='accessor-detail'),                                # noqa
     url(r'^emergency-contacts/(?P<pk>[0-9]+)/$', views.EmergencyContactDetailView.as_view(), name='emergency-contact-detail'),      # noqa
     url(r'^emergency-items/(?P<pk>[0-9]+)/$', views.EmergencyItemDetailView.as_view(), name='emergency-item-detail'),               # noqa

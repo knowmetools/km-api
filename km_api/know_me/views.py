@@ -298,6 +298,24 @@ class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.MediaResourceSerializer
 
 
+class PendingAccessorListView(generics.ListAPIView):
+    """
+    View for listing pending accessors.
+    """
+    permission_classes = (DRYPermissions,)
+    serializer_class = serializers.KMUserAccessorSerializer
+
+    def get_queryset(self):
+        """
+        Get the list of pending accessors for the requesting user.
+
+        Returns:
+            A queryset containing the ``KMUserAccessor`` instances that
+            give access to the requesting user and are not yet accepted.
+        """
+        return self.request.user.km_user_accessors.filter(accepted=False)
+
+
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
     """
     View for retreiving and updating a specific profile.

@@ -10,7 +10,7 @@ import PIL
 
 import pytest
 
-from rest_framework.test import APIRequestFactory
+from rest_framework.test import APIClient, APIRequestFactory
 
 from account.factories import EmailFactory
 import factories
@@ -57,6 +57,17 @@ class UserAPIRequestFactory(APIRequestFactory):
         request.user = self.user
 
         return request
+
+
+@pytest.fixture
+def api_client():
+    """
+    Fixture to get a client for making API requests.
+
+    Returns:
+        An instance of the ``APIClient`` provided by DRF.
+    """
+    return APIClient()
 
 
 @pytest.fixture(scope='function')
