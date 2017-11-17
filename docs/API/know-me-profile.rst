@@ -1,18 +1,18 @@
-=================
-Know Me - KMUser
-=================
+==================
+Know Me - Profiles
+==================
 
 These endpoints provide data for the Know Me app.
 
 
---------
-KMUsers
---------
+-------------
+Know Me Users
+-------------
 
-KMUsers are the basis of Know Me. They contain organized sets of information about a specific user.
+Know Me users accounts hold data specific to the Know Me app.
 
-KMUser List
-------------
+Know Me User List
+-----------------
 
 .. http:get:: /know-me/users/
 
@@ -46,8 +46,8 @@ KMUser List
 
     Currently, a user may only have one know me user.
 
-KMUser Details
----------------
+Know Me User Details
+--------------------
 
 .. http:get:: /know-me/profiles/(int:id)/
 
@@ -206,8 +206,8 @@ Profile Topic List
 
     :param int id: The ID of the profile to create a topic for.
 
-    :>jsonarr string topics_url: The URL of the given topic's list.  
-    :>jsonarr object topics: An object containing the profile's topic. 
+    :>jsonarr string topics_url: The URL of the given topic's list.
+    :>jsonarr object topics: An object containing the profile's topic.
     :<json string name: A name for the topic.
     :<json int topic_type: An integer representing which type of topic to create.
 
@@ -216,7 +216,11 @@ Profile Topic List
     :>json int id: The ID of the topic.
     :>json string url: The URL of the topic's detail view.
     :>json string name: The name of the topic.
-    :>json int topic_type: An integer representing the type of topic.
+    :>json int topic_type: An integer representing the type of topic. The choices are:
+
+        * ``3`` -- Text topic
+        * ``4`` -- Visual topic
+
     :>json string items_url: The URL of the topic's item list.
     :>json array items: The items contained in the topic.
 

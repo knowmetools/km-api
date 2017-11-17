@@ -1,0 +1,26 @@
+---
+aws_application_name: my-application
+aws_tags: {}
+
+asg_name: "{{ aws_application_name }}-asg"
+asg_instance_type: t2.nano
+
+asg_desired_capacity: 1
+asg_max_size: 1
+asg_min_size: 1
+
+asg_lc_name: "{{ aws_application_name }}-{{ ansible_date_time.iso8601 | regex_replace('[^a-zA-Z0-9]', '-') }}"
+asg_security_groups: []
+
+asg_lb_name: "{{ aws_application_name }}-lb"
+asg_lb_security_groups: []
+
+asg_lb_default_tags:
+  application: "{{ aws_application_name }}"
+  role: load balancer
+asg_lb_tags: "{{ asg_lb_default_tags | combine(aws_tags) }}"
+
+asg_lb_listeners:
+  - protocol: http
+    load_balancer_port: 80
+    instance_port: 80

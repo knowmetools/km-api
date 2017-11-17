@@ -29,3 +29,4 @@ API Endpoints
     API/know-me-emergency
     API/know-me-gallery
     API/know-me-profile
+    API/know-me-sharing

@@ -55,3 +55,41 @@ def test_serialize(user_factory):
     }
 
     assert serializer.data == expected
+
+
+def test_validate_duplicate_email(email_factory):
+    """
+    If the provided email address already exists in our database, the
+    serializer should not be valid.
+    """
+    email = email_factory(verified=True)
+
+    data = {
+        'email': email.email,
+        'first_name': 'John',
+        'last_name': 'Doe',
+        'password': 'p455w0rd',
+    }
+
+    serializer = serializers.UserRegistrationSerializer(data=data)
+
+    assert not serializer.is_valid()
+
+
+def test_validate_duplicate_email_unverified(email_factory):
+    """
+    If the provided email address already exists but it has not been
+    verified, the serializer should be valid.
+    """
+    email = email_factory(verified=False)
+
+    data = {
+        'email': email.email,
+        'first_name': 'John',
+        'last_name': 'Doe',
+        'password': 'p455w0rd',
+    }
+
+    serializer = serializers.UserRegistrationSerializer(data=data)
+
+    assert serializer.is_valid()

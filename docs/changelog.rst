@@ -2,6 +2,22 @@ Changelog
 =========
 
 
+v0.6.0
+------
+
+Implement sharing of profiles.
+
+`Milestone <https://github.com/knowmetools/km-api/milestone/7>`_
+
+Features:
+  * :issue:`154`: Allow profiles to be marked as private. Private profiles are not accessible by shared users unless they are explicitly granted access.
+
+Bug Fixes:
+  * :issue:`142`: Add missing migrations.
+  * :issue:`139,197`: Add ability to share profiles with other users.
+  * :issue:`177`: Fix issue with trying to register with an email address that is already being used.
+
+
 v0.5.3
 ------
 

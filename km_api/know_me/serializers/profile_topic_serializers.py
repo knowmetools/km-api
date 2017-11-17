@@ -6,6 +6,7 @@ from rest_framework import serializers
 from know_me import models
 
 from .profile_item_serializers import ProfileItemSerializer
+from dry_rest_permissions.generics import DRYPermissionsField
 
 
 class ProfileTopicSerializer(serializers.HyperlinkedModelSerializer):
@@ -14,11 +15,19 @@ class ProfileTopicSerializer(serializers.HyperlinkedModelSerializer):
     """
     items = ProfileItemSerializer(many=True, read_only=True)
     items_url = serializers.SerializerMethodField()
+    permissions = DRYPermissionsField()
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:profile-topic-detail')
 
     class Meta:
-        fields = ('id', 'url', 'name', 'topic_type', 'items_url', 'items')
+        fields = (
+            'id',
+            'url',
+            'name',
+            'topic_type',
+            'items_url',
+            'items',
+            'permissions')
         model = models.ProfileTopic
 
     def get_items_url(self, topic):

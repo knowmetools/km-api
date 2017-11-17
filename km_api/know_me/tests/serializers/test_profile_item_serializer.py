@@ -77,6 +77,7 @@ def test_serialize_image_item(
         context=serializer_context)
 
     url_request = api_rf.get(item.get_absolute_url())
+    serializer_request = serializer_context['request']
 
     expected = {
         'id': item.id,
@@ -84,6 +85,10 @@ def test_serialize_image_item(
         'name': item.name,
         'image_content': image_content_serializer.data,
         'list_content': None,
+        'permissions': {
+            'read': item.has_object_read_permission(serializer_request),
+            'write': item.has_object_write_permission(serializer_request),
+        }
     }
 
     assert serializer.data == expected
@@ -105,9 +110,11 @@ def test_serialize_list_item(
         context=serializer_context)
 
     list_content_serializer = serializers.ListContentSerializer(
-        item.list_content)
+        item.list_content,
+        context=serializer_context)
 
     url_request = api_rf.get(item.get_absolute_url())
+    serializer_request = serializer_context['request']
 
     expected = {
         'id': item.id,
@@ -115,6 +122,10 @@ def test_serialize_list_item(
         'name': item.name,
         'image_content': None,
         'list_content': list_content_serializer.data,
+        'permissions': {
+            'read': item.has_object_read_permission(serializer_request),
+            'write': item.has_object_write_permission(serializer_request),
+        }
     }
 
     assert serializer.data == expected

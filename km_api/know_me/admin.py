@@ -62,6 +62,31 @@ class KMUserAdmin(admin.ModelAdmin):
     search_fields = ('user__first_name', 'user__last_name')
 
 
+@admin.register(models.KMUserAccessor)
+class KMUserAccessor(admin.ModelAdmin):
+    """
+    Admin for the ``KMUserAccessor`` model.
+    """
+    fields = (
+        'km_user',
+        'user_with_access',
+        'accepted',
+        'can_write',
+        'has_private_profile_access')
+    list_display = (
+        'km_user',
+        'user_with_access',
+        'accepted',
+        'can_write',
+        'has_private_profile_access')
+    list_filter = ('accepted', 'can_write', 'has_private_profile_access')
+    search_fields = (
+        'km_user__user__first_name',
+        'km_user__user__last_name',
+        'user_with_access__first_name',
+        'user_with_access__last_name')
+
+
 @admin.register(models.ListContent)
 class ListContentAdmin(admin.ModelAdmin):
     """
@@ -105,9 +130,9 @@ class ProfileAdmin(admin.ModelAdmin):
     """
     Admin for the ``Profile`` model.
     """
-    fields = ('name', 'km_user', 'is_default')
-    list_display = ('name', 'km_user', 'is_default')
-    list_filter = ('is_default',)
+    fields = ('name', 'km_user', 'is_default', 'is_private')
+    list_display = ('name', 'km_user', 'is_default', 'is_private')
+    list_filter = ('is_default', 'is_private')
     search_fields = ('name', 'km_user__user__name')
 
 

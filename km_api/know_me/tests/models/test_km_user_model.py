@@ -145,6 +145,66 @@ def test_name(km_user_factory):
     assert km_user.name == km_user.user.get_short_name()
 
 
+def test_share_existing_user(email_factory, km_user_factory, user_factory):
+    """
+    If the provided email address belongs to an existing user, an
+    accessor should be created for that user.
+    """
+    km_user = km_user_factory()
+
+    user = user_factory()
+    email_factory(email=user.email, user=user, verified=True)
+
+    accessor = km_user.share(
+        user.email,
+        can_write=True,
+        has_private_profile_access=True)
+
+    assert km_user.km_user_accessors.count() == 1
+
+    assert accessor.can_write
+    assert accessor.email == user.email
+    assert accessor.has_private_profile_access
+    assert accessor.user_with_access == user
+
+
+def test_share_existing_user_unverified_email(
+        email_factory,
+        km_user_factory,
+        user_factory):
+    """
+    If the provided email address exists but isn't verified, the
+    accessor should not be assigned a user yet.
+    """
+    km_user = km_user_factory()
+
+    user = user_factory()
+    email_factory(email=user.email, user=user, verified=False)
+
+    accessor = km_user.share(user.email)
+
+    assert km_user.km_user_accessors.count() == 1
+
+    assert accessor.email == user.email
+    assert accessor.user_with_access is None
+
+
+def test_share_nonexistent_user(km_user_factory):
+    """
+    If there is no user with the provided email address, The created
+    accessor should only be linked to an email address.
+    """
+    km_user = km_user_factory()
+    email = 'test-share@example.com'
+
+    accessor = km_user.share(email)
+
+    assert km_user.km_user_accessors.count() == 1
+
+    assert accessor.email == email
+    assert accessor.user_with_access is None
+
+
 def test_string_conversion(km_user_factory):
     """
     Converting a km_user to a string should return the km_user's name.

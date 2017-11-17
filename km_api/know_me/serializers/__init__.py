@@ -5,6 +5,8 @@ from .emergency_contact_serializers import EmergencyContactSerializer   # noqa
 
 from .emergency_item_serializers import EmergencyItemSerializer         # noqa
 
+from .km_user_accessor_serializers import KMUserAccessorSerializer      # noqa
+
 from .km_user_serializers import (                                      # noqa
     KMUserDetailSerializer,
     KMUserListSerializer,

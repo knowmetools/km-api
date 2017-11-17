@@ -4,7 +4,7 @@ from know_me import serializers
 def test_create(km_user_factory, serializer_context):
     """
     Saving a serializer instance with valid data should create a new
-    profile.
+    profile group.
     """
     km_user = km_user_factory()
     data = {
@@ -35,12 +35,17 @@ def test_serialize(api_rf, profile_factory, serializer_context):
         context=serializer_context)
 
     url_request = api_rf.get(profile.get_absolute_url())
+    serializer_request = serializer_context['request']
 
     expected = {
         'id': profile.id,
         'url': url_request.build_absolute_uri(),
         'name': profile.name,
         'is_default': profile.is_default,
+        'permissions': {
+            'read': profile.has_object_read_permission(serializer_request),
+            'write': profile.has_object_write_permission(serializer_request),
+        }
     }
 
     assert serializer.data == expected

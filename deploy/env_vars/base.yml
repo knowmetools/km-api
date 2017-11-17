@@ -1,11 +1,133 @@
 ---
+# Generic AWS Settings
+
+aws_region: us-east-1
+
+
+# Security Group Configuration
+
+lb_sg_name: "{{ aws_application_name }}-lb-sg"
+lb_sg_description: Security group for {{ aws_application_name }} load balancers.
+
+webserver_sg_name: "{{ aws_application_name }}-webserver-sg"
+webserver_sg_description: Security group for {{ aws_application_name }} webservers.
+
+ami_builder_sg_name: "{{ aws_application_name }}-amibuilder-sg"
+ami_builder_sg_description: Security group for {{ aws_application_name }} AMI builder.
+
+db_sg_name: "{{ aws_application_name }}-db-sg"
+db_sg_description: "Security group for {{ aws_application_name }} databases."
+db_sg_rules:
+  - proto: tcp
+    from_port: 5432
+    to_port: 5432
+    group_name: "{{ ami_builder_sg_name }}"
+    group_desc: "{{ ami_builder_sg_description }}"
+  - proto: tcp
+    from_port: 5432
+    to_port: 5432
+    group_name: "{{ webserver_sg_name }}"
+    group_desc: "{{ webserver_sg_description }}"
+
+sg_list:
+  - name: "{{ lb_sg_name }}"
+    description: "{{ lb_sg_description }}"
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+    rules_egress:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+  - name: "{{ webserver_sg_name }}"
+    description: "{{ webserver_sg_description }}"
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        group_name: "{{ lb_sg_name }}"
+        group_desc: "{{ lb_sg_description }}"
+    rules_egress:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 5432
+        to_port: 5432
+        group_name: "{{ db_sg_name }}"
+        group_desc: "{{ db_sg_description }}"
+  - name: "{{ ami_builder_sg_name }}"
+    description: "{{ ami_builder_sg_description }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: 0.0.0.0/0
+  - name: "{{ db_sg_name }}"
+    description: "{{ db_sg_description }}"
+    rules: "{{ db_sg_rules }}"
+
+
+# Database Configuration
+
+db_instance_sg_name: "{{ db_sg_name }}"
+db_instance_sg_rules: "{{ db_sg_rules }}"
+
 db_admin_username: dbadmin
 db_admin_password: "{{ vault_db_admin_password }}"
 
+db_name: kmapi
 db_username: django
 db_password: "{{ vault_db_password }}"
 
 db_map:
-  kmapi:
+  "{{ db_name }}":
     users:
-      "{{ db_username }}": "{{ vault_db_password }}"
+      "{{ db_username }}": "{{ db_password }}"
+
+
+# AMI Configuration
+
+ami_builder_base: ami-b391b9c8
+
+
+# Autoscaling Group Settings
+
+asg_image_id: "{{ application_ami.image_id }}"
+asg_security_groups:
+  - "{{ webserver_sg_name }}"
+
+asg_lb_security_groups:
+  - "{{ lb_sg_name }}"
+asg_lb_zones:
+  - us-east-1a
+  - us-east-1b
+  - us-east-1c
+  - us-east-1d
+  - us-east-1e
+  - us-east-1f
+
+asg_lb_listeners:
+  - protocol: http
+    load_balancer_port: 80
+    instance_port: 80
+  - protocol: https
+    load_balancer_port: 443
+    instance_protocol: http
+    instance_port: 80
+    ssl_certificate_id: "arn:aws:acm:us-east-1:656952694364:certificate/dbf1b90e-8a68-4962-bd06-a116830f87a2"
+
+asg_route53_record: "{{ domain_name }}"
+asg_route53_zone: knowmetools.com

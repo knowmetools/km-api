@@ -1,0 +1,61 @@
+---
+- name: Create launch configuration
+  local_action:
+    module: ec2_lc
+    aws_access_key: "{{ aws_access_key | default(omit) }}"
+    aws_secret_key: "{{ aws_secret_key | default(omit) }}"
+    image_id: "{{ asg_image_id }}"
+    instance_profile_name: "{{ asg_instance_profile | default(omit) }}"
+    instance_type: "{{ asg_instance_type }}"
+    name: "{{ asg_lc_name }}"
+    region: "{{ aws_region | default(omit) }}"
+    security_groups: "{{ asg_security_groups }}"
+    state: present
+  register: launch_config
+
+- name: Create load balancer
+  local_action:
+    module: ec2_elb_lb
+    aws_access_key: "{{ aws_access_key | default(omit) }}"
+    aws_secret_key: "{{ aws_secret_key | default(omit) }}"
+    connection_draining_timeout: 20
+    listeners: "{{ asg_lb_listeners }}"
+    name: "{{ asg_lb_name }}"
+    region: "{{ aws_region | default(omit) }}"
+    security_group_names: "{{ asg_lb_security_groups }}"
+    state: present
+    tags: "{{ asg_lb_tags }}"
+    wait: yes
+    zones: "{{ asg_lb_zones }}"
+  register: load_balancer
+
+- name: Create autoscaling group
+  local_action:
+    module: ec2_asg
+    aws_access_key: "{{ aws_access_key | default(omit) }}"
+    aws_secret_key: "{{ aws_secret_key | default(omit) }}"
+    desired_capacity: "{{ asg_desired_capacity }}"
+    launch_config_name: "{{ launch_config.result.name }}"
+    load_balancers: ["{{ load_balancer.elb.name }}"]
+    max_size: "{{ asg_max_size }}"
+    min_size: "{{ asg_min_size }}"
+    name: "{{ asg_name }}"
+    region: "{{ aws_region | default(omit) }}"
+    replace_all_instances: yes
+    wait_for_instances: yes
+
+- name: Set route 53 alias
+  local_action:
+    module: route53
+    alias: yes
+    alias_hosted_zone_id: "{{ load_balancer.elb.hosted_zone_id }}"
+    aws_access_key: "{{ aws_access_key | default(omit) }}"
+    aws_secret_key: "{{ aws_secret_key | default(omit) }}"
+    command: create
+    overwrite: yes
+    record: "{{ asg_route53_record }}"
+    type: A
+    value: "{{ load_balancer.elb.dns_name }}"
+    wait: yes
+    zone: "{{ asg_route53_zone }}"
+  when: asg_route53_record is defined

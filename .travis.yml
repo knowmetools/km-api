@@ -1,17 +1,22 @@
 language: python
 python: 3.4
 
+addons:
+  apt:
+    packages:
+      - secure-delete
+
 cache: pip
 
 env:
   global:
     - AWS_ACCESS_KEY_ID=AKIAIR3ALLAIYVISFBZQ
-    - AWS_APP_NAME=km-api
-    - AWS_BUCKET_NAME=elasticbeanstalk-us-east-1-656952694364
-    - AWS_REGION=us-east-1
-    - secure: "YARJiZmaMEM18Be1h8AUtB7xl9mK/Fcvm6FR8BTrQuNv9xRrLzlJ2Lhsl6+RpP/ifX72CUbXubwIX6h0KDgZriVE3SV/jQ0Ium6jQRbhnkTYE7xrE1FgTJIRhdDnNMD3Qhy7EEFROYkLXmiVf3wDA24twn7ez/8W/In6rIJkt48yGLxeGcPMq/7xCiXg0pyWOiibiZKzxHyFpqW37XZLsynjMTrX75FXEiVifmp6Pc0UVu7TbcOLQxS1by/HT/EbMYzLZJmJCwdP/Kq7rCfc4AMpacFJJQQuQH7GhQikdxd1priiqqtFYGeAKXRXKjTAr0iR4Pr95exo9GKysBox8mvfPFHJmwmBYrlhazIUkUeZOhj0IigOHjDMn/vNS/4vHI0ZDuecJvSHD8CmpmNcy8yPXHT/ywyQy/KlA10YkaFrFqFB5kLIqFZaARyJ9MDoP7bjkGU46ArJmcR14OIjAER+39S9jwaXtSFCmKn4+M7jyawe5Pm3O6meSHK6dGMj+rPPbH6VIpKZjxo4gT19EIt7tCy0l26pJDGNT3LtbTp48mSZTCnVmufFYuHgB1dEu77Jsxca++Non8rG1R9LegY/VH7h/CZMACsa/wsxiQM4U81x/Zg5HHOZanH7t/MjaxZUBanRXWA95N6JMfJL5bd/2ChCeHJT61IN8nDLhDU="
     # Don't run tests in parallel. This fixes an issue with code coverage.
     - PYTEST_ADDOPTS="-n0"
+    # AWS_ACCESS_KEY_ID
+    - secure: "YARJiZmaMEM18Be1h8AUtB7xl9mK/Fcvm6FR8BTrQuNv9xRrLzlJ2Lhsl6+RpP/ifX72CUbXubwIX6h0KDgZriVE3SV/jQ0Ium6jQRbhnkTYE7xrE1FgTJIRhdDnNMD3Qhy7EEFROYkLXmiVf3wDA24twn7ez/8W/In6rIJkt48yGLxeGcPMq/7xCiXg0pyWOiibiZKzxHyFpqW37XZLsynjMTrX75FXEiVifmp6Pc0UVu7TbcOLQxS1by/HT/EbMYzLZJmJCwdP/Kq7rCfc4AMpacFJJQQuQH7GhQikdxd1priiqqtFYGeAKXRXKjTAr0iR4Pr95exo9GKysBox8mvfPFHJmwmBYrlhazIUkUeZOhj0IigOHjDMn/vNS/4vHI0ZDuecJvSHD8CmpmNcy8yPXHT/ywyQy/KlA10YkaFrFqFB5kLIqFZaARyJ9MDoP7bjkGU46ArJmcR14OIjAER+39S9jwaXtSFCmKn4+M7jyawe5Pm3O6meSHK6dGMj+rPPbH6VIpKZjxo4gT19EIt7tCy0l26pJDGNT3LtbTp48mSZTCnVmufFYuHgB1dEu77Jsxca++Non8rG1R9LegY/VH7h/CZMACsa/wsxiQM4U81x/Zg5HHOZanH7t/MjaxZUBanRXWA95N6JMfJL5bd/2ChCeHJT61IN8nDLhDU="
+    # ANSIBLE_VAULT_PASSWORD
+    - secure: "nNqJNVR03XngabhfGrVaEAlnTLCpke1hRp5T4wA+X2t502FLW8HBrMphpb6ccJzNTMOEFTFFupe9i2L8lPX0njt280kGfOr4tbxk9Ao7IDOp2vkuSNtuYaO+7vYfkJhVV0OG3M9TS17T5N/sdlOsGDYJyDxHpcCFZ5o3x60wKP5pH56TizSwMnn4CH7sVuuxRyPMJqcrEZqNiwC3LGk4sxfvcR9g9T8Estfa5ANJ47BNFA7g3lZCnxP7oKgx7Ao/kKPrm1Mg6mmFn9kmAfkFZL4e66Fsi/HSErm07AF48D8PH/jR3BebwdSbP++6EpEGrZOSUBhFwe3cfCgZagwIpdbVRnsb0ohwULwUR2Zta3pUTKJcFbAUNGtEdvIa7klrqw9bGPEVtlzhB0FmP4TY5B8z7Wl3rV80pwU+VZ6N/QxqHTzt1kMNfUbJqM96cijGizQSKauenoM2VPKQN6VtamIGeKDDV5KruVErfSW3dnJy1PT70dEf4Vk1cnnI+qaaO+DHXllMdoKPWN4gJcBoG1GsyyqUrSaboaebVIgCOgt88ynqy8eeRX7F1GeY+PuZdqYdo2VfEnvG6KYV24ndJLFEt2gH1w4NmUAcbj7QbWD0gWRJUwc7JDEBftGOHTFxGQnooyIFxCkIEfRYSikdSmmJgxNFb+1GKg9Xdo2bZro="
 
 install:
   - pip install --upgrade pip
@@ -24,28 +29,19 @@ script:
 
 after_success: codecov
 
-deploy:
-  - provider: elasticbeanstalk
-    access_key_id: $AWS_ACCESS_KEY_ID
-    secret_access_key: $AWS_SECRET_ACCESS_KEY
-    region: $AWS_REGION
-    app: $AWS_APP_NAME
-    env: km-api-dev
-    bucket_name: $AWS_BUCKET_NAME
-    skip_cleanup: yes
-    on:
-      branch: develop
+before_deploy: pip2 install --user -r requirements/deploy.txt
 
-  - provider: elasticbeanstalk
-    access_key_id: $AWS_ACCESS_KEY_ID
-    secret_access_key: $AWS_SECRET_ACCESS_KEY
-    region: $AWS_REGION
-    app: $AWS_APP_NAME
-    env: km-api
-    bucket_name: $AWS_BUCKET_NAME
-    skip_cleanup: yes
+deploy:
+  - provider: script
+    script: deploy/ci-build
+    on:
+      all_branches: yes
+      condition: '"$TRAVIS_BRANCH" =~ ^(develop|hotfix\/v.*|release\/v.*)$'
+  - provider: script
+    script: deploy/ci-build
     on:
       tags: yes
+
 
 notifications:
   slack:

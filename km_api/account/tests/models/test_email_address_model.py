@@ -15,6 +15,16 @@ def test_create_email(user_factory):
     assert not email.verified
 
 
+def test_create_duplicate_unverified(email_factory):
+    """
+    If an email address is unverified, it should still be possible to
+    create another instance of that email address.
+    """
+    email = email_factory(verified=False)
+
+    email_factory(email=email.email)
+
+
 def test_get_absolute_url(email_factory):
     """
     The method should return the URL of the email address' detail view.

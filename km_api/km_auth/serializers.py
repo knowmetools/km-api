@@ -1,14 +1,19 @@
 """Serializers for authentication views.
 """
 
+import logging
+
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth import password_validation
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
 
-from account.models import EmailAddress, EmailConfirmation
+from account.models import EmailAddress, EmailConfirmation, User
 from km_auth import layer
+
+
+logger = logging.getLogger(__name__)
 
 
 class LayerIdentitySerializer(serializers.Serializer):
@@ -101,8 +106,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         Returns:
             The newly created ``User`` instance.
         """
-        user = get_user_model().objects.create_user(**validated_data)
+        logger.info(
+            'Registering new user with email: %s',
+            validated_data['email'])
 
+        user = User.objects.create_user(**validated_data)
         email = EmailAddress.objects.create(
             email=self.validated_data['email'],
             user=user)
@@ -111,6 +119,24 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         confirmation.send_confirmation()
 
         return user
+
+    def validate_email(self, email):
+        """
+        Validate the provided email address.
+
+        Returns:
+            str:
+                The validated email address.
+
+        Raises:
+            ValidationError:
+                If that email exists and is verified already.
+        """
+        if EmailAddress.objects.filter(email=email, verified=True).exists():
+            raise serializers.ValidationError(
+                _('An account with that email address already exists.'))
+
+        return email
 
     def validate_password(self, password):
         """

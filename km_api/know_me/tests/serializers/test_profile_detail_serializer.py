@@ -31,6 +31,10 @@ def test_serialize(
         'is_default': profile.is_default,
         'topics_url': topic_list_request.build_absolute_uri(),
         'topics': topic_serializer.data,
+        'permissions': {
+            'read': profile.has_object_read_permission(topic_list_request),
+            'write': profile.has_object_write_permission(topic_list_request),
+        }
     }
 
     assert serializer.data == expected
@@ -39,11 +43,11 @@ def test_serialize(
 def test_update(profile_factory):
     """
     Saving a bound serializer with valid data should update the profile
-    profile bound to the serializer.
+    bound to the serializer.
     """
-    profile = profile_factory(name='Old Group')
+    profile = profile_factory(name='Old Profile')
     data = {
-        'name': 'New Group',
+        'name': 'New Profile',
     }
 
     serializer = serializers.ProfileDetailSerializer(

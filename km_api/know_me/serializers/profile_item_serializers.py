@@ -10,6 +10,7 @@ from know_me.serializers.profile_item_content_serializers import (
     ImageContentSerializer,
     ListContentSerializer,
 )
+from dry_rest_permissions.generics import DRYPermissionsField
 
 
 class ProfileItemSerializer(serializers.HyperlinkedModelSerializer):
@@ -18,11 +19,18 @@ class ProfileItemSerializer(serializers.HyperlinkedModelSerializer):
     """
     image_content = ImageContentSerializer(required=False)
     list_content = ListContentSerializer(required=False)
+    permissions = DRYPermissionsField()
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:profile-item-detail')
 
     class Meta:
-        fields = ('id', 'url', 'name', 'image_content', 'list_content')
+        fields = (
+            'id',
+            'url',
+            'name',
+            'image_content',
+            'list_content',
+            'permissions')
         model = models.ProfileItem
 
     def create(self, data):

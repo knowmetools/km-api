@@ -42,15 +42,11 @@ class AuthenticationBackend:
         """
         email = email or username
 
-        try:
-            email_instance = models.EmailAddress.objects.get(email=email)
-        except models.EmailAddress.DoesNotExist:
-            return None
+        for email_instance in models.EmailAddress.objects.filter(email=email):
+            user = email_instance.user
 
-        user = email_instance.user
-
-        if user.check_password(password) and user.is_active:
-            return user
+            if user.check_password(password) and user.is_active:
+                return user
 
         return None
 

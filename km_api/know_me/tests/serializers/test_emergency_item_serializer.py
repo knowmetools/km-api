@@ -8,13 +8,20 @@ def test_create(km_user_factory, media_resource_factory, serializer_context):
     """
     km_user = km_user_factory()
     serializer_context['km_user'] = km_user
+    serializer_request = serializer_context['request']
 
     media_resource = media_resource_factory(km_user=km_user)
+    has_read = media_resource.has_object_read_permission(serializer_request)
+    has_write = media_resource.has_object_write_permission(serializer_request)
 
     data = {
         'name': 'Test Emergency Item',
         'description': 'Test emergency item description.',
         'media_resource': media_resource.id,
+        'permissions': {
+            'read': has_read,
+            'write': has_write,
+        }
     }
 
     serializer = serializers.EmergencyItemSerializer(
@@ -51,6 +58,9 @@ def test_serialize(
         context=serializer_context)
 
     url_request = api_rf.get(item.get_absolute_url())
+    serializer_request = serializer_context['request']
+    has_read = media_resource.has_object_read_permission(serializer_request)
+    has_write = media_resource.has_object_write_permission(serializer_request)
 
     expected = {
         'id': item.id,
@@ -58,6 +68,10 @@ def test_serialize(
         'name': item.name,
         'description': item.description,
         'media_resource': media_resource_serializer.data,
+        'permissions': {
+            'read': has_read,
+            'write': has_write,
+        }
     }
 
     assert serializer.data == expected

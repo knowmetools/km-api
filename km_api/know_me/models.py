@@ -1,6 +1,8 @@
 """Models for the Know Me app.
 """
 
+import logging
+
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -8,7 +10,11 @@ from django.core.validators import RegexValidator
 
 from rest_framework.reverse import reverse
 
+from account.models import EmailAddress
 from permission_utils import model_mixins as mixins
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_media_resource_upload_path(item, filename):
@@ -77,7 +83,7 @@ class EmergencyContact(mixins.IsAuthenticatedMixin, models.Model):
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
-    relation = models.TextField(
+    relation = models.CharField(
         max_length=255,
         verbose_name=_('relation'))
     phone_number = models.CharField(
@@ -302,6 +308,36 @@ class ImageContent(models.Model):
         verbose_name = _('profile item image content')
         verbose_name_plural = _('profile item image content')
 
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user is allowed to read from
+                the instance and ``False`` otherwise.
+        """
+        return self.profile_item.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the request is allowed to write to the
+                instance and ``False`` otherwise.
+        """
+        return self.profile_item.has_object_write_permission(request)
+
     def __str__(self):
         """
         Get a string representation of the instance.
@@ -481,6 +517,127 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         """
         return request.user == self.user
 
+    def share(self, email, can_write=False, has_private_profile_access=False):
+        """
+        Share a Know Me account with another user.
+
+        Args:
+            email (str):
+                The email address of the user to share with.
+            can_write (bool):
+                A boolean indicating if the invited user has write
+                access for profiles.
+            has_private_profile_access (bool):
+                A boolean indicating if the invited user has access to
+                profiles marked as private.
+
+        Returns:
+            The created ``KMUserAccessor`` instance.
+        """
+        try:
+            user = EmailAddress.objects.get(
+                email=email,
+                verified=True).user
+        except EmailAddress.DoesNotExist:
+            user = None
+
+        accessor = KMUserAccessor.objects.create(
+            can_write=can_write,
+            email=email,
+            has_private_profile_access=has_private_profile_access,
+            km_user=self,
+            user_with_access=user)
+
+        logger.info(
+            'Shared Know Me user %s (ID %d) with %s',
+            self.name,
+            self.id,
+            email)
+
+        return accessor
+
+
+class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    Model to store KMUser access information.
+
+    Attributes:
+        accepted (bool):
+            A boolean indicating if the share has been accepted yet.
+        can_write (bool):
+            A boolean indicating if the user has write access to the
+            Know Me user's profiles.
+        km_user:
+            The KMUser sharing access.
+        user_with_access:
+            The user recieving access.
+    """
+    accepted = models.BooleanField(
+        default=False,
+        help_text=_('The KMUser has accepted the access.'),
+        verbose_name=_('is accepted'))
+    can_write = models.BooleanField(
+        default=False,
+        help_text=_('Users with write access can make changes to the profiles '
+                    'they are invited to.'),
+        verbose_name=_('can write'))
+    email = models.EmailField(
+        help_text=_('The email address used to invite the user.'),
+        null=True,
+        verbose_name=_('email'))
+    has_private_profile_access = models.BooleanField(
+        default=False,
+        verbose_name=_('has private profile access'))
+    km_user = models.ForeignKey(
+        'know_me.KMUser',
+        null=True,
+        related_name='km_user_accessors',
+        related_query_name='km_user_accessor',
+        verbose_name=_('Know Me user'))
+    user_with_access = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='km_user_accessors',
+        related_query_name='km_user_accessor',
+        verbose_name=_('user'))
+
+    class Meta(object):
+        unique_together = ('km_user', 'user_with_access')
+        verbose_name = _('Know Me user accessor')
+        verbose_name_plural = _('Know Me user accessors')
+
+    def __str__(self):
+        """
+        Get a string representation of the KMUserAccessor.
+
+        Returns:
+            str:
+                A string stating which Know Me user the instance gives
+                access to.
+        """
+        return 'Accessor for {user}'.format(user=self.km_user.name)
+
+    def get_absolute_url(self, request=None):
+        """
+        Get the URL of the instance's detail view.
+
+        Args:
+            request:
+                The request to use as context when constructing the URL.
+                Defaults to ``None``.
+
+        Returns:
+            The URL of the instance's detail view. If a request is
+            provided, a full URL including the protocol and domain will
+            be returned. Otherwise a path relative to the root of the
+            current domain is returned.
+        """
+        return reverse(
+            'know-me:accessor-detail',
+            kwargs={'pk': self.pk},
+            request=request)
+
 
 class ListContent(mixins.IsAuthenticatedMixin, models.Model):
     """
@@ -658,7 +815,6 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('name'))
     km_user = models.ForeignKey(
         'know_me.KMUser',
-        null=True,
         related_name='media_resources',
         related_query_name='media_resource',
         verbose_name=_('km_user'))
@@ -730,6 +886,8 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         is_default (bool):
             A boolean controlling if the profile is the default for its
             parent km_user.
+        is_private (bool):
+            This a private profile with admin only access.
         name (str):
             The name of the profile.
         km_user:
@@ -739,9 +897,10 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         default=False,
         help_text=_('The default profile is displayed initially.'),
         verbose_name=_('is default'))
-    name = models.CharField(
-        max_length=255,
-        verbose_name=_('name'))
+    is_private = models.BooleanField(
+        default=False,
+        help_text=_('Private profiles are only visable to admin.'),
+        verbose_name=_('is private'))
     km_user = models.ForeignKey(
         'know_me.KMUser',
         null=True,
@@ -749,6 +908,9 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         related_name='profiles',
         related_query_name='profile',
         verbose_name=_('know me user'))
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_('name'))
 
     class Meta:
         verbose_name = _('profile')
@@ -837,7 +999,6 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
 
     topic = models.ForeignKey(
         'know_me.ProfileTopic',
-        null=True,
         related_name='items',
         related_query_name='item',
         verbose_name=_('profile topic'))
@@ -923,7 +1084,6 @@ class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
 
     profile = models.ForeignKey(
         'know_me.Profile',
-        null=True,
         on_delete=models.CASCADE,
         related_name='topics',
         related_query_name='topic',
