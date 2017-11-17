@@ -618,6 +618,26 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         """
         return 'Accessor for {user}'.format(user=self.km_user.name)
 
+    def get_absolute_url(self, request=None):
+        """
+        Get the URL of the instance's detail view.
+
+        Args:
+            request:
+                The request to use as context when constructing the URL.
+                Defaults to ``None``.
+
+        Returns:
+            The URL of the instance's detail view. If a request is
+            provided, a full URL including the protocol and domain will
+            be returned. Otherwise a path relative to the root of the
+            current domain is returned.
+        """
+        return reverse(
+            'know-me:accessor-detail',
+            kwargs={'pk': self.pk},
+            request=request)
+
 
 class ListContent(mixins.IsAuthenticatedMixin, models.Model):
     """

@@ -14,9 +14,11 @@ class KMUserAccessorSerializer(serializers.ModelSerializer):
     Serializer for ``KMUserAccessor`` instances.
     """
     km_user = KMUserDetailSerializer(read_only=True)
+    url = serializers.SerializerMethodField()
 
     class Meta:
         fields = (
+            'url',
             'accepted',
             'can_write',
             'email',
@@ -44,6 +46,19 @@ class KMUserAccessorSerializer(serializers.ModelSerializer):
         validated_data.pop('accepted', None)
 
         return km_user.share(email, **validated_data)
+
+    def get_url(self, accessor):
+        """
+        Get the URL of the provided accessor's detail view.
+
+        Args:
+            accessor:
+                The accessor being serialized.
+
+        Returns:
+            The full URL of the accessor's detail view.
+        """
+        return accessor.get_absolute_url(self.context['request'])
 
     def validate_accepted(self, accepted):
         """

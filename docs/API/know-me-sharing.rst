@@ -20,6 +20,7 @@ The accessor list view allows for retrieving existing accessors and creating new
 
     List the existing accessors for the requesting user.
 
+    :>jsonarr string url: The URL of the accessor's detail view.
     :>jsonarr boolean accepted: A boolean indicating if the invitation has been accepted by the invited user.
     :>jsonarr boolean can_write: A boolean indicating if the accessor grants the invited user write access to profiles.
     :>jsonarr string email: The email address used to invite the user.
@@ -36,6 +37,9 @@ The accessor list view allows for retrieving existing accessors and creating new
     :<json string email: The email address of the user to invite.
     :<json boolean has_private_profile_access: A boolean indicating if the invited user should have access to profiles marked as private.
 
+    :>header Location: The URL of the created accessor's detail view.
+
+    :>json string url: The URL of the accessor's detail view.
     :>json boolean accepted: A boolean indicating if the invitation has been accepted by the invited user.
     :>json boolean can_write: A boolean indicating if the accessor grants the invited user write access to profiles.
     :>json string email: The email address used to invite the user.
@@ -56,6 +60,7 @@ The accessor detail view allows for retrieving, updating, or deleting a specific
 
     :param int id: The ID of the accessor to retrieve.
 
+    :>json string url: The URL of the accessor's detail view.
     :>json boolean accepted: A boolean indicating if the invitation has been accepted by the invited user.
     :>json boolean can_write: A boolean indicating if the accessor grants the invited user write access to profiles.
     :>json string email: The email address used to invite the user.
@@ -97,6 +102,7 @@ the user the accessor grants access to.
 
     Get the pending accessors for the requesting user.
 
+    :>jsonarr string url: The URL of the accessor's detail view.
     :>jsonarr can_write accepted: A boolean indicating if the accessor has been accepted yet. This will be ``false`` for all elements in the list.
     :>jsonarr boolean can_write: A boolean indicating if the accessor grants the user write permission on the shared profiles.
     :>jsonarr string email: The email address used to invite the user.

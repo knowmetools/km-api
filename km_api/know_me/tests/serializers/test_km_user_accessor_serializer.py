@@ -115,7 +115,10 @@ def test_serialize(
         km_user,
         context=serializer_context)
 
+    url = km_user_accessor.get_absolute_url(serializer_context['request'])
+
     expected = {
+        'url': url,
         'accepted': False,
         'can_write': False,
         'email': km_user_accessor.email,
