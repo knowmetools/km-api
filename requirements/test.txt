@@ -2,7 +2,7 @@
 
 dj-inmemorystorage == 1.4.1
 factory_boy == 2.9.2
-flake8 == 3.4.1
-pytest == 3.2.3
+flake8 == 3.5.0
+pytest == 3.2.5
 pytest-django == 3.1.2
 pytest-xdist == 1.20.1
