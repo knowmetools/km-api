@@ -68,7 +68,7 @@ django_project_settings:
   RAVEN_CONFIG:
     dsn: "{{ vault_sentry_dsn }}"
     environment: "{{ sentry_environment }}"
-    release: '0.5.3'
+    release: '0.6.0'
 
 
 django_logging:
