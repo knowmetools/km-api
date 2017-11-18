@@ -17,7 +17,17 @@ from know_me import filters, models, serializers
 
 class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
-    View for modifying a specific Know Me user accessor.
+    get:
+    Endpoint for retrieving the details of a specific accessor.
+
+    put:
+    Endpoint for updating an accessor.
+
+    patch:
+    Endpoint for partially updating an accessor.
+
+    delete:
+    Endpoint for deleting a specific accessor.
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.KMUserAccessorSerializer
@@ -38,7 +48,13 @@ class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class AccessorListView(generics.ListCreateAPIView):
     """
-    View for listing and creating new accessors for a Know Me user.
+    get:
+    Endpoint for listing the accessors that grant access to the current
+    user's Know Me profiles.
+
+    post:
+    Endpoint for creating a new accessor for the current user's
+    profiles.
     """
     serializer_class = serializers.KMUserAccessorSerializer
 
@@ -73,7 +89,18 @@ class AccessorListView(generics.ListCreateAPIView):
 
 class EmergencyContactDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
-    View for retrieving and updating a specific emergency contact.
+    get:
+    Endpoint for retrieving the details of a specific emergency contact.
+
+    put:
+    Endpoint for updating the details of a specific emergency contact.
+
+    patch:
+    Endpoint for partially updating the details of a specific emergency
+    contact.
+
+    delete:
+    Endpoint for deleting a specific emergency contact.
     """
     permission_classes = (DRYPermissions,)
     queryset = models.EmergencyContact.objects.all()
@@ -82,7 +109,11 @@ class EmergencyContactDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class EmergencyContactListView(generics.ListCreateAPIView):
     """
-    View for listing and creating a specific emergency contact.
+    get:
+    Endpoint for listing the emergency contacts for a Know Me user.
+
+    post:
+    Endpoint for creating a new emergency contact for a Know Me user.
     """
     filter_backends = (filters.KMUserAccessFilterBackend,)
     permission_classes = (DRYPermissions,)
@@ -108,7 +139,18 @@ class EmergencyContactListView(generics.ListCreateAPIView):
 
 class EmergencyItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
-    View for updating and deleting a specific emergency item.
+    get:
+    Endpoint for retrieving the details of a specific emergency item.
+
+    put:
+    Endpoint for updating the details of a specific emergency item.
+
+    patch:
+    Endpoint for partially updating the details of a specific emergency
+    item.
+
+    delete:
+    Endpoint for deleting a specific emergency item.
     """
     permission_classes = (DRYPermissions,)
     queryset = models.EmergencyItem.objects.all()
@@ -117,7 +159,11 @@ class EmergencyItemDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class EmergencyItemListView(generics.ListCreateAPIView):
     """
-    View for listing and creating emergency items.
+    get:
+    Endpoint for listing the emergency items for a Know Me user.
+
+    post:
+    Endpoint for creating a new emergency item for a Know Me user.
     """
     filter_backends = (filters.KMUserAccessFilterBackend,)
     permission_classes = (DRYPermissions,)
@@ -145,7 +191,9 @@ class EmergencyItemListView(generics.ListCreateAPIView):
 
 class GalleryView(generics.CreateAPIView):
     """
-    View for creating media resources.
+    post:
+    Endpoint for creating a new media resource for the Know Me user with
+    the specified ID.
     """
     serializer_class = serializers.MediaResourceSerializer
 
@@ -168,7 +216,15 @@ class GalleryView(generics.CreateAPIView):
 
 class KMUserDetailView(generics.RetrieveUpdateAPIView):
     """
-    View for retreiving and updating a specific km_user.
+    get:
+    Endpoint for retrieving the details of a specific Know Me user.
+
+    put:
+    Endpoint for updating the details of a specific Know Me user.
+
+    patch:
+    Endpoint for partially updating the details of a specific Know Me
+    user.
     """
     permission_classes = (DRYPermissions,)
     queryset = models.KMUser.objects.all()
@@ -177,7 +233,14 @@ class KMUserDetailView(generics.RetrieveUpdateAPIView):
 
 class KMUserListView(generics.ListCreateAPIView):
     """
-    View for listing and creating km_users.
+    get:
+    Endpoint for listing the Know Me users that the current user has
+    access to.
+
+    post:
+    Endpoint for creating a new Know Me user for the current user.
+
+    *__Note__: Users may only create one Know Me app account.*
     """
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserListSerializer
@@ -220,7 +283,12 @@ class KMUserListView(generics.ListCreateAPIView):
 
 class ListEntryListView(generics.ListCreateAPIView):
     """
-    View for listing and creating list entries.
+    get:
+    Endpoint for listing the list entries associated with a list-type
+    profile item.
+
+    post:
+    Endpoint for adding a new list entry to a list-type profile item.
     """
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.ListEntrySerializer
@@ -284,7 +352,21 @@ class ListEntryListView(generics.ListCreateAPIView):
 
 class ListEntryDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
-    View for retrieving and updating a specific list entry.
+    get:
+    Endpoint for retrieving the details of a specific list entry in a
+    list-type profile item.
+
+    put:
+    Endpoint for updating the details of a specific list entry in a
+    list-type profile item.
+
+    patch:
+    Endpoint for partially updating the details of a specific list entry
+    in a list-type profile item.
+
+    delete:
+    Endpoint for deleting a specific list entry from a list-type profile
+    item.
     """
     permission_classes = (DRYPermissions,)
     queryset = models.ListEntry.objects.all()
@@ -293,7 +375,15 @@ class ListEntryDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
     """
-    View for retrieving and updating a specific media resource.
+    get:
+    Endpoint for retrieving the details of a specific media resource.
+
+    put:
+    Endpoint for updating the details of a specific media resource.
+
+    patch:
+    Endpoint for partially updating the details of a specifc media
+    resource.
     """
     permission_classes = (DRYPermissions,)
     queryset = models.MediaResource.objects.all()
@@ -302,7 +392,7 @@ class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
 
 class PendingAccessorListView(generics.ListAPIView):
     """
-    View for listing pending accessors.
+    Endpoint for listing the accessors that the current user can accept.
     """
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserAccessorSerializer
@@ -320,7 +410,14 @@ class PendingAccessorListView(generics.ListAPIView):
 
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
     """
-    View for retreiving and updating a specific profile.
+    get:
+    Endpoint for retrieving the details of a specific profile.
+
+    put:
+    Endpoint for updating the details of a specific profile.
+
+    patch:
+    Endpoint for partially updating the details of a specific profile.
     """
     permission_classes = (DRYPermissions,)
     queryset = models.Profile.objects.all()
@@ -329,7 +426,11 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
 
 class ProfileListView(generics.ListCreateAPIView):
     """
-    View for listing and creating profiles.
+    get:
+    Endpoint for listing the profiles of the specified Know Me user.
+
+    post:
+    Endpoint for creating a new profile for the specified Know Me user.
     """
     filter_backends = (filters.KMUserAccessFilterBackend,)
     permission_classes = (DRYPermissions,)
@@ -357,7 +458,15 @@ class ProfileListView(generics.ListCreateAPIView):
 
 class ProfileItemDetailView(generics.RetrieveUpdateAPIView):
     """
-    View for retrieving and updating a specific profile item.
+    get:
+    Endpoint for retrieving the details of a specific profile item.
+
+    put:
+    Endpoint for updating the details of a specific profile item.
+
+    patch:
+    Endpoint for partially updating the details of a specific profile
+    item.
     """
     permission_classes = (DRYPermissions,)
     queryset = models.ProfileItem.objects.all()
@@ -382,7 +491,11 @@ class ProfileItemDetailView(generics.RetrieveUpdateAPIView):
 
 class ProfileItemListView(generics.ListCreateAPIView):
     """
-    View for listing and creating profile items.
+    get:
+    Endpoint for listing the profile items in a specific topic.
+
+    post:
+    Endpoint for adding a new profile item to a specifc topic.
     """
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.ProfileItemSerializer
@@ -457,7 +570,15 @@ class ProfileItemListView(generics.ListCreateAPIView):
 
 class ProfileTopicDetailView(generics.RetrieveUpdateAPIView):
     """
-    View for retreiving and updating a profile topic.
+    get:
+    Endpoint for retrieving the details of a specific profile topic.
+
+    put:
+    Endpoint for updating the details of a specific profile topic.
+
+    patch:
+    Endpoint for partially updating the details of a specific profile
+    topic.
     """
     permission_classes = (DRYPermissions,)
     queryset = models.ProfileTopic.objects.all()
@@ -466,7 +587,11 @@ class ProfileTopicDetailView(generics.RetrieveUpdateAPIView):
 
 class ProfileTopicListView(generics.ListCreateAPIView):
     """
-    View for listing and creating topics in a profile.
+    get:
+    Endpoint for listing the topics in a specific profile.
+
+    post:
+    Endpoint for adding a new topic to a specific profile.
     """
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.ProfileTopicSerializer

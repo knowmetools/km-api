@@ -33,6 +33,11 @@ class ListEntrySerializer(serializers.ModelSerializer):
     permissions = DRYPermissionsField()
 
     class Meta(object):
+        extra_kwargs = {
+            'text': {
+                'help_text': "The text the list entry contains.",
+            },
+        }
         fields = (
             'id',
             'text',

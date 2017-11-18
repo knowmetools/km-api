@@ -16,23 +16,13 @@ import generic_rest_views
 
 class EmailActionListView(views.APIView):
     """
-    View for listing the available actions for an email.
+    Endpoint for listing the available actions for when an email address
+    is confirmed.
 
     These actions can be specified when creating a new email address to
     control what happens when the email is confirmed.
     """
     def get(self, request):
-        """
-        Get a list of available verification actions.
-
-        Args:
-            request:
-                The request being made.
-
-        Returns:
-            A response containing a serialized list of all available
-            verification actions.
-        """
         serializer = serializers.EmailVerifiedActionSerializer(
             models.EmailAddress.VERIFIED_ACTION_CHOICES,
             many=True)
@@ -42,7 +32,22 @@ class EmailActionListView(views.APIView):
 
 class EmailDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
-    View for retrieving, updating, or deleting a specific email address.
+    get:
+    Endpoint for retrieving the details of a specific email address.
+
+    put:
+    Endpoint for updating the details of a specific email address.
+
+    patch:
+    Endpoint for partially updating the details of a specific email address.
+
+    delete:
+    Endpoint for deleting a specific email address.
+
+    This call will only work if the email address is not the account's
+    primary email. To delete the primary email address, the user must
+    switch their primary to a different address and then delete the old
+    primary.
     """
     permission_classes = (DRYPermissions,)
     queryset = models.EmailAddress.objects.all()
@@ -82,7 +87,11 @@ class EmailDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class EmailListView(generics.ListCreateAPIView):
     """
-    View for listing the requesting user's email addresses.
+    get:
+    List the email addresses that belong to the current user.
+
+    post:
+    Add a new email address owned by the current user.
     """
     permission_classes = (DRYPermissions,)
     queryset = models.EmailAddress.objects.all()
@@ -91,14 +100,21 @@ class EmailListView(generics.ListCreateAPIView):
 
 class EmailVerificationView(generic_rest_views.SerializerSaveView):
     """
-    View for verifying an email address.
+    Endpoint for verifying ownership of an email address.
+
+    By providing a token that was sent to the email we can confirm that
+    the user actually has access to the account.
     """
     serializer_class = serializers.EmailVerificationSerializer
 
 
 class PasswordChangeView(generic_rest_views.SerializerSaveView):
     """
-    View for changing the user's password.
+    Endpoint for changing a user's password.
+
+    This endpoint allows for using the user's previous password to set a
+    new one, or for using a password reset token to reset the user's
+    password.
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.PasswordChangeSerializer
@@ -112,18 +128,21 @@ class PasswordChangeView(generic_rest_views.SerializerSaveView):
 
 class PasswordResetView(generic_rest_views.SerializerSaveView):
     """
-    View for requesting a password reset.
+    Endpoint for requesting a password reset for a user.
     """
     serializer_class = serializers.PasswordResetSerializer
 
 
 class UserDetailView(generics.RetrieveUpdateAPIView):
     """
-    View for retrieving and updating a user's information.
+    get:
+    Endpoint for retrieving the current user's information.
 
-    This view is only able to update account information such as email
-    address or name. To change a user's password, see
-    :class:`.PasswordChangeView`.
+    put:
+    Endpoint for updating the current user's information.
+
+    patch:
+    Endpoint for partially updating the current user's information.
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.UserSerializer

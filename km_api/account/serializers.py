@@ -25,6 +25,9 @@ class EmailSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         extra_kwargs = {
+            'email': {
+                'help_text': "The user's email address.",
+            },
             'url': {
                 'view_name': 'account:email-detail',
             },
@@ -179,9 +182,13 @@ class EmailVerificationSerializer(serializers.Serializer):
     Serializer for verifying a user's email address.
     """
     key = serializers.CharField(
+        help_text=("The key that was sent to the email address the user is "
+                   "verifying."),
         max_length=settings.EMAIL_CONFIRMATION_KEY_LENGTH,
         write_only=True)
     password = serializers.CharField(
+        help_text=("The user's password. This is required so that a mistyped "
+                   "email doesn't lead to the account being compromised."),
         style={'input_type': 'password'},
         write_only=True)
 
@@ -274,13 +281,18 @@ class PasswordChangeSerializer(serializers.Serializer):
     Serializer for changing a user's password.
     """
     key = serializers.CharField(
+        help_text=("The key provided to a user when they requested a password "
+                   "reset. One of 'key' or 'old_password' must be specified."),
         required=False,
         write_only=True)
     old_password = serializers.CharField(
+        help_text=("The user's previous password. One of 'key' or "
+                   "'old_password' must be specified."),
         style={'input_type': 'password'},
         required=False,
         write_only=True)
     new_password = serializers.CharField(
+        help_text=("The user's new password."),
         style={'input_type': 'password'},
         write_only=True)
 
@@ -390,7 +402,9 @@ class PasswordResetSerializer(serializers.Serializer):
     """
     Serializer for requesting a password reset.
     """
-    email = serializers.EmailField()
+    email = serializers.EmailField(
+        help_text=("The email address of the user requesting a password "
+                   "reset."))
 
     def save(self):
         """
@@ -408,6 +422,14 @@ class UserSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
+        extra_kwargs = {
+            'first_name': {
+                'help_text': "The user's first name.",
+            },
+            'last_name': {
+                'help_text': "The user's last name.",
+            },
+        }
         fields = ('id', 'email', 'first_name', 'last_name')
         model = get_user_model()
         read_only_fields = ('email',)

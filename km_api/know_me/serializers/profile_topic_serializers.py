@@ -20,6 +20,15 @@ class ProfileTopicSerializer(serializers.HyperlinkedModelSerializer):
         view_name='know-me:profile-topic-detail')
 
     class Meta:
+        extra_kwargs = {
+            'name': {
+                'help_text': "The name of the topic.",
+            },
+            'topic_type': {
+                'help_text': ("A constant representing the type of the topic. "
+                              "Must be either 3 (text) or 4 (visual)."),
+            },
+        }
         fields = (
             'id',
             'url',

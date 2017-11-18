@@ -17,13 +17,24 @@ class ProfileItemSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for ``ProfileItem`` instances.
     """
-    image_content = ImageContentSerializer(required=False)
-    list_content = ListContentSerializer(required=False)
+    image_content = ImageContentSerializer(
+        help_text=("An object containing the contents of an image-type "
+                   "profile item. Mutually exclusive with 'list_content'."),
+        required=False)
+    list_content = ListContentSerializer(
+        help_text=("An object containing the contents of a list-type profile "
+                   "item. Mutually exclusive with 'image_content'."),
+        required=False)
     permissions = DRYPermissionsField()
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:profile-item-detail')
 
     class Meta:
+        extra_kwargs = {
+            'name': {
+                'help_text': "The name of the profile item.",
+            },
+        }
         fields = (
             'id',
             'url',

@@ -9,6 +9,17 @@ from .profile_topic_serializers import ProfileTopicSerializer
 from dry_rest_permissions.generics import DRYPermissionsField
 
 
+EXTRA_FIELD_KWARGS = {
+    'is_default': {
+        'help_text': ("A boolean indicating if the profile is the user's "
+                      "default profile."),
+    },
+    'name': {
+        'help_text': "The name of the profile.",
+    },
+}
+
+
 class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for multiple ``Profile`` instances.
@@ -18,6 +29,7 @@ class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
     permissions = DRYPermissionsField()
 
     class Meta:
+        extra_kwargs = EXTRA_FIELD_KWARGS
         fields = (
             'id',
             'url',
@@ -38,6 +50,7 @@ class ProfileDetailSerializer(ProfileListSerializer):
     permissions = DRYPermissionsField()
 
     class Meta:
+        extra_kwargs = EXTRA_FIELD_KWARGS
         fields = (
             'id',
             'url',
