@@ -5,6 +5,7 @@ import logging
 
 from django.conf import settings
 from django.db import models
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import RegexValidator
 
@@ -814,6 +815,42 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
                 instance and ``False`` otherwise.
         """
         return self.km_user.user == request.user
+
+
+class MediaResourceCategory(models.Model):
+    """
+    A category that media resources can be placed in.
+    """
+    name = models.CharField(
+        help_text=_('The name of the category.'),
+        max_length=255,
+        verbose_name=_('name'))
+    slug = models.SlugField(
+        help_text=_("A URL-safe version of the category's name."),
+        max_length=50,
+        unique=True,
+        verbose_name=_('slug'))
+
+    class Meta:
+        verbose_name = _('media resource category')
+        verbose_name_plural = _('media resource categories')
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            The instance's name.
+        """
+        return self.name
+
+    def save(self, *args, **kwargs):
+        """
+        Generate a slug for the instance from its name.
+        """
+        self.slug = slugify(self.name)[:50]
+
+        return super().save(*args, **kwargs)
 
 
 class Profile(mixins.IsAuthenticatedMixin, models.Model):

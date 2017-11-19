@@ -102,6 +102,16 @@ class MediaResourceAdmin(admin.ModelAdmin):
     search_fields = ('name', 'km_user__user__name')
 
 
+@admin.register(models.MediaResourceCategory)
+class MediaResourceCategory(admin.ModelAdmin):
+    """
+    Admin for the ``MediaResourceCategory`` model.
+    """
+    fields = ('name',)
+    list_display = ('name',)
+    search_fields = ('name', 'slug')
+
+
 @admin.register(models.Profile)
 class ProfileAdmin(admin.ModelAdmin):
     """
