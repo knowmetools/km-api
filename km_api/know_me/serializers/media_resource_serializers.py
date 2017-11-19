@@ -16,5 +16,13 @@ class MediaResourceSerializer(serializers.HyperlinkedModelSerializer):
         view_name='know-me:media-resource-detail')
 
     class Meta:
+        extra_kwargs = {
+            'file': {
+                'help_text': "The file to upload.",
+            },
+            'name': {
+                'help_text': "The name of the media resource.",
+            }
+        }
         fields = ('id', 'url', 'name', 'file', 'permissions')
         model = models.MediaResource

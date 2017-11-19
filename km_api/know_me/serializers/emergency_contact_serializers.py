@@ -16,6 +16,23 @@ class EmergencyContactSerializer(serializers.HyperlinkedModelSerializer):
         view_name='know-me:emergency-contact-detail')
 
     class Meta:
+        extra_kwargs = {
+            'alt_phone_number': {
+                'help_text': "The contact's alternate phone number.",
+            },
+            'email': {
+                'help_text': "The contact's email address.",
+            },
+            'name': {
+                'help_text': "The contact's name.",
+            },
+            'phone_number': {
+                'help_text': "The contact's primary phone number.",
+            },
+            'relation': {
+                'help_text': "The contact's relation to the user.",
+            },
+        }
         fields = (
             'id', 'url', 'name', 'relation', 'phone_number',
             'alt_phone_number', 'email', 'permissions'

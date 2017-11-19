@@ -25,7 +25,11 @@ class LayerIdentitySerializer(serializers.Serializer):
     used to participate in conversations.
     """
     identity_token = serializers.CharField(read_only=True)
-    nonce = serializers.CharField(write_only=True)
+    nonce = serializers.CharField(
+        help_text=("The nonce provided by Layer. See the following URL for "
+                   "more information: https://docs.layer.com/reference/"
+                   "client_api/authentication.out#introduction"),
+        write_only=True)
 
     def save(self):
         """
@@ -43,8 +47,10 @@ class TokenSerializer(serializers.Serializer):
     The actual generation of the auth token is intended to be handled by
     the view that utilizes this serializer.
     """
-    email = serializers.EmailField()
-    password = serializers.CharField(style={'input_type': 'password'})
+    email = serializers.EmailField(help_text="The user's email address.")
+    password = serializers.CharField(
+        help_text="The user's password",
+        style={'input_type': 'password'})
 
     def validate(self, data):
         """
@@ -84,7 +90,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         extra_kwargs = {
+            'email': {
+                'help_text': "The user's email address.",
+            },
+            'first_name': {
+                'help_text': "The user's first name.",
+            },
+            'last_name': {
+                'help_text': "The user's last name.",
+            },
             'password': {
+                'help_text': "The user's password.",
                 'style': {'input_type': 'password'},
                 'write_only': True,
             },

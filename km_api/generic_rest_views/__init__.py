@@ -17,17 +17,8 @@ class SerializerSaveView(generics.GenericAPIView):
         pass
 
     def post(self, request):
-        """
-        Save a serializer with the given data.
-
-        Args:
-            request:
-                The request being made.
-
-        Returns:
-            A response with a status code indicating if the request was
-            succesful.
-        """
+        # Since the docstring is used to generate the documentation, we
+        # don't include one for this generic view.
         serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():

@@ -2,6 +2,15 @@ Changelog
 =========
 
 
+v0.7.0
+------
+
+`Milestone <https://github.com/knowmetools/km-api/milestone/9>`_
+
+Miscellaneous
+  * Use DRF's built in mechanism for generating documentation.
+
+
 v0.6.0
 ------
 

@@ -11,17 +11,19 @@ from km_auth import permissions, serializers
 
 class LayerIdentityView(generics.CreateAPIView):
     """
-    View for getting a Layer identity.
+    Endpoint for obtaining a Layer identity.
     """
     serializer_class = serializers.LayerIdentitySerializer
 
 
-class ObtainTokenView(ObtainAuthToken):
+# We extend from 'GenericAPIView' so that the generated docs can access
+# the view's serializer fields.
+class ObtainTokenView(ObtainAuthToken, generics.GenericAPIView):
     """
-    View for obtaining an authentication token.
+    Endpoint for obtaining an authentication token.
 
-    This view builds upon the default token view from DRF to use our
-    custom token serializer.
+    The user provides their email and password and a token that can be
+    used to authenticate further requests is returned.
     """
     serializer_class = serializers.TokenSerializer
 

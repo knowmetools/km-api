@@ -8,6 +8,16 @@ from know_me import models
 from .profile_serializers import ProfileListSerializer
 
 
+EXTRA_FIELD_KWARGS = {
+    'image': {
+        'help_text': 'An image that represents the Know Me user.',
+    },
+    'quote': {
+        'help_text': "A quote for the Know Me user to introduce themself.",
+    },
+}
+
+
 class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for multiple ``KMUser`` instances.
@@ -16,6 +26,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
         view_name='know-me:km-user-detail')
 
     class Meta:
+        extra_kwargs = EXTRA_FIELD_KWARGS
         fields = ('id', 'url', 'name', 'image', 'quote')
         model = models.KMUser
 
@@ -32,6 +43,7 @@ class KMUserDetailSerializer(KMUserListSerializer):
     profiles_url = serializers.SerializerMethodField()
 
     class Meta:
+        extra_kwargs = EXTRA_FIELD_KWARGS
         fields = (
             'id', 'url', 'name', 'image', 'quote', 'emergency_items_url',
             'gallery_url', 'profiles_url', 'profiles'
