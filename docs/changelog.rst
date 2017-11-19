@@ -8,6 +8,7 @@ v0.7.0
 `Milestone <https://github.com/knowmetools/km-api/milestone/9>`_
 
 Miscellaneous
+  * :issue:`209`: Remove "emergency" related content.
   * Use DRF's built in mechanism for generating documentation.
 
 

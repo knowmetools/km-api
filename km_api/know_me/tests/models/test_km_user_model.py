@@ -98,43 +98,6 @@ def test_has_object_write_permission_owner(api_rf, km_user_factory):
     assert km_user.has_object_write_permission(request)
 
 
-def test_get_emergency_contact_list_url(km_user_factory):
-    """
-    This method should return the URL of the user's emergency contact list.
-    """
-    km_user = km_user_factory()
-    expected = reverse(
-        'know-me:emergency-contact-list',
-        kwargs={'pk': km_user.pk})
-
-    assert km_user.get_emergency_contact_list_url() == expected
-
-
-def test_get_emergency_item_list_url(km_user_factory):
-    """
-    This method should return the URL of the user's emergency item list.
-    """
-    km_user = km_user_factory()
-    expected = reverse(
-        'know-me:emergency-item-list',
-        kwargs={'pk': km_user.pk})
-
-    assert km_user.get_emergency_item_list_url() == expected
-
-
-def test_get_emergency_item_list_url_full(api_rf, km_user_factory):
-    """
-    If a request is provided to the method, the returned URL should
-    include a protocol and domain name.
-    """
-    km_user = km_user_factory()
-    request = api_rf.get(km_user.get_emergency_item_list_url())
-
-    expected = request.build_absolute_uri()
-
-    assert km_user.get_emergency_item_list_url(request) == expected
-
-
 def test_name(km_user_factory):
     """
     The know me user's name property should return the associated user's

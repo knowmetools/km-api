@@ -26,7 +26,6 @@ def test_serialize(
 
     url = api_rf.get(km_user.get_absolute_url()).build_absolute_uri()
     image_url = api_rf.get(km_user.image.url).build_absolute_uri()
-    emergency_items_url = km_user.get_emergency_item_list_url(request)
     gallery_url = km_user.get_gallery_url(request)
     profile_list_url = km_user.get_profile_list_url(request)
 
@@ -36,7 +35,6 @@ def test_serialize(
         'name': km_user.name,
         'quote': km_user.quote,
         'image': image_url,
-        'emergency_items_url': emergency_items_url,
         'gallery_url': gallery_url,
         'profiles_url': profile_list_url,
         'profiles': profile_serializer.data,
