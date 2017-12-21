@@ -739,15 +739,16 @@ class ListEntry(mixins.IsAuthenticatedMixin, models.Model):
 class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
     """
     A media resource is an uploaded file attached to a km_user.
-
-    Attributes:
-        name:
-            The name of the item.
-        km_user:
-            The km_user that the item is attached to.
-        file:
-            A file containing some sort of content.
     """
+    category = models.ForeignKey(
+        'know_me.MediaResourceCategory',
+        blank=True,
+        help_text=_("The category that the resource is a part of."),
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='media_resources',
+        related_query_name='media_resource',
+        verbose_name=_('category'))
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
@@ -814,6 +815,36 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
                 instance and ``False`` otherwise.
         """
         return self.km_user.user == request.user
+
+
+class MediaResourceCategory(models.Model):
+    """
+    Category that a media resource can be placed in.
+    """
+    km_user = models.ForeignKey(
+        'know_me.KMUser',
+        help_text=_("The Know Me user who owns the category."),
+        on_delete=models.CASCADE,
+        related_name='media_resource_categories',
+        related_query_name='media_resource_category',
+        verbose_name=_('media resource category'))
+    name = models.CharField(
+        help_text=_("The category's name."),
+        max_length=255,
+        verbose_name=_('name'))
+
+    class Meta:
+        verbose_name = _('media resource category')
+        verbose_name_plural = _('media resource categories')
+
+    def __str__(self):
+        """
+        Get a string representation of the category.
+
+        Returns:
+            The category's name.
+        """
+        return self.name
 
 
 class Profile(mixins.IsAuthenticatedMixin, models.Model):
