@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^accessors/pending/$', views.PendingAccessorListView.as_view(), name='pending-accessor-list'),                            # noqa
     url(r'^accessors/(?P<pk>[0-9]+)/$', views.AccessorDetailView.as_view(), name='accessor-detail'),                                # noqa
     url(r'^media-resources/(?P<pk>[0-9]+)/$', views.MediaResourceDetailView.as_view(), name='media-resource-detail'),               # noqa
+    url(r'^media-resource-categories/(?P<pk>[0-9]+)/$', views.MediaResourceCategoryDetailView.as_view(), name='media-resource-category-detail'),               # noqa
     url(r'^items/(?P<pk>[0-9]+)/$', views.ProfileItemDetailView.as_view(), name='profile-item-detail'),                             # noqa
     url(r'^items/(?P<pk>[0-9]+)/list-entries/$', views.ListEntryListView.as_view(), name='list-entry-list'),                        # noqa
     url(r'^list-entries/(?P<pk>[0-9]+)/$', views.ListEntryDetailView.as_view(), name='list-entry-detail'),                          # noqa
@@ -22,4 +23,5 @@ urlpatterns = [
     url(r'^users/(?P<pk>[0-9]+)/$', views.KMUserDetailView.as_view(), name='km-user-detail'),                                       # noqa
     url(r'^users/(?P<pk>[0-9]+)/gallery/$', views.GalleryView.as_view(), name='gallery'),                                           # noqa
     url(r'^users/(?P<pk>[0-9]+)/profiles/$', views.ProfileListView.as_view(), name='profile-list'),                                 # noqa
+    url(r'^users/(?P<pk>[0-9]+)/media-resource-categories/$', views.MediaResourceCategoryListView.as_view(), name='media-resource-category-list'),                                 # noqa
 ]

@@ -26,3 +26,22 @@ class MediaResourceSerializer(serializers.HyperlinkedModelSerializer):
         }
         fields = ('id', 'url', 'name', 'file', 'permissions')
         model = models.MediaResource
+
+
+class MediaResourceCategorySerializer(
+        serializers.HyperlinkedModelSerializer):
+    """
+    Serializer for ``MediaResourceCategory`` instances.
+    """
+    permissions = DRYPermissionsField()
+    url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:media-resource-category-list')
+
+    class Meta:
+        extra_kwargs = {
+            'name': {
+                'help_text': "The name of the media resource category.",
+            }
+        }
+        fields = ('id', 'url', 'name', 'permissions')
+        model = models.MediaResourceCategory
