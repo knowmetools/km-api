@@ -44,9 +44,6 @@ deploy:
 
 
 notifications:
-  slack:
+  email:
     on_failure: always
-    on_success: change
-    rooms:
-      - secure: "cjksoOfssYAooxxBDXTpSwKx89IqMAAb7VPi1xQnxzuO2Kwb7y5T44wQZ14INtKhkp00rE2IhasZbvYvEBv0RLuA99XMaILbcluspF9HQzOsmckG6HdadE4s258PV2hkclzv5MCxO8xkyA9VorNv9lQLKeAxdnoC3XH8WJ3zc2ljduduz5ebtkz4YF/W6+PWESEQWUWgWfznrGGJcwYwNR3KNmgGAfBSRQWLACNhdtOEFFJczmH0IyrfXFZUt38gkbpBZPHcTw+gjTeRUoHRI2lwA7r/6uza68LvmDtVNjT8qLQNx0T5J8GApq42A7d8uZQBv2BO8Qt+vKUmEw5M5O9gAb03NzqcJw7dyDMD2ncx52zaGtFGImsPZyC5V5N9v+8s7ZlbrpFgXer7cPHVISxZXoc+xSf6fdQwOTa9GsNzSiMWhVzfQn6A9QHwBVFGERwXnia8chNgFlovpsBJWYn9OkpS8gUng6JwW9O+Ehs0hkxVooUESA0jp2WRBhzWkckMmUIxHhIQsnkEAFiJ/na+uZJBz+/xkm68cizbS/rtvD0ucPkqxdiu2Nf9R46ddGz/FwVsE39SEGxX1uWUNhzsUAZ3dcQqwChI8DOeb7gI9tabUknRYqfU5b1Y6M1pAEegi3ipKjozhnSokeAtS1Zz/2xWa+8pD9O5rO+De5M="
-
+    on_success: never
