@@ -28,7 +28,6 @@ def test_serialize(
         'id': profile.id,
         'url': url_request.build_absolute_uri(),
         'name': profile.name,
-        'is_default': profile.is_default,
         'topics_url': topic_list_request.build_absolute_uri(),
         'topics': topic_serializer.data,
         'permissions': {
