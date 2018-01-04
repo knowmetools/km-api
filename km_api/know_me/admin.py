@@ -117,7 +117,7 @@ class ProfileAdmin(admin.ModelAdmin):
     """
     Admin for the ``Profile`` model.
     """
-    fields = ('name', 'km_user','is_private')
+    fields = ('name', 'km_user', 'is_private')
     list_display = ('name', 'km_user', 'is_private')
     list_filter = ('is_private', )
     search_fields = ('name', 'km_user__user__name')
