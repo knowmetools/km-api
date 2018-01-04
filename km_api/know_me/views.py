@@ -87,31 +87,6 @@ class AccessorListView(generics.ListCreateAPIView):
         return serializer.save(km_user=km_user)
 
 
-class GalleryView(generics.CreateAPIView):
-    """
-    post:
-    Endpoint for creating a new media resource for the Know Me user with
-    the specified ID.
-    """
-    serializer_class = serializers.MediaResourceSerializer
-
-    def perform_create(self, serializer):
-        """
-        Create a new media resource for the given km_user.
-
-        Args:
-            serializer:
-                A serializer instance containing the submitted data.
-
-        Returns:
-            The newly created ``MediaResource`` instance.
-        """
-        km_user = models.KMUser.objects.get(
-            pk=self.kwargs.get('pk'))
-
-        return serializer.save(km_user=km_user)
-
-
 class KMUserDetailView(generics.RetrieveUpdateAPIView):
     """
     get:

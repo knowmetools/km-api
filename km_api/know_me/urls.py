@@ -13,11 +13,6 @@ user_detail_endpoints = [
         name='km-user-detail'),
 
     url(
-        r'^gallery/$',
-        views.GalleryView.as_view(),
-        name='gallery'),
-
-    url(
         r'^media-resources/$',
         views.MediaResourceListView.as_view(),
         name='media-resource-list'),

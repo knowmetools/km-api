@@ -30,7 +30,7 @@ def get_media_resource_upload_path(item, filename):
     Returns:
         str:
             The original filename prefixed with
-            ``km_user/<id>/gallery/``.
+            ``know-me/users/{id}/media-resources/``.
     """
     return 'know-me/users/{id}/media-resources/{file}'.format(
         file=filename,
@@ -386,25 +386,6 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
                 The absolute URL of the instance's detail view.
         """
         return reverse('know-me:km-user-detail', kwargs={'pk': self.pk})
-
-    def get_gallery_url(self, request=None):
-        """
-        Get the absolute URL of the instance's gallery view.
-
-        Args:
-            request (optional):
-                A request used as context when constructing the URL. If
-                given, the resulting URL will be a full URI with a
-                protocol and domain name.
-
-        Returns:
-            str:
-                The absolute URL of the instance's gallery view.
-        """
-        return reverse(
-            'know-me:gallery',
-            kwargs={'pk': self.pk},
-            request=request)
 
     def get_profile_list_url(self, request=None):
         """
