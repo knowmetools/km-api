@@ -1,6 +1,12 @@
 Changelog
 =========
 
+v0.6.1
+------
+
+Bug Fixes:
+  * :issue:`225`: Fix production deployments being deployed to the staging environment.
+
 
 v0.7.0
 ------
