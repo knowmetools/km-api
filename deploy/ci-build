@@ -55,7 +55,7 @@ Branch: $TRAVIS_BRANCH
 
 
 EOF
-    ANSIBLE_VERSION="$TRAVIS_BRANCH"
+    ANSIBLE_VERSION=$TRAVIS_BRANCH
 else
     cat << EOF
 
@@ -69,8 +69,8 @@ Tag: $TRAVIS_TAG
 
 EOF
 
-    ANSIBLE_VERSION="$TRAVIS_TAG"
-    ANSIBLE_EXTRA_OPTS='-e "env=prod"'
+    ANSIBLE_VERSION=$TRAVIS_TAG
+    ANSIBLE_EXTRA_OPTS='-e env=prod'
 fi
 
 
@@ -80,8 +80,8 @@ export ANSIBLE_HOST_KEY_CHECKING=False
 
 ansible-playbook \
   --private-key $TEMP_KEY_PRIVATE \
-  -e "app_repo_version='$ANSIBLE_VERSION'" \
-  -e "ami_builder_key_file='${TEMP_KEY_PRIVATE}.pub'" \
+  -e "app_repo_version=$ANSIBLE_VERSION" \
+  -e "ami_builder_key_file=${TEMP_KEY_PRIVATE}.pub" \
   deploy/deploy.yml \
   $ANSIBLE_EXTRA_OPTS
 
