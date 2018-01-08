@@ -306,13 +306,13 @@ class MediaResourceCategoryListView(generics.ListCreateAPIView):
 class MediaResourceCategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     get:
-    Endpoint for retrieving the details of a specific profile.
+    Endpoint for retrieving the details of a specific category.
 
     put:
-    Endpoint for updating the details of a specific profile.
+    Endpoint for updating the details of a specific category.
 
     patch:
-    Endpoint for partially updating the details of a specific profile.
+    Endpoint for partially updating the details of a specific category.
     """
     permission_classes = (DRYPermissions,)
     queryset = models.MediaResourceCategory.objects.all()
@@ -324,6 +324,9 @@ class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
     get:
     Endpoint for retrieving the details of a specific media resource.
 
+
+    put:
+    Endpoint for updating the details of a specific media resource.
 
     patch:
     Endpoint for partially updating the details of a specifc media
