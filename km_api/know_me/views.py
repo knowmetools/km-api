@@ -288,6 +288,36 @@ class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.MediaResourceSerializer
 
 
+class MediaResourceListView(generics.ListCreateAPIView):
+    """
+    get:
+    Retrieve the media resources associated with the specified user's
+    account.
+    """
+    filter_backends = (filters.KMUserAccessFilterBackend,)
+    permission_classes = (DRYPermissions,)
+    queryset = models.MediaResource.objects.all()
+    serializer_class = serializers.MediaResourceSerializer
+
+    def perform_create(self, serializer):
+        """
+        Create a new media resource for the specified user.
+
+        Args:
+            serializer:
+                A serializer instance containing the data submitted to
+                the view.
+
+        Returns:
+            The newly created media resource.
+        """
+        km_user = get_object_or_404(
+            models.KMUser,
+            pk=self.kwargs.get('pk'))
+
+        return serializer.save(km_user=km_user)
+
+
 class PendingAccessorListView(generics.ListAPIView):
     """
     Endpoint for listing the accessors that the current user can accept.
