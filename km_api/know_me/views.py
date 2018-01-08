@@ -12,7 +12,7 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
-from know_me import filters, models, serializers
+from know_me import filters, models, permissions, serializers
 
 
 class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -295,7 +295,7 @@ class MediaResourceListView(generics.ListCreateAPIView):
     account.
     """
     filter_backends = (filters.KMUserAccessFilterBackend,)
-    permission_classes = (DRYPermissions,)
+    permission_classes = (DRYPermissions, permissions.HasKMUserAccess)
     queryset = models.MediaResource.objects.all()
     serializer_class = serializers.MediaResourceSerializer
 
