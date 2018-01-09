@@ -37,7 +37,6 @@ class KMUserDetailSerializer(KMUserListSerializer):
 
     This serializer builds off of the ``KMUserListSerializer``.
     """
-    gallery_url = serializers.SerializerMethodField()
     profiles = ProfileListSerializer(many=True, read_only=True)
     profiles_url = serializers.SerializerMethodField()
 
@@ -49,26 +48,10 @@ class KMUserDetailSerializer(KMUserListSerializer):
             'name',
             'image',
             'quote',
-            'gallery_url',
             'profiles_url',
             'profiles',
         )
         model = models.KMUser
-
-    def get_gallery_url(self, profile):
-        """
-        Get the URL for the gallery view of the profile being
-        serialized.
-
-        Args:
-            profile:
-                The ``KMUser`` instance being serialized.
-
-        Returns:
-            str:
-                The URL of the profile's gallery view.
-        """
-        return profile.get_gallery_url(self.context['request'])
 
     def get_profiles_url(self, profile):
         """

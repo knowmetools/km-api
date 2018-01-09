@@ -30,7 +30,7 @@ def get_media_resource_upload_path(item, filename):
     Returns:
         str:
             The original filename prefixed with
-            ``km_user/<id>/gallery/``.
+            ``know-me/users/{id}/media-resources/``.
     """
     return 'know-me/users/{id}/media-resources/{file}'.format(
         file=filename,
@@ -913,9 +913,6 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
     A profile contains a targeted subset of a ``KMUser``.
 
     Attributes:
-        is_default (bool):
-            A boolean controlling if the profile is the default for its
-            parent km_user.
         is_private (bool):
             This a private profile with admin only access.
         name (str):
@@ -923,10 +920,6 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         km_user:
             The ``KMUser`` instance the profile belongs to.
     """
-    is_default = models.BooleanField(
-        default=False,
-        help_text=_('The default profile is displayed initially.'),
-        verbose_name=_('is default'))
     is_private = models.BooleanField(
         default=False,
         help_text=_('Private profiles are only visable to admin.'),

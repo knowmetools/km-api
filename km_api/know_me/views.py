@@ -12,7 +12,7 @@ from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
-from know_me import filters, models, serializers
+from know_me import filters, models, permissions, serializers
 
 
 class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -83,31 +83,6 @@ class AccessorListView(generics.ListCreateAPIView):
             The newly created ``KMUserAccessor`` instance.
         """
         km_user = get_object_or_404(models.KMUser, user=self.request.user)
-
-        return serializer.save(km_user=km_user)
-
-
-class GalleryView(generics.CreateAPIView):
-    """
-    post:
-    Endpoint for creating a new media resource for the Know Me user with
-    the specified ID.
-    """
-    serializer_class = serializers.MediaResourceSerializer
-
-    def perform_create(self, serializer):
-        """
-        Create a new media resource for the given km_user.
-
-        Args:
-            serializer:
-                A serializer instance containing the submitted data.
-
-        Returns:
-            The newly created ``MediaResource`` instance.
-        """
-        km_user = models.KMUser.objects.get(
-            pk=self.kwargs.get('pk'))
 
         return serializer.save(km_user=km_user)
 
@@ -335,6 +310,53 @@ class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = (DRYPermissions,)
     queryset = models.MediaResource.objects.all()
     serializer_class = serializers.MediaResourceSerializer
+
+
+class MediaResourceListView(generics.ListCreateAPIView):
+    """
+    get:
+    Retrieve the media resources associated with the specified user's
+    account.
+    """
+    filter_backends = (filters.KMUserAccessFilterBackend,)
+    permission_classes = (DRYPermissions, permissions.HasKMUserAccess)
+    queryset = models.MediaResource.objects.all()
+    serializer_class = serializers.MediaResourceSerializer
+
+    def get_queryset(self):
+        """
+        Filter the queryset based on the category from the URL.
+
+        Returns:
+            The media resources belonging to the specified Know Me user.
+            If a category is specified, only the items from that
+            category are returned.
+        """
+        queryset = super().get_queryset()
+
+        category_id = self.request.query_params.get('category', None)
+        if category_id is not None:
+            queryset = queryset.filter(category__id=category_id)
+
+        return queryset
+
+    def perform_create(self, serializer):
+        """
+        Create a new media resource for the specified user.
+
+        Args:
+            serializer:
+                A serializer instance containing the data submitted to
+                the view.
+
+        Returns:
+            The newly created media resource.
+        """
+        km_user = get_object_or_404(
+            models.KMUser,
+            pk=self.kwargs.get('pk'))
+
+        return serializer.save(km_user=km_user)
 
 
 class PendingAccessorListView(generics.ListAPIView):

@@ -10,10 +10,6 @@ from dry_rest_permissions.generics import DRYPermissionsField
 
 
 EXTRA_FIELD_KWARGS = {
-    'is_default': {
-        'help_text': ("A boolean indicating if the profile is the user's "
-                      "default profile."),
-    },
     'name': {
         'help_text': "The name of the profile.",
     },
@@ -34,7 +30,6 @@ class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'url',
             'name',
-            'is_default',
             'permissions')
         model = models.Profile
 
@@ -55,7 +50,6 @@ class ProfileDetailSerializer(ProfileListSerializer):
             'id',
             'url',
             'name',
-            'is_default',
             'permissions',
             'topics_url',
             'topics')

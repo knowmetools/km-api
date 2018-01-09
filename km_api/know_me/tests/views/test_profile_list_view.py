@@ -17,7 +17,6 @@ def test_create(api_rf, km_user_factory):
 
     data = {
         'name': 'New Profile',
-        'is_default': True,
     }
 
     request = api_rf.post(km_user.get_profile_list_url(), data)

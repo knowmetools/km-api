@@ -22,16 +22,6 @@ def test_get_absolute_url(km_user_factory):
     assert km_user.get_absolute_url() == expected
 
 
-def test_get_gallery_url(km_user_factory):
-    """
-    This method should return the URL of the km_user's gallery view.
-    """
-    km_user = km_user_factory()
-    expected = reverse('know-me:gallery', kwargs={'pk': km_user.pk})
-
-    assert km_user.get_gallery_url() == expected
-
-
 def test_get_profile_list_url(km_user_factory):
     """
     This method should return the URL of the profile's list view.

@@ -8,11 +8,11 @@ def test_create_image_content(
     """
     Test creating image content for a profile item.
     """
-    image_gallery_item = media_resource_factory(file=image)
+    image_resource = media_resource_factory(file=image)
 
     models.ImageContent.objects.create(
         description='Test item description.',
-        image_resource=image_gallery_item,
+        image_resource=image_resource,
         media_resource=media_resource_factory(),
         profile_item=profile_item_factory())
 
