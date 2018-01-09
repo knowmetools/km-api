@@ -22,7 +22,8 @@ def test_accept(
     serializer = serializers.KMUserAccessorSerializer(
         accessor,
         context={'request': request},
-        data=data)
+        data=data,
+        partial=True)
     assert serializer.is_valid()
 
     serializer.save()
@@ -46,7 +47,8 @@ def test_accept_by_unauthorized_user(api_rf, km_user_accessor_factory):
     serializer = serializers.KMUserAccessorSerializer(
         accessor,
         context={'request': request},
-        data=data)
+        data=data,
+        partial=True)
 
     assert not serializer.is_valid()
     assert set(serializer.errors.keys()) == {'accepted'}
