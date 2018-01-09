@@ -296,7 +296,7 @@ class MediaResourceCategoryListView(generics.ListCreateAPIView):
             The newly created ``Media Resource Category`` instance.
         """
         km_user = get_object_or_404(
-            models.MediaResourceCategory,
+            models.KMUser,
             pk=self.kwargs.get('pk'),
             user=self.request.user)
 

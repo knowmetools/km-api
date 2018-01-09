@@ -7,42 +7,47 @@ def test_create(km_user_factory, serializer_context):
     media resource attached to the given km_user.
     """
     km_user = km_user_factory()
-    
+
     data = {
             'name': 'Test Media Resource Category',
     }
 
     serializer = serializers.MediaResourceCategorySerializer(
-        context = serializer_context,
-        data = data)
+        context=serializer_context,
+        data=data)
     assert serializer.is_valid()
 
     category = serializer.save(km_user=km_user)
-    
+
     assert category.name == data['name']
     assert category.km_user == km_user
-    
 
-def test_serialize(api_rf, media_resource_category_factory, serializer_context):
+
+def test_serialize(api_rf,
+                   media_resource_category_factory,
+                   serializer_context):
     """
     Test serializing a Media Resource Category.
     """
-    media_resource_category = media_resource_category_factory()
+    category = media_resource_category_factory()
 
     serializer = serializers.MediaResourceCategorySerializer(
-            media_resource_category,
-            context = serializer_context)
+            category,
+            context=serializer_context)
 
-    url_request = api_rf.get(media_resource_category.get_absolute_url())
+    url_request = api_rf.get(category.get_absolute_url())
     serializer_request = serializer_context['request']
 
+    hr = category.has_object_read_permission(serializer_request)
+    hw = category.has_object_write_permission(serializer_request)
+
     expected = {
-        'id': media_resource_category.id,
+        'id': category.id,
         'url': url_request.build_absolute_uri(),
-        'name': media_resource_category.name,
-        'permissions' : {
-            'read' : media_resource_category.has_object_read_permission(serializer_request),
-            'write' : media_resource_category.has_object_write_permission(serializer_request),
+        'name': category.name,
+        'permissions': {
+            'read': hr,
+            'write': hw,
         }
     }
 
