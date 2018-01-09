@@ -929,6 +929,20 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         """
         return request.user == self.km_user.user
 
+    def save(self, *args, **kwargs):
+        """
+        Override save to set order.
+        """
+        if self.order is None:
+            query = self.km_user.profiles.order_by('-order')
+            if query.exists():
+                prev_max = query.get().order
+                self.order = prev_max + 1
+            else:
+                self.order = 0
+
+        super().save(*args, **kwargs)
+
 
 class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
     """
