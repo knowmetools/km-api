@@ -853,8 +853,11 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
+    order = models.IntegerField(
+        verbose_name=_('order'))
 
     class Meta:
+        unique_together = ('km_user', 'order')
         verbose_name = _('profile')
         verbose_name_plural = _('profiles')
 
