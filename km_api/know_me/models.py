@@ -406,7 +406,7 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             kwargs={'pk': self.pk},
             request=request)
 
-    def get_media_resource_category_url(self, request=None):
+    def get_media_resource_category_list_url(self, request=None):
         """
         Get the absolute URL of the instance's media resource category view.
 

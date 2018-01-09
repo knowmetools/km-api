@@ -18,7 +18,7 @@ def test_create(api_rf, km_user_factory):
         'name': 'Category',
     }
 
-    request = api_rf.post(km_user.get_media_resource_category_url(), data)
+    request = api_rf.post(km_user.get_media_resource_category_list_url(), data)
     response = category_list_view(request, pk=km_user.pk)
 
     assert response.status_code == status.HTTP_201_CREATED
@@ -40,7 +40,7 @@ def test_get_own(api_rf, media_resource_category_factory):
 
     api_rf.user = user
 
-    request = api_rf.get(km_user.get_media_resource_category_url())
+    request = api_rf.get(km_user.get_media_resource_category_list_url())
     response = category_list_view(request, pk=km_user.pk)
 
     serializer = serializers.MediaResourceCategorySerializer(

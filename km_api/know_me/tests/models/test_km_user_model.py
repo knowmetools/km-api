@@ -22,6 +22,18 @@ def test_get_absolute_url(km_user_factory):
     assert km_user.get_absolute_url() == expected
 
 
+def test_get_media_resource_category_list_url(km_user_factory):
+    """
+    This method should return the URL of the media resource category's
+    list view.
+    """
+    km_user = km_user_factory()
+    expected = reverse('know-me:media-resource-category-list',
+                       kwargs={'pk': km_user.pk})
+
+    assert km_user.get_media_resource_category_list_url() == expected
+
+
 def test_get_profile_list_url(km_user_factory):
     """
     This method should return the URL of the profile's list view.
