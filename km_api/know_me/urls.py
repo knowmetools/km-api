@@ -1,9 +1,32 @@
 """URLs for the ``know_me`` module.
 """
 
-from django.conf.urls import url
+from django.conf.urls import include, url
 
 from know_me import views
+
+
+user_detail_endpoints = [
+    url(
+        r'^$',
+        views.KMUserDetailView.as_view(),
+        name='km-user-detail'),
+
+    url(
+        r'^gallery/$',
+        views.GalleryView.as_view(),
+        name='gallery'),
+
+    url(
+        r'^media-resources/$',
+        views.MediaResourceListView.as_view(),
+        name='media-resource-list'),
+
+    url(
+        r'^profiles/$',
+        views.ProfileListView.as_view(),
+        name='profile-list'),
+]
 
 
 urlpatterns = [
@@ -19,7 +42,5 @@ urlpatterns = [
     url(r'^topics/(?P<pk>[0-9]+)/items/$' ,views.ProfileItemListView.as_view(), name='profile-item-list'),                          # noqa
     url(r'^users/$', views.KMUserListView.as_view(), name='km-user-list'),
     url(r'^users/accessors/$', views.AccessorListView.as_view(), name='accessor-list'),                                             # noqa
-    url(r'^users/(?P<pk>[0-9]+)/$', views.KMUserDetailView.as_view(), name='km-user-detail'),                                       # noqa
-    url(r'^users/(?P<pk>[0-9]+)/gallery/$', views.GalleryView.as_view(), name='gallery'),                                           # noqa
-    url(r'^users/(?P<pk>[0-9]+)/profiles/$', views.ProfileListView.as_view(), name='profile-list'),                                 # noqa
+    url(r'^users/(?P<pk>[0-9]+)/', include(user_detail_endpoints)),
 ]

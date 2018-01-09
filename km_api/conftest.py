@@ -108,11 +108,11 @@ def image():
     image = PIL.Image.new('RGB', (200, 200), 'red')
 
     out_stream = io.BytesIO()
-    image.save(out_stream, format='JPEG')
+    image.save(out_stream, format='png')
 
     return ContentFile(
         content=out_stream.getvalue(),
-        name='foo.jpg')
+        name='foo.png')
 
 
 @pytest.fixture
