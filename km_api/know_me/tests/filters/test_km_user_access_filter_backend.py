@@ -34,7 +34,7 @@ def test_filter_list_by_km_user(
     view.kwargs = {'pk': km_user.pk}
 
     backend = filters.KMUserAccessFilterBackend()
-    result = backend.filter_list_queryset(
+    result = backend.filter_queryset(
         request,
         models.EmergencyContact.objects.all(),
         view)
@@ -58,7 +58,7 @@ def test_filter_list_non_existent_user(api_rf, user_factory):
     backend = filters.KMUserAccessFilterBackend()
 
     with pytest.raises(Http404):
-        backend.filter_list_queryset(
+        backend.filter_queryset(
             request,
             models.EmergencyContact.objects.all(),
             view)
@@ -83,7 +83,7 @@ def test_filter_list_inaccessible_user(
     backend = filters.KMUserAccessFilterBackend()
 
     with pytest.raises(Http404):
-        backend.filter_list_queryset(
+        backend.filter_queryset(
             request,
             models.EmergencyContact.objects.all(),
             view)
@@ -114,7 +114,7 @@ def test_filter_list_shared(
     view.kwargs = {'pk': km_user.pk}
 
     backend = filters.KMUserAccessFilterBackend()
-    filtered = backend.filter_list_queryset(
+    filtered = backend.filter_queryset(
         request,
         models.EmergencyContact.objects.all(),
         view)
@@ -151,7 +151,7 @@ def test_filter_list_shared_not_accepted(
     backend = filters.KMUserAccessFilterBackend()
 
     with pytest.raises(Http404):
-        backend.filter_list_queryset(
+        backend.filter_queryset(
             request,
             models.EmergencyContact.objects.all(),
             view)
