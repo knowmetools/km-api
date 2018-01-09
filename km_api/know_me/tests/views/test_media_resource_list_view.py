@@ -118,6 +118,41 @@ def test_get_anonymous(api_client, km_user_factory):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
+def test_get_filtered_list(
+        api_client,
+        api_rf,
+        km_user_factory,
+        media_resource_category_factory,
+        media_resource_factory):
+    """
+    If a category is specified, only media resources belonging to that
+    category should be returned.
+    """
+    km_user = km_user_factory()
+    category = media_resource_category_factory(km_user=km_user)
+
+    media_resource_factory(category=category, km_user=km_user)
+    media_resource_factory(category=category, km_user=km_user)
+
+    media_resource_factory(km_user=km_user)
+
+    api_client.force_authenticate(user=km_user.user)
+    api_rf.user = km_user.user
+
+    url = reverse('know-me:media-resource-list', kwargs={'pk': km_user.pk})
+    request = api_rf.get(url)
+    response = api_client.get(url, {'category': category.pk})
+
+    assert response.status_code == status.HTTP_200_OK
+
+    serializer = serializers.MediaResourceSerializer(
+        category.media_resources.all(),
+        context={'request': request},
+        many=True)
+
+    assert response.data == serializer.data
+
+
 def test_get_media_resource_list(
         api_client,
         api_rf,

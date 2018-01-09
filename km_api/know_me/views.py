@@ -299,6 +299,23 @@ class MediaResourceListView(generics.ListCreateAPIView):
     queryset = models.MediaResource.objects.all()
     serializer_class = serializers.MediaResourceSerializer
 
+    def get_queryset(self):
+        """
+        Filter the queryset based on the category from the URL.
+
+        Returns:
+            The media resources belonging to the specified Know Me user.
+            If a category is specified, only the items from that
+            category are returned.
+        """
+        queryset = super().get_queryset()
+
+        category_id = self.request.query_params.get('category', None)
+        if category_id is not None:
+            queryset = queryset.filter(category__id=category_id)
+
+        return queryset
+
     def perform_create(self, serializer):
         """
         Create a new media resource for the specified user.
