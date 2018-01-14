@@ -541,7 +541,6 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('can write'))
     email = models.EmailField(
         help_text=_('The email address used to invite the user.'),
-        null=True,
         verbose_name=_('email'))
     has_private_profile_access = models.BooleanField(
         default=False,
