@@ -20,6 +20,7 @@ from rest_framework.documentation import include_docs_urls
 
 
 urlpatterns = [
+    url(r'^account/', include('rest_email_auth.urls')),
     url(r'^account/', include('account.urls', namespace='account')),
     url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),     # noqa

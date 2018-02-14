@@ -32,7 +32,7 @@ def get_member_info(user):
             readable by MailChimp.
     """
     return {
-        'email_address': user.email,
+        'email_address': user.primary_email.email,
         'merge_fields': {
             'FNAME': user.first_name,
             'LNAME': user.last_name,
@@ -98,7 +98,7 @@ def _member_create(list_id, user):
         response = client.lists.members.create(
             data=data,
             list_id=list_id)
-        logger.info('Subscribed %s to mailing list', user.email)
+        logger.info('Subscribed %s to mailing list', user.primary_email.email)
     except HTTPError:
         # When updating a user's info we don't want to set them to
         # subscribed
@@ -107,12 +107,12 @@ def _member_create(list_id, user):
         response = client.lists.members.update(
             data=data,
             list_id=list_id,
-            subscriber_hash=user.email)
+            subscriber_hash=user.primary_email.email)
 
         logger.info(
             ('Failed to create new mailing list member; updated info for %s '
              'instead.'),
-            user.email)
+            user.primary_email.email)
 
     models.MailchimpUser.objects.create(
         subscriber_hash=response['id'],
@@ -145,7 +145,9 @@ def _member_update(list_id, user, mailchimp_user):
             data=data,
             list_id=list_id,
             subscriber_hash=mailchimp_user.subscriber_hash)
-        logger.info('Updated mailing list info for %s.', user.email)
+        logger.info(
+            'Updated mailing list info for %s.',
+            user.primary_email.email)
     except HTTPError:
         data.update({'status': 'subscribed'})
 
@@ -156,7 +158,7 @@ def _member_update(list_id, user, mailchimp_user):
         logger.info(
             ('Failed to update member info; subscribed %s to mailing list '
              'instead.'),
-            user.email)
+            user.primary_email.email)
 
     mailchimp_user.subscriber_hash = response['id']
     mailchimp_user.save()

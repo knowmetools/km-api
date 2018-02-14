@@ -1,5 +1,3 @@
-from unittest import mock
-
 import pytest
 
 from account import models
@@ -11,7 +9,6 @@ def test_create():
     Test creating a new user.
     """
     models.User.objects.create(
-        email='test@example.com',
         is_active=True,
         is_staff=True,
         is_superuser=True,
@@ -40,26 +37,15 @@ def test_get_short_name(user_factory):
     assert user.get_short_name() == user.first_name
 
 
-def test_send_password_changed_email(settings, user_factory):
+def test_primary_email(email_factory, user_factory):
     """
-    This method should send an email to the user informing them that
-    their password has been changed.
+    The 'primary_email' property should return the email address owned
+    by the user that has 'is_primary' set to true.
     """
     user = user_factory()
+    primary = email_factory(is_primary=True, user=user)
+    primary.set_primary()
 
-    expected_context = {
-        'user': user,
-    }
+    email_factory(user=user)
 
-    with mock.patch(
-            'account.models.templated_email.send_email',
-            autospec=True) as mock_send_email:
-        user.send_password_changed_email()
-
-    assert mock_send_email.call_count == 1
-    assert mock_send_email.call_args[1] == {
-        'context': expected_context,
-        'subject': 'Your Know Me Password was Changed',
-        'template': 'account/email/password-changed',
-        'to': user.email,
-    }
+    assert user.primary_email == primary

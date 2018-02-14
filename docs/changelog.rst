@@ -1,6 +1,13 @@
 Changelog
 =========
 
+v0.7.0
+------
+
+Breaking Changes
+  * Switched to third party account management package. This modified the endpoints used for email management, password resets, and registration. Also, the transition removed a lot of our account related models and modified their migrations. This means the existing database must be wiped and recreated.
+
+
 v0.6.1
 ------
 

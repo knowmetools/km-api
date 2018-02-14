@@ -10,7 +10,6 @@ def test_create_superuser():
     should set the ``is_staff`` and ``is_superuser`` flags to ``True``.
     """
     user = models.User.objects.create_superuser(
-        email='test@example.com',
         first_name='John',
         last_name='Doe',
         password='p455w0rd')
@@ -27,7 +26,6 @@ def test_create_user():
     """
     password = 'p455w0rd'
     user = models.User.objects.create_user(
-        email='test@example.com',
         first_name='John',
         last_name='Doe',
         password=password)

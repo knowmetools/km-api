@@ -8,9 +8,10 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import RegexValidator
 
+from rest_email_auth.models import EmailAddress
+
 from rest_framework.reverse import reverse
 
-from account.models import EmailAddress
 from permission_utils import model_mixins as mixins
 
 
@@ -456,7 +457,7 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         try:
             user = EmailAddress.objects.get(
                 email=email,
-                verified=True).user
+                is_verified=True).user
         except EmailAddress.DoesNotExist:
             user = None
 

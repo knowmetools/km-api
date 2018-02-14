@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
     # Third Party Apps
     'dry_rest_permissions',
+    'rest_email_auth',
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -87,11 +88,8 @@ WSGI_APPLICATION = 'km_api.wsgi.application'
 # Authentication configuration
 
 AUTHENTICATION_BACKENDS = (
-    'account.authentication.AuthenticationBackend',
+    'rest_email_auth.authentication.VerifiedEmailBackend',
 )
-PASSWORD_RESET_KEY_LENGTH = 64
-PASSWORD_RESET_EXPIRATION_HOURS = 1
-PASSWORD_RESET_LINK_TEMPLATE = 'example.com/reset-password/?key={key}'
 
 
 # Custom user model
@@ -133,9 +131,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # Email Configuration
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_CONFIRMATION_EXPIRATION_DAYS = 1
-EMAIL_CONFIRMATION_KEY_LENGTH = 64
-EMAIL_CONFIRMATION_LINK_TEMPLATE = 'example.com/confirm-email?key={key}'
 
 
 # Internationalization
@@ -176,6 +171,15 @@ LAYER_RSA_KEY_FILE_PATH = os.path.join(BASE_DIR, 'layer.pem')
 # Mailchimp Configuration
 
 MAILCHIMP_ENABLED = False
+
+
+# Rest Email Auth
+
+REST_EMAIL_AUTH = {
+    'EMAIL_VERIFICATION_URL': 'https://example.com/verify/{key}',
+    'PASSWORD_RESET_URL': 'https://example.com/reset/{key}',
+    'REGISTRATION_SERIALIZER': 'account.serializers.RegistrationSerializer',
+}
 
 
 # Rest Framework

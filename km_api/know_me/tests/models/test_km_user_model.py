@@ -106,17 +106,16 @@ def test_share_existing_user(email_factory, km_user_factory, user_factory):
     km_user = km_user_factory()
 
     user = user_factory()
-    email_factory(email=user.email, user=user, verified=True)
 
     accessor = km_user.share(
-        user.email,
+        user.primary_email.email,
         can_write=True,
         has_private_profile_access=True)
 
     assert km_user.km_user_accessors.count() == 1
 
     assert accessor.can_write
-    assert accessor.email == user.email
+    assert accessor.email == user.primary_email.email
     assert accessor.has_private_profile_access
     assert accessor.user_with_access == user
 
@@ -132,13 +131,13 @@ def test_share_existing_user_unverified_email(
     km_user = km_user_factory()
 
     user = user_factory()
-    email_factory(email=user.email, user=user, verified=False)
+    email = email_factory(is_verified=False, user=user)
 
-    accessor = km_user.share(user.email)
+    accessor = km_user.share(email.email)
 
     assert km_user.km_user_accessors.count() == 1
 
-    assert accessor.email == user.email
+    assert accessor.email == email.email
     assert accessor.user_with_access is None
 
 

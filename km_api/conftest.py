@@ -12,7 +12,6 @@ import pytest
 
 from rest_framework.test import APIClient, APIRequestFactory
 
-from account.factories import EmailFactory
 import factories
 
 
@@ -94,7 +93,7 @@ def email_factory(db):
     Returns:
         The factory class used to create ``EmailAddress`` instances.
     """
-    return EmailFactory
+    return factories.EmailFactory
 
 
 @pytest.fixture

@@ -105,7 +105,7 @@ def test_serialize(
     km_user = km_user_factory()
     user = user_factory()
     km_user_accessor = km_user_accessor_factory(
-        email=user.email,
+        email=user.primary_email.email,
         km_user=km_user,
         user_with_access=user)
 
