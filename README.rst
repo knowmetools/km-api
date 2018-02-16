@@ -13,10 +13,10 @@ Know Me API
 
 
 API Root
-  https://new-api.knowmetools.com
+  https://toolbox.knowmetools.com
 
 API Endpoint Documentation
-  https://new-api.knowmetools.com/docs/
+  https://toolbox.knowmetools.com/docs/
 
 Developer Documentation
   http://know-me-api.readthedocs.io/

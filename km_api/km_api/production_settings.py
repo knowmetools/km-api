@@ -5,12 +5,6 @@ import datetime
 
 from km_api.settings import *       # noqa
 
-
-ALLOWED_HOSTS = [
-    '.new-api.knowmetools.com',
-    'localhost',
-]
-
 DEBUG = False
 
 

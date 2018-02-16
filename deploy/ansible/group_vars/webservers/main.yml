@@ -1,11 +1,11 @@
 ---
 # NGINX Configuration
 
-nginx_site_conf_name: "{{ domain_name }}.conf"
+nginx_site_conf_name: "{{ inventory_hostname }}.conf"
 nginx_socket: 'http://{{ gunicorn_socket_unix }}'
 
 nginx_site_servers:
-  - name: "{{ domain_name }}"
+  - name: "{{ inventory_hostname }}"
     listen: 80
     extra_params: |
           location = /favicon.ico {
@@ -14,9 +14,12 @@ nginx_site_servers:
 
           location / {
               include proxy_params;
-              proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
               proxy_pass {{ nginx_socket }};
           }
+
+
+# Letsencrypt Settings
+letsencrypt_email: tech@knowmetools.com
 
 
 # Layer Configuration
@@ -41,7 +44,7 @@ app_required_packages:
 
 django_settings_module: km_api.production_settings
 
-django_debug: no
+django_debug: false
 django_secret_key: "{{ vault_django_secret_key }}"
 
 django_databases:
@@ -50,7 +53,7 @@ django_databases:
     NAME: "{{ db_name }}"
     USER: "{{ db_username }}"
     PASSWORD: "{{ db_password }}"
-    HOST: "{{ db_instance.endpoint }}"
+    HOST: "{{ db_endpoint }}"
     PORT: 5432
 
 django_manage_commands:
@@ -58,12 +61,16 @@ django_manage_commands:
 
 
 django_project_settings:
+  ALLOWED_HOSTS:
+    - localhost
+    - "{{ inventory_hostname }}"
+
   AWS_STORAGE_BUCKET_NAME: "'{{ static_bucket }}'"
   LAYER_KEY_ID: "'{{ vault_layer_key_id }}'"
   LAYER_PROVIDER_ID: "'{{ vault_layer_provider_id }}'"
   LAYER_RSA_KEY_FILE_PATH: "'{{ layer_private_key_dest }}'"
   MAILCHIMP_API_KEY: "'{{ vault_mailchimp_api_key }}'"
-  MAILCHIMP_ENABLED: yes
+  MAILCHIMP_ENABLED: true
   MAILCHIMP_LIST_ID: "'{{ mailchimp_list_id }}'"
   RAVEN_CONFIG:
     dsn: "{{ vault_sentry_dsn }}"
@@ -73,7 +80,7 @@ django_project_settings:
 
 django_logging:
   version: 1
-  disable_existing_loggers: no
+  disable_existing_loggers: false
   formatters:
     standard:
       datefmt: '%d/%b/%Y %H:%M:%S'
@@ -106,14 +113,14 @@ django_logging:
       handlers:
         - sentry
         - watchtower
-      propagate: no
+      propagate: false
     django.request:
       level: ERROR
-      propagate: yes
+      propagate: true
     django.security.DisallowedHost:
       handlers:
         - 'null'
-      propagate: no
+      propagate: false
     generic_rest_views:
       level: INFO
       handlers:
@@ -135,6 +142,11 @@ django_logging:
         - sentry
         - watchtower
     permission_utils:
+      level: INFO
+      handlers:
+        - sentry
+        - watchtower
+    rest_email_auth:
       level: INFO
       handlers:
         - sentry
