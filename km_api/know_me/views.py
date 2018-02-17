@@ -468,8 +468,12 @@ class ProfileItemListView(generics.ListCreateAPIView):
         """
         context = super().get_serializer_context()
 
-        context['km_user'] = models.KMUser.objects.get(
-            profile__topic__pk=self.kwargs.get('pk'))
+        pk = self.kwargs.get('pk', None)
+        if pk is None:
+            context['km_user'] = None
+        else:
+            context['km_user'] = models.KMUser.objects.get(
+                profile__topic__pk=pk)
 
         return context
 
