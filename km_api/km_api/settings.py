@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import datetime
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -158,14 +157,6 @@ MEDIA_URL = '/media/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
-
-
-# Layer Configuration
-
-LAYER_IDENTITY_EXPIRATION = datetime.timedelta(minutes=5)
-LAYER_KEY_ID = 'layer:///keys/sample'
-LAYER_PROVIDER_ID = 'layer:///provider/'
-LAYER_RSA_KEY_FILE_PATH = os.path.join(BASE_DIR, 'layer.pem')
 
 
 # Mailchimp Configuration

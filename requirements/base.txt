@@ -6,7 +6,5 @@ dry-rest-permissions == 0.1.9
 mailchimp3 == 2.0.18
 Markdown == 2.6.9
 Pillow == 4.3.0
-pycrypto == 2.6.1
 Pygments == 2.2.0
-PyJWT == 1.5.3
 requests == 2.18.4

@@ -111,9 +111,6 @@ ENV/
 km_api/media/
 km_api/static/
 
-# Layer Key
-layer.pem
-
 # Mac Development Environments
 **/.DS_Store
 

@@ -19,13 +19,8 @@ nginx_site_servers:
 
 
 # Letsencrypt Settings
+
 letsencrypt_email: tech@knowmetools.com
-
-
-# Layer Configuration
-
-layer_private_key: "{{ vault_layer_private_key }}"
-layer_private_key_owner: "{{ gunicorn_user }}"
 
 
 # Django Configuration
@@ -66,9 +61,6 @@ django_project_settings:
     - "{{ inventory_hostname }}"
 
   AWS_STORAGE_BUCKET_NAME: "'{{ static_bucket }}'"
-  LAYER_KEY_ID: "'{{ vault_layer_key_id }}'"
-  LAYER_PROVIDER_ID: "'{{ vault_layer_provider_id }}'"
-  LAYER_RSA_KEY_FILE_PATH: "'{{ layer_private_key_dest }}'"
   MAILCHIMP_API_KEY: "'{{ vault_mailchimp_api_key }}'"
   MAILCHIMP_ENABLED: true
   MAILCHIMP_LIST_ID: "'{{ mailchimp_list_id }}'"
@@ -121,11 +113,6 @@ django_logging:
       handlers:
         - 'null'
       propagate: false
-    generic_rest_views:
-      level: INFO
-      handlers:
-        - sentry
-        - watchtower
     km_auth:
       level: INFO
       handlers:
@@ -137,11 +124,6 @@ django_logging:
         - sentry
         - watchtower
     mailing_list:
-      level: INFO
-      handlers:
-        - sentry
-        - watchtower
-    permission_utils:
       level: INFO
       handlers:
         - sentry
