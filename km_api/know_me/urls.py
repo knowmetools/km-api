@@ -13,6 +13,11 @@ user_detail_endpoints = [
         name='km-user-detail'),
 
     url(
+        r'^media-resource-categories/$',
+        views.MediaResourceCategoryListView.as_view(),
+        name='media-resource-category-list'),
+
+    url(
         r'^media-resources/$',
         views.MediaResourceListView.as_view(),
         name='media-resource-list'),
@@ -38,4 +43,9 @@ urlpatterns = [
     url(r'^users/$', views.KMUserListView.as_view(), name='km-user-list'),
     url(r'^users/accessors/$', views.AccessorListView.as_view(), name='accessor-list'),                                             # noqa
     url(r'^users/(?P<pk>[0-9]+)/', include(user_detail_endpoints)),
+
+    url(
+        r'^media-resource-categories/(?P<pk>[0-9]+)/$',
+        views.MediaResourceCategoryDetailView.as_view(),
+        name='media-resource-category-detail'),
 ]

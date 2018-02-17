@@ -798,7 +798,7 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
         return self.km_user.user == request.user
 
 
-class MediaResourceCategory(models.Model):
+class MediaResourceCategory(mixins.IsAuthenticatedMixin, models.Model):
     """
     Category that a media resource can be placed in.
     """
@@ -826,6 +826,34 @@ class MediaResourceCategory(models.Model):
             The category's name.
         """
         return self.name
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            The permissions granted by the instance's parent Know Me
+            user.
+        """
+        return self.km_user.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            The permissions granted by the instance's parent Know Me
+            user.
+        """
+        return self.km_user.has_object_write_permission(request)
 
 
 class Profile(mixins.IsAuthenticatedMixin, models.Model):

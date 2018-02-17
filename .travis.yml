@@ -16,9 +16,12 @@ install:
 
 script:
   - flake8
-  - coverage run -m pytest km_api/
+  - COVERAGE_FILE=.coverage.unit coverage run -m pytest -m "not integration" km_api/
+  - COVERAGE_FILE=.coverage.int coverage run -m pytest -m "integration" km_api/
 
-after_success: codecov
+after_success:
+  - coverage combine
+  - codecov
 
 
 notifications:

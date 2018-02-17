@@ -8,7 +8,10 @@ from .km_user_serializers import (                                      # noqa
     KMUserListSerializer,
 )
 
-from .media_resource_serializers import MediaResourceSerializer         # noqa
+from .media_resource_serializers import (                               # noqa
+    MediaResourceCategorySerializer,
+    MediaResourceSerializer,
+)
 
 from .profile_item_content_serializers import (                         # noqa
     ImageContentSerializer,

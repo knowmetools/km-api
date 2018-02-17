@@ -7,6 +7,17 @@ from know_me import models
 from dry_rest_permissions.generics import DRYPermissionsField
 
 
+class MediaResourceCategorySerializer(serializers.ModelSerializer):
+    """
+    Serializer for ``MediaResourceCategory`` instances.
+    """
+
+    class Meta:
+        fields = ('id', 'km_user', 'name')
+        model = models.MediaResourceCategory
+        read_only_fields = ('km_user',)
+
+
 class MediaResourceSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for ``MediaResource`` instances.
