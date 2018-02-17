@@ -8,6 +8,9 @@ Breaking Changes
   * Switched to third party account management package. This modified the endpoints used for email management, password resets, and registration. Also, the transition removed a lot of our account related models and modified their migrations. This means the existing database must be wiped and recreated.
   * :issue:`239`: Removed Layer integration. This means Layer authentication tokens can no longer be obtained from the API.
 
+Bug Fixes
+  * :issue:`219`: Fix issue with API docs causing a server error.
+
 
 v0.6.1
 ------

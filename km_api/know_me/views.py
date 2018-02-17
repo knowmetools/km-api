@@ -403,8 +403,13 @@ class ProfileItemDetailView(generics.RetrieveUpdateAPIView):
         """
         context = super().get_serializer_context()
 
-        context['km_user'] = models.KMUser.objects.get(
-            profile__topic__pk=self.kwargs.get('pk'))
+        try:
+            km_user = models.KMUser.objects.get(
+                profile__topic__pk=self.kwargs.get('pk'))
+        except models.KMUser.DoesNotExist:
+            km_user = None
+
+        context['km_user'] = km_user
 
         return context
 
