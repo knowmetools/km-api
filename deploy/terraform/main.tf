@@ -130,10 +130,10 @@ resource "aws_s3_bucket" "static" {
   bucket_prefix = "${local.app_name}-static"
   region        = "${var.aws_region}"
 
-  # cors_rule {
-  #   allowed_methods = ["GET"]
-  #   allowed_origins = ["*"]
-  # }
+  cors_rule {
+    allowed_methods = ["GET"]
+    allowed_origins = ["*"]
+  }
 
   tags {
     Application = "${local.app_name}"
