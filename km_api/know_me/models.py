@@ -388,6 +388,45 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         """
         return reverse('know-me:km-user-detail', kwargs={'pk': self.pk})
 
+    def get_gallery_url(self, request=None):
+        """
+        Get the absolute URL of the instance's gallery view.
+
+        Args:
+            request (optional):
+                A request used as context when constructing the URL. If
+                given, the resulting URL will be a full URI with a
+                protocol and domain name.
+
+        Returns:
+            str:
+                The absolute URL of the instance's gallery view.
+        """
+        return reverse(
+            'know-me:gallery',
+            kwargs={'pk': self.pk},
+            request=request)
+
+    def get_media_resource_category_list_url(self, request=None):
+        """
+        Get the absolute URL of the instance's media resource category view.
+
+        Args:
+            request (optional):
+                A request used as context when constructing the URL. If
+                given, the resulting URL will be a full URI with a
+                protocol and domain name.
+
+        Returns:
+            str:
+                The absolute URL of the instance's media resource
+                category view.
+        """
+        return reverse(
+            'know-me:media-resource-category-list',
+            kwargs={'pk': self.pk},
+            request=request)
+
     def get_profile_list_url(self, request=None):
         """
         Get the absolute URL of the instance's profile list view.
@@ -798,7 +837,7 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
         return self.km_user.user == request.user
 
 
-class MediaResourceCategory(models.Model):
+class MediaResourceCategory(mixins.IsAuthenticatedMixin, models.Model):
     """
     Category that a media resource can be placed in.
     """
@@ -826,6 +865,47 @@ class MediaResourceCategory(models.Model):
             The category's name.
         """
         return self.name
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            str:
+                The absolute URL of the instance's detail view.
+        """
+        return reverse('know-me:media-resource-category-detail',
+                       kwargs={'pk': self.pk})
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user is allowed to read
+                from the instance and ``False`` otherwise.
+        """
+        return self.km_user.user == request.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            bool:
+                ``True`` if the requesting user is allowed to write to the
+                instance and ``False`` otherwise.
+        """
+        return self.km_user.user == request.user
 
 
 class Profile(mixins.IsAuthenticatedMixin, models.Model):
@@ -922,8 +1002,8 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
 
         Returns:
             bool:
-                ``True`` if the requesting user owns the profile's parent
-                km_user and ``False`` otherwise.
+                ``True`` if the requesting user is allowed to write to instance
+                ``False`` otherwise.
         """
         return request.user == self.km_user.user
 

@@ -246,10 +246,59 @@ class ListEntryDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.ListEntrySerializer
 
 
+class MediaResourceCategoryListView(generics.ListCreateAPIView):
+    """
+    get:
+    Endpoint for listing the Media Resource Categories of the specified
+    Know Me user.
+
+    post:
+    Endpoint for creating a new profile for the specified Know Me user.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.MediaResourceCategory.objects.all()
+    serializer_class = serializers.MediaResourceCategorySerializer
+
+    def perform_create(self, serializer):
+        """
+        Create a new Media Resource Category for the given km_user.
+
+        Args:
+            serializer:
+                The serializer containing the data received.
+
+        Returns:
+            The newly created ``Media Resource Category`` instance.
+        """
+        km_user = get_object_or_404(
+            models.KMUser,
+            pk=self.kwargs.get('pk'),
+            user=self.request.user)
+
+        return serializer.save(km_user=km_user)
+
+
+class MediaResourceCategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    get:
+    Endpoint for retrieving the details of a specific category.
+
+    put:
+    Endpoint for updating the details of a specific category.
+
+    patch:
+    Endpoint for partially updating the details of a specific category.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.MediaResourceCategory.objects.all()
+    serializer_class = serializers.MediaResourceCategorySerializer
+
+
 class MediaResourceDetailView(generics.RetrieveUpdateAPIView):
     """
     get:
     Endpoint for retrieving the details of a specific media resource.
+
 
     put:
     Endpoint for updating the details of a specific media resource.
