@@ -1,23 +1,24 @@
 from know_me import serializers
+from know_me.profile.factories import ProfileFactory
+from know_me.profile.serializers import ProfileListSerializer
 
 
 def test_serialize(
         api_rf,
         image,
         km_user_factory,
-        profile_factory,
         serializer_context):
     """
     Test serializing a km_user.
     """
     km_user = km_user_factory(image=image)
-    profile_factory(km_user=km_user)
-    profile_factory(km_user=km_user)
+    ProfileFactory(km_user=km_user)
+    ProfileFactory(km_user=km_user)
 
     serializer = serializers.KMUserDetailSerializer(
         km_user,
         context=serializer_context)
-    profile_serializer = serializers.ProfileListSerializer(
+    profile_serializer = ProfileListSerializer(
         km_user.profiles,
         context=serializer_context,
         many=True)
@@ -25,7 +26,9 @@ def test_serialize(
     request = serializer_context['request']
 
     url = api_rf.get(km_user.get_absolute_url()).build_absolute_uri()
+    category_url = km_user.get_media_resource_category_list_url(request)
     image_url = api_rf.get(km_user.image.url).build_absolute_uri()
+    media_resource_request = api_rf.get(km_user.get_media_resource_list_url())
     profile_list_url = km_user.get_profile_list_url(request)
 
     expected = {
@@ -34,6 +37,8 @@ def test_serialize(
         'name': km_user.name,
         'quote': km_user.quote,
         'image': image_url,
+        'media_resource_categories_url': category_url,
+        'media_resources_url': media_resource_request.build_absolute_uri(),
         'profiles_url': profile_list_url,
         'profiles': profile_serializer.data,
     }

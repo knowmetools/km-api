@@ -114,6 +114,27 @@ def image():
         name='foo.png')
 
 
+@pytest.fixture(scope='session')
+def serialized_time():
+    """
+    Fixture to get a function that returns a serialized version of a
+    datetime instance.
+
+    The output matches that of DRF's DateTimeField.
+
+    Logic taken from:
+    https://github.com/encode/django-rest-framework/blob/6ea7d05979695cfb9db6ec3946d031b02a82952c/rest_framework/fields.py#L1217-L1221
+    """
+    def f(time):
+        formatted = time.isoformat()
+        if formatted.endswith('+00:00'):
+            formatted = formatted[:-6] + 'Z'
+
+        return formatted
+
+    return f
+
+
 @pytest.fixture
 def serializer_context(api_rf):
     """

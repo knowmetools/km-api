@@ -7,6 +7,9 @@ Changelog
 v0.8.0
 ******
 
+Breaking Changes
+  * :issue:`253`: Massive rewrite of profile features. This is a backwards incompatible change that modifies endpoints, the data returned from profile endpoints, and requires a complete database wipe.
+
 Miscellaneous
   * :issue:`211`: Remove old "emergency" models.
 
