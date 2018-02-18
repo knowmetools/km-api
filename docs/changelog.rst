@@ -2,6 +2,15 @@
 Changelog
 #########
 
+
+******
+v0.7.1
+******
+
+Bug Fixes
+  * :issue:`244`: Fix issue with registration serializer.
+
+
 ******
 v0.7.0
 ******
