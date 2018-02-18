@@ -1,5 +1,0 @@
----
-app_name: app
-
-layer_private_key_dest: /etc/{{ app_name }}/certs/layer.pem
-layer_private_key_owner: root
