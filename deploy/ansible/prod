@@ -1,0 +1,6 @@
+[webservers]
+toolbox.knowmetools.com
+
+[webservers:vars]
+ansible_python_interpreter = python3
+env = prod
