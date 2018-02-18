@@ -20,30 +20,6 @@ def create_file():
         name='foo.txt')
 
 
-class EmergencyItemFactory(factory.django.DjangoModelFactory):
-    """
-    Factory for generating ``EmergencyItem`` instances.
-    """
-    name = factory.Sequence(lambda n: 'Emergency Item {n}'.format(n=n))
-    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
-
-    class Meta:
-        model = models.EmergencyItem
-
-
-class EmergencyContactFactory(factory.django.DjangoModelFactory):
-    """
-    Factory for generating ``EmergencyContact`` instances.
-    """
-    km_user = factory.SubFactory('know_me.factories.KMUserFactory')
-    name = factory.Sequence(lambda n: 'Contact Name {n}'.format(n=n))
-    relation = 'Caregiver'
-    phone_number = '19193334444'
-
-    class Meta:
-        model = models.EmergencyContact
-
-
 class ImageContentFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``ImageContent`` instances.

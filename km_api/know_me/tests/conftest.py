@@ -9,17 +9,6 @@ from know_me import factories
 
 
 @pytest.fixture
-def emergency_item_factory(db):
-    """
-    Fixture to get the factory used to create emergency items.
-
-    Returns:
-        The factory class used to create test ``EmergencyItem`` instances.
-    """
-    return factories.EmergencyItemFactory
-
-
-@pytest.fixture
 def file():
     """
     Fixture to get a file suitable for a ``FileField``.
@@ -65,17 +54,6 @@ def km_user_factory(db):
         The factory class used to create test ``KMUser`` instances.
     """
     return factories.KMUserFactory
-
-
-@pytest.fixture
-def emergency_contact_factory(db):
-    """
-    Fixture to get the factory used to create an Emergency Contact.
-
-    Returns:
-        The factory class used to create test ``EmergencyContact`` instances.
-    """
-    return factories.EmergencyContactFactory
 
 
 @pytest.fixture

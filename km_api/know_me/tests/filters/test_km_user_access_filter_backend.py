@@ -1,8 +1,8 @@
 """
 Tests for the KMUserAccessFilterBackend class.
 
-Note that the use of the ``EmergencyContact`` model is just an example.
-We could use any model that has a ``km_user`` owner.
+Note that the use of the ``Profile`` model is just an example. We could
+use any model that has a ``km_user`` owner.
 """
 
 from unittest import mock
@@ -16,16 +16,16 @@ from know_me import filters, models
 
 def test_filter_list_by_km_user(
         api_rf,
-        emergency_contact_factory,
-        km_user_factory):
+        km_user_factory,
+        profile_factory):
     """
     The filter backend should include items owned by the requesting user
     if that user's ID is also given in the URL.
     """
     km_user = km_user_factory()
 
-    emergency_contact_factory(km_user=km_user)
-    emergency_contact_factory()
+    profile_factory(km_user=km_user)
+    profile_factory()
 
     api_rf.user = km_user.user
     request = api_rf.get('/')
@@ -36,10 +36,10 @@ def test_filter_list_by_km_user(
     backend = filters.KMUserAccessFilterBackend()
     result = backend.filter_queryset(
         request,
-        models.EmergencyContact.objects.all(),
+        models.Profile.objects.all(),
         view)
 
-    expected = km_user.emergency_contacts.all()
+    expected = km_user.profiles.all()
 
     assert list(result) == list(expected)
 
@@ -60,7 +60,7 @@ def test_filter_list_non_existent_user(api_rf, user_factory):
     with pytest.raises(Http404):
         backend.filter_queryset(
             request,
-            models.EmergencyContact.objects.all(),
+            models.Profile.objects.all(),
             view)
 
 
@@ -85,20 +85,20 @@ def test_filter_list_inaccessible_user(
     with pytest.raises(Http404):
         backend.filter_queryset(
             request,
-            models.EmergencyContact.objects.all(),
+            models.Profile.objects.all(),
             view)
 
 
 def test_filter_list_shared(
         api_rf,
-        emergency_contact_factory,
         km_user_accessor_factory,
+        profile_factory,
         user_factory):
     """
     The filter should include items where the requesting user has been
     granted access to the specified Know Me user through an accessor.
     """
-    contact = emergency_contact_factory()
+    contact = profile_factory()
     km_user = contact.km_user
 
     user = user_factory()
@@ -116,24 +116,24 @@ def test_filter_list_shared(
     backend = filters.KMUserAccessFilterBackend()
     filtered = backend.filter_queryset(
         request,
-        models.EmergencyContact.objects.all(),
+        models.Profile.objects.all(),
         view)
 
-    expected = km_user.emergency_contacts.all()
+    expected = km_user.profiles.all()
 
     assert list(filtered) == list(expected)
 
 
 def test_filter_list_shared_not_accepted(
         api_rf,
-        emergency_contact_factory,
         km_user_accessor_factory,
+        profile_factory,
         user_factory):
     """
     If the accessor has not been accepted then access to the shared
     items should not be granted.
     """
-    contact = emergency_contact_factory()
+    contact = profile_factory()
     km_user = contact.km_user
 
     user = user_factory()
@@ -153,5 +153,5 @@ def test_filter_list_shared_not_accepted(
     with pytest.raises(Http404):
         backend.filter_queryset(
             request,
-            models.EmergencyContact.objects.all(),
+            models.Profile.objects.all(),
             view)

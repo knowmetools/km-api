@@ -4,6 +4,14 @@ Changelog
 
 
 ******
+v0.8.0
+******
+
+Miscellaneous
+  * :issue:`211`: Remove old "emergency" models.
+
+
+******
 v0.7.1
 ******
 
