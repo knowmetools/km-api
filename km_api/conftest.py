@@ -12,7 +12,6 @@ import pytest
 
 from rest_framework.test import APIClient, APIRequestFactory
 
-from account.factories import EmailFactory
 import factories
 
 
@@ -94,7 +93,7 @@ def email_factory(db):
     Returns:
         The factory class used to create ``EmailAddress`` instances.
     """
-    return EmailFactory
+    return factories.EmailFactory
 
 
 @pytest.fixture
@@ -108,11 +107,11 @@ def image():
     image = PIL.Image.new('RGB', (200, 200), 'red')
 
     out_stream = io.BytesIO()
-    image.save(out_stream, format='JPEG')
+    image.save(out_stream, format='png')
 
     return ContentFile(
         content=out_stream.getvalue(),
-        name='foo.jpg')
+        name='foo.png')
 
 
 @pytest.fixture

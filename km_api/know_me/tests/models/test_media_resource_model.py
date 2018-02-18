@@ -3,11 +3,12 @@ from rest_framework.reverse import reverse
 from know_me import models
 
 
-def test_create(file, km_user_factory):
+def test_create(file, km_user_factory, media_resource_category_factory):
     """
     Test creating a media resource.
     """
     models.MediaResource.objects.create(
+        category=media_resource_category_factory(),
         name='Media Resource',
         km_user=km_user_factory(),
         file=file)

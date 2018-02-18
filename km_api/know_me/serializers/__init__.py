@@ -1,10 +1,6 @@
 """Serializers for the models from the ``know_me`` module.
 """
 
-from .emergency_contact_serializers import EmergencyContactSerializer   # noqa
-
-from .emergency_item_serializers import EmergencyItemSerializer         # noqa
-
 from .km_user_accessor_serializers import KMUserAccessorSerializer      # noqa
 
 from .km_user_serializers import (                                      # noqa
@@ -12,7 +8,10 @@ from .km_user_serializers import (                                      # noqa
     KMUserListSerializer,
 )
 
-from .media_resource_serializers import MediaResourceSerializer         # noqa
+from .media_resource_serializers import (                               # noqa
+    MediaResourceCategorySerializer,
+    MediaResourceSerializer,
+)
 
 from .profile_item_content_serializers import (                         # noqa
     ImageContentSerializer,

@@ -24,7 +24,6 @@ def test_create_admin():
 
     admin = get_user_model().objects.get()
 
-    assert admin.email == os.environ['ADMIN_EMAIL']
     assert admin.check_password(os.environ['ADMIN_PASSWORD'])
     assert admin.first_name == 'Admin'
     assert admin.last_name == 'User'
@@ -35,8 +34,8 @@ def test_create_admin():
     email = admin.email_addresses.get()
 
     assert email.email == os.environ['ADMIN_EMAIL']
-    assert email.primary
-    assert email.verified
+    assert email.is_primary
+    assert email.is_verified
 
 
 def test_create_admin_user_exists(email_factory, user_factory):
@@ -44,7 +43,7 @@ def test_create_admin_user_exists(email_factory, user_factory):
     If the user already exists, their information should be updated.
     """
     user = user_factory(password='oldpassword')
-    email = email_factory(email=user.email, user=user)
+    email = user.primary_email
 
     os.environ['ADMIN_EMAIL'] = email.email
     os.environ['ADMIN_PASSWORD'] = 'newpassword'
@@ -61,4 +60,4 @@ def test_create_admin_user_exists(email_factory, user_factory):
     assert user.is_staff
     assert user.is_superuser
 
-    assert email.verified
+    assert email.is_verified

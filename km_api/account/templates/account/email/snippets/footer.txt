@@ -1,1 +1,0 @@
-{% load i18n %}{% blocktrans %}This email was sent from an unmonitored address. If you need to contact us please send an email to team@knowmetools.com.{% endblocktrans %}

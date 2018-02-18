@@ -8,7 +8,7 @@ def test_get_info(user_factory):
     """
     user = user_factory()
     expected = {
-        'email_address': user.email,
+        'email_address': user.primary_email.email,
         'merge_fields': {
             'FNAME': user.first_name,
             'LNAME': user.last_name,

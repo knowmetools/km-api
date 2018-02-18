@@ -3,7 +3,7 @@ import logging
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from account.models import EmailAddress
+from rest_email_auth.models import EmailAddress
 
 from know_me import models
 
@@ -35,7 +35,7 @@ def update_accessor(instance, **kwargs):
     except models.KMUserAccessor.DoesNotExist:
         return
 
-    if instance.verified:
+    if instance.is_verified:
         accessor.user_with_access = instance.user
         accessor.save()
 

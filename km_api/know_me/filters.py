@@ -4,12 +4,12 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from dry_rest_permissions.generics import DRYPermissionFiltersBase
+from rest_framework import filters
 
 from know_me import models
 
 
-class KMUserAccessFilterBackend(DRYPermissionFiltersBase):
+class KMUserAccessFilterBackend(filters.BaseFilterBackend):
     """
     Filter for listing items owned by a Know Me user.
 
@@ -19,7 +19,7 @@ class KMUserAccessFilterBackend(DRYPermissionFiltersBase):
          user whose ID is provided in the request.
     """
 
-    def filter_list_queryset(self, request, queryset, view):
+    def filter_queryset(self, request, queryset, view):
         """
         Filter items for a list action.
 

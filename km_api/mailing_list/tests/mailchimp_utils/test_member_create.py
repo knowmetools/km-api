@@ -68,7 +68,7 @@ def test_create_member_exists(mock_mc_client, user_factory):
     assert mock_mc_client.lists.members.update.call_args[1] == {
         'data': mailchimp_utils.get_member_info(user),
         'list_id': 'list',
-        'subscriber_hash': user.email,
+        'subscriber_hash': user.primary_email.email,
     }
 
     assert models.MailchimpUser.objects.count() == 1

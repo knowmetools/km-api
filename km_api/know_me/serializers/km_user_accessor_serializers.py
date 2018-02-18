@@ -17,6 +17,29 @@ class KMUserAccessorSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
 
     class Meta:
+        extra_kwargs = {
+            'accepted': {
+                'help_text': ("A boolean indicating if the accessor has been "
+                              "accepted. This field may only be updated by "
+                              "the invited user."),
+            },
+            'can_write': {
+                'help_text': ("A boolean indicating if the accessor grants "
+                              "write access to profiles. This field may only "
+                              "be updated by the accessor owner."),
+            },
+            'email': {
+                'help_text': ("The email address of the user to grant access "
+                              "to. Once created the email may not be "
+                              "changed."),
+            },
+            'has_private_profile_access': {
+                'help_text': ("A boolean indicating if the accessor grants "
+                              "access to profiles marked as 'private'. This "
+                              "field may only be updated by the accessor "
+                              "owner."),
+            }
+        }
         fields = (
             'url',
             'accepted',

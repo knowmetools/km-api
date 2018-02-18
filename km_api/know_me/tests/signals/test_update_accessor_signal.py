@@ -3,10 +3,10 @@ def test_update_accessor_user(email_factory, km_user_accessor_factory):
     When an email address matching an accessor that has no user is saved
     the accessor's user should be updated.
     """
-    email = email_factory(verified=False)
+    email = email_factory(is_verified=False)
     accessor = km_user_accessor_factory(email=email.email)
 
-    email.verified = True
+    email.is_verified = True
     email.save()
 
     accessor.refresh_from_db()
@@ -21,7 +21,7 @@ def test_update_accessor_user_unverified_email(
     If the email address is not verified, the accessor should not be
     updated.
     """
-    email = email_factory(verified=False)
+    email = email_factory(is_verified=False)
     accessor = km_user_accessor_factory(email=email.email)
 
     email.save()
@@ -40,7 +40,7 @@ def test_update_accessor_with_user(
     updated.
     """
     user = user_factory()
-    email = email_factory(verified=True)
+    email = email_factory(is_verified=True)
     accessor = km_user_accessor_factory(
         email=email.email,
         user_with_access=user)

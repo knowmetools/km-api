@@ -29,29 +29,6 @@ class ListEntryInline(admin.StackedInline):
 # Standard admin objects
 
 
-@admin.register(models.EmergencyItem)
-class EmergencyItemAdmin(admin.ModelAdmin):
-    """
-    Admin for the ``EmergencyItem`` model.
-    """
-    fields = ('name', 'km_user', 'media_resource', 'description')
-    list_display = ('name', 'km_user')
-    search_fields = ('name',)
-
-
-@admin.register(models.EmergencyContact)
-class EmergencyContactAdmin(admin.ModelAdmin):
-    """
-    Admin for the ``EmergencyContact`` model.
-    """
-    fields = (
-        'km_user', 'name', 'relation', 'phone_number', 'alt_phone_number',
-        'email'
-    )
-    list_display = ('name', 'km_user')
-    search_fields = ('name',)
-
-
 @admin.register(models.KMUser)
 class KMUserAdmin(admin.ModelAdmin):
     """
@@ -125,14 +102,24 @@ class MediaResourceAdmin(admin.ModelAdmin):
     search_fields = ('name', 'km_user__user__name')
 
 
+@admin.register(models.MediaResourceCategory)
+class MediaResourceCategoryAdmin(admin.ModelAdmin):
+    """
+    Admin for the ``MediaResourceCategory`` model.
+    """
+    fields = ('km_user', 'name')
+    list_display = ('name', 'km_user')
+    search_fields = ('name',)
+
+
 @admin.register(models.Profile)
 class ProfileAdmin(admin.ModelAdmin):
     """
     Admin for the ``Profile`` model.
     """
-    fields = ('name', 'km_user', 'is_default', 'is_private')
-    list_display = ('name', 'km_user', 'is_default', 'is_private')
-    list_filter = ('is_default', 'is_private')
+    fields = ('name', 'km_user', 'is_private')
+    list_display = ('name', 'km_user', 'is_private')
+    list_filter = ('is_private', )
     search_fields = ('name', 'km_user__user__name')
 
 

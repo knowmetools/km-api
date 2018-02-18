@@ -1,0 +1,37 @@
+---
+- name: Install pip
+  apt:
+    name: "{{ pip_package }}"
+    cache_valid_time: "{{ apt_cache_time }}"
+
+- name: Install psycopg2
+  pip:
+    name: psycopg2
+
+- name: Create application database
+  postgresql_db:
+    login_host: "{{ db_endpoint }}"
+    login_password: "{{ db_admin_password }}"
+    login_user: "{{ db_admin_username }}"
+    name: "{{ db_name }}"
+
+- name: Create application database user
+  no_log: true
+  postgresql_user:
+    db: "{{ db_name }}"
+    login_host: "{{ db_endpoint }}"
+    login_password: "{{ db_admin_password }}"
+    login_user: "{{ db_admin_username }}"
+    name: "{{ db_username }}"
+    no_password_changes: true
+    password: "{{ db_password }}"
+
+- name: Set database user permissions
+  postgresql_privs:
+    db: "{{ db_name }}"
+    login_host: "{{ db_endpoint }}"
+    login_password: "{{ db_admin_password }}"
+    login_user: "{{ db_admin_username }}"
+    privs: ALL
+    role: "{{ db_username }}"
+    type: database

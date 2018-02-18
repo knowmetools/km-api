@@ -6,7 +6,7 @@ import os
 from django.contrib.auth import get_user_model
 from django.core.management import BaseCommand
 
-from account import models
+from rest_email_auth.models import EmailAddress
 
 
 class Command(BaseCommand):
@@ -29,9 +29,9 @@ class Command(BaseCommand):
         email = os.environ['ADMIN_EMAIL']
         password = os.environ['ADMIN_PASSWORD']
 
-        if models.EmailAddress.objects.filter(email=email).exists():
-            email_instance = models.EmailAddress.objects.get(email=email)
-            email_instance.verified = True
+        if EmailAddress.objects.filter(email=email).exists():
+            email_instance = EmailAddress.objects.get(email=email)
+            email_instance.is_verified = True
             email_instance.save()
 
             admin = email_instance.user
@@ -43,15 +43,14 @@ class Command(BaseCommand):
             self.stdout.write(self.style.NOTICE('Updated existing user.'))
         else:
             admin = get_user_model().objects.create_superuser(
-                email=email,
                 first_name='Admin',
                 last_name='User',
                 password=password)
 
-            models.EmailAddress.objects.create(
+            EmailAddress.objects.create(
                 email=email,
-                primary=True,
-                verified=True,
+                is_primary=True,
+                is_verified=True,
                 user=admin)
 
             self.stdout.write(self.style.NOTICE('Created new admin user.'))

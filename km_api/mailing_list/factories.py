@@ -26,6 +26,6 @@ class MailchimpUserFactory(factory.django.DjangoModelFactory):
             str:
                 The MD5 hash of the user's lowercased email.
         """
-        email = self.user.email.lower()
+        email = self.user.primary_email.email.lower()
 
         return hashlib.md5(email.encode('utf8')).hexdigest()

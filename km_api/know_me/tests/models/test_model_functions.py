@@ -6,7 +6,7 @@ from know_me import models
 def test_get_media_resource_upload_path():
     """
     Media Resources should be stored with their original filename in a
-    folder titled ``km_user/<id>/gallery``.
+    folder titled ``know-me/users/{id}/media-resources``.
     """
     resource = mock.Mock(name='Mock Media Resource')
     resource.km_user.id = 1

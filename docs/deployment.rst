@@ -1,108 +1,150 @@
-==========
+##########
 Deployment
-==========
+##########
 
-Deployment is handled with Ansible_ and deployed continuously with `Travis CI <travis-ci_>`_. Tagged releases are deployed to production and the ``develop``, ``hotfix/*``, and ``release/*`` branches are deployed to the staging environment.
-
-
---------
-Overview
---------
-
-The deployment is split into 3 main parts. First we provision the required infrastructure, then we bake the application into a reusable image, and finally we set up the webservers to use that image.
-
-The provisioning process first creates all the security groups that we will use and configures rules for them so they can talk to each other. Next we create an RDS instance and set up our database on it.
-
-The next part of the process is creating an image to launch our webservers from. To do this, we spin up an EC2 instance and set it up to serve our application. We then create an AMI from this machine.
-
-The last part of the process is creating an autoscaling group using the AMI we just created. The autoscaling group handles the termination of existing instances running old versions and spinning up an appropriate number of servers with the new version. This group is then placed behind a load balancer.
+We use Ansible_ and Terraform_ to deploy our application. Terraform is responsible for provisioning our infrastructure, and Ansible is used to configure our servers.
 
 
---------------------------
-Customizing the Deployment
---------------------------
+**************
+Infrastructure
+**************
 
-There are a few places containing settings controlling the deployment process .
+We use Terraform to easily provision the infrastructure for multiple environments through the use of workspaces. Each workspace corresponds to a completely separate set of resources.
 
-Non-sensitive information that affects only the application's behaviour is stored in ``km_api/km_api/production_settings.py``.
+.. note::
 
-The rest of the deployment configuration is expressed using Ansible variables.
+    The ``default`` workspace, which is what Terraform uses if you don't explicitly select a workspace, corresponds to the ``dev`` workspace.
 
-Infrastructure configuration is stored in the ``deploy/env_vars/`` folder. ``base.yml`` holds variables that are shared accross environments, while ``dev.yml`` and ``prod.yml`` store information specific to each environment.
-
-The webserver configuration is stored in ``deploy/group_vars/amibuilder/``. These variables only apply to the software on the webservers.
+Each environment ends up being available at ``<env>.toolbox.knowmetools.com``.
 
 
------------------
-Manual Deployment
------------------
+Modifying the Infrastructure
+============================
 
 Prerequisites
 -------------
 
-In order to run a deployment, you must first install the requirements.
+  * AWS credentials with the appropriate permissions
+  * Terraform must be `installed <terraform-install_>`_
 
-.. note::
 
-    Ansible defaults to using the system-wide python installation. This means that the requirements must be installed for that python version, or you can point Ansible at a different python interpreter with the ``--ansible-python-interpreter /path/to/python`` flag.
+File Organization
+-----------------
 
-The deployment requirements are listed in ``requirements/deploy.txt``::
+All Terraform code is stored in the :file:`deploy/terraform` directory. The :file:`main.tf` file contains the configuration for deploying all the infrastructure for the project. :file:`variables.tf` contains the variables used to configure the deployment and their defaults, and :file:`outputs.tf` describes what is output after applying the configuration.
 
-    $ pip install requirements/deploy.txt
 
-After installing the deployment requirements, you must also install the required Ansible roles::
+Initialization
+--------------
 
-    $ cd deploy
+Before performing any ``terraform`` commands, we must initialize Terraform. This does some basic checks and installs any necessary plugins. From the directory containing the terraform configuration, run::
+
+    $ terraform init
+
+
+Applying Changes
+----------------
+
+Applying changes to the infrastructure is broken down into two parts. First we plan out the changes that will be made::
+
+    $ terraform plan -out tfplan
+
+After ensuring that the proposed changes are reasonable, those changes can be applied::
+
+    $ terraform apply tfplan
+
+
+*************
+Configuration
+*************
+
+We use Ansible to apply software configurations to our servers.
+
+
+Modifying the Configuration Process
+===================================
+
+Prerequisites
+-------------
+
+  * SSH access to the webservers. If you were the one to provision the infrastructure, this should be set up automatically.
+  * Ansible must be `installed <ansible-install_>`_
+  * Access to the password for the Ansible Vault. This is available in the team's 1password vault.
+
+
+File Organization
+-----------------
+
+All Ansible configuration files are in the :file:`deploy/ansible` directory. The :file:`env_vars` directory contains environment specific configurations. Variables that only apply to the webservers are in the :file:`group_vars/webservers` directory.
+
+
+Deployment Requirements
+-----------------------
+
+We make use of a few different third party Ansible roles. These roles are listed in :file:`requirements.yml` and need to be installed before running the playbook::
+
     $ ansible-galaxy install -r requirements.yml
 
 
 Credentials
 -----------
 
-The deployment process requires a password to decrypt the vault used to store other credentials as well as AWS credentials with permissions for the resources we use.
+Sensitive information used in configuring our servers is stored using Ansible's Vault system. When deploying, you must be able to decrypt this vault. The easiest way to do this is store the Vault password in a file and pass that file in when running the playbook::
 
-The vault password can be found in our team password vault. Pass it to Ansible with::
+    $ echo "<vault password>" > VAULT_PASSWORD_FILE
 
-    $ echo "myvaultpass" > VAULT_PASSWORD_FILE
-    $ export ANSIBLE_VAULT_PASSWORD_FILE=VAULT_PASSWORD_FILE
+.. warning::
 
-AWS credentials can also be specified as environment variables::
+    The file name :file:`VAULT_PASSWORD_FILE` is excluded from version control by our :file:`.gitignore` configuration. If you name this file anything else, make sure it is not added to git.
 
-    $ export AWS_ACCESS_KEY_ID=your-access-key
-    $ export AWS_SECRET_ACCESS_KEY=your-secret-key
+The password can then be passed to Ansible as follows::
 
-The AWS credentials must have the following permissions:
+    $ ansible-playbook --vault-password-file VAULT_PASSWORD_FILE my-playbook.yml
 
-* EC2
 
-  * Create and edit security groups
-  * Start and stop EC2 instances
-  * Create AMIs
-  * Create and edit load balancers
-  * Create launch configurations
-  * Create and edit autoscaling groups
+Inventory
+---------
 
-* RDS
+Ansible has the concept of an inventory file which describes the servers we are targeting. A new inventory file should be created for each environment being configured. You can use the :file:`dev` inventory file as a template.
 
-  * Create and edit RDS instances
+The inventory file then needs to be passed to Ansible::
 
-* Route 53
+    $ ansible-playbook -i my-inventory-file my-playbook.yml
 
-  * Create and edit domain entries
 
-Running the Playbook
---------------------
+Extra Variables
+---------------
 
-Before deploying, make sure you are in the ``deploy/`` directory.
+Sometimes it is useful to be able to configure Ansible variables from the command line when running the playbook. This is particularly useful when you need to pass in information output from Terraform after provisioning the application's infrastructure.
 
-To deploy to staging::
+These variables are passed to Ansible at runtime with the ``-e`` flag::
 
-    $ ansible-playbook deploy.yml
+    $ ansible-playbook -e foo='bar' my-playbook.yml
 
-To deploy to production::
+Including Terraform Outputs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    $ ansible-playbook -e 'env=prod' deploy.yml
+In general, Terraform outputs can be retrieved (from the Ansible directory) with the following command::
+
+    $ cd ../terraform && terraform output <name>
+
+If used in a subshell, this can be used to dynamically include Terraform outputs when running Ansible commands.
+
+
+Example Run
+-----------
+
+Putting together all the configurations described above, an example run might look like::
+
+    $ ansible-playbook \
+        -i dev \
+        --vault-password-file VAULT_PASSWORD_FILE \
+        -e db_endpoint="$(cd ../terraform && terraform output database)" \
+        -e static_bucket="$(cd ../terraform && terraform output static_bucket)" \
+        deploy.yml
 
 
 .. _Ansible: http://docs.ansible.com/ansible/latest/index.html
-.. _travis-ci: https://travis-ci.org/knowmetools/km-api
+.. _Terraform: https://www.terraform.io/
+.. _ansible-install: http://docs.ansible.com/ansible/latest/intro_installation.html
+.. _terraform-install: https://www.terraform.io/intro/getting-started/install.html

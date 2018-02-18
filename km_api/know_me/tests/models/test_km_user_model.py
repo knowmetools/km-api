@@ -22,16 +22,6 @@ def test_get_absolute_url(km_user_factory):
     assert km_user.get_absolute_url() == expected
 
 
-def test_get_gallery_url(km_user_factory):
-    """
-    This method should return the URL of the km_user's gallery view.
-    """
-    km_user = km_user_factory()
-    expected = reverse('know-me:gallery', kwargs={'pk': km_user.pk})
-
-    assert km_user.get_gallery_url() == expected
-
-
 def test_get_profile_list_url(km_user_factory):
     """
     This method should return the URL of the profile's list view.
@@ -98,43 +88,6 @@ def test_has_object_write_permission_owner(api_rf, km_user_factory):
     assert km_user.has_object_write_permission(request)
 
 
-def test_get_emergency_contact_list_url(km_user_factory):
-    """
-    This method should return the URL of the user's emergency contact list.
-    """
-    km_user = km_user_factory()
-    expected = reverse(
-        'know-me:emergency-contact-list',
-        kwargs={'pk': km_user.pk})
-
-    assert km_user.get_emergency_contact_list_url() == expected
-
-
-def test_get_emergency_item_list_url(km_user_factory):
-    """
-    This method should return the URL of the user's emergency item list.
-    """
-    km_user = km_user_factory()
-    expected = reverse(
-        'know-me:emergency-item-list',
-        kwargs={'pk': km_user.pk})
-
-    assert km_user.get_emergency_item_list_url() == expected
-
-
-def test_get_emergency_item_list_url_full(api_rf, km_user_factory):
-    """
-    If a request is provided to the method, the returned URL should
-    include a protocol and domain name.
-    """
-    km_user = km_user_factory()
-    request = api_rf.get(km_user.get_emergency_item_list_url())
-
-    expected = request.build_absolute_uri()
-
-    assert km_user.get_emergency_item_list_url(request) == expected
-
-
 def test_name(km_user_factory):
     """
     The know me user's name property should return the associated user's
@@ -153,17 +106,16 @@ def test_share_existing_user(email_factory, km_user_factory, user_factory):
     km_user = km_user_factory()
 
     user = user_factory()
-    email_factory(email=user.email, user=user, verified=True)
 
     accessor = km_user.share(
-        user.email,
+        user.primary_email.email,
         can_write=True,
         has_private_profile_access=True)
 
     assert km_user.km_user_accessors.count() == 1
 
     assert accessor.can_write
-    assert accessor.email == user.email
+    assert accessor.email == user.primary_email.email
     assert accessor.has_private_profile_access
     assert accessor.user_with_access == user
 
@@ -179,13 +131,13 @@ def test_share_existing_user_unverified_email(
     km_user = km_user_factory()
 
     user = user_factory()
-    email_factory(email=user.email, user=user, verified=False)
+    email = email_factory(is_verified=False, user=user)
 
-    accessor = km_user.share(user.email)
+    accessor = km_user.share(email.email)
 
     assert km_user.km_user_accessors.count() == 1
 
-    assert accessor.email == user.email
+    assert accessor.email == email.email
     assert accessor.user_with_access is None
 
 

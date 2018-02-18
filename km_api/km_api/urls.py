@@ -16,10 +16,15 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
+from rest_framework.documentation import include_docs_urls
+
+
 urlpatterns = [
+    url(r'^account/', include('rest_email_auth.urls')),
     url(r'^account/', include('account.urls', namespace='account')),
     url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),     # noqa
     url(r'^auth/', include('km_auth.urls', namespace='auth')),
+    url(r'^docs/', include_docs_urls(title='Know Me API')),
     url(r'^know-me/', include('know_me.urls', namespace='know-me')),
 ]

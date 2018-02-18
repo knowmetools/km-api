@@ -8,9 +8,10 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import RegexValidator
 
+from rest_email_auth.models import EmailAddress
+
 from rest_framework.reverse import reverse
 
-from account.models import EmailAddress
 from permission_utils import model_mixins as mixins
 
 
@@ -30,7 +31,7 @@ def get_media_resource_upload_path(item, filename):
     Returns:
         str:
             The original filename prefixed with
-            ``km_user/<id>/gallery/``.
+            ``know-me/users/{id}/media-resources/``.
     """
     return 'know-me/users/{id}/media-resources/{file}'.format(
         file=filename,
@@ -120,18 +121,6 @@ class EmergencyContact(mixins.IsAuthenticatedMixin, models.Model):
         """
         return self.name
 
-    def get_absolute_url(self):
-        """
-        Get the URL of the profile item's detail view.
-
-        Returns:
-            str:
-                The absolute URL of the profile item's detail view.
-        """
-        return reverse(
-            'know-me:emergency-contact-detail',
-            kwargs={'pk': self.pk})
-
     def has_object_read_permission(self, request):
         """
         Check read permissions on the instance for a request.
@@ -210,16 +199,6 @@ class EmergencyItem(mixins.IsAuthenticatedMixin, models.Model):
                 The emergency item's name.
         """
         return self.name
-
-    def get_absolute_url(self):
-        """
-        Get the URL of the instance's detail view.
-
-        Returns:
-            str:
-                The absolute URL of the instance's detail view.
-        """
-        return reverse('know-me:emergency-item-detail', kwargs={'pk': self.pk})
 
     def has_object_read_permission(self, request):
         """
@@ -409,65 +388,6 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         """
         return reverse('know-me:km-user-detail', kwargs={'pk': self.pk})
 
-    def get_emergency_contact_list_url(self, request=None):
-        """
-        Get the absolute URL of the instance's emergency contact list view.
-
-        Args:
-            request (optional):
-                A request used as context when constructing the URL. If
-                given, the resulting URL will be a full URI with a
-                protocol and domain name.
-
-        Returns:
-            str:
-                The absolute URL of the instance's emeregency contact list
-                view.
-        """
-        return reverse(
-            'know-me:emergency-contact-list',
-            kwargs={'pk': self.pk},
-            request=request)
-
-    def get_emergency_item_list_url(self, request=None):
-        """
-        Get the URL of the instance's emergency item list.
-
-        Args:
-            request (:class:`django.http.HttpRequest`, optional):
-                The request to use as context when constructing the URL.
-
-        Returns:
-            str:
-                The URL of the instance's emergency item list view. If
-                ``request`` is not ``None``, the URL will include a
-                protocol and domain, otherwise it will be an absolute
-                URL.
-        """
-        return reverse(
-            'know-me:emergency-item-list',
-            kwargs={'pk': self.pk},
-            request=request)
-
-    def get_gallery_url(self, request=None):
-        """
-        Get the absolute URL of the instance's gallery view.
-
-        Args:
-            request (optional):
-                A request used as context when constructing the URL. If
-                given, the resulting URL will be a full URI with a
-                protocol and domain name.
-
-        Returns:
-            str:
-                The absolute URL of the instance's gallery view.
-        """
-        return reverse(
-            'know-me:gallery',
-            kwargs={'pk': self.pk},
-            request=request)
-
     def get_profile_list_url(self, request=None):
         """
         Get the absolute URL of the instance's profile list view.
@@ -537,7 +457,7 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         try:
             user = EmailAddress.objects.get(
                 email=email,
-                verified=True).user
+                is_verified=True).user
         except EmailAddress.DoesNotExist:
             user = None
 
@@ -583,7 +503,6 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('can write'))
     email = models.EmailField(
         help_text=_('The email address used to invite the user.'),
-        null=True,
         verbose_name=_('email'))
     has_private_profile_access = models.BooleanField(
         default=False,
@@ -801,15 +720,16 @@ class ListEntry(mixins.IsAuthenticatedMixin, models.Model):
 class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
     """
     A media resource is an uploaded file attached to a km_user.
-
-    Attributes:
-        name:
-            The name of the item.
-        km_user:
-            The km_user that the item is attached to.
-        file:
-            A file containing some sort of content.
     """
+    category = models.ForeignKey(
+        'know_me.MediaResourceCategory',
+        blank=True,
+        help_text=_("The category that the resource is a part of."),
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='media_resources',
+        related_query_name='media_resource',
+        verbose_name=_('category'))
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
@@ -878,14 +798,69 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
         return self.km_user.user == request.user
 
 
+class MediaResourceCategory(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    Category that a media resource can be placed in.
+    """
+    km_user = models.ForeignKey(
+        'know_me.KMUser',
+        help_text=_("The Know Me user who owns the category."),
+        on_delete=models.CASCADE,
+        related_name='media_resource_categories',
+        related_query_name='media_resource_category',
+        verbose_name=_('media resource category'))
+    name = models.CharField(
+        help_text=_("The category's name."),
+        max_length=255,
+        verbose_name=_('name'))
+
+    class Meta:
+        verbose_name = _('media resource category')
+        verbose_name_plural = _('media resource categories')
+
+    def __str__(self):
+        """
+        Get a string representation of the category.
+
+        Returns:
+            The category's name.
+        """
+        return self.name
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            The permissions granted by the instance's parent Know Me
+            user.
+        """
+        return self.km_user.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            The permissions granted by the instance's parent Know Me
+            user.
+        """
+        return self.km_user.has_object_write_permission(request)
+
+
 class Profile(mixins.IsAuthenticatedMixin, models.Model):
     """
     A profile contains a targeted subset of a ``KMUser``.
 
     Attributes:
-        is_default (bool):
-            A boolean controlling if the profile is the default for its
-            parent km_user.
         is_private (bool):
             This a private profile with admin only access.
         name (str):
@@ -893,10 +868,6 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         km_user:
             The ``KMUser`` instance the profile belongs to.
     """
-    is_default = models.BooleanField(
-        default=False,
-        help_text=_('The default profile is displayed initially.'),
-        verbose_name=_('is default'))
     is_private = models.BooleanField(
         default=False,
         help_text=_('Private profiles are only visable to admin.'),

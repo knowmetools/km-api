@@ -4,8 +4,6 @@ from django.core.exceptions import ValidationError
 
 import pytest
 
-from rest_framework.reverse import reverse
-
 from know_me import models
 
 
@@ -20,20 +18,6 @@ def test_create(km_user_factory):
         phone_number='19199199199',
         alt_phone_number='12345678909',
         email='hi@gmail.com')
-
-
-def test_get_absolute_url(emergency_contact_factory):
-    """
-    This method should return the URL of the emergency contact's
-    detail view.
-    """
-    ec = emergency_contact_factory()
-    expected = reverse(
-        'know-me:emergency-contact-detail',
-        kwargs={'pk': ec.pk}
-    )
-
-    assert ec.get_absolute_url() == expected
 
 
 def test_has_object_read_permission_with_user_permission(

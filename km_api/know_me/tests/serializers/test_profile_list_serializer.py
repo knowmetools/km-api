@@ -9,7 +9,6 @@ def test_create(km_user_factory, serializer_context):
     km_user = km_user_factory()
     data = {
         'name': 'Profile',
-        'is_default': True,
     }
 
     serializer = serializers.ProfileListSerializer(
@@ -21,7 +20,6 @@ def test_create(km_user_factory, serializer_context):
 
     assert profile.name == data['name']
     assert profile.km_user == km_user
-    assert profile.is_default == data['is_default']
 
 
 def test_serialize(api_rf, profile_factory, serializer_context):
@@ -41,7 +39,6 @@ def test_serialize(api_rf, profile_factory, serializer_context):
         'id': profile.id,
         'url': url_request.build_absolute_uri(),
         'name': profile.name,
-        'is_default': profile.is_default,
         'permissions': {
             'read': profile.has_object_read_permission(serializer_request),
             'write': profile.has_object_write_permission(serializer_request),

@@ -1,0 +1,17 @@
+---
+- hosts: webservers
+  gather_facts: false
+
+  become: true
+  remote_user: ubuntu
+
+  vars_files:
+    - env_vars/base.yml
+    - env_vars/{{ env }}.yml
+    - env_vars/{{ env }}-vault.yml
+
+  roles:
+    - database
+    - cdriehuys.django-app
+    - cdriehuys.nginx
+    - letsencrypt

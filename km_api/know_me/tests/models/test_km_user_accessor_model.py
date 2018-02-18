@@ -12,7 +12,7 @@ def test_create(km_user_factory, user_factory):
     models.KMUserAccessor.objects.create(
         accepted=False,
         can_write=False,
-        email=user.email,
+        email=user.primary_email.email,
         has_private_profile_access=False,
         km_user=km_user_factory(),
         user_with_access=user)

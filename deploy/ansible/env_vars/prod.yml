@@ -1,0 +1,14 @@
+---
+domain_name: new-api.knowmetools.com
+
+
+# General AWS Configuration
+
+aws_application_name: km-api
+
+
+# Django Configuration
+
+mailchimp_list_id: 203aeb34ec
+
+sentry_environment: production

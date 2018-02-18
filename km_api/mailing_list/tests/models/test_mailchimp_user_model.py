@@ -9,7 +9,7 @@ def test_create(user_factory):
     """
     user = user_factory()
     subscriber_hash = hashlib.md5(
-        user.email.lower().encode('utf8')).hexdigest()
+        user.primary_email.email.lower().encode('utf8')).hexdigest()
 
     models.MailchimpUser.objects.create(
         subscriber_hash=subscriber_hash,

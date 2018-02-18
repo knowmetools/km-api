@@ -111,17 +111,11 @@ ENV/
 km_api/media/
 km_api/static/
 
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
-
-# Layer Key
-layer.pem
-
 # Mac Development Environments
 **/.DS_Store
 
-# Ansible Files
+# Deployment Files
+.terraform/
+tfplan
 *.retry
 VAULT_PASSWORD_FILE

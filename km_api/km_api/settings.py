@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import datetime
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -42,18 +41,24 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third Party Apps
+    'corsheaders',
     'dry_rest_permissions',
+    'raven.contrib.django.raven_compat',
+    'rest_email_auth',
     'rest_framework',
     'rest_framework.authtoken',
+    'storages',
 
     # Custom Apps
     'account',
+    'custom_storages',
     'km_auth',
     'know_me',
     'mailing_list',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -87,11 +92,8 @@ WSGI_APPLICATION = 'km_api.wsgi.application'
 # Authentication configuration
 
 AUTHENTICATION_BACKENDS = (
-    'account.authentication.AuthenticationBackend',
+    'rest_email_auth.authentication.VerifiedEmailBackend',
 )
-PASSWORD_RESET_KEY_LENGTH = 64
-PASSWORD_RESET_EXPIRATION_HOURS = 1
-PASSWORD_RESET_LINK_TEMPLATE = 'example.com/reset-password/?key={key}'
 
 
 # Custom user model
@@ -133,9 +135,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # Email Configuration
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_CONFIRMATION_EXPIRATION_DAYS = 1
-EMAIL_CONFIRMATION_KEY_LENGTH = 64
-EMAIL_CONFIRMATION_LINK_TEMPLATE = 'example.com/confirm-email?key={key}'
 
 
 # Internationalization
@@ -165,17 +164,24 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
 
-# Layer Configuration
+# CORS Configurations
+# https://github.com/ottoyiu/django-cors-headers#configuration
 
-LAYER_IDENTITY_EXPIRATION = datetime.timedelta(minutes=5)
-LAYER_KEY_ID = 'layer:///keys/sample'
-LAYER_PROVIDER_ID = 'layer:///provider/'
-LAYER_RSA_KEY_FILE_PATH = os.path.join(BASE_DIR, 'layer.pem')
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Mailchimp Configuration
 
 MAILCHIMP_ENABLED = False
+
+
+# Rest Email Auth
+
+REST_EMAIL_AUTH = {
+    'EMAIL_VERIFICATION_URL': 'https://example.com/verify/{key}',
+    'PASSWORD_RESET_URL': 'https://example.com/reset/{key}',
+    'REGISTRATION_SERIALIZER': 'account.serializers.RegistrationSerializer',
+}
 
 
 # Rest Framework

@@ -64,6 +64,39 @@ def test_get_items(api_rf, profile_item_factory, profile_topic_factory):
     assert response.data == serializer.data
 
 
+def test_get_serializer_context(profile_topic_factory):
+    """
+    The serializer context should include the Know Me user who owns the
+    profile topic whose PK is passed to the view.
+    """
+    topic = profile_topic_factory()
+    km_user = topic.profile.km_user
+
+    view = views.ProfileItemListView()
+    view.format_kwarg = None
+    view.kwargs = {'pk': topic.pk}
+    view.request = None
+
+    context = view.get_serializer_context()
+
+    assert context['km_user'] == km_user
+
+
+def test_get_serializer_context_no_topic_pk(db):
+    """
+    If no primary key is given to the view, the serializer context
+    should use None for the Know Me user.
+    """
+    view = views.ProfileItemListView()
+    view.format_kwarg = None
+    view.kwargs = {}
+    view.request = None
+
+    context = view.get_serializer_context()
+
+    assert context['km_user'] is None
+
+
 def test_get_shared_items(
         api_rf,
         km_user_accessor_factory,

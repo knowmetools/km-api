@@ -5,20 +5,46 @@ These factories are used project-wide.
 
 from django.contrib.auth import get_user_model
 
+from rest_email_auth.models import EmailAddress
+
 import factory
+
+
+class EmailFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``EmailAddress`` instances.
+    """
+    email = factory.Sequence(lambda n: 'test{}@example.com'.format(n))
+    user = factory.SubFactory('factories.UserFactory')
+
+    class Meta:
+        model = 'rest_email_auth.EmailAddress'
 
 
 class UserFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``User`` instances.
     """
-    email = factory.Sequence(lambda n: 'test{n}@example.com'.format(n=n))
     first_name = 'John'
     last_name = 'Doe'
     password = 'password'
 
     class Meta:
         model = get_user_model()
+
+    @classmethod
+    def _after_postgeneration(cls, obj, create, results=None):
+        """
+        Create an email address for the user.
+        """
+        if obj.email_addresses.count() == 0:
+            EmailAddress.objects.create(
+                email='{name}{id}@example.com'.format(
+                    id=obj.id,
+                    name=obj.first_name),
+                is_primary=True,
+                is_verified=True,
+                user=obj)
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):

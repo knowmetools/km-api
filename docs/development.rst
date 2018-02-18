@@ -1,26 +1,28 @@
-===========
+###########
 Development
-===========
+###########
 
 The API is built with Python using Django and Django Rest Framework.
 
------------------------------------
+***********************************
 Recommended Development Environment
------------------------------------
+***********************************
 
 If you are comfortable with setting up a python development environment and cloning the project, feel free to skip to the `development environment overview <dev-overview_>`_.
 
+
 Prerequisites
--------------
+=============
 
 We use git_ for version control and generally follow the development model laid out `here <git-branching-model_>`_. If you are looking for a tool to assist in following this model, we recommend git-flow_, a tool made by the same people that created the development model.
 
 Since this is a Python project, we recommend using a virtualenv_ to manage the environment for the project. If you want to simplify the management of these virtual environments, we recommend using virtualenvwrapper_.
 
-This project runs on Python 3.4, since that's the Python version available on Elastic Beanstalk, our hosting platform. Ideally your development environment also has Python 3.4 installed. If not, you can find it `here <python34_>`_
+This project runs on Python 3.4. Ideally your development environment also has Python 3.4 installed. If not, you can find it `here <python34_>`_
+
 
 Project Setup
--------------
+=============
 
 .. note::
 
@@ -45,8 +47,9 @@ Finally, install the project requirements appropriate for what you need. The ``t
 
     $ pip install -r requirements/[base|test].txt
 
+
 Linting
--------
+=======
 
 We use flake8_ to lint our code, which is a tool for checking compliance with python's style guide: pep8_. To lint the source code, run flake8 from the project root::
 
@@ -60,11 +63,12 @@ If you want to run the linter on every commit, which is useful because our CI to
 
 The configuration options ensure that only the code being committed is linted, and that linting errors will stop the commit process.
 
+
 .. _dev-overview:
 
-------------------------
+************************
 Dev Environment Overview
-------------------------
+************************
 
 If you have not yet cloned the repository, do so and install the requirements::
 
@@ -72,23 +76,26 @@ If you have not yet cloned the repository, do so and install the requirements::
     $ cd km-api
     $ pip install -r requirements/base.txt
 
+
 Local Dev Server
-----------------
+================
 
 The development server can be run using the following command::
 
     $ km_api/manage.py runserver
 
+
 Running Tests
--------------
+=============
 
 Tests are run with pytest_. To run the tests, make sure the requirements are installed and run the tests::
 
     $ pip install -r requirements/test.txt
     $ pytest km_api/
 
+
 Building Docs
--------------
+=============
 
 We use sphinx for building documentation, and the docs are automatically published using ReadTheDocs. If you want to build the docs locally, install the requirements and run the build command::
 

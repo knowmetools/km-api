@@ -3,9 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-=======================================
+#######################################
 Welcome to Know Me API's documentation!
-=======================================
+#######################################
 
 
 .. include:: ../README.rst
@@ -15,14 +15,14 @@ Welcome to Know Me API's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   api-endpoints
    development
    deployment
    changelog
 
 
+******************
 Indices and tables
-==================
+******************
 
 * :ref:`genindex`
 * :ref:`modindex`
