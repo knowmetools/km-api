@@ -8,9 +8,6 @@ Know Me API
 .. image:: https://img.shields.io/codecov/c/github/knowmetools/km-api.svg
   :target: https://codecov.io/gh/knowmetools/km-api
 
-.. image:: https://img.shields.io/gemnasium/knowmetools/km-api.svg
-  :target: https://gemnasium.com/github.com/knowmetools/km-api
-
 
 API Root
   https://toolbox.knowmetools.com
