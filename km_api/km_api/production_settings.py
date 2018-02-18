@@ -3,27 +3,8 @@
 
 from km_api.settings import *       # noqa
 
+
 DEBUG = False
-
-
-# Production only apps
-
-INSTALLED_APPS += [         # noqa
-    # Third Party Apps
-    'corsheaders',
-    'raven.contrib.django.raven_compat',
-    'storages',
-
-    # Custom Apps
-    'custom_storages',
-]
-
-
-# Production only middleware
-
-MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-] + MIDDLEWARE              # noqa
 
 
 # Email Settings
@@ -43,12 +24,6 @@ SESSION_COOKIE_SECURE = True
 
 DEFAULT_FILE_STORAGE = 'custom_storages.backends.MediaStorage'
 STATICFILES_STORAGE = 'custom_storages.backends.StaticStorage'
-
-
-# CORS Configurations
-# https://github.com/ottoyiu/django-cors-headers#configuration
-
-CORS_ORIGIN_ALLOW_ALL = True
 
 
 # S3 Configuration
