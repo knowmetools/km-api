@@ -1,6 +1,6 @@
-===========
+###########
 Know Me API
-===========
+###########
 
 .. image:: https://img.shields.io/travis/knowmetools/km-api.svg
   :target: https://travis-ci.org/knowmetools/km-api
@@ -21,8 +21,8 @@ API Endpoint Documentation
 Developer Documentation
   http://know-me-api.readthedocs.io/
 
------
+*****
 About
------
+*****
 
 This is the API behind our Know Me app. It is written in Python using Django and Django Rest Framework.
