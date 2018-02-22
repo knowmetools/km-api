@@ -702,8 +702,11 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
     name = models.CharField(
         max_length=255,
         verbose_name=_('name'))
+    order = models.IntegerField(
+        verbose_name=_('order'))
 
     class Meta:
+        unique_together = ('km_user', 'order')
         verbose_name = _('profile')
         verbose_name_plural = _('profiles')
 
@@ -774,6 +777,20 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
                 km_user and ``False`` otherwise.
         """
         return request.user == self.km_user.user
+
+    def save(self, *args, **kwargs):
+        """
+        Override save to set order.
+        """
+        if self.order is None:
+            query = self.km_user.profiles.order_by('-order')
+            if query.exists():
+                prev_max = query.get().order
+                self.order = prev_max + 1
+            else:
+                self.order = 0
+
+        super().save(*args, **kwargs)
 
 
 class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
