@@ -142,16 +142,23 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         """
         Check read permissions on the instance for a request.
 
+        Users have read access if they are the owner of the Know Me user
+        or have been granted access through an accessor.
+
         Args:
             request:
                 The request to check permissions for.
 
         Returns:
-            bool:
-                ``True`` if the requesting user owns the km_user and
-                ``False`` otherwise.
+            A boolean indicating if the requesting user has read access
+            to the instance.
         """
-        return request.user == self.user
+        if request.user == self.user:
+            return True
+
+        return self.km_user_accessors.filter(
+            accepted=True,
+            user_with_access=request.user).exists()
 
     def has_object_write_permission(self, request):
         """
@@ -166,7 +173,13 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
                 ``True`` if the requesting user owns the km_user and
                 ``False`` otherwise.
         """
-        return request.user == self.user
+        if request.user == self.user:
+            return True
+
+        return self.km_user_accessors.filter(
+            accepted=True,
+            can_write=True,
+            user_with_access=request.user).exists()
 
     def share(self, email, can_write=False, has_private_profile_access=False):
         """

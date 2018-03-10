@@ -13,6 +13,8 @@ def test_serialize(
     resource = media_resource_factory(
         category=category,
         km_user=category.km_user)
+
+    api_rf.user = category.km_user.user
     request = api_rf.get(resource.get_absolute_url())
 
     serializer = serializers.MediaResourceSerializer(

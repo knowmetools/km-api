@@ -101,6 +101,40 @@ def test_has_object_read_permission_other(
     assert not km_user.has_object_read_permission(request)
 
 
+def test_has_object_read_permission_shared(
+        api_rf,
+        km_user_accessor_factory,
+        km_user_factory):
+    """
+    The requesting user should be granted read access if there is an
+    accessor granting them access.
+    """
+    km_user = km_user_factory()
+    accessor = km_user_accessor_factory(accepted=True, km_user=km_user)
+
+    api_rf.user = accessor.user_with_access
+    request = api_rf.get('/')
+
+    assert km_user.has_object_read_permission(request)
+
+
+def test_has_object_read_permission_shared_not_accepted(
+        api_rf,
+        km_user_accessor_factory,
+        km_user_factory):
+    """
+    If the accessor granting access has not been accepted yet, access
+    should not be granted.
+    """
+    km_user = km_user_factory()
+    accessor = km_user_accessor_factory(accepted=False, km_user=km_user)
+
+    api_rf.user = accessor.user_with_access
+    request = api_rf.get('/')
+
+    assert not km_user.has_object_read_permission(request)
+
+
 def test_has_object_read_permission_owner(api_rf, km_user_factory):
     """
     Users should have read access on their own km_user.
@@ -139,6 +173,65 @@ def test_has_object_write_permission_owner(api_rf, km_user_factory):
     request = api_rf.get('/')
 
     assert km_user.has_object_write_permission(request)
+
+
+def test_has_object_write_permission_shared(
+        api_rf,
+        km_user_accessor_factory,
+        km_user_factory):
+    """
+    Users should be able to be granted write access through an accessor.
+    """
+    km_user = km_user_factory()
+    accessor = km_user_accessor_factory(
+        accepted=True,
+        can_write=True,
+        km_user=km_user)
+
+    api_rf.user = accessor.user_with_access
+    request = api_rf.get('/')
+
+    assert km_user.has_object_write_permission(request)
+
+
+def test_has_object_write_permission_shared_no_write(
+        api_rf,
+        km_user_accessor_factory,
+        km_user_factory):
+    """
+    Write access should not be granted from accessors that only grant
+    read access.
+    """
+    km_user = km_user_factory()
+    accessor = km_user_accessor_factory(
+        accepted=True,
+        can_write=False,
+        km_user=km_user)
+
+    api_rf.user = accessor.user_with_access
+    request = api_rf.get('/')
+
+    assert not km_user.has_object_write_permission(request)
+
+
+def test_has_object_write_permission_shared_not_accepted(
+        api_rf,
+        km_user_accessor_factory,
+        km_user_factory):
+    """
+    If the accessor has not been accepted, it should not grant write
+    access.
+    """
+    km_user = km_user_factory()
+    accessor = km_user_accessor_factory(
+        accepted=False,
+        can_write=True,
+        km_user=km_user)
+
+    api_rf.user = accessor.user_with_access
+    request = api_rf.get('/')
+
+    assert not km_user.has_object_write_permission(request)
 
 
 def test_name(km_user_factory):

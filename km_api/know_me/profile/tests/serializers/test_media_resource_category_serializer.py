@@ -6,6 +6,8 @@ def test_serialize(api_rf, media_resource_category_factory, serialized_time):
     Test serializing a media resource category.
     """
     category = media_resource_category_factory()
+
+    api_rf.user = category.km_user.user
     request = api_rf.get(category.get_absolute_url())
 
     serializer = serializers.MediaResourceCategorySerializer(

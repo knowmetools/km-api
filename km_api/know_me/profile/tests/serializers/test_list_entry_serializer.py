@@ -6,6 +6,8 @@ def test_serialize(api_rf, list_entry_factory, serialized_time):
     Test serializing a list entry.
     """
     entry = list_entry_factory()
+
+    api_rf.user = entry.profile_item.topic.profile.km_user.user
     request = api_rf.get(entry.get_absolute_url())
 
     serializer = serializers.ListEntrySerializer(

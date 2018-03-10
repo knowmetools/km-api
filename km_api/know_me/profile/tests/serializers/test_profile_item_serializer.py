@@ -19,6 +19,8 @@ def test_serialize(
         image=image,
         media_resource=media_resource,
         topic__profile__km_user=media_resource.km_user)
+
+    api_rf.user = media_resource.km_user.user
     request = api_rf.get(item.get_absolute_url())
 
     serializer = serializers.ProfileItemSerializer(

@@ -6,6 +6,8 @@ def test_serialize_profile(api_rf, profile_factory, serialized_time):
     Test serializing a profile.
     """
     profile = profile_factory()
+
+    api_rf.user = profile.km_user.user
     request = api_rf.get(profile.get_absolute_url())
 
     serializer = serializers.ProfileListSerializer(
