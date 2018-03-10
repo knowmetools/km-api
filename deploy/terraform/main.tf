@@ -63,13 +63,14 @@ data "aws_route53_zone" "main" {
 // Database
 
 resource "aws_db_instance" "main" {
-  allocated_storage      = "${var.db_capacity}"
-  engine                 = "postgres"
-  instance_class         = "${var.db_instance_type}"
-  password               = "${var.db_master_password}"
-  publicly_accessible    = true
-  username               = "${var.db_master_username}"
-  vpc_security_group_ids = ["${aws_security_group.db.id}"]
+  allocated_storage         = "${var.db_capacity}"
+  engine                    = "postgres"
+  final_snapshot_identifier = "${local.app_name}-final"
+  instance_class            = "${var.db_instance_type}"
+  password                  = "${var.db_master_password}"
+  publicly_accessible       = true
+  username                  = "${var.db_master_username}"
+  vpc_security_group_ids    = ["${aws_security_group.db.id}"]
 
   tags {
     Application = "${local.app_name}"
