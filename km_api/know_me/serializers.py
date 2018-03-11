@@ -70,35 +70,11 @@ class KMUserAccessorSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
 
     class Meta:
-        extra_kwargs = {
-            'accepted': {
-                'help_text': ("A boolean indicating if the accessor has been "
-                              "accepted. This field may only be updated by "
-                              "the invited user."),
-            },
-            'can_write': {
-                'help_text': ("A boolean indicating if the accessor grants "
-                              "write access to profiles. This field may only "
-                              "be updated by the accessor owner."),
-            },
-            'email': {
-                'help_text': ("The email address of the user to grant access "
-                              "to. Once created the email may not be "
-                              "changed."),
-            },
-            'has_private_profile_access': {
-                'help_text': ("A boolean indicating if the accessor grants "
-                              "access to profiles marked as 'private'. This "
-                              "field may only be updated by the accessor "
-                              "owner."),
-            }
-        }
         fields = (
             'url',
-            'accepted',
-            'can_write',
             'email',
-            'has_private_profile_access',
+            'is_accepted',
+            'is_admin',
             'km_user',
         )
         model = models.KMUserAccessor
@@ -117,9 +93,9 @@ class KMUserAccessorSerializer(serializers.ModelSerializer):
         km_user = validated_data.pop('km_user')
         email = validated_data.pop('email')
 
-        # Remove 'accepted' from the arguments so it's not passed to the
+        # Remove 'is_accepted' from the arguments so it's not passed to the
         # 'share' method.
-        validated_data.pop('accepted', None)
+        validated_data.pop('is_accepted', None)
 
         return km_user.share(email, **validated_data)
 
@@ -135,38 +111,6 @@ class KMUserAccessorSerializer(serializers.ModelSerializer):
             The full URL of the accessor's detail view.
         """
         return accessor.get_absolute_url(self.context['request'])
-
-    def validate_accepted(self, accepted):
-        """
-        Validate the provided 'accepted' value.
-
-        Args:
-            accepted (boolean):
-                A boolean indicating if the accessor has been accepted.
-
-        Returns:
-            boolean:
-                The validated 'accepted' value.
-
-        Raises:
-            serializers.ValidationError:
-                If the user doesn't have permission to change the
-                'accepted' attribute.
-        """
-        accessor = self.instance
-
-        if not accessor and accepted:
-            raise serializers.ValidationError(
-                _("An accessor can't be marked as accepted until after it has "
-                  "been created."))
-        elif accessor \
-                and accessor.accepted != accepted \
-                and accessor.user_with_access != self.context['request'].user:
-            raise serializers.ValidationError(
-                _("Only the user granted access by the accessor may accept "
-                  "the accessor."))
-
-        return accepted
 
     def validate_email(self, email):
         """
@@ -190,3 +134,35 @@ class KMUserAccessorSerializer(serializers.ModelSerializer):
                 _('The email of an existing share may not be changed.'))
 
         return email
+
+    def validate_is_accepted(self, is_accepted):
+        """
+        Validate the provided 'is_accepted' value.
+
+        Args:
+            accepted (boolean):
+                A boolean indicating if the accessor has been accepted.
+
+        Returns:
+            boolean:
+                The validated 'is_accepted' value.
+
+        Raises:
+            serializers.ValidationError:
+                If the user doesn't have permission to change the
+                'is_accepted' attribute.
+        """
+        accessor = self.instance
+
+        if not accessor and is_accepted:
+            raise serializers.ValidationError(
+                _("An accessor can't be marked as accepted until after it has "
+                  "been created."))
+        elif (accessor
+                and accessor.is_accepted != is_accepted
+                and accessor.user_with_access != self.context['request'].user):
+            raise serializers.ValidationError(
+                _("Only the user granted access by the accessor may accept "
+                  "the accessor."))
+
+        return is_accepted

@@ -110,7 +110,7 @@ def test_has_object_read_permission_shared(
     accessor granting them access.
     """
     km_user = km_user_factory()
-    accessor = km_user_accessor_factory(accepted=True, km_user=km_user)
+    accessor = km_user_accessor_factory(is_accepted=True, km_user=km_user)
 
     api_rf.user = accessor.user_with_access
     request = api_rf.get('/')
@@ -127,7 +127,7 @@ def test_has_object_read_permission_shared_not_accepted(
     should not be granted.
     """
     km_user = km_user_factory()
-    accessor = km_user_accessor_factory(accepted=False, km_user=km_user)
+    accessor = km_user_accessor_factory(is_accepted=False, km_user=km_user)
 
     api_rf.user = accessor.user_with_access
     request = api_rf.get('/')
@@ -184,8 +184,8 @@ def test_has_object_write_permission_shared(
     """
     km_user = km_user_factory()
     accessor = km_user_accessor_factory(
-        accepted=True,
-        can_write=True,
+        is_accepted=True,
+        is_admin=True,
         km_user=km_user)
 
     api_rf.user = accessor.user_with_access
@@ -204,8 +204,8 @@ def test_has_object_write_permission_shared_no_write(
     """
     km_user = km_user_factory()
     accessor = km_user_accessor_factory(
-        accepted=True,
-        can_write=False,
+        is_accepted=True,
+        is_admin=False,
         km_user=km_user)
 
     api_rf.user = accessor.user_with_access
@@ -224,8 +224,8 @@ def test_has_object_write_permission_shared_not_accepted(
     """
     km_user = km_user_factory()
     accessor = km_user_accessor_factory(
-        accepted=False,
-        can_write=True,
+        is_accepted=False,
+        is_admin=True,
         km_user=km_user)
 
     api_rf.user = accessor.user_with_access
@@ -255,15 +255,12 @@ def test_share_existing_user(email_factory, km_user_factory, user_factory):
 
     accessor = km_user.share(
         user.primary_email.email,
-        can_write=True,
-        has_private_profile_access=True)
+        is_admin=True)
 
     assert km_user.km_user_accessors.count() == 1
 
-    assert accessor.can_write
     assert accessor.email == user.primary_email.email
-    assert accessor.has_private_profile_access
-    assert accessor.user_with_access == user
+    assert accessor.is_admin
 
 
 def test_share_existing_user_unverified_email(

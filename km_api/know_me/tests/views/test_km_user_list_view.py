@@ -82,7 +82,9 @@ def test_get_shared(api_rf, km_user_accessor_factory, user_factory):
     access to through accessors.
     """
     user = user_factory()
-    accessor = km_user_accessor_factory(accepted=True, user_with_access=user)
+    accessor = km_user_accessor_factory(
+        is_accepted=True,
+        user_with_access=user)
 
     api_rf.user = user
 
@@ -110,7 +112,7 @@ def test_get_shared_not_accepted(
     accessor that has not been accepted.
     """
     user = user_factory()
-    km_user_accessor_factory(accepted=False, user_with_access=user)
+    km_user_accessor_factory(is_accepted=False, user_with_access=user)
 
     api_rf.user = user
 

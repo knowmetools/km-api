@@ -10,10 +10,9 @@ def test_create(km_user_factory, user_factory):
     user = user_factory()
 
     models.KMUserAccessor.objects.create(
-        accepted=False,
-        can_write=False,
         email=user.primary_email.email,
-        has_private_profile_access=False,
+        is_accepted=False,
+        is_admin=False,
         km_user=km_user_factory(),
         user_with_access=user)
 

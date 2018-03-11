@@ -42,15 +42,29 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
     A KMUser tracks information associated with each user of the
     Know Me app.
     """
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time that the Know Me user was created.'),
+        verbose_name=_('created at'))
     image = models.ImageField(
         blank=True,
+        help_text=_("The image to use as the user's hero image."),
         max_length=255,
         null=True,
         upload_to=get_km_user_image_upload_path,
         verbose_name=_('image'))
-    quote = models.TextField(blank=True, null=True, verbose_name=_('quote'))
+    quote = models.TextField(
+        blank=True,
+        help_text=_("A quote to introduce the user."),
+        null=True,
+        verbose_name=_('quote'))
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text=_('The time that the Know Me user was last updated.'),
+        verbose_name=_('updated at'))
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
+        help_text=_('The user who owns the Know Me app account.'),
         on_delete=models.CASCADE,
         related_name='km_user',
         verbose_name=_('user'))
@@ -157,7 +171,7 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             return True
 
         return self.km_user_accessors.filter(
-            accepted=True,
+            is_accepted=True,
             user_with_access=request.user).exists()
 
     def has_object_write_permission(self, request):
@@ -177,23 +191,20 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             return True
 
         return self.km_user_accessors.filter(
-            accepted=True,
-            can_write=True,
+            is_accepted=True,
+            is_admin=True,
             user_with_access=request.user).exists()
 
-    def share(self, email, can_write=False, has_private_profile_access=False):
+    def share(self, email, is_admin=False):
         """
         Share a Know Me account with another user.
 
         Args:
             email (str):
                 The email address of the user to share with.
-            can_write (bool):
+            is_admin (bool):
                 A boolean indicating if the invited user has write
-                access for profiles.
-            has_private_profile_access (bool):
-                A boolean indicating if the invited user has access to
-                profiles marked as private.
+                access for profiles and access to private profiles.
 
         Returns:
             The created ``KMUserAccessor`` instance.
@@ -206,9 +217,8 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             user = None
 
         accessor = KMUserAccessor.objects.create(
-            can_write=can_write,
             email=email,
-            has_private_profile_access=has_private_profile_access,
+            is_admin=is_admin,
             km_user=self,
             user_with_access=user)
 
@@ -224,39 +234,33 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
 class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
     """
     Model to store KMUser access information.
-
-    Attributes:
-        accepted (bool):
-            A boolean indicating if the share has been accepted yet.
-        can_write (bool):
-            A boolean indicating if the user has write access to the
-            Know Me user's profiles.
-        km_user:
-            The KMUser sharing access.
-        user_with_access:
-            The user recieving access.
     """
-    accepted = models.BooleanField(
-        default=False,
-        help_text=_('The KMUser has accepted the access.'),
-        verbose_name=_('is accepted'))
-    can_write = models.BooleanField(
-        default=False,
-        help_text=_('Users with write access can make changes to the profiles '
-                    'they are invited to.'),
-        verbose_name=_('can write'))
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time that the accessor was created.'),
+        verbose_name=_('created at'))
     email = models.EmailField(
         help_text=_('The email address used to invite the user.'),
         verbose_name=_('email'))
-    has_private_profile_access = models.BooleanField(
+    is_accepted = models.BooleanField(
         default=False,
-        verbose_name=_('has private profile access'))
+        help_text=_('The KMUser has accepted the access.'),
+        verbose_name=_('is accepted'))
+    is_admin = models.BooleanField(
+        default=False,
+        help_text=_('A boolean indicating if the user has admin access.'),
+        verbose_name=_('is admin'))
     km_user = models.ForeignKey(
         'know_me.KMUser',
-        null=True,
+        help_text=_('The Know Me user this accessor grants access to.'),
+        on_delete=models.CASCADE,
         related_name='km_user_accessors',
         related_query_name='km_user_accessor',
         verbose_name=_('Know Me user'))
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text=_('The time that the accessor was last updated.'),
+        verbose_name=_('updated at'))
     user_with_access = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,

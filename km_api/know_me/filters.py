@@ -36,7 +36,7 @@ class KMUserAccessFilterBackend(filters.BaseFilterBackend):
         """
         # Requesting user has access to KMUser
         query = Q(km_user_accessor__user_with_access=request.user)
-        query &= Q(km_user_accessor__accepted=True)
+        query &= Q(km_user_accessor__is_accepted=True)
 
         # Requesting user is KMUser
         query |= Q(user=request.user)

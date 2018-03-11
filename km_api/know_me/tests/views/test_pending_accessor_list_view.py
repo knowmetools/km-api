@@ -19,15 +19,15 @@ def test_get_pending_accessors(
     user = user_factory()
     api_client.force_authenticate(user=user)
 
-    km_user_accessor_factory(accepted=False, user_with_access=user)
-    km_user_accessor_factory(accepted=True, user_with_access=user)
+    km_user_accessor_factory(is_accepted=False, user_with_access=user)
+    km_user_accessor_factory(is_accepted=True, user_with_access=user)
 
     response = api_client.get(url)
 
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.KMUserAccessorSerializer(
-        user.km_user_accessors.filter(accepted=False),
+        user.km_user_accessors.filter(is_accepted=False),
         context={'request': api_rf.get(url)},
         many=True)
 

@@ -63,8 +63,8 @@ def test_shared_admin(
     user = user_factory()
 
     km_user_accessor_factory(
-        accepted=True,
-        can_write=True,
+        is_accepted=True,
+        is_admin=True,
         km_user=km_user,
         user_with_access=user)
 
@@ -94,8 +94,8 @@ def test_shared_read_only(
     user = user_factory()
 
     km_user_accessor_factory(
-        accepted=True,
-        can_write=False,
+        is_accepted=True,
+        is_admin=False,
         km_user=km_user,
         user_with_access=user)
 
@@ -126,8 +126,7 @@ def test_shared_unaccepted(
     user = user_factory()
 
     km_user_accessor_factory(
-        accepted=False,
-        can_write=True,
+        is_accepted=False,
         km_user=km_user,
         user_with_access=user)
 

@@ -17,7 +17,7 @@ def test_accept(
     api_rf.user = user
     request = api_rf.get('/')
 
-    data = {'accepted': True}
+    data = {'is_accepted': True}
 
     serializer = serializers.KMUserAccessorSerializer(
         accessor,
@@ -29,7 +29,7 @@ def test_accept(
     serializer.save()
     accessor.refresh_from_db()
 
-    assert accessor.accepted
+    assert accessor.is_accepted
 
 
 def test_accept_by_unauthorized_user(api_rf, km_user_accessor_factory):
@@ -42,7 +42,7 @@ def test_accept_by_unauthorized_user(api_rf, km_user_accessor_factory):
     api_rf.user = accessor.km_user.user
     request = api_rf.get('/')
 
-    data = {'accepted': True}
+    data = {'is_accepted': True}
 
     serializer = serializers.KMUserAccessorSerializer(
         accessor,
@@ -51,16 +51,17 @@ def test_accept_by_unauthorized_user(api_rf, km_user_accessor_factory):
         partial=True)
 
     assert not serializer.is_valid()
-    assert set(serializer.errors.keys()) == {'accepted'}
+    assert set(serializer.errors.keys()) == {'is_accepted'}
 
 
 def test_accept_on_create(db):
     """
-    Attempt to create an accessor with ``accepted == True`` should fail.
+    Attempt to create an accessor with ``is_accepted == True`` should
+    fail.
     """
     data = {
-        'accepted': True,
         'email': 'test@example.com',
+        'is_accepted': True,
     }
 
     serializer = serializers.KMUserAccessorSerializer(data=data)
@@ -74,9 +75,8 @@ def test_create(km_user_factory):
     """
     km_user = km_user_factory()
     data = {
-        'can_write': True,
         'email': 'test@example.com',
-        'has_private_profile_access': True,
+        'is_admin': True,
     }
 
     serializer = serializers.KMUserAccessorSerializer(data=data)
@@ -87,10 +87,7 @@ def test_create(km_user_factory):
 
     assert mock_share.call_count == 1
     assert mock_share.call_args[0] == (data['email'],)
-    assert mock_share.call_args[1] == {
-        'can_write': data['can_write'],
-        'has_private_profile_access': data['has_private_profile_access'],
-    }
+    assert mock_share.call_args[1] == {'is_admin': data['is_admin']}
 
 
 def test_serialize(
@@ -121,10 +118,9 @@ def test_serialize(
 
     expected = {
         'url': url,
-        'accepted': False,
-        'can_write': False,
         'email': km_user_accessor.email,
-        'has_private_profile_access': False,
+        'is_accepted': km_user_accessor.is_accepted,
+        'is_admin': km_user_accessor.is_admin,
         'km_user': km_user_serializer.data,
     }
 

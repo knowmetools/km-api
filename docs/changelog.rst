@@ -9,6 +9,7 @@ v0.8.0
 
 Breaking Changes
   * :issue:`253`: Massive rewrite of profile features. This is a backwards incompatible change that modifies endpoints, the data returned from profile endpoints, and requires a complete database wipe.
+  * :issue:`267`: Refactor accessor permission fields. The permissions are now encompassed in a single ``is_admin`` field.
 
 Bug Fixes
   * :issue:`261`: Fix permissions on ``KMUser`` instances not respecting sharing.

@@ -93,9 +93,9 @@ def test_patch_accessor(api_rf, km_user_accessor_factory):
     Sending a PATCH request to the view should update the accessor with
     the given ID.
     """
-    accessor = km_user_accessor_factory(can_write=False)
+    accessor = km_user_accessor_factory(is_admin=False)
     data = {
-        'can_write': True,
+        'is_admin': True,
     }
 
     api_rf.user = accessor.km_user.user
@@ -107,4 +107,4 @@ def test_patch_accessor(api_rf, km_user_accessor_factory):
 
     accessor.refresh_from_db()
 
-    assert accessor.can_write == data['can_write']
+    assert accessor.is_admin == data['is_admin']

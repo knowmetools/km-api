@@ -102,7 +102,7 @@ def test_filter_list_shared(
 
     user = user_factory()
     km_user_accessor_factory(
-        accepted=True,
+        is_accepted=True,
         km_user=km_user,
         user_with_access=user)
 
@@ -136,7 +136,7 @@ def test_filter_list_shared_not_accepted(
 
     user = user_factory()
     km_user_accessor_factory(
-        accepted=False,
+        is_accepted=False,
         km_user=km_user,
         user_with_access=user)
 

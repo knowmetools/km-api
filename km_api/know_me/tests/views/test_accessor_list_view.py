@@ -40,9 +40,8 @@ def test_post_new_share(api_rf, km_user_factory):
     api_rf.user = km_user.user
 
     data = {
-        'can_write': True,
         'email': 'share@example.com',
-        'has_private_profile_access': True,
+        'is_admin': True,
     }
 
     request = api_rf.post('/', data)
@@ -53,11 +52,8 @@ def test_post_new_share(api_rf, km_user_factory):
 
     accessor = km_user.km_user_accessors.get()
 
-    assert accessor.can_write == data['can_write']
     assert accessor.email == data['email']
-    assert accessor.has_private_profile_access == \
-        data['has_private_profile_access']
-
+    assert accessor.is_admin == data['is_admin']
     serializer = serializers.KMUserAccessorSerializer(
         accessor,
         context={'request': request})

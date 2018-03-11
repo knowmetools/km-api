@@ -38,12 +38,12 @@ class HasKMUserAccess(permissions.IsAuthenticated):
 
         try:
             accessor = km_user.km_user_accessors.get(
-                accepted=True,
+                is_accepted=True,
                 user_with_access=request.user)
         except models.KMUserAccessor.DoesNotExist:
             raise Http404()
 
-        if accessor.can_write:
+        if accessor.is_admin:
             return True
 
         return request.method in permissions.SAFE_METHODS

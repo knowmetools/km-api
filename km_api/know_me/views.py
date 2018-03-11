@@ -127,7 +127,7 @@ class KMUserListView(generics.ListCreateAPIView):
         """
         # User granted access through an accessor
         query = Q(km_user_accessor__user_with_access=self.request.user)
-        query &= Q(km_user_accessor__accepted=True)
+        query &= Q(km_user_accessor__is_accepted=True)
 
         # Requesting user is the user
         query |= Q(user=self.request.user)
@@ -168,4 +168,4 @@ class PendingAccessorListView(generics.ListAPIView):
             A queryset containing the ``KMUserAccessor`` instances that
             give access to the requesting user and are not yet accepted.
         """
-        return self.request.user.km_user_accessors.filter(accepted=False)
+        return self.request.user.km_user_accessors.filter(is_accepted=False)
