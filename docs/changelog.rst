@@ -12,6 +12,7 @@ Breaking Changes
   * :issue:`267`: Refactor accessor permission fields. The permissions are now encompassed in a single ``is_admin`` field.
 
 Bug Fixes
+  * :issue:`254`: Fix Ansible creating duplicate crontab entries.
   * :issue:`261`: Fix permissions on ``KMUser`` instances not respecting sharing.
   * :issue:`262`: Fix access to private profiles being too open.
 

@@ -26,4 +26,5 @@
 - name: Automate certificate renewal
   cron:
     job: certbot renew
+    name: Renew SSL Certificate
     special_time: daily
