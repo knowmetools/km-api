@@ -13,6 +13,7 @@ Breaking Changes
 
 Bug Fixes
   * :issue:`261`: Fix permissions on ``KMUser`` instances not respecting sharing.
+  * :issue:`262`: Fix access to private profiles being too open.
 
 Miscellaneous
   * :issue:`211`: Remove old "emergency" models.

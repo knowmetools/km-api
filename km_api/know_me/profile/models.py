@@ -357,6 +357,11 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         """
         Check read permissions on the instance for a request.
 
+        If the profile is private, it requires the requesting user to be
+        granted admin permissions (or be the owner). This check is
+        already implemented in the write-permissions check of the parent
+        Know Me user, so we use it here.
+
         Args:
             request:
                 The request to check permissions for.
@@ -365,6 +370,9 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
             A boolean indicating if the requesting user has read
             permissions on the instance.
         """
+        if self.is_private:
+            return self.km_user.has_object_write_permission(request)
+
         return self.km_user.has_object_read_permission(request)
 
     def has_object_write_permission(self, request):

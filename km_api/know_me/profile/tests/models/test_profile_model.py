@@ -60,6 +60,29 @@ def test_has_object_read_permission(
 
 
 @mock.patch('know_me.models.KMUser.has_object_write_permission')
+def test_has_object_read_permission_private(
+        mock_parent_permission,
+        api_rf,
+        profile_factory):
+    """
+    Private profiles should delegate their read permission check to
+    their parent Know Me user's write permission check.
+
+    Using the 'write' permission is intentional. Access to private
+    profiles requires admin permissions, which is what write access to
+    the parent Know Me user requires.
+    """
+    profile = profile_factory(is_private=True)
+    request = api_rf.get('/')
+
+    expected = mock_parent_permission.return_value
+
+    assert profile.has_object_read_permission(request) == expected
+    assert mock_parent_permission.call_count == 1
+    assert mock_parent_permission.call_args[0] == (request,)
+
+
+@mock.patch('know_me.models.KMUser.has_object_write_permission')
 def test_has_object_write_permission(
         mock_parent_permission,
         api_rf,
