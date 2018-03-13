@@ -23,7 +23,9 @@ def test_check_permissions(mock_km_user_permission, mock_dry_permissions):
 
 
 @mock.patch('know_me.profile.views.KMUserAccessFilterBackend.filter_queryset')
-def test_filter_queryset(mock_filter):
+@mock.patch(
+    'know_me.profile.views.filters.ProfileFilterBackend.filter_queryset')
+def test_filter_queryset(mock_profile_filter, mock_access_filter):
     """
     The view should filter its queryset by passing it through the filter
     that restricts access to items based on the owner.
@@ -35,7 +37,8 @@ def test_filter_queryset(mock_filter):
 
     view.filter_queryset(queryset)
 
-    assert mock_filter.call_count == 1
+    assert mock_access_filter.call_count == 1
+    assert mock_profile_filter.call_count == 1
 
 
 def test_get_queryset(profile_factory):

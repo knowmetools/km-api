@@ -5,7 +5,7 @@ from rest_framework import generics
 from know_me.filters import KMUserAccessFilterBackend
 from know_me.models import KMUser
 from know_me.permissions import HasKMUserAccess
-from know_me.profile import models, permissions, serializers
+from know_me.profile import filters, models, permissions, serializers
 
 
 class ListEntryDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -220,7 +220,7 @@ class ProfileListView(generics.ListCreateAPIView):
     Only team leaders or the Know Me user themself can create a new
     profile.
     """
-    filter_backends = (KMUserAccessFilterBackend,)
+    filter_backends = (KMUserAccessFilterBackend, filters.ProfileFilterBackend)
     permission_classes = (DRYPermissions, HasKMUserAccess)
     queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileListSerializer
