@@ -34,9 +34,11 @@ def test_serialize(
     Test serializing a km_user.
     """
     km_user = km_user_factory(image=image)
+    api_rf.user = km_user.user
+    request = api_rf.get(km_user.get_absolute_url())
     serializer = serializers.KMUserListSerializer(
         km_user,
-        context=serializer_context)
+        context={'request': request})
 
     image_url = api_rf.get(km_user.image.url).build_absolute_uri()
     url_request = api_rf.get(km_user.get_absolute_url())
@@ -47,6 +49,10 @@ def test_serialize(
         'url': url_request.build_absolute_uri(),
         'name': km_user.user.get_short_name(),
         'quote': km_user.quote,
+        'permissions': {
+            'read': km_user.has_object_read_permission(request),
+            'write': km_user.has_object_write_permission(request),
+        }
     }
 
     assert serializer.data == expected

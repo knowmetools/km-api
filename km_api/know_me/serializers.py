@@ -3,6 +3,8 @@
 
 from django.utils.translation import ugettext_lazy as _
 
+from dry_rest_permissions.generics import DRYPermissionsField
+
 from rest_framework import serializers
 
 from know_me import models
@@ -25,10 +27,11 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     """
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:km-user-detail')
+    permissions = DRYPermissionsField()
 
     class Meta:
         extra_kwargs = EXTRA_FIELD_KWARGS
-        fields = ('id', 'url', 'name', 'image', 'quote')
+        fields = ('id', 'url', 'name', 'image', 'quote', 'permissions')
         model = models.KMUser
 
 
@@ -58,6 +61,7 @@ class KMUserDetailSerializer(KMUserListSerializer):
             'media_resources_url',
             'profiles_url',
             'profiles',
+            'permissions'
         )
         model = models.KMUser
 
