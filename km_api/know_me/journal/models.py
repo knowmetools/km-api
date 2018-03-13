@@ -76,6 +76,17 @@ class Entry(mixins.IsAuthenticatedMixin, models.Model):
         """
         return reverse('know-me:journal:entry-detail', kwargs={'pk': self.pk})
 
+    def get_comments_url(self):
+        """
+        Get the URL of the instance's comment list view.
+
+        Returns:
+            The absolute URL of the instance's comment list view.
+        """
+        return reverse(
+            'know-me:journal:entry-comment-list',
+            kwargs={'pk': self.pk})
+
     def has_object_read_permission(self, request):
         """
         Check read permissions on the instance for a request.
@@ -188,3 +199,15 @@ class EntryComment(mixins.IsAuthenticatedMixin, models.Model):
             permissions on the instance.
         """
         return request.user == self.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        No one is granted blanket write permissions. More granular
+        permissions are handled by the 'destroy' and 'update' checks.
+
+        Returns:
+            ``False``
+        """
+        return False

@@ -27,6 +27,19 @@ class RegistrationSerializer(BaseRegistrationSerializer):
         model = get_user_model()
 
 
+class UserInfoSerializer(serializers.ModelSerializer):
+    """
+    Serializer for sharing the basic information of a user.
+
+    This serializer is a read-only serializer intended for use when we
+    need to display information about the user to another user.
+    """
+
+    class Meta:
+        fields = ('first_name', 'last_name')
+        model = get_user_model()
+
+
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for ``User`` instances.

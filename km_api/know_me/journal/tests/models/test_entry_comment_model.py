@@ -81,3 +81,12 @@ def test_has_object_update_permission_other(api_rf, entry_comment_factory):
     request = api_rf.get('/')
 
     assert not comment.has_object_update_permission(request)
+
+
+def test_has_object_write_permission(entry_comment_factory):
+    """
+    No one should have write permission on a comment.
+    """
+    comment = entry_comment_factory()
+
+    assert not comment.has_object_write_permission(None)

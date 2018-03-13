@@ -3,9 +3,51 @@ from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import generics
 
 from know_me.filters import KMUserAccessFilterBackend
-from know_me.journal import models, serializers
+from know_me.journal import models, permissions, serializers
 from know_me.models import KMUser
 from know_me.permissions import HasKMUserAccess
+
+
+class EntryCommentListView(generics.ListCreateAPIView):
+    """
+    get:
+    List the comments attached to a journal entry.
+
+    post:
+    Add a new comment to a specific journal entry.
+    """
+    permission_classes = (
+        DRYPermissions,
+        permissions.HasEntryCommentListPermissions)
+    serializer_class = serializers.EntryCommentSerializer
+
+    def get_queryset(self):
+        """
+        Get the comments attached to the journal entry given in the URL.
+
+        Returns:
+            A queryset containing the comments attached to the journal
+            entry whose ID is specified in the URL.
+        """
+        entry = models.Entry.objects.get(pk=self.kwargs.get('pk'))
+
+        return entry.comments.all()
+
+    def perform_create(self, serializer):
+        """
+        Create a new comment attached to the specified journal entry.
+
+        Args:
+            serializer:
+                An instance of the view's serializer class containing
+                the data passed to the view.
+
+        Returns:
+            The newly created comment instance.
+        """
+        entry = models.Entry.objects.get(pk=self.kwargs.get('pk'))
+
+        return serializer.save(entry=entry, user=self.request.user)
 
 
 class EntryDetailView(generics.RetrieveUpdateDestroyAPIView):

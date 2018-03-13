@@ -28,6 +28,19 @@ def test_get_absolute_url(entry_factory):
     assert entry.get_absolute_url() == expected
 
 
+def test_get_comments_url(entry_factory):
+    """
+    This method should return the URL of the instance's comment list
+    view.
+    """
+    entry = entry_factory()
+    expected = reverse(
+        'know-me:journal:entry-comment-list',
+        kwargs={'pk': entry.pk})
+
+    assert entry.get_comments_url() == expected
+
+
 @mock.patch('know_me.models.KMUser.has_object_read_permission')
 def test_has_object_read_permission(
         mock_parent_permission,
