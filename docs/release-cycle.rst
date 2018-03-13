@@ -103,3 +103,4 @@ The message for the newly created tag should be ``Release vX.Y.Z``. After the pr
 
 .. _bumpversion: https://github.com/peritus/bumpversion
 .. _git-branching-model: http://nvie.com/posts/a-successful-git-branching-model/
+.. _git-flow: https://github.com/nvie/gitflow
