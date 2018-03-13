@@ -15,15 +15,17 @@ def test_serialize(
     ProfileFactory(km_user=km_user)
     ProfileFactory(km_user=km_user)
 
+    api_rf.user = km_user.user
+    request = api_rf.get('/')
+
+
     serializer = serializers.KMUserDetailSerializer(
         km_user,
-        context=serializer_context)
+        context={'request': request})
     profile_serializer = ProfileListSerializer(
         km_user.profiles,
-        context=serializer_context,
+        context={'request': request},
         many=True)
-
-    request = serializer_context['request']
 
     url = api_rf.get(km_user.get_absolute_url()).build_absolute_uri()
     category_url = km_user.get_media_resource_category_list_url(request)
@@ -41,6 +43,10 @@ def test_serialize(
         'media_resources_url': media_resource_request.build_absolute_uri(),
         'profiles_url': profile_list_url,
         'profiles': profile_serializer.data,
+        'permissions': {
+            'read': km_user.has_object_read_permission(request),
+            'write': km_user.has_object_write_permission(request),
+        }
     }
 
     assert serializer.data == expected
