@@ -7,9 +7,8 @@ from know_me import views
 
 
 urlpatterns = [
-    url(
-        r'^',
-        include('know_me.profile.urls')),
+    url(r'^', include('know_me.journal.urls')),
+    url(r'^', include('know_me.profile.urls')),
 
     url(
         r'^accessors/pending/$',

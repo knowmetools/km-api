@@ -13,6 +13,7 @@ Breaking Changes
 
 Features
   * :issue:`246`: Create model for journal entries.
+  * :issue:`247`: Add endpoint for listing and creating journal entries.
   * :issue:`248`: Create model for comments on journal entries.
 
 Bug Fixes
