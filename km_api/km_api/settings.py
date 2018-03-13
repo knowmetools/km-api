@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'custom_storages',
     'km_auth',
     'know_me',
+    'know_me.journal',
     'know_me.profile',
     'mailing_list',
 ]

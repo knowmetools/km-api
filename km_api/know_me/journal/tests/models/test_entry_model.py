@@ -1,0 +1,62 @@
+from unittest import mock
+
+from know_me.journal import models
+
+
+def test_create(file, km_user_factory):
+    """
+    Test creating a new journal entry.
+    """
+    models.Entry.objects.create(
+        attachment=file,
+        km_user=km_user_factory(),
+        text='My sample entry text.')
+
+
+@mock.patch('know_me.models.KMUser.has_object_read_permission')
+def test_has_object_read_permission(
+        mock_parent_permission,
+        api_rf,
+        entry_factory):
+    """
+    Journal entries should delegate the read permission check to their
+    parent Know Me user.
+    """
+    entry = entry_factory()
+    request = api_rf.get('/')
+
+    expected = mock_parent_permission.return_value
+
+    assert entry.has_object_read_permission(request) == expected
+    assert mock_parent_permission.call_count == 1
+    assert mock_parent_permission.call_args[0] == (request,)
+
+
+@mock.patch('know_me.models.KMUser.has_object_write_permission')
+def test_has_object_write_permission(
+        mock_parent_permission,
+        api_rf,
+        entry_factory):
+    """
+    Journal entries should delegate the write permission check to their
+    parent Know Me user.
+    """
+    entry = entry_factory()
+    request = api_rf.get('/')
+
+    expected = mock_parent_permission.return_value
+
+    assert entry.has_object_write_permission(request) == expected
+    assert mock_parent_permission.call_count == 1
+    assert mock_parent_permission.call_args[0] == (request,)
+
+
+def test_string_conversion(entry_factory):
+    """
+    Converting an entry to a string should return the time it was
+    published.
+    """
+    entry = entry_factory()
+    expected = 'Entry for {}'.format(entry.created_at)
+
+    assert str(entry) == expected
