@@ -21,6 +21,8 @@ Since this is a Python project, we recommend using a virtualenv_ to manage the e
 This project runs on Python 3.4. Ideally your development environment also has Python 3.4 installed. If not, you can find it `here <python34_>`_
 
 
+.. _project-setup:
+
 Project Setup
 =============
 
@@ -42,6 +44,11 @@ You can now clone the project. Since the directory will have already been create
 If you installed the ``git-flow`` extension, you can now setup the repository to use it::
 
     $ git flow init -d
+
+We also recommend the following configuration options::
+
+    $ git config gitflow.feature.finish.keepremote true
+    $ git config gitflow.bugfix.finish.keepremote true
 
 Finally, install the project requirements appropriate for what you need. The ``test`` requirements should cover what you need. If all you want to do is run the project locally, the ``base`` requirements are all you need.::
 

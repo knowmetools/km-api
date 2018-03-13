@@ -16,6 +16,7 @@ Welcome to Know Me API's documentation!
    :caption: Contents:
 
    development
+   release-cycle
    deployment
    changelog
 

@@ -22,6 +22,7 @@ Bug Fixes
 
 Miscellaneous
   * :issue:`211`: Remove old "emergency" models.
+  * :issue:`273`: Document release process.
 
 
 ******
