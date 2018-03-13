@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from rest_framework.reverse import reverse
 
 from permission_utils import model_mixins as mixins
 
@@ -65,6 +66,15 @@ class Entry(mixins.IsAuthenticatedMixin, models.Model):
             A string containing the time that the entry was published.
         """
         return 'Entry for {}'.format(self.created_at)
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            The absolute URL of the instance's detail view.
+        """
+        return reverse('know-me:journal:entry-detail', kwargs={'pk': self.pk})
 
     def has_object_read_permission(self, request):
         """

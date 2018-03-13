@@ -8,6 +8,25 @@ from know_me.models import KMUser
 from know_me.permissions import HasKMUserAccess
 
 
+class EntryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    delete:
+    Delete a specific journal entry.
+
+    get:
+    Retrieve the information of a specific journal entry.
+
+    patch:
+    Partially update a specific journal entry.
+
+    put:
+    Update a specific journal entry.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.Entry.objects.all()
+    serializer_class = serializers.EntryDetailSerializer
+
+
 class EntryListView(generics.ListCreateAPIView):
     """
     get:

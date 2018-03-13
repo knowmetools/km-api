@@ -21,7 +21,7 @@ def test_create_entry(api_client, api_rf, km_user_factory):
         'text': 'My entry text.',
     }
 
-    url = reverse('know-me:journal:entry-detail', kwargs={'pk': km_user.pk})
+    url = reverse('know-me:journal:entry-list', kwargs={'pk': km_user.pk})
     request = api_rf.post(url, data)
     response = api_client.post(url, data)
 
@@ -45,7 +45,7 @@ def test_get_entry_list(api_client, api_rf, entry_factory, km_user_factory):
     api_client.force_authenticate(user=km_user.user)
     api_rf.user = km_user.user
 
-    url = reverse('know-me:journal:entry-detail', kwargs={'pk': km_user.pk})
+    url = reverse('know-me:journal:entry-list', kwargs={'pk': km_user.pk})
     request = api_rf.get(url)
     response = api_client.get(url)
 
