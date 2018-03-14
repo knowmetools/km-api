@@ -6,6 +6,9 @@ from django.conf.urls import include, url
 from know_me import views
 
 
+app_name = 'know-me'
+
+
 urlpatterns = [
     url(r'^', include('know_me.journal.urls')),
     url(r'^', include('know_me.profile.urls')),

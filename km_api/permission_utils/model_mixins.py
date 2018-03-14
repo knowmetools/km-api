@@ -24,7 +24,7 @@ class IsAuthenticatedMixin:
                 ``True`` if the requesting user is authenticated and
                 ``False`` otherwise.
         """
-        return request.user.is_authenticated()
+        return request.user.is_authenticated
 
     @staticmethod
     def has_write_permission(request):
@@ -40,4 +40,4 @@ class IsAuthenticatedMixin:
                 ``True`` if the requesting user is authenticated and
                 ``False`` otherwise.
         """
-        return request.user.is_authenticated()
+        return request.user.is_authenticated

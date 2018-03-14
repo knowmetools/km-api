@@ -18,7 +18,7 @@ def test_create_admin():
     os.environ['ADMIN_PASSWORD'] = 'password'
 
     output = io.StringIO()
-    call_command('createadmin', out=output)
+    call_command('createadmin', stdout=output)
 
     assert get_user_model().objects.count() == 1
 
@@ -49,7 +49,7 @@ def test_create_admin_user_exists(email_factory, user_factory):
     os.environ['ADMIN_PASSWORD'] = 'newpassword'
 
     output = io.StringIO()
-    call_command('createadmin', out=output)
+    call_command('createadmin', stdout=output)
 
     assert get_user_model().objects.count() == 1
 
