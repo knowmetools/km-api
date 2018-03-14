@@ -68,6 +68,19 @@ def test_get_serializer_class_get(api_rf):
     assert view.get_serializer_class() == expected
 
 
+def test_get_serializer_class_missing_request(api_rf):
+    """
+    When the documentation is generated, no request is provided to the
+    view. In this case we should return the list serializer.
+    """
+    view = views.EntryListView()
+    view.request = None
+
+    expected = serializers.EntryListSerializer
+
+    assert view.get_serializer_class() == expected
+
+
 def test_get_serializer_class_post(api_rf):
     """
     The view should use the entry detail serializer for a POST request.
