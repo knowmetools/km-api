@@ -150,6 +150,17 @@ class EntryComment(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name = _('entry comment')
         verbose_name_plural = _('entry comments')
 
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            The absolute URL of the instance's detail view.
+        """
+        return reverse(
+            'know-me:journal:entry-comment-detail',
+            kwargs={'pk': self.pk})
+
     def has_object_destroy_permission(self, request):
         """
         Check destroy permissions on the instance for a request.
@@ -182,32 +193,23 @@ class EntryComment(mixins.IsAuthenticatedMixin, models.Model):
             A boolean indicating if the requesting user has read
             permissions on the instance.
         """
-        return self.entry.has_object_read_permission(request)
+        return (
+            request.user == self.user
+            or self.entry.has_object_read_permission(request))
 
-    def has_object_update_permission(self, request):
+    def has_object_write_permission(self, request):
         """
-        Check update perissions on the instance for a request.
+        Check write permissions on the instance for a request.
 
-        Only the user who created the comment is allowed to update it.
+        Only the user who made the comment has blanket write permissions
+        on it.
 
         Args:
             request:
                 The request to check permissions for.
 
         Returns:
-            A boolean indicating if the requesting user has update
+            A boolean indicating if the requesting user has write
             permissions on the instance.
         """
         return request.user == self.user
-
-    def has_object_write_permission(self, request):
-        """
-        Check write permissions on the instance for a request.
-
-        No one is granted blanket write permissions. More granular
-        permissions are handled by the 'destroy' and 'update' checks.
-
-        Returns:
-            ``False``
-        """
-        return False

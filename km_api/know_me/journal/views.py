@@ -8,6 +8,32 @@ from know_me.models import KMUser
 from know_me.permissions import HasKMUserAccess
 
 
+class EntryCommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    delete:
+    Delete a specific comment on a journal entry.
+
+    The user who made the comment, the journal owner, and any users with
+    admin rights on the journal can delete a comment.
+
+    get:
+    Retrieve information about a specific comment.
+
+    patch:
+    Partially update a comment.
+
+    Only the user who made the comment is allowed to update it.
+
+    put:
+    Update a comment.
+
+    Only the user who made the comment is allowed to update it.
+    """
+    permission_classes = (DRYPermissions,)
+    queryset = models.EntryComment.objects.all()
+    serializer_class = serializers.EntryCommentSerializer
+
+
 class EntryCommentListView(generics.ListCreateAPIView):
     """
     get:

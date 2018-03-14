@@ -6,16 +6,19 @@ from account.serializers import UserInfoSerializer
 from know_me.journal import models
 
 
-class EntryCommentSerializer(serializers.ModelSerializer):
+class EntryCommentSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for comments on journal entries.
     """
     permissions = DRYPermissionsField()
+    url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:journal:entry-comment-detail')
     user = UserInfoSerializer(read_only=True)
 
     class Meta:
         fields = (
             'id',
+            'url',
             'created_at',
             'updated_at',
             'permissions',

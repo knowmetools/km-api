@@ -8,7 +8,7 @@ def test_serialize(api_rf, entry_comment_factory, serialized_time):
     """
     comment = entry_comment_factory()
     api_rf.user = comment.user
-    request = api_rf.get('/')
+    request = api_rf.get(comment.get_absolute_url())
 
     serializer = serializers.EntryCommentSerializer(
         comment,
@@ -19,12 +19,12 @@ def test_serialize(api_rf, entry_comment_factory, serialized_time):
 
     expected = {
         'id': comment.id,
+        'url': request.build_absolute_uri(),
         'created_at': serialized_time(comment.created_at),
         'updated_at': serialized_time(comment.updated_at),
         'permissions': {
             'destroy': comment.has_object_destroy_permission(request),
             'read': comment.has_object_read_permission(request),
-            'update': comment.has_object_update_permission(request),
             'write': comment.has_object_write_permission(request),
         },
         'text': comment.text,
