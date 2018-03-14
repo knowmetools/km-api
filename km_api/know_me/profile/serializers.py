@@ -67,13 +67,13 @@ class ListEntrySerializer(serializers.ModelSerializer):
     Serializer for list entries.
     """
     permissions = DRYPermissionsField()
-    profile_item_id = serializers.PrimaryKeyRelatedField(
-        read_only=True,
-        source='profile_item')
+    url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:profile:list-entry-detail')
 
     class Meta:
         fields = (
             'id',
+            'url',
             'created_at',
             'updated_at',
             'permissions',
@@ -82,20 +82,13 @@ class ListEntrySerializer(serializers.ModelSerializer):
         model = models.ListEntry
 
 
-class ProfileItemSerializer(serializers.ModelSerializer):
+class ProfileItemListSerializer(serializers.HyperlinkedModelSerializer):
     """
-    Serializer for profile items.
+    Serializer for a list of profile items.
     """
-    media_resource = MediaResourceSerializer(read_only=True)
-    media_resource_id = serializers.PrimaryKeyRelatedField(
-        queryset=models.MediaResource.objects.all(),
-        required=False,
-        source='media_resource',
-        write_only=True)
+    list_entries_url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:profile:list-entry-list')
     permissions = DRYPermissionsField()
-    topic_id = serializers.PrimaryKeyRelatedField(
-        read_only=True,
-        source='topic')
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:profile:profile-item-detail')
 
@@ -107,12 +100,30 @@ class ProfileItemSerializer(serializers.ModelSerializer):
             'updated_at',
             'description',
             'image',
-            'media_resource',
-            'media_resource_id',
+            'list_entries_url',
             'name',
             'permissions',
             'topic_id')
         model = models.ProfileItem
+
+
+class ProfileItemDetailSerializer(ProfileItemListSerializer):
+    """
+    Serializer for profile items.
+    """
+    list_entries = ListEntrySerializer(many=True, read_only=True)
+    media_resource = MediaResourceSerializer(read_only=True)
+    media_resource_id = serializers.PrimaryKeyRelatedField(
+        help_text=_('The ID of the media resource to attach to the item.'),
+        queryset=models.MediaResource.objects.all(),
+        required=False,
+        write_only=True)
+
+    class Meta(ProfileItemListSerializer.Meta):
+        fields = ProfileItemListSerializer.Meta.fields + (
+            'list_entries',
+            'media_resource',
+            'media_resource_id')
 
     def validate_media_resource_id(self, resource):
         """
@@ -154,10 +165,12 @@ class ProfileItemSerializer(serializers.ModelSerializer):
         return resource
 
 
-class ProfileTopicSerializer(serializers.HyperlinkedModelSerializer):
+class ProfileTopicListSerializer(serializers.HyperlinkedModelSerializer):
     """
-    Serializer for profile topics.
+    Serializer for a list of profile topics.
     """
+    items_url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:profile:profile-item-list')
     permissions = DRYPermissionsField()
     profile_id = serializers.PrimaryKeyRelatedField(
         read_only=True,
@@ -172,10 +185,21 @@ class ProfileTopicSerializer(serializers.HyperlinkedModelSerializer):
             'created_at',
             'updated_at',
             'is_detailed',
+            'items_url',
             'name',
             'permissions',
             'profile_id')
         model = models.ProfileTopic
+
+
+class ProfileTopicDetailSerializer(ProfileTopicListSerializer):
+    """
+    Serializer for a single profile topic.
+    """
+    items = ProfileItemListSerializer(many=True, read_only=True)
+
+    class Meta(ProfileTopicListSerializer.Meta):
+        fields = ProfileTopicListSerializer.Meta.fields + ('items',)
 
 
 class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
@@ -183,6 +207,8 @@ class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
     Serializer for multiple profile instances.
     """
     permissions = DRYPermissionsField()
+    topics_url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:profile:profile-topic-list')
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:profile:profile-detail')
 
@@ -193,7 +219,8 @@ class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
             'created_at',
             'updated_at',
             'name',
-            'permissions')
+            'permissions',
+            'topics_url')
         model = models.Profile
 
 
@@ -201,9 +228,7 @@ class ProfileDetailSerializer(ProfileListSerializer):
     """
     Serializer for a single profile.
     """
-    topics = ProfileTopicSerializer(many=True, read_only=True)
-    topics_url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:profile:profile-topic-list')
+    topics = ProfileTopicListSerializer(many=True, read_only=True)
 
     class Meta(ProfileListSerializer.Meta):
-        fields = ProfileListSerializer.Meta.fields + ('topics', 'topics_url')
+        fields = ProfileListSerializer.Meta.fields + ('topics',)

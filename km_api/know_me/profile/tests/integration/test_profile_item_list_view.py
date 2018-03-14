@@ -27,7 +27,7 @@ def test_create_profile_item(api_client, api_rf, profile_topic_factory):
 
     assert response.status_code == status.HTTP_201_CREATED
 
-    serializer = serializers.ProfileItemSerializer(
+    serializer = serializers.ProfileItemDetailSerializer(
         topic.items.get(),
         context={'request': request})
 
@@ -59,7 +59,7 @@ def test_get_profile_item_list(
 
     assert response.status_code == status.HTTP_200_OK
 
-    serializer = serializers.ProfileItemSerializer(
+    serializer = serializers.ProfileItemListSerializer(
         topic.items.all(),
         context={'request': request},
         many=True)

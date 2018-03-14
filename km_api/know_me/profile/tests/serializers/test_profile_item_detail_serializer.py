@@ -8,6 +8,7 @@ from know_me.profile import serializers
 def test_serialize(
         api_rf,
         image,
+        list_entry_factory,
         media_resource_factory,
         profile_item_factory,
         serialized_time):
@@ -23,30 +24,31 @@ def test_serialize(
     api_rf.user = media_resource.km_user.user
     request = api_rf.get(item.get_absolute_url())
 
-    serializer = serializers.ProfileItemSerializer(
+    list_entry_factory(profile_item=item)
+    list_entry_factory(profile_item=item)
+
+    serializer = serializers.ProfileItemDetailSerializer(
         item,
         context={'request': request})
+    list_serializer = serializers.ProfileItemListSerializer(
+        item,
+        context={'request': request})
+
+    list_entry_serializer = serializers.ListEntrySerializer(
+        item.list_entries.all(),
+        context={'request': request},
+        many=True)
     media_resource_serializer = serializers.MediaResourceSerializer(
         media_resource,
         context={'request': request})
 
-    image_url = api_rf.get(item.image.url).build_absolute_uri()
-
-    expected = {
-        'id': item.id,
-        'url': request.build_absolute_uri(),
-        'created_at': serialized_time(item.created_at),
-        'updated_at': serialized_time(item.updated_at),
-        'description': item.description,
-        'image': image_url,
+    additional = {
+        'list_entries': list_entry_serializer.data,
         'media_resource': media_resource_serializer.data,
-        'name': item.name,
-        'permissions': {
-            'read': item.has_object_read_permission(request),
-            'write': item.has_object_write_permission(request),
-        },
-        'topic_id': item.topic.id,
     }
+
+    expected = dict(list_serializer.data.items())
+    expected.update(additional)
 
     assert serializer.data == expected
 
@@ -62,7 +64,7 @@ def test_validate(image, media_resource_factory):
         'media_resource_id': media_resource.id,
         'name': 'Test Item',
     }
-    serializer = serializers.ProfileItemSerializer(
+    serializer = serializers.ProfileItemDetailSerializer(
         context={'km_user': media_resource.km_user},
         data=data)
 
@@ -76,7 +78,7 @@ def test_validate_media_resource_id_by_context(media_resource_factory):
     resource.
     """
     media_resource = media_resource_factory()
-    serializer = serializers.ProfileItemSerializer(
+    serializer = serializers.ProfileItemDetailSerializer(
         context={'km_user': media_resource.km_user})
 
     result = serializer.validate_media_resource_id(media_resource)
@@ -97,7 +99,7 @@ def test_validate_media_resource_id_by_item(
     media_resource = media_resource_factory(km_user=km_user)
     profile_item = profile_item_factory(topic__profile__km_user=km_user)
 
-    serializer = serializers.ProfileItemSerializer(profile_item)
+    serializer = serializers.ProfileItemDetailSerializer(profile_item)
     result = serializer.validate_media_resource_id(media_resource)
 
     assert result == media_resource
@@ -108,7 +110,7 @@ def test_validate_media_resource_id_missing_context():
     If the serializer is not bound and a Know Me user isn't provided as
     context, an AssertionError should be raised.
     """
-    serializer = serializers.ProfileItemSerializer()
+    serializer = serializers.ProfileItemDetailSerializer()
 
     with pytest.raises(AssertionError):
         serializer.validate_media_resource_id(None)
@@ -123,7 +125,7 @@ def test_validate_media_resource_id_other_user(
     """
     item = profile_item_factory()
     media_resource = media_resource_factory()
-    serializer = serializers.ProfileItemSerializer(item)
+    serializer = serializers.ProfileItemDetailSerializer(item)
 
     with pytest.raises(ValidationError):
         serializer.validate_media_resource_id(media_resource)

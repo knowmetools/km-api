@@ -14,6 +14,8 @@ def test_serialize_profile(api_rf, profile_factory, serialized_time):
         profile,
         context={'request': request})
 
+    topics_url = api_rf.get(profile.get_topic_list_url()).build_absolute_uri()
+
     expected = {
         'id': profile.id,
         'url': request.build_absolute_uri(),
@@ -24,6 +26,7 @@ def test_serialize_profile(api_rf, profile_factory, serialized_time):
             'read': profile.has_object_read_permission(request),
             'write': profile.has_object_write_permission(request),
         },
+        'topics_url': topics_url,
     }
 
     assert serializer.data == expected

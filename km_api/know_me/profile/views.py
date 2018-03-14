@@ -258,7 +258,7 @@ class ProfileItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     permission_classes = (DRYPermissions,)
     queryset = models.ProfileItem.objects.all()
-    serializer_class = serializers.ProfileItemSerializer
+    serializer_class = serializers.ProfileItemDetailSerializer
 
 
 class ProfileItemListView(generics.ListCreateAPIView):
@@ -273,7 +273,7 @@ class ProfileItemListView(generics.ListCreateAPIView):
         DRYPermissions,
         permissions.HasProfileItemListPermissions,
     )
-    serializer_class = serializers.ProfileItemSerializer
+    serializer_class = serializers.ProfileItemDetailSerializer
 
     def get_queryset(self):
         """
@@ -289,6 +289,20 @@ class ProfileItemListView(generics.ListCreateAPIView):
             ID is given in the URL.
         """
         return models.ProfileItem.objects.filter(topic=self.kwargs.get('pk'))
+
+    def get_serializer_class(self):
+        """
+        Get the appropriate serializer class for the current request.
+
+        Returns:
+            The profile item detail serializer if the request is missing
+            or it is a POST request. The profile item list serializer is
+            used otherwise.
+        """
+        if self.request is None or self.request.method == 'POST':
+            return serializers.ProfileItemDetailSerializer
+
+        return serializers.ProfileItemListSerializer
 
     def get_serializer_context(self):
         """
@@ -341,7 +355,7 @@ class ProfileTopicDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     permission_classes = (DRYPermissions,)
     queryset = models.ProfileTopic.objects.all()
-    serializer_class = serializers.ProfileTopicSerializer
+    serializer_class = serializers.ProfileTopicListSerializer
 
 
 class ProfileTopicListView(generics.ListCreateAPIView):
@@ -356,7 +370,6 @@ class ProfileTopicListView(generics.ListCreateAPIView):
         DRYPermissions,
         permissions.HasProfileTopicListPermissions,
     )
-    serializer_class = serializers.ProfileTopicSerializer
 
     def get_queryset(self):
         """
@@ -373,6 +386,19 @@ class ProfileTopicListView(generics.ListCreateAPIView):
         """
         return models.ProfileTopic.objects.filter(
             profile__pk=self.kwargs.get('pk'))
+
+    def get_serializer_class(self):
+        """
+        Get the correct serializer class for the given request.
+
+        Returns:
+            The profile topic detail serializer if there is no request
+            or it is a POST request and the list serializer otherwise.
+        """
+        if self.request is None or self.request.method == 'POST':
+            return serializers.ProfileTopicDetailSerializer
+
+        return serializers.ProfileTopicListSerializer
 
     def perform_create(self, serializer):
         """
