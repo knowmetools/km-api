@@ -42,12 +42,14 @@ INSTALLED_APPS = [
 
     # Third Party Apps
     'corsheaders',
+    'django_filters',
     'dry_rest_permissions',
     'raven.contrib.django.raven_compat',
     'rest_email_auth',
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
+    'watson',
 
     # Custom Apps
     'account',

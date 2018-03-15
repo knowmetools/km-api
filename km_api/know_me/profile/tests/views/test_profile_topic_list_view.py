@@ -32,12 +32,39 @@ def test_get_queryset(profile_factory, profile_topic_factory):
     assert list(view.get_queryset()) == list(profile.topics.all())
 
 
-def test_get_serializer_class():
+def test_get_serializer_class_get(api_rf):
     """
-    Test the serializer class used by the view.
+    The view should use the list serializer for a GET request.
     """
     view = views.ProfileTopicListView()
-    expected = serializers.ProfileTopicSerializer
+    view.request = api_rf.get('/')
+
+    expected = serializers.ProfileTopicListSerializer
+
+    assert view.get_serializer_class() == expected
+
+
+def test_get_serializer_class_missing_request():
+    """
+    If the view's request instance is ``None``, the detail serializer
+    should be used.
+    """
+    view = views.ProfileTopicListView()
+    view.request = None
+
+    expected = serializers.ProfileTopicDetailSerializer
+
+    assert view.get_serializer_class() == expected
+
+
+def test_get_serializer_class_post(api_rf):
+    """
+    The view should use the detail serializer for a POST request.
+    """
+    view = views.ProfileTopicListView()
+    view.request = api_rf.post('/')
+
+    expected = serializers.ProfileTopicDetailSerializer
 
     assert view.get_serializer_class() == expected
 

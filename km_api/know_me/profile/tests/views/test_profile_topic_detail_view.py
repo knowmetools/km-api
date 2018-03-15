@@ -33,6 +33,6 @@ def test_get_serializer_class():
     Test the serializer class the view uses.
     """
     view = views.ProfileTopicDetailView()
-    expected = serializers.ProfileTopicSerializer
+    expected = serializers.ProfileTopicListSerializer
 
     assert view.get_serializer_class() == expected

@@ -6,7 +6,6 @@ def test_serialize(api_rf, list_entry_factory, serialized_time):
     Test serializing a list entry.
     """
     entry = list_entry_factory()
-
     api_rf.user = entry.profile_item.topic.profile.km_user.user
     request = api_rf.get(entry.get_absolute_url())
 
@@ -16,6 +15,7 @@ def test_serialize(api_rf, list_entry_factory, serialized_time):
 
     expected = {
         'id': entry.id,
+        'url': request.build_absolute_uri(),
         'created_at': serialized_time(entry.created_at),
         'updated_at': serialized_time(entry.updated_at),
         'permissions': {

@@ -11,27 +11,42 @@ from know_me import models
 from know_me.profile.serializers import ProfileListSerializer
 
 
-EXTRA_FIELD_KWARGS = {
-    'image': {
-        'help_text': 'An image that represents the Know Me user.',
-    },
-    'quote': {
-        'help_text': "A quote for the Know Me user to introduce themself.",
-    },
-}
-
-
 class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for multiple ``KMUser`` instances.
     """
+    media_resource_categories_url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:profile:media-resource-category-list')
+    media_resources_url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:profile:media-resource-list')
+    permissions = DRYPermissionsField()
+    profiles_url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:profile:profile-list')
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:km-user-detail')
-    permissions = DRYPermissionsField()
 
     class Meta:
-        extra_kwargs = EXTRA_FIELD_KWARGS
-        fields = ('id', 'url', 'name', 'image', 'quote', 'permissions')
+        extra_kwargs = {
+            'image': {
+                'help_text': 'An image that represents the Know Me user.',
+            },
+            'quote': {
+                'help_text': ("A quote for the Know Me user to introduce "
+                              "themself."),
+            },
+        }
+        fields = (
+            'id',
+            'url',
+            'created_at',
+            'updated_at',
+            'image',
+            'media_resource_categories_url',
+            'media_resources_url',
+            'name',
+            'permissions',
+            'profiles_url',
+            'quote')
         model = models.KMUser
 
 
@@ -41,29 +56,10 @@ class KMUserDetailSerializer(KMUserListSerializer):
 
     This serializer builds off of the ``KMUserListSerializer``.
     """
-    media_resource_categories_url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:profile:media-resource-category-list')
-    media_resources_url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:profile:media-resource-list')
     profiles = ProfileListSerializer(many=True, read_only=True)
-    profiles_url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:profile:profile-list')
 
-    class Meta:
-        extra_kwargs = EXTRA_FIELD_KWARGS
-        fields = (
-            'id',
-            'url',
-            'name',
-            'image',
-            'quote',
-            'media_resource_categories_url',
-            'media_resources_url',
-            'profiles_url',
-            'profiles',
-            'permissions'
-        )
-        model = models.KMUser
+    class Meta(KMUserListSerializer.Meta):
+        fields = KMUserListSerializer.Meta.fields + ('permissions', 'profiles')
 
 
 class KMUserAccessorSerializer(serializers.ModelSerializer):

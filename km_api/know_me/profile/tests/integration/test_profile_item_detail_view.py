@@ -39,7 +39,7 @@ def test_get_profile_item(api_client, api_rf, profile_item_factory):
 
     assert response.status_code == status.HTTP_200_OK
 
-    serializer = serializers.ProfileItemSerializer(
+    serializer = serializers.ProfileItemDetailSerializer(
         item,
         context={'request': request})
 

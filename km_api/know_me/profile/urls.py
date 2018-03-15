@@ -6,25 +6,7 @@ from know_me.profile import views
 app_name = 'profile'
 
 
-user_detail_urls = [
-    url(
-        r'^media-resource-categories/$',
-        views.MediaResourceCategoryListView.as_view(),
-        name='media-resource-category-list'),
-
-    url(
-        r'^media-resources/$',
-        views.MediaResourceListView.as_view(),
-        name='media-resource-list'),
-
-    url(
-        r'^profiles/$',
-        views.ProfileListView.as_view(),
-        name='profile-list')
-]
-
-
-urlpatterns = [
+profile_urls = [
     url(
         r'^list-entries/(?P<pk>[0-9]+)/$',
         views.ListEntryDetailView.as_view(),
@@ -69,8 +51,28 @@ urlpatterns = [
         r'^profiles/(?P<pk>[0-9]+)/topics/$',
         views.ProfileTopicListView.as_view(),
         name='profile-topic-list'),
+]
+
+
+user_detail_urls = [
+    url(
+        r'^media-resource-categories/$',
+        views.MediaResourceCategoryListView.as_view(),
+        name='media-resource-category-list'),
 
     url(
-        r'^users/(?P<pk>[0-9]+)/',
-        include(user_detail_urls)),
+        r'^media-resources/$',
+        views.MediaResourceListView.as_view(),
+        name='media-resource-list'),
+
+    url(
+        r'^profiles/$',
+        views.ProfileListView.as_view(),
+        name='profile-list')
+]
+
+
+urlpatterns = [
+    url(r'^profile/', include(profile_urls)),
+    url(r'^users/(?P<pk>[0-9]+)/', include(user_detail_urls)),
 ]

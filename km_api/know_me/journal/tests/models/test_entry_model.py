@@ -1,5 +1,7 @@
 from unittest import mock
 
+from rest_framework.reverse import reverse
+
 from know_me.journal import models
 
 
@@ -11,6 +13,32 @@ def test_create(file, km_user_factory):
         attachment=file,
         km_user=km_user_factory(),
         text='My sample entry text.')
+
+
+def test_get_absolute_url(entry_factory):
+    """
+    This method should return the absolute URL of the instance's detail
+    view.
+    """
+    entry = entry_factory()
+    expected = reverse(
+        'know-me:journal:entry-detail',
+        kwargs={'pk': entry.pk})
+
+    assert entry.get_absolute_url() == expected
+
+
+def test_get_comments_url(entry_factory):
+    """
+    This method should return the URL of the instance's comment list
+    view.
+    """
+    entry = entry_factory()
+    expected = reverse(
+        'know-me:journal:entry-comment-list',
+        kwargs={'pk': entry.pk})
+
+    assert entry.get_comments_url() == expected
 
 
 @mock.patch('know_me.models.KMUser.has_object_read_permission')

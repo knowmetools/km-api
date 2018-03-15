@@ -8,19 +8,26 @@ v0.8.0
 ******
 
 Breaking Changes
-  * :issue:`253`: Massive rewrite of profile features. This is a backwards incompatible change that modifies endpoints, the data returned from profile endpoints, and requires a complete database wipe.
+  * :issue:`253,282`: Massive rewrite of profile features. This is a backwards incompatible change that modifies endpoints and the data returned from profile endpoints in addition to requiring a complete database wipe.
+  * :issue:`258`: Require multiple calls to return full profile.
   * :issue:`267`: Refactor accessor permission fields. The permissions are now encompassed in a single ``is_admin`` field.
 
 Features
-  * :issue:`246`: Create model for journal entries.
+  * :issue:`246,247,251`: Add endpoints for managing journal entries.
+  * :issue:`248,249,252`: Add endpoints for managing comments on journal entries.
+  * :issue:`250`: Add searching for journal entries.
+  * :issue:`267`: All models related to the Know Me app have creation and last-updated timestamps.
+  * :issue:`276`: Return URLs in Know Me user list rather than only from the detail endpoint.
 
 Bug Fixes
   * :issue:`254`: Fix Ansible creating duplicate crontab entries.
   * :issue:`261`: Fix permissions on ``KMUser`` instances not respecting sharing.
   * :issue:`262`: Fix access to private profiles being too open.
+  * :issue:`265`: Fix inability to tear down Terraform-provisioned infrastructure.
 
 Miscellaneous
   * :issue:`211`: Remove old "emergency" models.
+  * :issue:`273`: Document release process.
 
 
 ******
