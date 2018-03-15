@@ -1,7 +1,7 @@
 from account import serializers
 
 
-def test_serialize(user_factory):
+def test_serialize(serialized_time, user_factory):
     """
     Test serializing a user.
     """
@@ -10,6 +10,8 @@ def test_serialize(user_factory):
 
     expected = {
         'id': user.id,
+        'created_at': serialized_time(user.created_at),
+        'updated_at': serialized_time(user.updated_at),
         'first_name': user.first_name,
         'last_name': user.last_name,
     }

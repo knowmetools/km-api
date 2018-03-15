@@ -62,21 +62,24 @@ class KMUserDetailSerializer(KMUserListSerializer):
         fields = KMUserListSerializer.Meta.fields + ('permissions', 'profiles')
 
 
-class KMUserAccessorSerializer(serializers.ModelSerializer):
+class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for ``KMUserAccessor`` instances.
     """
     km_user = KMUserListSerializer(read_only=True)
-    url = serializers.SerializerMethodField()
+    url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:accessor-detail')
 
     class Meta:
         fields = (
+            'id',
             'url',
+            'created_at',
+            'updated_at',
             'email',
             'is_accepted',
             'is_admin',
-            'km_user',
-        )
+            'km_user')
         model = models.KMUserAccessor
 
     def create(self, validated_data):
@@ -98,19 +101,6 @@ class KMUserAccessorSerializer(serializers.ModelSerializer):
         validated_data.pop('is_accepted', None)
 
         return km_user.share(email, **validated_data)
-
-    def get_url(self, accessor):
-        """
-        Get the URL of the provided accessor's detail view.
-
-        Args:
-            accessor:
-                The accessor being serialized.
-
-        Returns:
-            The full URL of the accessor's detail view.
-        """
-        return accessor.get_absolute_url(self.context['request'])
 
     def validate_email(self, email):
         """

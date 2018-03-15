@@ -3,6 +3,14 @@ Changelog
 #########
 
 
+****************
+(In Development)
+****************
+
+Features
+  * :issue:`235`: Add timestamps to remaining models.
+
+
 ******
 v0.8.0
 ******
