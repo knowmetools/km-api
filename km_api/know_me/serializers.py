@@ -19,6 +19,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
         view_name='know-me:profile:media-resource-category-list')
     media_resources_url = serializers.HyperlinkedIdentityField(
         view_name='know-me:profile:media-resource-list')
+    permissions = DRYPermissionsField()
     profiles_url = serializers.HyperlinkedIdentityField(
         view_name='know-me:profile:profile-list')
     url = serializers.HyperlinkedIdentityField(
@@ -43,6 +44,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             'media_resource_categories_url',
             'media_resources_url',
             'name',
+            'permissions',
             'profiles_url',
             'quote')
         model = models.KMUser
@@ -54,7 +56,6 @@ class KMUserDetailSerializer(KMUserListSerializer):
 
     This serializer builds off of the ``KMUserListSerializer``.
     """
-    permissions = DRYPermissionsField()
     profiles = ProfileListSerializer(many=True, read_only=True)
 
     class Meta(KMUserListSerializer.Meta):

@@ -14,23 +14,22 @@ def test_serialize(api_rf, image, km_user_factory):
     ProfileFactory(km_user=km_user)
     ProfileFactory(km_user=km_user)
 
+    api_rf.user = km_user.user
+    request = api_rf.get('/')
+
     serializer = serializers.KMUserDetailSerializer(
         km_user,
         context={'request': request})
-
     list_serializer = serializers.KMUserListSerializer(
         km_user,
         context={'request': request})
+
     profile_serializer = ProfileListSerializer(
         km_user.profiles,
         context={'request': request},
         many=True)
 
     additional = {
-        'permissions': {
-            'read': km_user.has_object_read_permission(request),
-            'write': km_user.has_object_write_permission(request),
-        },
         'profiles': profile_serializer.data,
     }
 

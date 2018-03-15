@@ -30,6 +30,7 @@ def test_serialize(api_rf, image, km_user_factory, serialized_time):
     Test serializing a km_user.
     """
     km_user = km_user_factory(image=image)
+    api_rf.user = km_user.user
     request = api_rf.get(km_user.get_absolute_url())
 
     serializer = serializers.KMUserListSerializer(
@@ -59,6 +60,10 @@ def test_serialize(api_rf, image, km_user_factory, serialized_time):
         'name': km_user.user.get_short_name(),
         'profiles_url': profiles_url,
         'quote': km_user.quote,
+        'permissions': {
+            'read': km_user.has_object_read_permission(request),
+            'write': km_user.has_object_write_permission(request),
+        }
     }
 
     assert serializer.data == expected
