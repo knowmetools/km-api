@@ -53,6 +53,7 @@ django_databases:
 
 django_manage_commands:
   - 'collectstatic --no-input'
+  - buildwatson
 
 
 django_project_settings:

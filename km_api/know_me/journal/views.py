@@ -1,6 +1,10 @@
+from django_filters import rest_framework as filters
+
 from dry_rest_permissions.generics import DRYPermissions
 
 from rest_framework import generics
+
+from watson import search as watson
 
 from know_me.filters import KMUserAccessFilterBackend
 from know_me.journal import models, permissions, serializers
@@ -100,14 +104,40 @@ class EntryListView(generics.ListCreateAPIView):
     get:
     List the journal entries of a specific Know Me user.
 
+    In addition to the below filters, a keyword search may also be
+    performed by passing the search term as a GET parameter named `q`.
+
     post:
     Create a new journal entry for the specified Know Me user.
     """
-    filter_backends = (KMUserAccessFilterBackend,)
+    filter_backends = (
+        KMUserAccessFilterBackend,
+        filters.DjangoFilterBackend)
+    filter_fields = {
+        'created_at': ['gte', 'lte'],
+    }
     permission_classes = (
         DRYPermissions,
         HasKMUserAccess)
     queryset = models.Entry.objects.all()
+
+    def filter_queryset(self, queryset):
+        """
+        Filter the queryset based on the provided parameters.
+
+        Args:
+            The queryset to filter.
+
+        Returns:
+            The filtered queryset.
+        """
+        queryset = super().filter_queryset(queryset)
+
+        search_term = self.request.query_params.get('q', None)
+        if search_term is not None:
+            queryset = watson.filter(queryset, search_term)
+
+        return queryset
 
     def get_serializer_class(self):
         """

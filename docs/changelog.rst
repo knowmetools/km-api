@@ -17,6 +17,7 @@ Features
   * :issue:`247`: Add endpoint for listing and creating journal entries.
   * :issue:`248`: Create model for comments on journal entries.
   * :issue:`249`: Add endpoint for listing and creating comments on journal entries.
+  * :issue:`250`: Add searching for journal entries.
   * :issue:`276`: Return URLs in Know Me user list rather than only from the detail endpoint.
 
 Bug Fixes

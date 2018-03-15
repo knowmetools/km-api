@@ -1,4 +1,7 @@
+import datetime
 from unittest import mock
+
+from django.utils import timezone
 
 from know_me.journal import models, serializers, views
 
@@ -24,20 +27,101 @@ def test_check_permissions(mock_km_user_permission, mock_dry_permissions):
 
 @mock.patch(
     'know_me.journal.views.KMUserAccessFilterBackend.filter_queryset',
-    autospec=True)
-def test_filter_queryset(mock_filter):
+    autospec=True,
+    return_value=models.Entry.objects.none())
+def test_filter_queryset(mock_filter, api_rf):
     """
     The queryset returned by the view should be passed through a filter
     to restrict access.
     """
     view = views.EntryListView()
-    view.request = None
+    view.request = view.initialize_request(api_rf.get('/'))
 
     queryset = models.Entry.objects.none()
 
     view.filter_queryset(queryset)
 
     assert mock_filter.call_count == 1
+
+
+def test_filter_queryset_created_after(api_rf, entry_factory, km_user_factory):
+    """
+    The client should be able to use GET parameters to provide a
+    start timestamp for the result set.
+    """
+    km_user = km_user_factory()
+    api_rf.user = km_user.user
+
+    new = entry_factory(km_user=km_user)
+
+    now = timezone.now()
+    earlier = now - datetime.timedelta(hours=1)
+    earliest = earlier - datetime.timedelta(hours=1)
+
+    with mock.patch('django.utils.timezone.now', return_value=earliest):
+        entry_factory()
+
+    view = views.EntryListView()
+    view.kwargs = {'pk': km_user.pk}
+    view.request = view.initialize_request(
+        api_rf.get('/', {'created_at__gte': earlier}))
+
+    query = models.Entry.objects.all()
+
+    assert list(view.filter_queryset(query)) == [new]
+
+
+def test_filter_queryset_created_before(
+        api_rf,
+        entry_factory,
+        km_user_factory):
+    """
+    The client should be able to use GET parameters to provide a max
+    'created_at' value.
+    """
+    km_user = km_user_factory()
+    api_rf.user = km_user.user
+
+    old_entry = entry_factory(km_user=km_user)
+
+    now = timezone.now()
+    later = now + datetime.timedelta(hours=1)
+    latest = later + datetime.timedelta(hours=1)
+
+    with mock.patch('django.utils.timezone.now', return_value=latest):
+        entry_factory()
+
+    view = views.EntryListView()
+    view.kwargs = {'pk': km_user.pk}
+    view.request = view.initialize_request(
+        api_rf.get('/', {'created_at__lte': later}))
+
+    query = models.Entry.objects.all()
+
+    assert list(view.filter_queryset(query)) == [old_entry]
+
+
+def test_filter_queryset_keyword(api_rf, entry_factory, km_user_factory):
+    """
+    The client should be able to perform a keyword search on the journal
+    entries.
+    """
+    km_user = km_user_factory()
+    api_rf.user = km_user.user
+
+    foo_entry = entry_factory(
+        km_user=km_user,
+        text='This is an entry about foo only.')
+    entry_factory(km_user=km_user, text='This is an entry about bar only.')
+
+    view = views.EntryListView()
+    view.kwargs = {'pk': km_user.pk}
+    view.request = view.initialize_request(
+        api_rf.get('/', {'q': 'foo'}))
+
+    query = models.Entry.objects.all()
+
+    assert list(view.filter_queryset(query)) == [foo_entry]
 
 
 def test_get_queryset(api_rf, entry_factory):
