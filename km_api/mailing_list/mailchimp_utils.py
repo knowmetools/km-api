@@ -73,7 +73,7 @@ def _get_client():
         An instance of ``mailchimp3.MailChimp`` with the credentials
         specified in the project's settings.
     """
-    return mailchimp3.MailChimp('km-api', settings.MAILCHIMP_API_KEY)
+    return mailchimp3.MailChimp(settings.MAILCHIMP_API_KEY, 'km-api')
 
 
 def _member_create(list_id, user):
