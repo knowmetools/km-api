@@ -147,7 +147,7 @@ class EntryListView(generics.ListCreateAPIView):
             The entry detail serializer for a POST request and the list
             serializer for any other method.
         """
-        if self.request and self.request.method == 'POST':
+        if self.request is None or self.request.method == 'POST':
             return serializers.EntryDetailSerializer
 
         return serializers.EntryListSerializer

@@ -29,7 +29,6 @@ def test_serialize(api_rf, entry_comment_factory, entry_factory):
             'read': entry.has_object_read_permission(request),
             'write': entry.has_object_write_permission(request),
         },
-        'text': entry.text,
     }
 
     expected = dict(list_serializer.data.items())

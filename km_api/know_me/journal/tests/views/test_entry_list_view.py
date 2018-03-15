@@ -155,12 +155,12 @@ def test_get_serializer_class_get(api_rf):
 def test_get_serializer_class_missing_request(api_rf):
     """
     When the documentation is generated, no request is provided to the
-    view. In this case we should return the list serializer.
+    view. In this case we should return the detail serializer.
     """
     view = views.EntryListView()
     view.request = None
 
-    expected = serializers.EntryListSerializer
+    expected = serializers.EntryDetailSerializer
 
     assert view.get_serializer_class() == expected
 
