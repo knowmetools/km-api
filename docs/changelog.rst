@@ -9,6 +9,7 @@ Changelog
 
 Features
   * :issue:`235`: Add timestamps to remaining models.
+  * :issue:`300`: Send the correct URLs in account emails.
 
 Bug Fixes
   * :issue:`271`: Fix deployment failing with newly provisioned servers.

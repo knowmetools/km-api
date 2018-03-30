@@ -14,3 +14,6 @@ app_repo_version: develop
 mailchimp_list_id: 1211e9598f
 
 sentry_environment: staging
+
+email_verification_url: 'https://dev.app.knowmetools.com/verify-email/{key}'
+password_reset_url: 'https://dev.app.knowmetools.com/reset-password/{key}'

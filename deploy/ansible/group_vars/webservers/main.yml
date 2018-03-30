@@ -70,6 +70,11 @@ django_project_settings:
     environment: "{{ sentry_environment }}"
     release: '0.8.0'
 
+  REST_EMAIL_AUTH:
+    EMAIL_VERIFICATION_URL: "{{ email_verification_url }}"
+    PASSWORD_RESET_URL: "{{ password_reset_url }}"
+    REGISTRATION_SERIALIZER: account.serializers.RegistrationSerializer
+
 
 django_logging:
   version: 1
