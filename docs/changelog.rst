@@ -10,6 +10,9 @@ Changelog
 Features
   * :issue:`235`: Add timestamps to remaining models.
 
+Bug Fixes
+  * :issue:`271`: Fix deployment failing with newly provisioned servers.
+
 
 ******
 v0.8.0
