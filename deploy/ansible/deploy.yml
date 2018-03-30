@@ -10,6 +10,11 @@
     - env_vars/{{ env }}.yml
     - env_vars/{{ env }}-vault.yml
 
+  pre_tasks:
+    - name: Update apt repositories
+      apt:
+        update_cache: true
+
   roles:
     - database
     - cdriehuys.django-app
