@@ -9,6 +9,8 @@ import mailchimp3
 
 from requests.exceptions import HTTPError
 
+from rest_email_auth.models import EmailAddress
+
 from mailing_list import models
 
 
@@ -62,7 +64,13 @@ def sync_mailchimp_data(list_id, user):
 
         _member_update(list_id, user, mailchimp_user)
     else:
-        _member_create(list_id, user)
+        try:
+            _member_create(list_id, user)
+        except EmailAddress.DoesNotExist:
+            logger.warning(
+                ("Can't create mailchimp user for user %s because they don't "
+                 "have a primary email address."),
+                user)
 
 
 def _get_client():

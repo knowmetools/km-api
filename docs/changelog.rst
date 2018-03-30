@@ -13,6 +13,7 @@ Features
 
 Bug Fixes
   * :issue:`271`: Fix deployment failing with newly provisioned servers.
+  * :issue:`295`: Fix MailChimp integration.
 
 
 ******

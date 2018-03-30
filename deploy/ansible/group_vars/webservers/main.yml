@@ -63,7 +63,7 @@ django_project_settings:
 
   AWS_STORAGE_BUCKET_NAME: "'{{ static_bucket }}'"
   MAILCHIMP_API_KEY: "'{{ vault_mailchimp_api_key }}'"
-  MAILCHIMP_ENABLED: false
+  MAILCHIMP_ENABLED: true
   MAILCHIMP_LIST_ID: "'{{ mailchimp_list_id }}'"
   RAVEN_CONFIG:
     dsn: "{{ vault_sentry_dsn }}"
