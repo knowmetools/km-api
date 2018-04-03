@@ -368,18 +368,24 @@ class ProfileTopicDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.ProfileTopicListSerializer
 
 
-class ProfileTopicListView(generics.ListCreateAPIView):
+class ProfileTopicListView(SortView, generics.ListCreateAPIView):
     """
     get:
     List the topics that belong to the specified profile.
 
     post:
     Create a new topic in the specified profile.
+
+    put:
+    Set the order of the topics in the specified profile.
     """
     permission_classes = (
         DRYPermissions,
         permissions.HasProfileTopicListPermissions,
     )
+    sort_child_name = 'topics'
+    sort_parent = models.Profile
+    sort_serializer = create_sort_serializer(models.ProfileTopic)
 
     def get_queryset(self):
         """

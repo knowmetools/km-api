@@ -66,3 +66,41 @@ def test_post_profile_topic(
         context={'request': request})
 
     assert response.data == serializer.data
+
+
+@pytest.mark.integration
+def test_put_profile_order(
+        api_client,
+        api_rf,
+        profile_factory,
+        profile_topic_factory):
+    """
+    Sending a PUT request to the view should set the order of the
+    profile's topics.
+    """
+    profile = profile_factory()
+
+    api_client.force_authenticate(user=profile.km_user.user)
+    api_rf.user = profile.km_user.user
+
+    t1 = profile_topic_factory(profile=profile)
+    t2 = profile_topic_factory(profile=profile)
+    t3 = profile_topic_factory(profile=profile)
+
+    data = {
+        'order': [t1.id, t3.id, t2.id],
+    }
+
+    url = profile.get_topic_list_url()
+    request = api_rf.put(url, data)
+    response = api_client.put(url, data)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    serializer = serializers.ProfileTopicListSerializer(
+        profile.topics.all(),
+        context={'request': request},
+        many=True)
+
+    assert response.data == serializer.data
+    assert list(profile.get_profiletopic_order()) == data['order']
