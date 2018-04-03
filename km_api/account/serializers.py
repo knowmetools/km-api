@@ -57,5 +57,10 @@ class UserSerializer(serializers.ModelSerializer):
                 'help_text': "The user's last name.",
             },
         }
-        fields = ('id', 'first_name', 'last_name')
+        fields = (
+            'id',
+            'created_at',
+            'updated_at',
+            'first_name',
+            'last_name')
         model = get_user_model()

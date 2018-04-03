@@ -319,6 +319,7 @@ class Profile(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('updated at'))
 
     class Meta:
+        order_with_respect_to = 'km_user'
         verbose_name = _('profile')
         verbose_name_plural = _('profiles')
 
@@ -433,6 +434,7 @@ class ProfileItem(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('updated at'))
 
     class Meta:
+        order_with_respect_to = 'topic'
         verbose_name = _('profile item')
         verbose_name_plural = _('profile items')
 
@@ -526,6 +528,7 @@ class ProfileTopic(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('updated at'))
 
     class Meta:
+        order_with_respect_to = 'profile'
         verbose_name = _('profile topic')
         verbose_name_plural = _('profile topics')
 

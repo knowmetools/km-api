@@ -19,4 +19,7 @@ class MailingListAppConfig(AppConfig):
         This method allows us to defer initialiazation tasks such as
         loading signals until after the app's models are ready.
         """
-        from mailing_list import signals    # noqa
+        from mailing_list.signals import (      # noqa
+            mailchimp_email_signal,
+            mailchimp_user_signal,
+        )

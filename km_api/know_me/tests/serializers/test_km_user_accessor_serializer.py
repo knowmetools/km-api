@@ -94,33 +94,39 @@ def test_serialize(
         api_rf,
         km_user_factory,
         km_user_accessor_factory,
-        serializer_context,
+        serialized_time,
         user_factory):
     """
     Test serializing a km_user_accessor.
     """
     km_user = km_user_factory()
     user = user_factory()
-    km_user_accessor = km_user_accessor_factory(
+    accessor = km_user_accessor_factory(
         email=user.primary_email.email,
         km_user=km_user,
         user_with_access=user)
 
+    api_rf.user = user
+    request = api_rf.get(accessor.get_absolute_url())
+
     serializer = serializers.KMUserAccessorSerializer(
-        km_user_accessor,
-        context=serializer_context)
+        accessor,
+        context={'request': request})
 
     km_user_serializer = serializers.KMUserListSerializer(
         km_user,
-        context=serializer_context)
+        context={'request': request})
 
-    url = km_user_accessor.get_absolute_url(serializer_context['request'])
+    url = request.build_absolute_uri()
 
     expected = {
+        'id': accessor.id,
         'url': url,
-        'email': km_user_accessor.email,
-        'is_accepted': km_user_accessor.is_accepted,
-        'is_admin': km_user_accessor.is_admin,
+        'created_at': serialized_time(accessor.created_at),
+        'updated_at': serialized_time(accessor.updated_at),
+        'email': accessor.email,
+        'is_accepted': accessor.is_accepted,
+        'is_admin': accessor.is_admin,
         'km_user': km_user_serializer.data,
     }
 

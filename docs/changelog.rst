@@ -4,6 +4,20 @@ Changelog
 
 
 ******
+v0.9.0
+******
+
+Features
+  * :issue:`191,193,303`: Allow profiles and their components to be manually ordered.
+  * :issue:`235`: Add timestamps to remaining models.
+  * :issue:`300`: Send the correct URLs in account emails.
+
+Bug Fixes
+  * :issue:`271`: Fix deployment failing with newly provisioned servers.
+  * :issue:`295`: Fix MailChimp integration.
+
+
+******
 v0.8.0
 ******
 

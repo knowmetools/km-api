@@ -34,6 +34,10 @@ class User(PermissionsMixin, AbstractBaseUser):
     last_name = models.CharField(
         max_length=255,
         verbose_name=_('last name'))
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text=_('The time that the user was last updated.'),
+        verbose_name=_('updated_at'))
 
     USERNAME_FIELD = 'first_name'
 

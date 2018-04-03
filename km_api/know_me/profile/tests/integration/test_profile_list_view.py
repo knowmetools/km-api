@@ -64,3 +64,41 @@ def test_get_profile_list(
         many=True)
 
     assert response.data == serializer.data
+
+
+@pytest.mark.integration
+def test_put_profile_order(
+        api_client,
+        api_rf,
+        km_user_factory,
+        profile_factory):
+    """
+    Sending a PUT request to the view should set the order of the user's
+    profiles.
+    """
+    km_user = km_user_factory()
+
+    api_client.force_authenticate(user=km_user.user)
+    api_rf.user = km_user.user
+
+    p1 = profile_factory(km_user=km_user)
+    p2 = profile_factory(km_user=km_user)
+    p3 = profile_factory(km_user=km_user)
+
+    data = {
+        'order': [p1.id, p3.id, p2.id],
+    }
+
+    url = km_user.get_profile_list_url()
+    request = api_rf.put(url, data)
+    response = api_client.put(url, data)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    serializer = serializers.ProfileListSerializer(
+        km_user.profiles.all(),
+        context={'request': request},
+        many=True)
+
+    assert response.data == serializer.data
+    assert list(km_user.get_profile_order()) == data['order']
