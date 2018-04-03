@@ -6,6 +6,8 @@ from know_me.filters import KMUserAccessFilterBackend
 from know_me.models import KMUser
 from know_me.permissions import HasKMUserAccess
 from know_me.profile import filters, models, permissions, serializers
+from rest_order.generics import SortView
+from rest_order.serializers import create_sort_serializer
 
 
 class ListEntryDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -209,7 +211,7 @@ class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.ProfileDetailSerializer
 
 
-class ProfileListView(generics.ListCreateAPIView):
+class ProfileListView(SortView, generics.ListCreateAPIView):
     """
     get:
     List the profiles of a specific Know Me user.
@@ -219,11 +221,19 @@ class ProfileListView(generics.ListCreateAPIView):
 
     Only team leaders or the Know Me user themself can create a new
     profile.
+
+    put:
+    Update the order of the user's profiles.
+
+    Only team leaders or the Know Me user themself can update the order.
     """
     filter_backends = (KMUserAccessFilterBackend, filters.ProfileFilterBackend)
     permission_classes = (DRYPermissions, HasKMUserAccess)
     queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileListSerializer
+    sort_child_name = 'profiles'
+    sort_parent = KMUser
+    sort_serializer = create_sort_serializer(models.Profile)
 
     def perform_create(self, serializer):
         """

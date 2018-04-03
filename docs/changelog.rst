@@ -8,6 +8,7 @@ Changelog
 ****************
 
 Features
+  * :issue:`193`: Allow profiles to be manually ordered.
   * :issue:`235`: Add timestamps to remaining models.
   * :issue:`300`: Send the correct URLs in account emails.
 
