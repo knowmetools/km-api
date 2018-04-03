@@ -3,9 +3,9 @@ Changelog
 #########
 
 
-****************
-(In Development)
-****************
+******
+v0.9.0
+******
 
 Features
   * :issue:`191,193,303`: Allow profiles and their components to be manually ordered.
