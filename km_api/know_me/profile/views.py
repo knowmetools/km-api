@@ -271,19 +271,25 @@ class ProfileItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.ProfileItemDetailSerializer
 
 
-class ProfileItemListView(generics.ListCreateAPIView):
+class ProfileItemListView(SortView, generics.ListCreateAPIView):
     """
     get:
     List the profile items that belong to the specified topic.
 
     post:
     Create a new profile item for the specified topic.
+
+    put:
+    Set the order of the items in the specified topic.
     """
     permission_classes = (
         DRYPermissions,
         permissions.HasProfileItemListPermissions,
     )
     serializer_class = serializers.ProfileItemDetailSerializer
+    sort_child_name = 'items'
+    sort_parent = models.ProfileTopic
+    sort_serializer = create_sort_serializer(models.ProfileItem)
 
     def get_queryset(self):
         """
