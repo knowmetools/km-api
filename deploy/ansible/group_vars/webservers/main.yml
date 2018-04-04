@@ -42,6 +42,9 @@ django_settings_module: km_api.production_settings
 django_debug: false
 django_secret_key: "{{ vault_django_secret_key }}"
 
+django_admin_email: tech@knowmetools.com
+django_admin_password: "{{ vault_django_admin_password }}"
+
 django_databases:
   default:
     ENGINE: django.db.backends.postgresql_psycopg2
