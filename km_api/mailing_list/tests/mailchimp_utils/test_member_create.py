@@ -1,6 +1,6 @@
 from unittest import mock
 
-from requests.exceptions import HTTPError
+from mailchimp3.mailchimpclient import MailChimpError
 
 from mailing_list import mailchimp_utils, models
 
@@ -49,10 +49,7 @@ def test_create_member_exists(mock_mc_client, user_factory):
     user = user_factory()
 
     def mock_create(*args, **kwargs):
-        """
-        Raise a ``HttpError`` exception.
-        """
-        raise HTTPError()
+        raise MailChimpError()
 
     mock_mc_client.lists.members.create.side_effect = mock_create
     mock_mc_client.lists.members.update.return_value = {

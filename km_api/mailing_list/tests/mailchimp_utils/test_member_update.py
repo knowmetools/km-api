@@ -1,6 +1,6 @@
 from unittest import mock
 
-from requests.exceptions import HTTPError
+from mailchimp3.mailchimpclient import MailChimpError
 
 from mailing_list import mailchimp_utils, models
 
@@ -45,7 +45,7 @@ def test_update_user_nonexistent(mailchimp_user_factory, mock_mc_client):
     mailchimp_user = mailchimp_user_factory()
     user = mailchimp_user.user
 
-    mock_mc_client.lists.members.update.side_effect = HTTPError
+    mock_mc_client.lists.members.update.side_effect = MailChimpError
     mock_mc_client.lists.members.create.return_value = {
         'id': 'hash',
     }

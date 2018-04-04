@@ -7,8 +7,6 @@ from django.conf import settings
 
 import mailchimp3
 
-from requests.exceptions import HTTPError
-
 from rest_email_auth.models import EmailAddress
 
 from mailing_list import models
@@ -107,7 +105,7 @@ def _member_create(list_id, user):
             data=data,
             list_id=list_id)
         logger.info('Subscribed %s to mailing list', user.primary_email.email)
-    except HTTPError:
+    except mailchimp3.mailchimpclient.MailChimpError:
         # When updating a user's info we don't want to set them to
         # subscribed
         del data['status']
@@ -156,7 +154,7 @@ def _member_update(list_id, user, mailchimp_user):
         logger.info(
             'Updated mailing list info for %s.',
             user.primary_email.email)
-    except HTTPError:
+    except mailchimp3.mailchimpclient.MailChimpError:
         data.update({'status': 'subscribed'})
 
         response = client.lists.members.create(
