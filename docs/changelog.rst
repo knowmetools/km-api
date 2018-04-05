@@ -8,6 +8,7 @@ Changelog
 **************
 
 Features
+  * :issue:`233`: Add config endpoint for Know Me app. It contains information such as the lowest useable iOS app version.
   * :issue:`299`: Add additional information to media resources. The resources can have a link instead of a file, and they have an integer to hint how they should be styled.
 
 

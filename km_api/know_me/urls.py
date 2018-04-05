@@ -24,6 +24,11 @@ urlpatterns = [
         name='accessor-detail'),
 
     url(
+        r'^config/$',
+        views.ConfigDetailView.as_view(),
+        name='config-detail'),
+
+    url(
         r'^users/$',
         views.KMUserListView.as_view(),
         name='km-user-list'),

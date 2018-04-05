@@ -11,6 +11,17 @@ from know_me import models
 from know_me.profile.serializers import ProfileListSerializer
 
 
+class ConfigSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Know Me config object.
+    """
+    permissions = DRYPermissionsField(global_only=True)
+
+    class Meta:
+        fields = ('minimum_app_version_ios', 'permissions')
+        model = models.Config
+
+
 class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for multiple ``KMUser`` instances.

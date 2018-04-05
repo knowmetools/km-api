@@ -11,6 +11,8 @@ from rest_email_auth.models import EmailAddress
 
 from rest_framework.reverse import reverse
 
+from solo.models import SingletonModel
+
 from permission_utils import model_mixins as mixins
 
 
@@ -35,6 +37,57 @@ def get_km_user_image_upload_path(km_user, imagename):
     return 'know-me/users/{id}/images/{file}'.format(
             file=imagename,
             id=km_user.id)
+
+
+class Config(SingletonModel):
+    """
+    Configuration for the Know Me app.
+
+    This model is a singleton for holding variables global to the Know
+    Me app.
+    """
+    minimum_app_version_ios = models.CharField(
+        blank=True,
+        help_text=_('The minimum version of the iOS app that is usable '
+                    'without a required update.'),
+        max_length=31)
+
+    class Meta:
+        verbose_name = _('config')
+
+    @staticmethod
+    def has_read_permission(request):
+        """
+        Grant all users read permission to the config object.
+
+        Returns:
+            ``True``
+        """
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        """
+        Check write permissions on the config object for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            ``True`` if the requesting user is staff and ``False``
+            otherwise.
+        """
+        return request.user.is_staff
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            The string 'Config'.
+        """
+        return 'Config'
 
 
 class KMUser(mixins.IsAuthenticatedMixin, models.Model):

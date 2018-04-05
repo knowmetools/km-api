@@ -8,6 +8,7 @@ django-cors-headers == 2.2.0
 django-filter == 1.1.0
 django-rest-email-auth == 0.4.3
 django-ses == 0.8.5
+django-solo == 1.1.3
 django-storages == 1.6.5
 django-watson == 1.5.2
 djangorestframework == 3.7.7

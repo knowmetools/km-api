@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
-from dry_rest_permissions.generics import DRYPermissions
+from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
 
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
@@ -84,6 +84,35 @@ class AccessorListView(generics.ListCreateAPIView):
         km_user = get_object_or_404(models.KMUser, user=self.request.user)
 
         return serializer.save(km_user=km_user)
+
+
+class ConfigDetailView(generics.RetrieveUpdateAPIView):
+    """
+    get:
+    Retrieve the configuration for the Know Me app.
+
+    patch:
+    Partially update the configuration for Know Me.
+
+    Only staff users may perform this action.
+
+    put:
+    Update the configuration for Know Me.
+
+    Only staff users may perform this action.
+    """
+    permission_classes = (DRYGlobalPermissions,)
+    serializer_class = serializers.ConfigSerializer
+
+    def get_object(self):
+        """
+        Return the config instance singleton.
+        """
+        config = models.Config.get_solo()
+
+        self.check_object_permissions(self.request, config)
+
+        return config
 
 
 class KMUserDetailView(generics.RetrieveUpdateAPIView):

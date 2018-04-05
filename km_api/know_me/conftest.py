@@ -9,6 +9,14 @@ from know_me import factories
 
 
 @pytest.fixture
+def config_factory(db):
+    """
+    Fixture to get the factory used to create ``Config`` instances.
+    """
+    return factories.ConfigFactory
+
+
+@pytest.fixture
 def file():
     """
     Fixture to get a file suitable for a ``FileField``.
