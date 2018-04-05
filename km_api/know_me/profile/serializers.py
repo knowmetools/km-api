@@ -48,10 +48,43 @@ class MediaResourceSerializer(serializers.HyperlinkedModelSerializer):
             'created_at',
             'updated_at',
             'category_id',
+            'cover_style',
             'file',
+            'link',
             'name',
             'permissions')
         model = models.MediaResource
+
+    def validate(self, data):
+        """
+        Ensure that only a file or a link were provided.
+
+        Args:
+            data:
+                The data to validate.
+
+        Returns:
+            The validated data.
+
+        Raises:
+            serializers.ValidationError:
+                If there is no file and no link, or both a file and a
+                link.
+        """
+        if data.get('file') and data.get('link'):
+            raise serializers.ValidationError(
+                _('A media resource may not have both an attached file and '
+                  'link.'))
+
+        # Having neither a file nor a link is only invalid if the
+        # serializer is not bound or we're not doing a partial update.
+        if self.instance is None or not self.partial:
+            if data.get('file') is None and data.get('link') is None:
+                raise serializers.ValidationError(
+                    _('A media resource must have either an attached file or '
+                      'a link to an external resource.'))
+
+        return data
 
 
 #######################

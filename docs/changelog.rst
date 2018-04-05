@@ -3,6 +3,14 @@ Changelog
 #########
 
 
+**************
+(Next Release)
+**************
+
+Features
+  * :issue:`299`: Add additional information to media resources. The resources can have a link instead of a file, and they have an integer to hint how they should be styled.
+
+
 ******
 v0.9.0
 ******

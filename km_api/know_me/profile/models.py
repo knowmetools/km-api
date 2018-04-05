@@ -134,11 +134,17 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
         related_name='media_resources',
         related_query_name='media_resource',
         verbose_name=_('category'))
+    cover_style = models.PositiveSmallIntegerField(
+        blank=True,
+        default=0,
+        help_text=_('An integer that provides a hint for clients as to how to '
+                    'style the resource.'))
     created_at = models.DateTimeField(
         auto_now_add=True,
         help_text=_('The time that the resource was created.'),
         verbose_name=_('created at'))
     file = models.FileField(
+        blank=True,
         help_text=_('The file to associate with the resource.'),
         upload_to=get_media_resource_upload_path,
         verbose_name=_('file'))
@@ -149,6 +155,11 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
         related_name='media_resources',
         related_query_name='media_resource',
         verbose_name=_('Know Me user'))
+    link = models.URLField(
+        blank=True,
+        help_text=_('A link to an external resource.'),
+        max_length=255,
+        verbose_name=_('link'))
     name = models.CharField(
         help_text=_('The name of the resource.'),
         max_length=255,
