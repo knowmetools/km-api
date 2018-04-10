@@ -8,7 +8,7 @@ url = reverse('rest-email-auth:register')
 
 
 @pytest.mark.integration
-def test_register(api_client, db):
+def test_register(api_client, db, image):
     """
     Sending a POST request to the registration endpoint should use our
     custom registration serializer to register the new user.
@@ -21,6 +21,7 @@ def test_register(api_client, db):
         'password': 'uncommon-passw0rd',
         'first_name': 'John',
         'last_name': 'Doe',
+        'image': image,
     }
 
     response = api_client.post(url, data)
