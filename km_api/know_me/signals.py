@@ -4,11 +4,29 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from rest_email_auth.models import EmailAddress
+from rest_email_auth.signals import user_registered
 
 from know_me import models
 
 
 logger = logging.getLogger(__name__)
+
+
+@receiver(user_registered)
+def create_km_user(user, **kwargs):
+    """
+    Create a Know Me user for each registered user.
+
+    Each time a user registers, a Know Me user is automatically created
+    for them.
+
+    Args:
+        user:
+            The user who just registered.
+    """
+    models.KMUser.objects.create(image=user.image, user=user)
+
+    logger.info('Created Know Me user for user %s', user)
 
 
 @receiver(post_save, sender=EmailAddress)
