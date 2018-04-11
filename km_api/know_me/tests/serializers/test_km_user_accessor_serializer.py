@@ -1,5 +1,6 @@
 from unittest import mock
 
+from account.serializers import UserInfoSerializer
 from know_me import serializers
 
 
@@ -113,8 +114,8 @@ def test_serialize(
         accessor,
         context={'request': request})
 
-    km_user_serializer = serializers.KMUserListSerializer(
-        km_user,
+    user_serializer = UserInfoSerializer(
+        accessor.user_with_access,
         context={'request': request})
 
     url = request.build_absolute_uri()
@@ -127,7 +128,8 @@ def test_serialize(
         'email': accessor.email,
         'is_accepted': accessor.is_accepted,
         'is_admin': accessor.is_admin,
-        'km_user': km_user_serializer.data,
+        'km_user_id': accessor.km_user.id,
+        'user_with_access': user_serializer.data,
     }
 
     assert serializer.data == expected

@@ -11,6 +11,7 @@ Features
   * :issue:`233`: Add config endpoint for Know Me app. It contains information such as the lowest useable iOS app version.
   * :issue:`259`: Add optional profile image for users.
   * :issue:`263,277`: Automatically create a Know Me user for each user. The Know Me user's image defaults to the user's profile image.
+  * :issue:`278`: Include information about the user granted access through an accessor.
   * :issue:`299`: Add additional information to media resources. The resources can have a link instead of a file, and they have an integer to hint how they should be styled.
 
 

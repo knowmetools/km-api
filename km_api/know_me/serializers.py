@@ -7,6 +7,7 @@ from dry_rest_permissions.generics import DRYPermissionsField
 
 from rest_framework import serializers
 
+from account.serializers import UserInfoSerializer
 from know_me import models
 from know_me.profile.serializers import ProfileListSerializer
 
@@ -77,9 +78,9 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for ``KMUserAccessor`` instances.
     """
-    km_user = KMUserListSerializer(read_only=True)
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:accessor-detail')
+    user_with_access = UserInfoSerializer(read_only=True)
 
     class Meta:
         fields = (
@@ -90,7 +91,8 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
             'email',
             'is_accepted',
             'is_admin',
-            'km_user')
+            'km_user_id',
+            'user_with_access')
         model = models.KMUserAccessor
 
     def create(self, validated_data):
