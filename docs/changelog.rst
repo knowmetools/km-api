@@ -16,6 +16,13 @@ Features
 
 
 ******
+v0.9.1
+******
+
+:issue:`276`: Add missing journal entries URL to Know Me user information.
+
+
+******
 v0.9.0
 ******
 

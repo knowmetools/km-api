@@ -27,6 +27,8 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for multiple ``KMUser`` instances.
     """
+    journal_entries_url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:journal:entry-list')
     media_resource_categories_url = serializers.HyperlinkedIdentityField(
         view_name='know-me:profile:media-resource-category-list')
     media_resources_url = serializers.HyperlinkedIdentityField(
@@ -53,6 +55,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             'created_at',
             'updated_at',
             'image',
+            'journal_entries_url',
             'media_resource_categories_url',
             'media_resources_url',
             'name',
