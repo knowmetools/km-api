@@ -1,3 +1,5 @@
+from rest_framework.reverse import reverse
+
 from know_me import serializers
 
 
@@ -43,6 +45,12 @@ def test_serialize(api_rf, image, km_user_factory, serialized_time):
         km_user.get_media_resource_category_list_url())
     categories_url = categories_request.build_absolute_uri()
 
+    entries_request = api_rf.get(
+        reverse(
+            'know-me:journal:entry-list',
+            kwargs={'pk': km_user.pk}))
+    entries_url = entries_request.build_absolute_uri()
+
     media_resources_request = api_rf.get(km_user.get_media_resource_list_url())
     media_resources_url = media_resources_request.build_absolute_uri()
 
@@ -55,6 +63,7 @@ def test_serialize(api_rf, image, km_user_factory, serialized_time):
         'created_at': serialized_time(km_user.created_at),
         'updated_at': serialized_time(km_user.updated_at),
         'image': image_url,
+        'journal_entries_url': entries_url,
         'media_resource_categories_url': categories_url,
         'media_resources_url': media_resources_url,
         'name': km_user.user.get_short_name(),
