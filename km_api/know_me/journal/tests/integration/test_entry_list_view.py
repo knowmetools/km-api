@@ -2,6 +2,7 @@ import pytest
 
 from rest_framework import status
 from rest_framework.reverse import reverse
+from rest_framework.settings import api_settings
 
 from know_me.journal import serializers
 
@@ -45,6 +46,10 @@ def test_get_entry_list(api_client, api_rf, entry_factory, km_user_factory):
     api_client.force_authenticate(user=km_user.user)
     api_rf.user = km_user.user
 
+    # Create enough entries to test pagination
+    for _ in range(api_settings.PAGE_SIZE + 1):
+        entry_factory(km_user=km_user)
+
     url = reverse('know-me:journal:entry-list', kwargs={'pk': km_user.pk})
     request = api_rf.get(url)
     response = api_client.get(url)
@@ -52,8 +57,8 @@ def test_get_entry_list(api_client, api_rf, entry_factory, km_user_factory):
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.EntryListSerializer(
-        km_user.journal_entries.all(),
+        km_user.journal_entries.all()[:api_settings.PAGE_SIZE],
         context={'request': request},
         many=True)
 
-    assert response.data == serializer.data
+    assert response.data['results'] == serializer.data

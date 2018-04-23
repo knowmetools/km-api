@@ -55,6 +55,7 @@ class Entry(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('updated at'))
 
     class Meta:
+        ordering = ('-created_at',)
         verbose_name = _('journal entry')
         verbose_name_plural = _('journal entries')
 

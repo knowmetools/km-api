@@ -7,6 +7,9 @@ Changelog
 (Next Release)
 **************
 
+Breaking Changes
+  * :issue:`316`: Paginate journal entries. The entries are now nested under the ``results`` key, and there is additional information returned such as the total number of entries and the URLs for the next and previous pages. Entries are listed in reverse chronological order.
+
 Features
   * :issue:`233`: Add config endpoint for Know Me app. It contains information such as the lowest useable iOS app version.
   * :issue:`259`: Add optional profile image for users.
