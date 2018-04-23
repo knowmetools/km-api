@@ -68,7 +68,7 @@ django_project_settings:
   RAVEN_CONFIG:
     dsn: "{{ vault_sentry_dsn }}"
     environment: "{{ sentry_environment }}"
-    release: '0.9.1'
+    release: '0.9.2'
 
   REST_EMAIL_AUTH:
     EMAIL_VERIFICATION_URL: "{{ email_verification_url }}"

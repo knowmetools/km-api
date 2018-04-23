@@ -4,6 +4,13 @@ Changelog
 
 
 ******
+v0.9.2
+******
+
+:issue:`317`: Fix error when attaching a media resource to a profile item.
+
+
+******
 v0.9.1
 ******
 
