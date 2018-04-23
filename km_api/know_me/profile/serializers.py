@@ -150,6 +150,7 @@ class ProfileItemDetailSerializer(ProfileItemListSerializer):
         help_text=_('The ID of the media resource to attach to the item.'),
         queryset=models.MediaResource.objects.all(),
         required=False,
+        source='media_resource',
         write_only=True)
 
     class Meta(ProfileItemListSerializer.Meta):

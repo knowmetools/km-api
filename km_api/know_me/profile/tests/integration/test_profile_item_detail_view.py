@@ -6,6 +6,35 @@ from know_me.profile import models, serializers
 
 
 @pytest.mark.integration
+def test_attach_media_resource(
+        api_client,
+        media_resource_factory,
+        profile_item_factory):
+    """
+    Attaching a media resource to a profile item should not raise an
+    exception.
+
+    Regression test for #317.
+    """
+    resource = media_resource_factory()
+    item = profile_item_factory(topic__profile__km_user=resource.km_user)
+
+    api_client.force_authenticate(user=resource.km_user.user)
+
+    data = {
+        'media_resource_id': resource.id,
+    }
+
+    url = item.get_absolute_url()
+    response = api_client.patch(url, data)
+
+    item.refresh_from_db()
+
+    assert response.status_code == status.HTTP_200_OK
+    assert item.media_resource == resource
+
+
+@pytest.mark.integration
 def test_delete_profile_item(api_client, profile_item_factory):
     """
     Sending a DELETE request to the view should delete the profile item
