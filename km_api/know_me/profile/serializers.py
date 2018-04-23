@@ -147,6 +147,7 @@ class ProfileItemDetailSerializer(ProfileItemListSerializer):
     list_entries = ListEntrySerializer(many=True, read_only=True)
     media_resource = MediaResourceSerializer(read_only=True)
     media_resource_id = serializers.PrimaryKeyRelatedField(
+        allow_null=True,
         help_text=_('The ID of the media resource to attach to the item.'),
         queryset=models.MediaResource.objects.all(),
         required=False,
@@ -182,6 +183,9 @@ class ProfileItemDetailSerializer(ProfileItemListSerializer):
                 If there is no media resource with the provided ID owned
                 by the relevant Know Me user.
         """
+        if resource is None:
+            return resource
+
         if self.instance is not None:
             km_user = self.instance.topic.profile.km_user
         else:

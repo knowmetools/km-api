@@ -120,3 +120,6 @@ km_api/static/
 tfplan
 *.retry
 VAULT_PASSWORD_FILE
+
+# Pycharm Files
+.idea/
