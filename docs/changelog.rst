@@ -4,6 +4,14 @@ Changelog
 
 
 ******
+v0.9.3
+******
+
+Bug Fixes
+  * :issue:`325`: Fix crash when listing Know Me user accessors as an unauthenticated user.
+
+
+******
 v0.9.2
 ******
 
