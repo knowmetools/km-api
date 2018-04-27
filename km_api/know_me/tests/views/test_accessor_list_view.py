@@ -6,6 +6,19 @@ from know_me import serializers, views
 accessor_list_view = views.AccessorListView.as_view()
 
 
+def test_get_anonymous(api_rf):
+    """
+    Sending a GET request to the view as an anonymous user should return
+    a permissions error.
+
+    Regression test for #325
+    """
+    request = api_rf.get('/')
+    response = accessor_list_view(request)
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 def test_get_sharing_list(api_rf, km_user_accessor_factory, km_user_factory):
     """
     Sending a GET request to the view should return a list of all the

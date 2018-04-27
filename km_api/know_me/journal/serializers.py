@@ -36,6 +36,7 @@ class EntryListSerializer(serializers.HyperlinkedModelSerializer):
         source='comments.count')
     comments_url = serializers.HyperlinkedIdentityField(
         view_name='know-me:journal:entry-comment-list')
+    permissions = DRYPermissionsField()
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:journal:entry-detail')
 
@@ -49,6 +50,7 @@ class EntryListSerializer(serializers.HyperlinkedModelSerializer):
             'comment_count',
             'comments_url',
             'km_user_id',
+            'permissions',
             'text')
         model = models.Entry
 
@@ -58,7 +60,6 @@ class EntryDetailSerializer(EntryListSerializer):
     Serializer for a single journal entry.
     """
     comments = EntryCommentSerializer(many=True, read_only=True)
-    permissions = DRYPermissionsField()
 
     class Meta(EntryListSerializer.Meta):
-        fields = EntryListSerializer.Meta.fields + ('comments', 'permissions')
+        fields = EntryListSerializer.Meta.fields + ('comments',)

@@ -219,6 +219,7 @@ class ProfileListSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'created_at',
             'updated_at',
+            'is_private',
             'name',
             'permissions',
             'topics_url')

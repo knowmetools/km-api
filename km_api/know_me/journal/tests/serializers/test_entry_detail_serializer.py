@@ -25,10 +25,6 @@ def test_serialize(api_rf, entry_comment_factory, entry_factory):
 
     additional = {
         'comments': comment_serializer.data,
-        'permissions': {
-            'read': entry.has_object_read_permission(request),
-            'write': entry.has_object_write_permission(request),
-        },
     }
 
     expected = dict(list_serializer.data.items())
