@@ -1,4 +1,8 @@
+from django.core.exceptions import ValidationError
+
 from rest_framework.reverse import reverse
+
+import pytest
 
 from know_me import models
 
@@ -244,6 +248,22 @@ def test_name(km_user_factory):
     assert km_user.name == km_user.user.get_short_name()
 
 
+def test_share_duplicate_email(
+        email_factory,
+        km_user_accessor_factory,
+        km_user_factory):
+    """
+    If there is already an accessor linking the provided email and Know
+    Me user, a validation error should be raised.
+    """
+    km_user = km_user_factory()
+    email = email_factory()
+    km_user_accessor_factory(email=email.email, km_user=km_user)
+
+    with pytest.raises(ValidationError):
+        km_user.share(email.email)
+
+
 def test_share_existing_user(email_factory, km_user_factory, user_factory):
     """
     If the provided email address belongs to an existing user, an
@@ -282,6 +302,27 @@ def test_share_existing_user_unverified_email(
 
     assert accessor.email == email.email
     assert accessor.user_with_access is None
+
+
+def test_share_multiple_emails(
+        email_factory,
+        km_user_accessor_factory,
+        km_user_factory,
+        user_factory):
+    """
+    If a user has already been granted access through another email that
+    they own, they should not be able to be granted access through
+    another email address that they own.
+    """
+    user = user_factory()
+    e1 = email_factory(is_verified=True, user=user)
+    e2 = email_factory(is_verified=True, user=user)
+
+    km_user = km_user_factory()
+    km_user_accessor_factory(email=e1, km_user=km_user, user_with_access=user)
+
+    with pytest.raises(ValidationError):
+        km_user.share(e2.email)
 
 
 def test_share_nonexistent_user(km_user_factory):
