@@ -4,6 +4,7 @@
 import logging
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -262,12 +263,24 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         Returns:
             The created ``KMUserAccessor`` instance.
         """
+        if self.km_user_accessors.filter(email=email).exists():
+            raise ValidationError(
+                _('%s has already been invited to view your profiles.') % (
+                    email,
+                ))
+
         try:
             user = EmailAddress.objects.get(
                 email=email,
                 is_verified=True).user
         except EmailAddress.DoesNotExist:
             user = None
+
+        if user is not None:
+            if self.km_user_accessors.filter(user_with_access=user):
+                raise ValidationError(
+                    _('That user already has access through a different email '
+                      'address.'))
 
         accessor = KMUserAccessor.objects.create(
             email=email,

@@ -21,6 +21,7 @@ def test_serialize_profile(api_rf, profile_factory, serialized_time):
         'url': request.build_absolute_uri(),
         'created_at': serialized_time(profile.created_at),
         'updated_at': serialized_time(profile.updated_at),
+        'is_private': profile.is_private,
         'name': profile.name,
         'permissions': {
             'read': profile.has_object_read_permission(request),

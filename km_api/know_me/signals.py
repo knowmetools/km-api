@@ -54,6 +54,21 @@ def update_accessor(instance, **kwargs):
         return
 
     if instance.is_verified:
+        dupe_query = accessor.km_user.km_user_accessors.filter(
+            user_with_access=instance.user)
+
+        if dupe_query.exists():
+            duplicate = dupe_query.get()
+            logger.warning(
+                "Deleting accessor linking %s and %s because the user has "
+                "been granted access through the email address %s",
+                instance.email,
+                '{} (ID: {})'.format(accessor.km_user, accessor.km_user.id),
+                duplicate.email)
+            accessor.delete()
+
+            return
+
         accessor.user_with_access = instance.user
         accessor.save()
 

@@ -118,6 +118,32 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
 
         return km_user.share(email, **validated_data)
 
+    def validate(self, data):
+        """
+        Validate the data provided to the serializer as a whole.
+
+        Args:
+            data:
+                The data passed to the serializer, after each field has
+                been validated on its own.
+
+        Returns:
+            The validated data.
+        """
+        email = data.get('email')
+        km_user = data.get('km_user')
+
+        # The rest of the validation is only applicable when an email
+        # and Know Me user are provided.
+        if not all([email, km_user]):
+            return data
+
+        if km_user.km_user_accessors.filter(email=email).exists():
+            raise serializers.ValidationError(
+                _("%s has already been granted access to your account."))
+
+        return data
+
     def validate_email(self, email):
         """
         Validate the provided email address.

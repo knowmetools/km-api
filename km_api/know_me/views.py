@@ -55,6 +55,7 @@ class AccessorListView(generics.ListCreateAPIView):
     Endpoint for creating a new accessor for the current user's
     profiles.
     """
+    permission_classes = (IsAuthenticated,)
     serializer_class = serializers.KMUserAccessorSerializer
 
     def get_queryset(self):

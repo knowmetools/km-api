@@ -1,3 +1,33 @@
+
+
+def test_update_accessor_duplicate(
+        email_factory,
+        km_user_factory,
+        km_user_accessor_factory,
+        user_factory):
+    """
+    If a user is granted access through two emails, one verified and one
+    unverified, then when they verify the second email, a duplicate
+    accessor should not be created.
+    """
+    km_user = km_user_factory()
+
+    user = user_factory()
+    e1 = email_factory(is_verified=True, user=user)
+    e2 = email_factory(is_verified=False, user=user)
+
+    km_user_accessor_factory(
+        email=e1.email,
+        km_user=km_user,
+        user_with_access=user)
+    accessor = km_user_accessor_factory(email=e2.email, km_user=km_user)
+
+    e2.is_verified = True
+    e2.save()
+
+    assert not km_user.km_user_accessors.filter(id=accessor.id).exists()
+
+
 def test_update_accessor_user(email_factory, km_user_accessor_factory):
     """
     When an email address matching an accessor that has no user is saved

@@ -11,6 +11,7 @@ def test_serialize(
     Test serializing a journal entry.
     """
     entry = entry_factory(attachment=image)
+    api_rf.user = entry.km_user.user
     request = api_rf.get(entry.get_absolute_url())
 
     entry_comment_factory(entry=entry)
@@ -32,6 +33,10 @@ def test_serialize(
         'comment_count': entry.comments.count(),
         'comments_url': comments_url,
         'km_user_id': entry.km_user.id,
+        'permissions': {
+            'read': entry.has_object_read_permission(request),
+            'write': entry.has_object_write_permission(request),
+        },
         'text': entry.text,
     }
 
