@@ -8,6 +8,7 @@ Changelog
 **************
 
 Breaking Changes
+  * :issue:`296`: Add separate endpoint to accept an accessor.
   * :issue:`316`: Paginate journal entries. The entries are now nested under the ``results`` key, and there is additional information returned such as the total number of entries and the URLs for the next and previous pages. Entries are listed in reverse chronological order.
 
 Features

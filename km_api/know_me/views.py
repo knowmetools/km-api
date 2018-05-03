@@ -7,11 +7,34 @@ from django.utils.translation import ugettext as _
 
 from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
 
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from know_me import models, serializers
+
+
+class AccessorAcceptView(generics.GenericAPIView):
+    """
+    post:
+    Accept the accessor with the specified ID.
+
+    Only the user granted access by the accessor may accept it.
+    """
+    action = 'accept'
+    permission_classes = (DRYPermissions,)
+    queryset = models.KMUserAccessor.objects.all()
+    # We need a serializer class because dry-rest-permissions uses the
+    # serializer to determine the model used for the view.
+    serializer_class = serializers.KMUserAccessorAcceptSerializer
+
+    def post(self, request, *args, **kwargs):
+        accessor = self.get_object()
+
+        accessor.is_accepted = True
+        accessor.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -28,7 +51,7 @@ class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
     delete:
     Endpoint for deleting a specific accessor.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserAccessorSerializer
 
     def get_queryset(self):
@@ -55,7 +78,7 @@ class AccessorListView(generics.ListCreateAPIView):
     Endpoint for creating a new accessor for the current user's
     profiles.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserAccessorSerializer
 
     def get_queryset(self):

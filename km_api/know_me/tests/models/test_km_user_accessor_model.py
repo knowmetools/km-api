@@ -3,6 +3,17 @@ from rest_framework.reverse import reverse
 from know_me import models
 
 
+def test_accept_url(km_user_accessor_factory):
+    """
+    This property should contain the absolute URL of the accessor's
+    accept view.
+    """
+    accessor = km_user_accessor_factory()
+    expected = reverse('know-me:accessor-accept', kwargs={'pk': accessor.pk})
+
+    assert accessor.accept_url == expected
+
+
 def test_create(km_user_factory, user_factory):
     """
     Test creating a KMUserAccessor.
@@ -37,6 +48,125 @@ def test_get_absolute_url_with_request(api_rf, km_user_accessor_factory):
     expected = request.build_absolute_uri()
 
     assert accessor.get_absolute_url(request) == expected
+
+
+def test_has_object_accept_permission_accessee(
+        api_rf,
+        km_user_accessor_factory,
+        user_factory):
+    """
+    The user granted access through the accessor should have permission
+    to accept the accessor.
+    """
+    user = user_factory()
+    accessor = km_user_accessor_factory(user_with_access=user)
+
+    api_rf.user = user
+    request = api_rf.get(accessor.get_absolute_url())
+
+    assert accessor.has_object_accept_permission(request)
+
+
+def test_has_object_accept_permission_owner(api_rf, km_user_accessor_factory):
+    """
+    The user who created the accessor should not be able to mark the
+    accessor as accepted.
+    """
+    accessor = km_user_accessor_factory()
+    api_rf.user = accessor.km_user.user
+    request = api_rf.get(accessor.get_absolute_url())
+
+    assert not accessor.has_object_accept_permission(request)
+
+
+def test_has_object_read_permission_accessee(
+        api_rf,
+        km_user_accessor_factory,
+        user_factory):
+    """
+    The user granted access through the accessor should have read
+    permissions on the accessor.
+    """
+    user = user_factory()
+    accessor = km_user_accessor_factory(user_with_access=user)
+
+    api_rf.user = user
+    request = api_rf.get(accessor.get_absolute_url())
+
+    assert accessor.has_object_read_permission(request)
+
+
+def test_has_object_read_permission_other(
+        api_rf,
+        km_user_accessor_factory,
+        user_factory):
+    """
+    Other users should not have read access to accessors.
+    """
+    user = user_factory()
+    accessor = km_user_accessor_factory()
+
+    api_rf.user = user
+    request = api_rf.get(accessor.get_absolute_url())
+
+    assert not accessor.has_object_read_permission(request)
+
+
+def test_has_object_read_permission_owner(api_rf, km_user_accessor_factory):
+    """
+    The user who created the accessor should have read permissions on
+    it.
+    """
+    accessor = km_user_accessor_factory()
+    api_rf.user = accessor.km_user.user
+    request = api_rf.get(accessor.get_absolute_url())
+
+    assert accessor.has_object_read_permission(request)
+
+
+def test_has_object_write_permission_accessee(
+        api_rf,
+        km_user_accessor_factory,
+        user_factory):
+    """
+    The user granted access through the accessor should not have write
+    permissions on the accessor.
+    """
+    user = user_factory()
+    accessor = km_user_accessor_factory(user_with_access=user)
+
+    api_rf.user = user
+    request = api_rf.get(accessor.get_absolute_url())
+
+    assert not accessor.has_object_write_permission(request)
+
+
+def test_has_object_write_permission_other(
+        api_rf,
+        km_user_accessor_factory,
+        user_factory):
+    """
+    Other users should not have write access to accessors.
+    """
+    user = user_factory()
+    accessor = km_user_accessor_factory()
+
+    api_rf.user = user
+    request = api_rf.get(accessor.get_absolute_url())
+
+    assert not accessor.has_object_write_permission(request)
+
+
+def test_has_object_write_permission_owner(api_rf, km_user_accessor_factory):
+    """
+    The user who created the accessor should have write permissions on
+    it.
+    """
+    accessor = km_user_accessor_factory()
+    api_rf.user = accessor.km_user.user
+    request = api_rf.get(accessor.get_absolute_url())
+
+    assert accessor.has_object_write_permission(request)
 
 
 def test_string_conversion(km_user_accessor_factory):

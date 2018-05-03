@@ -351,6 +351,13 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         """
         return 'Accessor for {user}'.format(user=self.km_user.name)
 
+    @property
+    def accept_url(self):
+        """
+        The absolute URL of the accessor's accept view.
+        """
+        return reverse('know-me:accessor-accept', kwargs={'pk': self.pk})
+
     def get_absolute_url(self, request=None):
         """
         Get the URL of the instance's detail view.
@@ -370,3 +377,50 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
             'know-me:accessor-detail',
             kwargs={'pk': self.pk},
             request=request)
+
+    def has_object_accept_permission(self, request):
+        """
+        Check if the requesting user can accept the accessor.
+
+        Only the user granted access through the accessor can accept it.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the request user has permission to
+            accept the accessor.
+        """
+        return request.user == self.user_with_access
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Users have read access if they are the owner of the Know Me user
+        or have been granted access through an accessor.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has read access
+            to the instance.
+        """
+        return request.user in [self.km_user.user, self.user_with_access]
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has write access
+            to the instance.
+        """
+        return request.user == self.km_user.user
