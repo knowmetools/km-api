@@ -8,6 +8,8 @@ nginx_site_servers:
   - name: "{{ inventory_hostname }}"
     listen: 80
     extra_params: |
+          client_max_body_size 100M;
+
           location = /favicon.ico {
               access_log off;
           }

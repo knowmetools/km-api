@@ -17,6 +17,7 @@ Features
   * :issue:`278`: Include information about the user granted access through an accessor.
   * :issue:`299`: Add additional information to media resources. The resources can have a link instead of a file, and they have an integer to hint how they should be styled.
   * :issue:`321`: Allow media resources to be detached from profile items.
+  * :issue:`328`: Increase maximum upload size to 100MB.
 
 
 ******
