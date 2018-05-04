@@ -34,6 +34,16 @@ urlpatterns = [
         name='config-detail'),
 
     url(
+        r'^legacy-users/$',
+        views.LegacyUserListView.as_view(),
+        name='legacy-user-list'),
+
+    url(
+        r'^legacy-users/(?P<pk>[0-9]+)/$',
+        views.LegacyUserDetailView.as_view(),
+        name='legacy-user-detail'),
+
+    url(
         r'^users/$',
         views.KMUserListView.as_view(),
         name='km-user-list'),

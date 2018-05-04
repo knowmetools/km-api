@@ -30,6 +30,33 @@ def create_km_user(user, **kwargs):
 
 
 @receiver(post_save, sender=EmailAddress)
+def legacy_user(instance, **kwargs):
+    """
+    When an email address is verified, check to see if there is a
+    corresponding legacy user.
+
+    Args:
+        instance:
+            The email address that was verified.
+    """
+    try:
+        legacy_user = models.LegacyUser.objects.get(email=instance.email)
+    except models.LegacyUser.DoesNotExist:
+        return
+
+    if instance.is_verified:
+        instance.user.km_user.is_legacy_user = True
+        legacy_user.delete()
+
+        logger.info(
+            "Verified the email address %s which marked %s (ID %d) as a "
+            "legacy user.",
+            instance.email,
+            instance.user.km_user,
+            instance.user.km_user.id)
+
+
+@receiver(post_save, sender=EmailAddress)
 def update_accessor(instance, **kwargs):
     """
     Update accessors that have an email address but no user.

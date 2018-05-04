@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 
 from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
 
-from rest_framework import generics, status
+from rest_framework import generics, pagination, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
@@ -204,6 +204,39 @@ class KMUserListView(generics.ListCreateAPIView):
                 _('Users may not have more than one Know Me account.'))
 
         return serializer.save(user=self.request.user)
+
+
+class LegacyUserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    delete:
+    Delete the specified legacy user.
+
+    get:
+    Retrieve the specified legacy user's information.
+
+    patch:
+    Partially update the specified legacy user's information.
+
+    put:
+    Update the specified legacy user's information.
+    """
+    permission_classes = (DRYGlobalPermissions,)
+    queryset = models.LegacyUser.objects.all()
+    serializer_class = serializers.LegacyUserSerializer
+
+
+class LegacyUserListView(generics.ListCreateAPIView):
+    """
+    get:
+    Get a list of all legacy users.
+
+    post:
+    Add a new legacy user.
+    """
+    pagination_class = pagination.PageNumberPagination
+    permission_classes = (DRYPermissions,)
+    queryset = models.LegacyUser.objects.all()
+    serializer_class = serializers.LegacyUserSerializer
 
 
 class PendingAccessorListView(generics.ListAPIView):

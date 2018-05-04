@@ -152,3 +152,15 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
                 _('The email of an existing share may not be changed.'))
 
         return email
+
+
+class LegacyUserSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer for legacy users.
+    """
+    url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:legacy-user-detail')
+
+    class Meta:
+        fields = ('id', 'url', 'created_at', 'updated_at', 'email')
+        model = models.LegacyUser

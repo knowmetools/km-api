@@ -3,8 +3,6 @@
 
 import factory
 
-from know_me import models
-
 
 class ConfigFactory(factory.django.DjangoModelFactory):
     """
@@ -23,7 +21,7 @@ class KMUserAccessorFactory(factory.django.DjangoModelFactory):
     km_user = factory.SubFactory('know_me.factories.KMUserFactory')
 
     class Meta(object):
-        model = models.KMUserAccessor
+        model = 'know_me.KMUserAccessor'
 
 
 class KMUserFactory(factory.django.DjangoModelFactory):
@@ -35,4 +33,14 @@ class KMUserFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory('factories.UserFactory')
 
     class Meta:
-        model = models.KMUser
+        model = 'know_me.KMUser'
+
+
+class LegacyUserFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``LegacyUser`` instances.
+    """
+    email = factory.Sequence(lambda n: 'test{}@example.com'.format(n))
+
+    class Meta:
+        model = 'know_me.LegacyUser'

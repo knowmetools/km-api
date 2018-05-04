@@ -107,6 +107,11 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         null=True,
         upload_to=get_km_user_image_upload_path,
         verbose_name=_('image'))
+    is_legacy_user = models.BooleanField(
+        default=False,
+        help_text=_('A boolean indicating if the user used a prior version of '
+                    'Know Me.'),
+        verbose_name=_('is legacy user'))
     quote = models.TextField(
         blank=True,
         help_text=_("A quote to introduce the user."),
@@ -424,3 +429,73 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
             to the instance.
         """
         return request.user == self.km_user.user
+
+
+class LegacyUser(models.Model):
+    """
+    Model to track legacy users.
+    """
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time the legacy user was created.'),
+        verbose_name=_('created at'))
+    email = models.EmailField(
+        help_text=_("The user's email address."),
+        max_length=255,
+        unique=True,
+        verbose_name=_('email'))
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text=_('The time the legacy user was last updated.'),
+        verbose_name=_('updated at'))
+
+    class Meta:
+        ordering = ('email',)
+        verbose_name = _('legacy user')
+        verbose_name_plural = _('legacy users')
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            The instance's email.
+        """
+        return self.email
+
+    @staticmethod
+    def has_read_permission(request):
+        """
+        Determine if the requesting user has read permissions for legacy
+        users.
+
+        Only staff should have this permission.
+
+        Returns:
+            A boolean indicating if the requesting user should be
+            granted read access to legacy users.
+        """
+        return request.user.is_staff
+
+    @staticmethod
+    def has_write_permission(request):
+        """
+        Determine if the requesting user has write permissions for
+        legacy users.
+
+        Only staff should have this permission.
+
+        Returns:
+            A boolean indicating if the requesting user should be
+            granted write access to legacy users.
+        """
+        return request.user.is_staff
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            The absolute URL of the instance's detail view.
+        """
+        return reverse('know-me:legacy-user-detail', kwargs={'pk': self.pk})
