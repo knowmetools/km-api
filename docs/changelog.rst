@@ -10,6 +10,7 @@ Changelog
 Breaking Changes
   * :issue:`296`: Add separate endpoint to accept an accessor.
   * :issue:`316`: Paginate journal entries. The entries are now nested under the ``results`` key, and there is additional information returned such as the total number of entries and the URLs for the next and previous pages. Entries are listed in reverse chronological order.
+  * :issue:`332`: Remove ability to manually create a Know Me user. As per :issue:`263`, a Know Me user is automatically created for each registered user.
 
 Features
   * :issue:`233`: Add config endpoint for Know Me app. It contains information such as the lowest useable iOS app version.

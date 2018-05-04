@@ -3,12 +3,10 @@
 
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext as _
 
 from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
 
 from rest_framework import generics, pagination, status
-from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from know_me import models, serializers
@@ -156,16 +154,11 @@ class KMUserDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.KMUserDetailSerializer
 
 
-class KMUserListView(generics.ListCreateAPIView):
+class KMUserListView(generics.ListAPIView):
     """
     get:
     Endpoint for listing the Know Me users that the current user has
     access to.
-
-    post:
-    Endpoint for creating a new Know Me user for the current user.
-
-    *__Note__: Users may only create one Know Me app account.*
     """
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserListSerializer
@@ -186,24 +179,6 @@ class KMUserListView(generics.ListCreateAPIView):
         query |= Q(user=self.request.user)
 
         return models.KMUser.objects.filter(query)
-
-    def perform_create(self, serializer):
-        """
-        Create a new Know Me specific user for the requesting user.
-
-        Returns:
-            A new Know Me user.
-
-        Raises:
-            ValidationError:
-                If the user making the request already has a Know Me
-                specific account.
-        """
-        if hasattr(self.request.user, 'km_user'):
-            raise ValidationError(
-                _('Users may not have more than one Know Me account.'))
-
-        return serializer.save(user=self.request.user)
 
 
 class LegacyUserDetailView(generics.RetrieveUpdateDestroyAPIView):
