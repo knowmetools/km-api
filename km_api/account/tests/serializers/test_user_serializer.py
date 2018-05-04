@@ -16,6 +16,7 @@ def test_serialize(api_rf, image, serialized_time, user_factory):
         'updated_at': serialized_time(user.updated_at),
         'first_name': user.first_name,
         'image': request.build_absolute_uri(),
+        'is_staff': user.is_staff,
         'last_name': user.last_name,
     }
 

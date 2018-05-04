@@ -63,5 +63,7 @@ class UserSerializer(serializers.ModelSerializer):
             'updated_at',
             'first_name',
             'image',
-            'last_name')
+            'is_staff',
+            'last_name',
+        )
         model = get_user_model()

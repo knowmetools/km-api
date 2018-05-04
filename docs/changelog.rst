@@ -19,6 +19,7 @@ Features
   * :issue:`278`: Include information about the user granted access through an accessor.
   * :issue:`299`: Add additional information to media resources. The resources can have a link instead of a file, and they have an integer to hint how they should be styled.
   * :issue:`306`: Add tracking of legacy users. The list of legacy users can be viewed/updated by staff.
+  * :issue:`313`: Expose if a user is a staff member through the profile endpoint.
   * :issue:`321`: Allow media resources to be detached from profile items.
   * :issue:`326`: The Know Me user owned by the requesting user is guaranteed to be the first element in the list returned from ``/know-me/users/``. Each user in the list also has a new ``is_owned_by_current_user`` boolean attribute.
   * :issue:`328`: Increase maximum upload size to 100MB.
