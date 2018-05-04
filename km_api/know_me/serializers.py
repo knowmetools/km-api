@@ -27,6 +27,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for multiple ``KMUser`` instances.
     """
+    is_owned_by_current_user = serializers.SerializerMethodField()
     journal_entries_url = serializers.HyperlinkedIdentityField(
         view_name='know-me:journal:entry-list')
     media_resource_categories_url = serializers.HyperlinkedIdentityField(
@@ -54,6 +55,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'created_at',
             'updated_at',
+            'is_owned_by_current_user',
             'image',
             'journal_entries_url',
             'media_resource_categories_url',
@@ -61,8 +63,24 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             'name',
             'permissions',
             'profiles_url',
-            'quote')
+            'quote',
+        )
         model = models.KMUser
+
+    def get_is_owned_by_current_user(self, km_user):
+        """
+        Determine if the instance bound to the serializer is owned by
+        the requesting user.
+
+        Args:
+            km_user:
+                The Know Me user bound to the serializer.
+
+        Returns:
+            A boolean indicating if the requesting user owns the Know Me
+            user bound to the serializer.
+        """
+        return self.context['request'].user == km_user.user
 
 
 class KMUserDetailSerializer(KMUserListSerializer):

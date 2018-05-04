@@ -30,6 +30,40 @@ def test_get_own_km_user(api_rf, km_user_factory, user_factory):
     assert response.data == serializer.data
 
 
+def test_get_queryset_order(
+        api_rf,
+        km_user_accessor_factory,
+        km_user_factory,
+        user_factory):
+    """
+    The list of Know Me users should have the requesting user's Know Me
+    user listed first, followed by any shared users.
+    """
+    user = user_factory()
+    api_rf.user = user
+
+    k1 = km_user_factory()
+    km_user_accessor_factory(
+        is_accepted=True,
+        km_user=k1,
+        user_with_access=user)
+
+    k2 = km_user_factory(user=user)
+
+    k3 = km_user_factory()
+    km_user_accessor_factory(
+        is_accepted=True,
+        km_user=k3,
+        user_with_access=user)
+
+    view = views.KMUserListView()
+    view.request = api_rf.get(url)
+
+    expected = [k2, k1, k3]
+
+    assert list(view.get_queryset()) == expected
+
+
 def test_get_shared(api_rf, km_user_accessor_factory, user_factory):
     """
     The list should include the users that the requesting user has

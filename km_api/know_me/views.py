@@ -1,7 +1,7 @@
 """Views for the ``know_me`` module.
 """
 
-from django.db.models import Q
+from django.db.models import Case, Q, PositiveSmallIntegerField, Value, When
 from django.shortcuts import get_object_or_404
 
 from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
@@ -159,6 +159,9 @@ class KMUserListView(generics.ListAPIView):
     get:
     Endpoint for listing the Know Me users that the current user has
     access to.
+
+    The Know Me user owned by the requesting user is guaranteed to be
+    the first element returned.
     """
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserListSerializer
@@ -172,13 +175,29 @@ class KMUserListView(generics.ListAPIView):
             the requesting user.
         """
         # User granted access through an accessor
-        query = Q(km_user_accessor__user_with_access=self.request.user)
-        query &= Q(km_user_accessor__is_accepted=True)
+        filter_args = Q(km_user_accessor__user_with_access=self.request.user)
+        filter_args &= Q(km_user_accessor__is_accepted=True)
 
         # Requesting user is the user
-        query |= Q(user=self.request.user)
+        filter_args |= Q(user=self.request.user)
 
-        return models.KMUser.objects.filter(query)
+        query = models.KMUser.objects.filter(filter_args)
+
+        # Allow us to sort the query with the requesting user's Know Me
+        # user first. See conditional expression documentation:
+        # https://docs.djangoproject.com/en/dev/ref/models/conditional-expressions/
+        query = query.annotate(
+            owned_by_user=Case(
+                When(
+                    user=self.request.user,
+                    then=Value(1)
+                ),
+                default=Value(0),
+                output_field=PositiveSmallIntegerField(),
+            ),
+        )
+
+        return query.order_by('-owned_by_user', 'created_at')
 
 
 class LegacyUserDetailView(generics.RetrieveUpdateDestroyAPIView):
