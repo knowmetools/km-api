@@ -51,6 +51,38 @@ def test_delete_profile_item(api_client, profile_item_factory):
 
 
 @pytest.mark.integration
+def test_detach_media_resource(
+        api_client,
+        media_resource_factory,
+        profile_item_factory):
+    """
+    Sending a null value for the media resource attached to a profile
+    item should detach any media resource from the specified profile
+    item.
+
+    Regression test for #321
+    """
+    resource = media_resource_factory()
+    item = profile_item_factory(
+        media_resource=resource,
+        topic__profile__km_user=resource.km_user)
+
+    api_client.force_authenticate(user=resource.km_user.user)
+
+    data = {
+        'media_resource_id': '',
+    }
+
+    url = item.get_absolute_url()
+    response = api_client.patch(url, data)
+
+    item.refresh_from_db()
+
+    assert response.status_code == status.HTTP_200_OK, response.data
+    assert item.media_resource is None
+
+
+@pytest.mark.integration
 def test_get_profile_item(api_client, api_rf, profile_item_factory):
     """
     Sending a GET request to the view should return the information of

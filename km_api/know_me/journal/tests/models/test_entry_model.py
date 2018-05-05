@@ -79,6 +79,17 @@ def test_has_object_write_permission(
     assert mock_parent_permission.call_args[0] == (request,)
 
 
+def test_ordering(entry_factory):
+    """
+    Journal entries should be ordered by most recently created.
+    """
+    e1 = entry_factory()
+    e2 = entry_factory()
+    e3 = entry_factory()
+
+    assert list(models.Entry.objects.all()) == [e3, e2, e1]
+
+
 def test_string_conversion(entry_factory):
     """
     Converting an entry to a string should return the time it was

@@ -15,6 +15,7 @@ def test_create(file, km_user_factory, media_resource_category_factory):
         category=media_resource_category_factory(km_user=km_user),
         file=file,
         km_user=km_user,
+        link='https://example.com',
         name='Test Media Resource',)
 
 

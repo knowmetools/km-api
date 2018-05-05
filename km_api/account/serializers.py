@@ -23,7 +23,7 @@ class RegistrationSerializer(BaseRegistrationSerializer):
                 'write_only': True,
             }
         }
-        fields = ('email', 'password', 'first_name', 'last_name')
+        fields = ('email', 'password', 'first_name', 'last_name', 'image')
         model = get_user_model()
 
 
@@ -36,7 +36,7 @@ class UserInfoSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
-        fields = ('first_name', 'last_name')
+        fields = ('first_name', 'image', 'last_name')
         model = get_user_model()
 
 
@@ -62,5 +62,8 @@ class UserSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             'first_name',
-            'last_name')
+            'image',
+            'is_staff',
+            'last_name',
+        )
         model = get_user_model()

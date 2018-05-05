@@ -9,6 +9,14 @@ from know_me import factories
 
 
 @pytest.fixture
+def config_factory(db):
+    """
+    Fixture to get the factory used to create ``Config`` instances.
+    """
+    return factories.ConfigFactory
+
+
+@pytest.fixture
 def file():
     """
     Fixture to get a file suitable for a ``FileField``.
@@ -41,3 +49,11 @@ def km_user_factory(db):
         The factory class used to create test ``KMUser`` instances.
     """
     return factories.KMUserFactory
+
+
+@pytest.fixture
+def legacy_user_factory(db):
+    """
+    Fixture to get the factory used to create legacy users.
+    """
+    return factories.LegacyUserFactory

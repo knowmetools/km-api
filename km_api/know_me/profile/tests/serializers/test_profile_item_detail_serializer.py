@@ -105,15 +105,43 @@ def test_validate_media_resource_id_by_item(
     assert result == media_resource
 
 
-def test_validate_media_resource_id_missing_context():
+def test_validate_media_resource_id_missing_context(media_resource_factory):
     """
     If the serializer is not bound and a Know Me user isn't provided as
     context, an AssertionError should be raised.
     """
+    resource = media_resource_factory()
     serializer = serializers.ProfileItemDetailSerializer()
 
     with pytest.raises(AssertionError):
-        serializer.validate_media_resource_id(None)
+        serializer.validate_media_resource_id(resource)
+
+
+def test_validate_media_resource_id_null(
+        km_user_factory,
+        media_resource_factory,
+        profile_item_factory):
+    """
+    Setting ``media_resource_id`` to ``None`` should detach the media resource
+    from the profile item.
+
+    Regression test for #321
+    """
+    km_user = km_user_factory()
+    resource = media_resource_factory(km_user=km_user)
+    item = profile_item_factory(
+        media_resource=resource,
+        topic__profile__km_user=km_user)
+
+    data = {
+        'media_resource_id': None,
+    }
+    serializer = serializers.ProfileItemDetailSerializer(
+        item,
+        data=data,
+        partial=True)
+
+    assert serializer.is_valid()
 
 
 def test_validate_media_resource_id_other_user(

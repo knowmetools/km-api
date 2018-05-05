@@ -8,52 +8,6 @@ km_user_list_view = views.KMUserListView.as_view()
 url = reverse('know-me:km-user-list')
 
 
-def test_create(api_rf, user_factory):
-    """
-    Sending a POST request with valid data to the view should create a
-    new km_user for the user making the request.
-    """
-    user = user_factory()
-    api_rf.user = user
-
-    data = {
-        'name': user.get_short_name(),
-        'quote': "Hi, I'm {name}".format(name=user.get_short_name()),
-    }
-
-    request = api_rf.post(url, data)
-    response = km_user_list_view(request)
-
-    assert response.status_code == status.HTTP_201_CREATED
-
-    serializer = serializers.KMUserListSerializer(
-        user.km_user,
-        context={'request': request})
-
-    assert response.data == serializer.data
-
-
-def test_create_second_km_user(api_rf, km_user_factory, user_factory):
-    """
-    A user who already has an associated ``KMUser`` instance should not
-    be able to create a second one.
-    """
-    user = user_factory()
-    api_rf.user = user
-
-    km_user_factory(user=user)
-
-    data = {
-        'name': user.get_short_name(),
-        'quote': "Hi, I'm {name}".format(name=user.get_short_name()),
-    }
-
-    request = api_rf.post(url, data)
-    response = km_user_list_view(request)
-
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-
-
 def test_get_own_km_user(api_rf, km_user_factory, user_factory):
     """
     If the requesting user has a km_user, then a GET request to this
@@ -74,6 +28,40 @@ def test_get_own_km_user(api_rf, km_user_factory, user_factory):
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data == serializer.data
+
+
+def test_get_queryset_order(
+        api_rf,
+        km_user_accessor_factory,
+        km_user_factory,
+        user_factory):
+    """
+    The list of Know Me users should have the requesting user's Know Me
+    user listed first, followed by any shared users.
+    """
+    user = user_factory()
+    api_rf.user = user
+
+    k1 = km_user_factory()
+    km_user_accessor_factory(
+        is_accepted=True,
+        km_user=k1,
+        user_with_access=user)
+
+    k2 = km_user_factory(user=user)
+
+    k3 = km_user_factory()
+    km_user_accessor_factory(
+        is_accepted=True,
+        km_user=k3,
+        user_with_access=user)
+
+    view = views.KMUserListView()
+    view.request = api_rf.get(url)
+
+    expected = [k2, k1, k3]
+
+    assert list(view.get_queryset()) == expected
 
 
 def test_get_shared(api_rf, km_user_accessor_factory, user_factory):

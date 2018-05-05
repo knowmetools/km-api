@@ -1,71 +1,7 @@
 from unittest import mock
 
+from account.serializers import UserInfoSerializer
 from know_me import serializers
-
-
-def test_accept(
-        api_rf,
-        km_user_accessor_factory,
-        user_factory):
-    """
-    The user who is invited through the accessor should be able to mark
-    the accessor as accepted.
-    """
-    user = user_factory()
-    accessor = km_user_accessor_factory(user_with_access=user)
-
-    api_rf.user = user
-    request = api_rf.get('/')
-
-    data = {'is_accepted': True}
-
-    serializer = serializers.KMUserAccessorSerializer(
-        accessor,
-        context={'request': request},
-        data=data,
-        partial=True)
-    assert serializer.is_valid()
-
-    serializer.save()
-    accessor.refresh_from_db()
-
-    assert accessor.is_accepted
-
-
-def test_accept_by_unauthorized_user(api_rf, km_user_accessor_factory):
-    """
-    Any user other than the user granted access by the accessor should
-    not be able to accept the accessor.
-    """
-    accessor = km_user_accessor_factory()
-
-    api_rf.user = accessor.km_user.user
-    request = api_rf.get('/')
-
-    data = {'is_accepted': True}
-
-    serializer = serializers.KMUserAccessorSerializer(
-        accessor,
-        context={'request': request},
-        data=data,
-        partial=True)
-
-    assert not serializer.is_valid()
-    assert set(serializer.errors.keys()) == {'is_accepted'}
-
-
-def test_accept_on_create(db):
-    """
-    Attempt to create an accessor with ``is_accepted == True`` should
-    fail.
-    """
-    data = {
-        'email': 'test@example.com',
-        'is_accepted': True,
-    }
-
-    serializer = serializers.KMUserAccessorSerializer(data=data)
-    assert not serializer.is_valid()
 
 
 def test_create(km_user_factory):
@@ -113,21 +49,31 @@ def test_serialize(
         accessor,
         context={'request': request})
 
-    km_user_serializer = serializers.KMUserListSerializer(
-        km_user,
+    user_serializer = UserInfoSerializer(
+        accessor.user_with_access,
         context={'request': request})
 
     url = request.build_absolute_uri()
+
+    accept_request = api_rf.get(accessor.accept_url)
+    accept_url = accept_request.build_absolute_uri()
 
     expected = {
         'id': accessor.id,
         'url': url,
         'created_at': serialized_time(accessor.created_at),
         'updated_at': serialized_time(accessor.updated_at),
+        'accept_url': accept_url,
         'email': accessor.email,
         'is_accepted': accessor.is_accepted,
         'is_admin': accessor.is_admin,
-        'km_user': km_user_serializer.data,
+        'km_user_id': accessor.km_user.id,
+        'permissions': {
+            'accept': accessor.has_object_accept_permission(request),
+            'read': accessor.has_object_read_permission(request),
+            'write': accessor.has_object_write_permission(request),
+        },
+        'user_with_access': user_serializer.data,
     }
 
     assert serializer.data == expected

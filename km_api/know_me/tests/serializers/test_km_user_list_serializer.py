@@ -27,6 +27,26 @@ def test_create(serializer_context, user_factory):
     assert km_user.user == user
 
 
+def test_get_is_owned_by_current_user_not_owner(
+        api_rf,
+        km_user_factory,
+        user_factory):
+    """
+    If the requesting user is not the owner of the instance bound to the
+    serializer, this method should return ``False``.
+    """
+    user = user_factory()
+    api_rf.user = user
+    request = api_rf.get('/')
+
+    km_user = km_user_factory()
+    serializer = serializers.KMUserListSerializer(
+        km_user,
+        context={'request': request})
+
+    assert not serializer.get_is_owned_by_current_user(km_user)
+
+
 def test_serialize(api_rf, image, km_user_factory, serialized_time):
     """
     Test serializing a km_user.
@@ -63,6 +83,7 @@ def test_serialize(api_rf, image, km_user_factory, serialized_time):
         'created_at': serialized_time(km_user.created_at),
         'updated_at': serialized_time(km_user.updated_at),
         'image': image_url,
+        'is_owned_by_current_user': km_user.user == request.user,
         'journal_entries_url': entries_url,
         'media_resource_categories_url': categories_url,
         'media_resources_url': media_resources_url,

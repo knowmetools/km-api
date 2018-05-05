@@ -7,14 +7,27 @@ from dry_rest_permissions.generics import DRYPermissionsField
 
 from rest_framework import serializers
 
+from account.serializers import UserInfoSerializer
 from know_me import models
 from know_me.profile.serializers import ProfileListSerializer
+
+
+class ConfigSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Know Me config object.
+    """
+    permissions = DRYPermissionsField(global_only=True)
+
+    class Meta:
+        fields = ('minimum_app_version_ios', 'permissions')
+        model = models.Config
 
 
 class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for multiple ``KMUser`` instances.
     """
+    is_owned_by_current_user = serializers.SerializerMethodField()
     journal_entries_url = serializers.HyperlinkedIdentityField(
         view_name='know-me:journal:entry-list')
     media_resource_categories_url = serializers.HyperlinkedIdentityField(
@@ -42,6 +55,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'created_at',
             'updated_at',
+            'is_owned_by_current_user',
             'image',
             'journal_entries_url',
             'media_resource_categories_url',
@@ -49,8 +63,24 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             'name',
             'permissions',
             'profiles_url',
-            'quote')
+            'quote',
+        )
         model = models.KMUser
+
+    def get_is_owned_by_current_user(self, km_user):
+        """
+        Determine if the instance bound to the serializer is owned by
+        the requesting user.
+
+        Args:
+            km_user:
+                The Know Me user bound to the serializer.
+
+        Returns:
+            A boolean indicating if the requesting user owns the Know Me
+            user bound to the serializer.
+        """
+        return self.context['request'].user == km_user.user
 
 
 class KMUserDetailSerializer(KMUserListSerializer):
@@ -65,13 +95,26 @@ class KMUserDetailSerializer(KMUserListSerializer):
         fields = KMUserListSerializer.Meta.fields + ('permissions', 'profiles')
 
 
+class KMUserAccessorAcceptSerializer(serializers.ModelSerializer):
+    """
+    Serializer for accepting an accessor.
+    """
+
+    class Meta:
+        fields = tuple()
+        model = models.KMUserAccessor
+
+
 class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for ``KMUserAccessor`` instances.
     """
-    km_user = KMUserListSerializer(read_only=True)
+    accept_url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:accessor-accept')
+    permissions = DRYPermissionsField(additional_actions=['accept'])
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:accessor-detail')
+    user_with_access = UserInfoSerializer(read_only=True)
 
     class Meta:
         fields = (
@@ -79,11 +122,15 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'created_at',
             'updated_at',
+            'accept_url',
             'email',
             'is_accepted',
             'is_admin',
-            'km_user')
+            'km_user_id',
+            'permissions',
+            'user_with_access')
         model = models.KMUserAccessor
+        read_only_fields = ('is_accepted',)
 
     def create(self, validated_data):
         """
@@ -99,37 +146,7 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
         km_user = validated_data.pop('km_user')
         email = validated_data.pop('email')
 
-        # Remove 'is_accepted' from the arguments so it's not passed to the
-        # 'share' method.
-        validated_data.pop('is_accepted', None)
-
         return km_user.share(email, **validated_data)
-
-    def validate(self, data):
-        """
-        Validate the data provided to the serializer as a whole.
-
-        Args:
-            data:
-                The data passed to the serializer, after each field has
-                been validated on its own.
-
-        Returns:
-            The validated data.
-        """
-        email = data.get('email')
-        km_user = data.get('km_user')
-
-        # The rest of the validation is only applicable when an email
-        # and Know Me user are provided.
-        if not all([email, km_user]):
-            return data
-
-        if km_user.km_user_accessors.filter(email=email).exists():
-            raise serializers.ValidationError(
-                _("%s has already been granted access to your account."))
-
-        return data
 
     def validate_email(self, email):
         """
@@ -154,34 +171,14 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
 
         return email
 
-    def validate_is_accepted(self, is_accepted):
-        """
-        Validate the provided 'is_accepted' value.
 
-        Args:
-            accepted (boolean):
-                A boolean indicating if the accessor has been accepted.
+class LegacyUserSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer for legacy users.
+    """
+    url = serializers.HyperlinkedIdentityField(
+        view_name='know-me:legacy-user-detail')
 
-        Returns:
-            boolean:
-                The validated 'is_accepted' value.
-
-        Raises:
-            serializers.ValidationError:
-                If the user doesn't have permission to change the
-                'is_accepted' attribute.
-        """
-        accessor = self.instance
-
-        if not accessor and is_accepted:
-            raise serializers.ValidationError(
-                _("An accessor can't be marked as accepted until after it has "
-                  "been created."))
-        elif (accessor
-                and accessor.is_accepted != is_accepted
-                and accessor.user_with_access != self.context['request'].user):
-            raise serializers.ValidationError(
-                _("Only the user granted access by the accessor may accept "
-                  "the accessor."))
-
-        return is_accepted
+    class Meta:
+        fields = ('id', 'url', 'created_at', 'updated_at', 'email')
+        model = models.LegacyUser

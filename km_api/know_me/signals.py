@@ -4,11 +4,56 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from rest_email_auth.models import EmailAddress
+from rest_email_auth.signals import user_registered
 
 from know_me import models
 
 
 logger = logging.getLogger(__name__)
+
+
+@receiver(user_registered)
+def create_km_user(user, **kwargs):
+    """
+    Create a Know Me user for each registered user.
+
+    Each time a user registers, a Know Me user is automatically created
+    for them.
+
+    Args:
+        user:
+            The user who just registered.
+    """
+    models.KMUser.objects.create(image=user.image, user=user)
+
+    logger.info('Created Know Me user for user %s', user)
+
+
+@receiver(post_save, sender=EmailAddress)
+def legacy_user(instance, **kwargs):
+    """
+    When an email address is verified, check to see if there is a
+    corresponding legacy user.
+
+    Args:
+        instance:
+            The email address that was verified.
+    """
+    try:
+        legacy_user = models.LegacyUser.objects.get(email=instance.email)
+    except models.LegacyUser.DoesNotExist:
+        return
+
+    if instance.is_verified:
+        instance.user.km_user.is_legacy_user = True
+        legacy_user.delete()
+
+        logger.info(
+            "Verified the email address %s which marked %s (ID %d) as a "
+            "legacy user.",
+            instance.email,
+            instance.user.km_user,
+            instance.user.km_user.id)
 
 
 @receiver(post_save, sender=EmailAddress)

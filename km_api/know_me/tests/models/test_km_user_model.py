@@ -11,9 +11,11 @@ def test_create(user_factory):
     """
     Test creating a km_user.
     """
-    models.KMUser.objects.create(
+    km_user = models.KMUser.objects.create(
         quote='Life is like a box of chocolates.',
         user=user_factory())
+
+    assert not km_user.is_legacy_user
 
 
 def test_get_absolute_url(km_user_factory):

@@ -1,11 +1,31 @@
 """Models for the ``account`` module.
 """
 
+import uuid
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from account import managers
+
+
+def get_user_image_path(user, filename):
+    """
+    Get the path where a user's image should be stored.
+
+    Args:
+        user:
+            The user whose image is being uploaded.
+        filename:
+            The original name of the uploaded file.
+
+    Returns:
+        The path that the image should be uploaded to.
+    """
+    return 'users/{name}.{ext}'.format(
+        ext=filename.rsplit('.', 1)[-1],
+        name=uuid.uuid4())
 
 
 class User(PermissionsMixin, AbstractBaseUser):
@@ -15,6 +35,11 @@ class User(PermissionsMixin, AbstractBaseUser):
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_('created at'))
+    image = models.ImageField(
+        blank=True,
+        help_text=_('A profile image for the user.'),
+        upload_to=get_user_image_path,
+        verbose_name=_('profile image'))
     is_active = models.BooleanField(
         default=True,
         help_text=_('Inactive users are not able to log in.'),

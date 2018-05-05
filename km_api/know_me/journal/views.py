@@ -2,7 +2,7 @@ from django_filters import rest_framework as filters
 
 from dry_rest_permissions.generics import DRYPermissions
 
-from rest_framework import generics
+from rest_framework import generics, pagination
 
 from watson import search as watson
 
@@ -116,6 +116,7 @@ class EntryListView(generics.ListCreateAPIView):
     filter_fields = {
         'created_at': ['gte', 'lte'],
     }
+    pagination_class = pagination.PageNumberPagination
     permission_classes = (
         DRYPermissions,
         HasKMUserAccess)

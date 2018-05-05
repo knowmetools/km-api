@@ -143,6 +143,12 @@ Putting together all the configurations described above, an example run might lo
         -e static_bucket="$(cd ../terraform && terraform output static_bucket)" \
         deploy.yml
 
+We also have a shell script to facilitate the above process. This shell script is located in the :file:`deploy` directory, and can be run as follows::
+
+  $ deploy.sh ansible/ dev terraform/ default
+
+The positional arguments are the relative path to the Ansible playbook directory, the name of the Ansible inventory file, the relative path to the Terraform configuration directory, and the name of the Terraform workspace to use, respectively.
+
 
 .. _Ansible: http://docs.ansible.com/ansible/latest/index.html
 .. _Terraform: https://www.terraform.io/

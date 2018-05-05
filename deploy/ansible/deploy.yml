@@ -18,5 +18,6 @@
   roles:
     - database
     - cdriehuys.django-app
+    - django-admin
     - cdriehuys.nginx
     - letsencrypt

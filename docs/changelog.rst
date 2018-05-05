@@ -4,6 +4,28 @@ Changelog
 
 
 ******
+v1.0.0
+******
+
+Breaking Changes
+  * :issue:`296`: Add separate endpoint to accept an accessor.
+  * :issue:`316`: Paginate journal entries. The entries are now nested under the ``results`` key, and there is additional information returned such as the total number of entries and the URLs for the next and previous pages. Entries are listed in reverse chronological order.
+  * :issue:`332`: Remove ability to manually create a Know Me user. As per :issue:`263`, a Know Me user is automatically created for each registered user.
+
+Features
+  * :issue:`233`: Add config endpoint for Know Me app. It contains information such as the lowest useable iOS app version.
+  * :issue:`259`: Add optional profile image for users.
+  * :issue:`263,277`: Automatically create a Know Me user for each user. The Know Me user's image defaults to the user's profile image.
+  * :issue:`278`: Include information about the user granted access through an accessor.
+  * :issue:`299`: Add additional information to media resources. The resources can have a link instead of a file, and they have an integer to hint how they should be styled.
+  * :issue:`306`: Add tracking of legacy users. The list of legacy users can be viewed/updated by staff.
+  * :issue:`313`: Expose if a user is a staff member through the profile endpoint.
+  * :issue:`321`: Allow media resources to be detached from profile items.
+  * :issue:`326`: The Know Me user owned by the requesting user is guaranteed to be the first element in the list returned from ``/know-me/users/``. Each user in the list also has a new ``is_owned_by_current_user`` boolean attribute.
+  * :issue:`328`: Increase maximum upload size to 100MB.
+
+
+******
 v0.9.3
 ******
 

@@ -12,6 +12,8 @@ from rest_email_auth.models import EmailAddress
 
 from rest_framework.reverse import reverse
 
+from solo.models import SingletonModel
+
 from permission_utils import model_mixins as mixins
 
 
@@ -38,6 +40,57 @@ def get_km_user_image_upload_path(km_user, imagename):
             id=km_user.id)
 
 
+class Config(SingletonModel):
+    """
+    Configuration for the Know Me app.
+
+    This model is a singleton for holding variables global to the Know
+    Me app.
+    """
+    minimum_app_version_ios = models.CharField(
+        blank=True,
+        help_text=_('The minimum version of the iOS app that is usable '
+                    'without a required update.'),
+        max_length=31)
+
+    class Meta:
+        verbose_name = _('config')
+
+    @staticmethod
+    def has_read_permission(request):
+        """
+        Grant all users read permission to the config object.
+
+        Returns:
+            ``True``
+        """
+        return True
+
+    @staticmethod
+    def has_write_permission(request):
+        """
+        Check write permissions on the config object for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            ``True`` if the requesting user is staff and ``False``
+            otherwise.
+        """
+        return request.user.is_staff
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            The string 'Config'.
+        """
+        return 'Config'
+
+
 class KMUser(mixins.IsAuthenticatedMixin, models.Model):
     """
     A KMUser tracks information associated with each user of the
@@ -54,6 +107,11 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         null=True,
         upload_to=get_km_user_image_upload_path,
         verbose_name=_('image'))
+    is_legacy_user = models.BooleanField(
+        default=False,
+        help_text=_('A boolean indicating if the user used a prior version of '
+                    'Know Me.'),
+        verbose_name=_('is legacy user'))
     quote = models.TextField(
         blank=True,
         help_text=_("A quote to introduce the user."),
@@ -298,6 +356,13 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         """
         return 'Accessor for {user}'.format(user=self.km_user.name)
 
+    @property
+    def accept_url(self):
+        """
+        The absolute URL of the accessor's accept view.
+        """
+        return reverse('know-me:accessor-accept', kwargs={'pk': self.pk})
+
     def get_absolute_url(self, request=None):
         """
         Get the URL of the instance's detail view.
@@ -317,3 +382,120 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
             'know-me:accessor-detail',
             kwargs={'pk': self.pk},
             request=request)
+
+    def has_object_accept_permission(self, request):
+        """
+        Check if the requesting user can accept the accessor.
+
+        Only the user granted access through the accessor can accept it.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the request user has permission to
+            accept the accessor.
+        """
+        return request.user == self.user_with_access
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a request.
+
+        Users have read access if they are the owner of the Know Me user
+        or have been granted access through an accessor.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has read access
+            to the instance.
+        """
+        return request.user in [self.km_user.user, self.user_with_access]
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has write access
+            to the instance.
+        """
+        return request.user == self.km_user.user
+
+
+class LegacyUser(models.Model):
+    """
+    Model to track legacy users.
+    """
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time the legacy user was created.'),
+        verbose_name=_('created at'))
+    email = models.EmailField(
+        help_text=_("The user's email address."),
+        max_length=255,
+        unique=True,
+        verbose_name=_('email'))
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text=_('The time the legacy user was last updated.'),
+        verbose_name=_('updated at'))
+
+    class Meta:
+        ordering = ('email',)
+        verbose_name = _('legacy user')
+        verbose_name_plural = _('legacy users')
+
+    def __str__(self):
+        """
+        Get a string representation of the instance.
+
+        Returns:
+            The instance's email.
+        """
+        return self.email
+
+    @staticmethod
+    def has_read_permission(request):
+        """
+        Determine if the requesting user has read permissions for legacy
+        users.
+
+        Only staff should have this permission.
+
+        Returns:
+            A boolean indicating if the requesting user should be
+            granted read access to legacy users.
+        """
+        return request.user.is_staff
+
+    @staticmethod
+    def has_write_permission(request):
+        """
+        Determine if the requesting user has write permissions for
+        legacy users.
+
+        Only staff should have this permission.
+
+        Returns:
+            A boolean indicating if the requesting user should be
+            granted write access to legacy users.
+        """
+        return request.user.is_staff
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            The absolute URL of the instance's detail view.
+        """
+        return reverse('know-me:legacy-user-detail', kwargs={'pk': self.pk})

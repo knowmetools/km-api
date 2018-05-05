@@ -1,17 +1,38 @@
 """Views for the ``know_me`` module.
 """
 
-from django.db.models import Q
+from django.db.models import Case, Q, PositiveSmallIntegerField, Value, When
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext as _
 
-from dry_rest_permissions.generics import DRYPermissions
+from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
 
-from rest_framework import generics
-from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, pagination, status
+from rest_framework.response import Response
 
 from know_me import models, serializers
+
+
+class AccessorAcceptView(generics.GenericAPIView):
+    """
+    post:
+    Accept the accessor with the specified ID.
+
+    Only the user granted access by the accessor may accept it.
+    """
+    action = 'accept'
+    permission_classes = (DRYPermissions,)
+    queryset = models.KMUserAccessor.objects.all()
+    # We need a serializer class because dry-rest-permissions uses the
+    # serializer to determine the model used for the view.
+    serializer_class = serializers.KMUserAccessorAcceptSerializer
+
+    def post(self, request, *args, **kwargs):
+        accessor = self.get_object()
+
+        accessor.is_accepted = True
+        accessor.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -28,7 +49,7 @@ class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
     delete:
     Endpoint for deleting a specific accessor.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserAccessorSerializer
 
     def get_queryset(self):
@@ -55,7 +76,7 @@ class AccessorListView(generics.ListCreateAPIView):
     Endpoint for creating a new accessor for the current user's
     profiles.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserAccessorSerializer
 
     def get_queryset(self):
@@ -87,6 +108,35 @@ class AccessorListView(generics.ListCreateAPIView):
         return serializer.save(km_user=km_user)
 
 
+class ConfigDetailView(generics.RetrieveUpdateAPIView):
+    """
+    get:
+    Retrieve the configuration for the Know Me app.
+
+    patch:
+    Partially update the configuration for Know Me.
+
+    Only staff users may perform this action.
+
+    put:
+    Update the configuration for Know Me.
+
+    Only staff users may perform this action.
+    """
+    permission_classes = (DRYGlobalPermissions,)
+    serializer_class = serializers.ConfigSerializer
+
+    def get_object(self):
+        """
+        Return the config instance singleton.
+        """
+        config = models.Config.get_solo()
+
+        self.check_object_permissions(self.request, config)
+
+        return config
+
+
 class KMUserDetailView(generics.RetrieveUpdateAPIView):
     """
     get:
@@ -104,16 +154,14 @@ class KMUserDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = serializers.KMUserDetailSerializer
 
 
-class KMUserListView(generics.ListCreateAPIView):
+class KMUserListView(generics.ListAPIView):
     """
     get:
     Endpoint for listing the Know Me users that the current user has
     access to.
 
-    post:
-    Endpoint for creating a new Know Me user for the current user.
-
-    *__Note__: Users may only create one Know Me app account.*
+    The Know Me user owned by the requesting user is guaranteed to be
+    the first element returned.
     """
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserListSerializer
@@ -127,31 +175,62 @@ class KMUserListView(generics.ListCreateAPIView):
             the requesting user.
         """
         # User granted access through an accessor
-        query = Q(km_user_accessor__user_with_access=self.request.user)
-        query &= Q(km_user_accessor__is_accepted=True)
+        filter_args = Q(km_user_accessor__user_with_access=self.request.user)
+        filter_args &= Q(km_user_accessor__is_accepted=True)
 
         # Requesting user is the user
-        query |= Q(user=self.request.user)
+        filter_args |= Q(user=self.request.user)
 
-        return models.KMUser.objects.filter(query)
+        query = models.KMUser.objects.filter(filter_args)
 
-    def perform_create(self, serializer):
-        """
-        Create a new Know Me specific user for the requesting user.
+        # Allow us to sort the query with the requesting user's Know Me
+        # user first. See conditional expression documentation:
+        # https://docs.djangoproject.com/en/dev/ref/models/conditional-expressions/
+        query = query.annotate(
+            owned_by_user=Case(
+                When(
+                    user=self.request.user,
+                    then=Value(1)
+                ),
+                default=Value(0),
+                output_field=PositiveSmallIntegerField(),
+            ),
+        )
 
-        Returns:
-            A new Know Me user.
+        return query.order_by('-owned_by_user', 'created_at')
 
-        Raises:
-            ValidationError:
-                If the user making the request already has a Know Me
-                specific account.
-        """
-        if hasattr(self.request.user, 'km_user'):
-            raise ValidationError(
-                _('Users may not have more than one Know Me account.'))
 
-        return serializer.save(user=self.request.user)
+class LegacyUserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    delete:
+    Delete the specified legacy user.
+
+    get:
+    Retrieve the specified legacy user's information.
+
+    patch:
+    Partially update the specified legacy user's information.
+
+    put:
+    Update the specified legacy user's information.
+    """
+    permission_classes = (DRYGlobalPermissions,)
+    queryset = models.LegacyUser.objects.all()
+    serializer_class = serializers.LegacyUserSerializer
+
+
+class LegacyUserListView(generics.ListCreateAPIView):
+    """
+    get:
+    Get a list of all legacy users.
+
+    post:
+    Add a new legacy user.
+    """
+    pagination_class = pagination.PageNumberPagination
+    permission_classes = (DRYPermissions,)
+    queryset = models.LegacyUser.objects.all()
+    serializer_class = serializers.LegacyUserSerializer
 
 
 class PendingAccessorListView(generics.ListAPIView):
