@@ -3,9 +3,9 @@ Changelog
 #########
 
 
-**************
-(Next Release)
-**************
+******
+v1.0.0
+******
 
 Breaking Changes
   * :issue:`296`: Add separate endpoint to accept an accessor.
