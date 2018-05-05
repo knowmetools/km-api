@@ -19,12 +19,31 @@ class AccessorAcceptView(generics.GenericAPIView):
 
     Only the user granted access by the accessor may accept it.
     """
-    action = 'accept'
-    permission_classes = (DRYPermissions,)
+    # We use the global permissions check because the normal check
+    # assumes we're checking write permissions for a POST request.
+    permission_classes = (DRYGlobalPermissions,)
     queryset = models.KMUserAccessor.objects.all()
     # We need a serializer class because dry-rest-permissions uses the
     # serializer to determine the model used for the view.
     serializer_class = serializers.KMUserAccessorAcceptSerializer
+
+    def check_object_permissions(self, request, obj):
+        """
+        Check permissions on the accessor being accessed.
+
+        Only the user granted access by the accessor has permission to
+        accept the accessor.
+
+        Args:
+            request:
+                The request being made.
+            obj:
+                The ``KMUserAccessor`` instance being accepted.
+        """
+        super().check_object_permissions(request, obj)
+
+        if not obj.has_object_accept_permission(request):
+            self.permission_denied(request)
 
     def post(self, request, *args, **kwargs):
         accessor = self.get_object()
