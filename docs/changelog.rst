@@ -4,6 +4,13 @@ Changelog
 
 
 ******
+v1.0.1
+******
+
+:issue:`337`: Fix issue with API documentation crashing.
+
+
+******
 v1.0.0
 ******
 
