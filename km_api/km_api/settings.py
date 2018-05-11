@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'know_me.journal',
     'know_me.profile',
     'mailing_list',
+    'notifications',
 ]
 
 MIDDLEWARE = [

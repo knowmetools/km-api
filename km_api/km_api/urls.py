@@ -27,4 +27,5 @@ urlpatterns = [
     url(r'^auth/', include('km_auth.urls')),
     url(r'^docs/', include_docs_urls(title='Know Me API')),
     url(r'^know-me/', include('know_me.urls')),
+    url(r'^notifications/', include('notifications.urls')),
 ]
