@@ -1,16 +1,17 @@
-from django.conf.urls import url
+from django.conf.urls import include, url
 
+from push_notifications.api.rest_framework import APNSDeviceAuthorizedViewSet
 
-from notifications import views
+from rest_framework.routers import DefaultRouter
 
 
 app_name = 'notifications'
 
 
+router = DefaultRouter()
+router.register('apns', APNSDeviceAuthorizedViewSet, 'apns-device')
+
+
 urlpatterns = [
-    url(
-        r'^devices/apns/$',
-        views.APNSDeviceListView.as_view(),
-        name='apns-device-list',
-    ),
+    url(r'^', include(router.urls)),
 ]
