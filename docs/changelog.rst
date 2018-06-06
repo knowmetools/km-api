@@ -4,6 +4,13 @@ Changelog
 
 
 ******
+v1.0.2
+******
+
+:issue:`341`: Fix issue with list entries not being orderable.
+
+
+******
 v1.0.1
 ******
 

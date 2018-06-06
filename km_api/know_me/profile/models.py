@@ -69,6 +69,7 @@ class ListEntry(mixins.IsAuthenticatedMixin, models.Model):
         verbose_name=_('updated at'))
 
     class Meta:
+        order_with_respect_to = 'profile_item'
         verbose_name = _('profile item list entry')
         verbose_name_plural = _('profile item list entries')
 
