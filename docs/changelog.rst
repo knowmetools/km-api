@@ -4,6 +4,14 @@ Changelog
 
 
 ******
+v1.1.0
+******
+
+Features
+  :issue:`346`: Add endpoint to list previously accepted accessors.
+
+
+******
 v1.0.2
 ******
 
