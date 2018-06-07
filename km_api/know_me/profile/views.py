@@ -29,18 +29,25 @@ class ListEntryDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.ListEntrySerializer
 
 
-class ListEntryListView(generics.ListCreateAPIView):
+class ListEntryListView(SortView, generics.ListCreateAPIView):
     """
     get:
     Get a list of the list entries belonging to a specific profile item.
 
     post:
     Add a new list entry to a specific profile item.
+
+    put:
+    Set the order of the list entries relative to their parent profile
+    item.
     """
     permission_classes = (
         DRYPermissions,
         permissions.HasListEntryListPermissions)
     serializer_class = serializers.ListEntrySerializer
+    sort_child_name = 'list_entries'
+    sort_parent = models.ProfileItem
+    sort_serializer = create_sort_serializer(models.ListEntry)
 
     def get_queryset(self):
         """

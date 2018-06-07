@@ -282,6 +282,11 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             user = None
 
         if user is not None:
+            if user == self.user:
+                raise ValidationError(
+                    _('You may not share your own user with yourself.'),
+                )
+
             if self.km_user_accessors.filter(user_with_access=user):
                 raise ValidationError(
                     _('That user already has access through a different email '
