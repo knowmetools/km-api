@@ -7,7 +7,9 @@ Changelog
 v1.0.2
 ******
 
-:issue:`341`: Fix issue with list entries not being orderable.
+Bug Fixes
+  :issue:`341`: Fix issue with list entries not being orderable.
+  :issue:`343`: Fix bug with duplicate rows when selecting Know Me users.
 
 
 ******
