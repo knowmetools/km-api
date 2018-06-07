@@ -1,5 +1,14 @@
 from unittest import mock
 
+from django.core.exceptions import ValidationError
+
+import pytest
+
+from rest_framework.serializers import (
+    ValidationError as SerializerValidationError,
+)
+from rest_framework.settings import api_settings
+
 from account.serializers import UserInfoSerializer
 from know_me import serializers
 
@@ -24,6 +33,33 @@ def test_create(km_user_factory):
     assert mock_share.call_count == 1
     assert mock_share.call_args[0] == (data['email'],)
     assert mock_share.call_args[1] == {'is_admin': data['is_admin']}
+
+
+def test_create_failed(km_user_factory):
+    """
+    If the share operation fails, the validation error from the model
+    should be translated to a serializer error.
+    """
+    km_user = km_user_factory()
+    data = {
+        'email': 'test@example.com',
+    }
+
+    serializer = serializers.KMUserAccessorSerializer(data=data)
+    assert serializer.is_valid()
+
+    with mock.patch.object(
+        km_user,
+        'share',
+        side_effect=ValidationError('foo'),
+    ) as mock_share:
+        with pytest.raises(SerializerValidationError) as ex_info:
+            serializer.save(km_user=km_user)
+
+    assert mock_share.call_count == 1
+    assert ex_info.value.detail == {
+        api_settings.NON_FIELD_ERRORS_KEY: 'foo',
+    }
 
 
 def test_serialize(

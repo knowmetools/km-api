@@ -65,6 +65,22 @@ def test_has_object_write_permission(
     assert mock_parent_permission.call_args[0] == (request,)
 
 
+def test_ordering(list_entry_factory, profile_item_factory):
+    """
+    List entries should be ordered with respect to their parent profile
+    item.
+    """
+    item = profile_item_factory()
+
+    l1 = list_entry_factory(profile_item=item)
+    l2 = list_entry_factory(profile_item=item)
+    l3 = list_entry_factory(profile_item=item)
+
+    item.set_listentry_order([l3.id, l1.id, l2.id])
+
+    assert list(item.list_entries.all()) == [l3, l1, l2]
+
+
 def test_string_conversion(list_entry_factory):
     """
     Converting a list entry to a string should return the entry's text.

@@ -343,6 +343,19 @@ def test_share_nonexistent_user(km_user_factory):
     assert accessor.user_with_access is None
 
 
+def test_share_self(km_user_factory):
+    """
+    You should not be able to share your own Know Me user with yourself.
+
+    Regression test for #343.
+    """
+    km_user = km_user_factory()
+    email = km_user.user.primary_email
+
+    with pytest.raises(ValidationError):
+        km_user.share(email.email)
+
+
 def test_string_conversion(km_user_factory):
     """
     Converting a km_user to a string should return the km_user's name.

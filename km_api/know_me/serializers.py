@@ -1,11 +1,13 @@
 """Serializers for the ``know_me`` module.
 """
 
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from dry_rest_permissions.generics import DRYPermissionsField
 
 from rest_framework import serializers
+from rest_framework.settings import api_settings
 
 from account.serializers import UserInfoSerializer
 from know_me import models
@@ -146,7 +148,15 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
         km_user = validated_data.pop('km_user')
         email = validated_data.pop('email')
 
-        return km_user.share(email, **validated_data)
+        # If sharing fails (already shared, can't share with self, etc.)
+        # we capture the error and echo it as a serializer error which
+        # will get handled by the DRF middleware.
+        try:
+            return km_user.share(email, **validated_data)
+        except ValidationError as e:
+            raise serializers.ValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: e.message,
+            })
 
     def validate_email(self, email):
         """

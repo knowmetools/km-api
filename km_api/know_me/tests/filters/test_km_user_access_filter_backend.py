@@ -44,26 +44,6 @@ def test_filter_list_by_km_user(
     assert list(result) == list(expected)
 
 
-def test_filter_list_non_existent_user(api_rf, user_factory):
-    """
-    If there is no Know Me user with the provided primary key, an
-    Http404 exception should be raised.
-    """
-    api_rf.user = user_factory()
-    request = api_rf.get('/')
-
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': 1}
-
-    backend = filters.KMUserAccessFilterBackend()
-
-    with pytest.raises(Http404):
-        backend.filter_queryset(
-            request,
-            models.KMUserAccessor.objects.all(),
-            view)
-
-
 def test_filter_list_inaccessible_user(
         api_rf,
         km_user_factory,
@@ -87,6 +67,73 @@ def test_filter_list_inaccessible_user(
             request,
             models.KMUserAccessor.objects.all(),
             view)
+
+
+def test_filter_list_non_existent_user(api_rf, user_factory):
+    """
+    If there is no Know Me user with the provided primary key, an
+    Http404 exception should be raised.
+    """
+    api_rf.user = user_factory()
+    request = api_rf.get('/')
+
+    view = mock.Mock(name='Mock View')
+    view.kwargs = {'pk': 1}
+
+    backend = filters.KMUserAccessFilterBackend()
+
+    with pytest.raises(Http404):
+        backend.filter_queryset(
+            request,
+            models.KMUserAccessor.objects.all(),
+            view)
+
+
+def test_filter_list_owned_and_shared(
+        api_rf,
+        km_user_accessor_factory,
+        km_user_factory,
+        user_factory):
+    """
+    If there is a situation where the user both owns the Know Me user
+    being access and has an accessor granting them access to the same
+    user, we should de-duplicate the resulting query.
+
+    In other words, we should be able to handle duplicates in the
+    resulting query.
+
+    Regression test for #343
+    """
+    user = user_factory()
+    km_user = km_user_factory(user=user)
+    km_user_accessor_factory(
+        is_accepted=True,
+        km_user=km_user,
+        user_with_access=user,
+    )
+    # We have to create a second accessor accessing the user for the bug
+    # to trigger.
+    km_user_accessor_factory(
+        is_accepted=True,
+        km_user=km_user,
+    )
+
+    api_rf.user = user
+    request = api_rf.get('/')
+
+    view = mock.Mock(name='Mock View')
+    view.kwargs = {'pk': km_user.pk}
+
+    backend = filters.KMUserAccessFilterBackend()
+    filtered = backend.filter_queryset(
+        request,
+        models.KMUserAccessor.objects.all(),
+        view,
+    )
+
+    expected = km_user.km_user_accessors.all()
+
+    assert list(filtered) == list(expected)
 
 
 def test_filter_list_shared(

@@ -41,9 +41,13 @@ class KMUserAccessFilterBackend(filters.BaseFilterBackend):
         # Requesting user is KMUser
         query |= Q(user=request.user)
 
+        # In rare cases, this query will return duplicate rows. See #343
+        # for details.
+        km_user_query = models.KMUser.objects.filter(query).distinct()
+
         km_user = get_object_or_404(
-            models.KMUser,
-            query,
-            pk=view.kwargs.get('pk'))
+            km_user_query,
+            pk=view.kwargs.get('pk'),
+        )
 
         return queryset.filter(km_user=km_user)
