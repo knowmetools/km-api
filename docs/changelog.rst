@@ -10,6 +10,7 @@ v1.0.2
 Bug Fixes
   :issue:`341`: Fix issue with list entries not being orderable.
   :issue:`343`: Fix bug with duplicate rows when selecting Know Me users.
+  :issue:`345`: Fix issue with sharing errors not being caught and rendered.
 
 
 ******
