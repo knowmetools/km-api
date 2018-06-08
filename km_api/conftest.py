@@ -86,6 +86,14 @@ def api_rf():
 
 
 @pytest.fixture
+def apns_device_factory(db):
+    """
+    Fixture to get the factory used to create APNS devices.
+    """
+    return factories.APNSDeviceFactory
+
+
+@pytest.fixture
 def email_factory(db):
     """
     Get the factory used to create email addresses.

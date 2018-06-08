@@ -10,6 +10,17 @@ from rest_email_auth.models import EmailAddress
 import factory
 
 
+class APNSDeviceFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating APNS devices.
+    """
+    user = factory.SubFactory('factories.UserFactory')
+    registration_id = factory.Sequence(lambda n: str(n))
+
+    class Meta:
+        model = 'push_notifications.APNSDevice'
+
+
 class EmailFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``EmailAddress`` instances.

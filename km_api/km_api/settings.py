@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'dry_rest_permissions',
+    'push_notifications',
     'raven.contrib.django.raven_compat',
     'rest_email_auth',
     'rest_framework',
@@ -59,6 +60,7 @@ INSTALLED_APPS = [
     'know_me.journal',
     'know_me.profile',
     'mailing_list',
+    'notifications',
 ]
 
 MIDDLEWARE = [
