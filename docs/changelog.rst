@@ -4,6 +4,15 @@ Changelog
 
 
 ******
+v1.1.0
+******
+
+Features
+  :issue:`346`: Add endpoint to list previously accepted accessors.
+  :issue:`347`: Allow users granted access by an accessor to delete that accessor.
+
+
+******
 v1.0.2
 ******
 

@@ -54,6 +54,26 @@ class AccessorAcceptView(generics.GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class AcceptedAccessorListView(generics.ListAPIView):
+    """
+    get:
+    Retrieve the accessors granting the requesting user access to other
+    users' accounts that have been accepted.
+    """
+    permission_classes = (DRYPermissions,)
+    serializer_class = serializers.KMUserAccessorSerializer
+
+    def get_queryset(self):
+        """
+        Get the accessors accepted by the requesting user.
+
+        Returns:
+            A queryset containing the accessors accepted by the
+            requesting user.
+        """
+        return self.request.user.km_user_accessors.filter(is_accepted=True)
+
+
 class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     get:

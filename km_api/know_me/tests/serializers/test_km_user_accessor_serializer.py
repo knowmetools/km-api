@@ -106,6 +106,7 @@ def test_serialize(
         'km_user_id': accessor.km_user.id,
         'permissions': {
             'accept': accessor.has_object_accept_permission(request),
+            'destroy': accessor.has_object_destroy_permission(request),
             'read': accessor.has_object_read_permission(request),
             'write': accessor.has_object_write_permission(request),
         },

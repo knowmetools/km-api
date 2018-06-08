@@ -79,6 +79,51 @@ def test_has_object_accept_permission_owner(api_rf, km_user_accessor_factory):
     assert not accessor.has_object_accept_permission(request)
 
 
+def test_has_object_destroy_permission_accessee(
+        api_rf,
+        km_user_accessor_factory,
+        user_factory):
+    """
+    The user granted access by the accessor should be able to delete the
+    accessor.
+    """
+    user = user_factory()
+    accessor = km_user_accessor_factory(user_with_access=user)
+
+    api_rf.user = user
+    request = api_rf.get('/')
+
+    assert accessor.has_object_destroy_permission(request)
+
+
+def test_has_object_destroy_permission_other(
+        api_rf,
+        km_user_accessor_factory,
+        user_factory):
+    """
+    Other users should not be able to destroy a random accessor.
+    """
+    user = user_factory()
+    accessor = km_user_accessor_factory()
+
+    api_rf.user = user
+    request = api_rf.get('/')
+
+    assert not accessor.has_object_destroy_permission(request)
+
+
+def test_has_object_destroy_permission_owner(api_rf, km_user_accessor_factory):
+    """
+    The Know Me user the accessor grants access on should be able to
+    destroy the accessor.
+    """
+    accessor = km_user_accessor_factory()
+    api_rf.user = accessor.km_user.user
+    request = api_rf.get('/')
+
+    assert accessor.has_object_destroy_permission(request)
+
+
 def test_has_object_read_permission_accessee(
         api_rf,
         km_user_accessor_factory,

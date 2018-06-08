@@ -14,6 +14,12 @@ urlpatterns = [
     url(r'^', include('know_me.profile.urls')),
 
     url(
+        r'^accessors/accepted/$',
+        views.AcceptedAccessorListView.as_view(),
+        name='accepted-accessor-list',
+    ),
+
+    url(
         r'^accessors/pending/$',
         views.PendingAccessorListView.as_view(),
         name='pending-accessor-list'),

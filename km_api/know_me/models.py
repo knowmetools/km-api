@@ -404,6 +404,20 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         """
         return request.user == self.user_with_access
 
+    def has_object_destroy_permission(self, request):
+        """
+        Check if the requesting user can destroy the accessor.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has permission
+            to destroy the accessor.
+        """
+        return request.user in [self.km_user.user, self.user_with_access]
+
     def has_object_read_permission(self, request):
         """
         Check read permissions on the instance for a request.
