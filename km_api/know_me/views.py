@@ -220,7 +220,7 @@ class KMUserListView(generics.ListAPIView):
         # Requesting user is the user
         filter_args |= Q(user=self.request.user)
 
-        query = models.KMUser.objects.filter(filter_args)
+        query = models.KMUser.objects.filter(filter_args).distinct()
 
         # Allow us to sort the query with the requesting user's Know Me
         # user first. See conditional expression documentation:

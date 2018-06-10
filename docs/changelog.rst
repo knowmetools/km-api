@@ -4,6 +4,14 @@ Changelog
 
 
 ******
+v1.2.0
+******
+
+Bug Fixes
+  * :issue:`352`: Remove duplicate entry from user list.
+
+
+******
 v1.1.0
 ******
 

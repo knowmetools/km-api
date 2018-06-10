@@ -30,6 +30,37 @@ def test_get_own_km_user(api_rf, km_user_factory, user_factory):
     assert response.data == serializer.data
 
 
+def test_get_queryset_duplicates(
+        api_rf,
+        km_user_accessor_factory,
+        km_user_factory,
+        user_factory):
+    """
+    If the user has managed to create an accessor granting access to
+    their own account, there should not be a duplicate entry in the user
+    list.
+
+    Regression test for #352.
+    """
+    user = user_factory()
+    api_rf.user = user
+
+    km_user = km_user_factory(user=user)
+    km_user_accessor_factory(
+        is_accepted=True,
+        km_user=km_user,
+        user_with_access=user,
+    )
+
+    # Have to create another accessor for the bug to be present
+    km_user_accessor_factory(km_user=km_user)
+
+    view = views.KMUserListView()
+    view.request = api_rf.get('/')
+
+    assert list(view.get_queryset()) == [km_user]
+
+
 def test_get_queryset_order(
         api_rf,
         km_user_accessor_factory,
