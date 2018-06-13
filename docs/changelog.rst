@@ -4,6 +4,20 @@ Changelog
 
 
 ******
+v1.2.0
+******
+
+Features
+  * :issue:`354`: Add Know Me user information to accessor response.
+
+Bug Fixes
+  * :issue:`352`: Remove duplicate entry from user list.
+
+Miscellaneous
+  * :issue:`355`: Bump package versions
+
+
+******
 v1.1.0
 ******
 

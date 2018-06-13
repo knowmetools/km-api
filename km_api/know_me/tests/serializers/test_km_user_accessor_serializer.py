@@ -85,6 +85,10 @@ def test_serialize(
         accessor,
         context={'request': request})
 
+    km_user_serializer = serializers.KMUserInfoSerializer(
+        km_user,
+        context={'request': request},
+    )
     user_serializer = UserInfoSerializer(
         accessor.user_with_access,
         context={'request': request})
@@ -103,7 +107,7 @@ def test_serialize(
         'email': accessor.email,
         'is_accepted': accessor.is_accepted,
         'is_admin': accessor.is_admin,
-        'km_user_id': accessor.km_user.id,
+        'km_user': km_user_serializer.data,
         'permissions': {
             'accept': accessor.has_object_accept_permission(request),
             'destroy': accessor.has_object_destroy_permission(request),

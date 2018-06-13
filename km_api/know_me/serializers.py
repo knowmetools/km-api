@@ -25,6 +25,19 @@ class ConfigSerializer(serializers.ModelSerializer):
         model = models.Config
 
 
+class KMUserInfoSerializer(serializers.ModelSerializer):
+    """
+    Serializer for displaying basic information about a Know Me user.
+
+    This serializer is used when we only need to display basic user
+    information, such as alongside an accessor.
+    """
+
+    class Meta:
+        fields = ('image', 'name')
+        model = models.KMUser
+
+
 class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for multiple ``KMUser`` instances.
@@ -113,6 +126,7 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
     """
     accept_url = serializers.HyperlinkedIdentityField(
         view_name='know-me:accessor-accept')
+    km_user = KMUserInfoSerializer(read_only=True)
     permissions = DRYPermissionsField(additional_actions=['accept'])
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:accessor-detail')
@@ -128,7 +142,7 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
             'email',
             'is_accepted',
             'is_admin',
-            'km_user_id',
+            'km_user',
             'permissions',
             'user_with_access')
         model = models.KMUserAccessor
