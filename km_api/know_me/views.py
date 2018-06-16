@@ -10,6 +10,7 @@ from rest_framework import generics, pagination, status
 from rest_framework.response import Response
 
 from know_me import models, serializers
+from permission_utils.view_mixins import DocumentActionMixin
 
 
 class AccessorAcceptView(generics.GenericAPIView):
@@ -74,7 +75,9 @@ class AcceptedAccessorListView(generics.ListAPIView):
         return self.request.user.km_user_accessors.filter(is_accepted=True)
 
 
-class AccessorDetailView(generics.RetrieveUpdateDestroyAPIView):
+class AccessorDetailView(
+        DocumentActionMixin,
+        generics.RetrieveUpdateDestroyAPIView):
     """
     get:
     Endpoint for retrieving the details of a specific accessor.

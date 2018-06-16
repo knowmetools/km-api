@@ -4,6 +4,14 @@ Changelog
 
 
 ******
+v1.2.1
+******
+
+Bug Fixes
+  * :issue:`358`: Fix users not being able to delete accessors granting them access to another user's informtion.
+
+
+******
 v1.2.0
 ******
 
