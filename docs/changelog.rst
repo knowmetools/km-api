@@ -8,6 +8,7 @@ v1.2.1
 ******
 
 Bug Fixes
+  * :issue:`357`: Add user account image to Know Me user list response data.
   * :issue:`358`: Fix users not being able to delete accessors granting them access to another user's informtion.
 
 
