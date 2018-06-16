@@ -54,6 +54,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
         view_name='know-me:profile:profile-list')
     url = serializers.HyperlinkedIdentityField(
         view_name='know-me:km-user-detail')
+    user_image = serializers.ImageField(read_only=True, source='user.image')
 
     class Meta:
         extra_kwargs = {
@@ -79,6 +80,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             'permissions',
             'profiles_url',
             'quote',
+            'user_image',
         )
         model = models.KMUser
 

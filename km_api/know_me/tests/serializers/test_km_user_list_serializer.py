@@ -47,11 +47,17 @@ def test_get_is_owned_by_current_user_not_owner(
     assert not serializer.get_is_owned_by_current_user(km_user)
 
 
-def test_serialize(api_rf, image, km_user_factory, serialized_time):
+def test_serialize(
+        api_rf,
+        image,
+        km_user_factory,
+        serialized_time,
+        user_factory):
     """
     Test serializing a km_user.
     """
-    km_user = km_user_factory(image=image)
+    user = user_factory(image=image)
+    km_user = km_user_factory(image=image, user=user)
     api_rf.user = km_user.user
     request = api_rf.get(km_user.get_absolute_url())
 
@@ -77,6 +83,9 @@ def test_serialize(api_rf, image, km_user_factory, serialized_time):
     profiles_request = api_rf.get(km_user.get_profile_list_url())
     profiles_url = profiles_request.build_absolute_uri()
 
+    user_image_request = api_rf.get(km_user.user.image.url)
+    user_image_url = user_image_request.build_absolute_uri()
+
     expected = {
         'id': km_user.id,
         'url': request.build_absolute_uri(),
@@ -88,12 +97,13 @@ def test_serialize(api_rf, image, km_user_factory, serialized_time):
         'media_resource_categories_url': categories_url,
         'media_resources_url': media_resources_url,
         'name': km_user.user.get_short_name(),
-        'profiles_url': profiles_url,
-        'quote': km_user.quote,
         'permissions': {
             'read': km_user.has_object_read_permission(request),
             'write': km_user.has_object_write_permission(request),
-        }
+        },
+        'profiles_url': profiles_url,
+        'quote': km_user.quote,
+        'user_image': user_image_url,
     }
 
     assert serializer.data == expected
