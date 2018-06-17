@@ -67,3 +67,4 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
         )
         model = get_user_model()
+        read_only_fields = ('is_staff',)

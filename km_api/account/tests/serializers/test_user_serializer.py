@@ -40,3 +40,24 @@ def test_update(user_factory):
     user.refresh_from_db()
 
     assert user.first_name == data['first_name']
+
+
+def test_update_is_staff(user_factory):
+    """
+    Providing the ``is_staff`` attribute should not make any changes.
+
+    Regression test for issue where users could upgrade themselves to
+    staff users.
+    """
+    user = user_factory()
+    data = {
+        'is_staff': True,
+    }
+
+    serializer = serializers.UserSerializer(user, data=data, partial=True)
+    assert serializer.is_valid()
+
+    serializer.save()
+    user.refresh_from_db()
+
+    assert not user.is_staff

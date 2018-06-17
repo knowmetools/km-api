@@ -4,6 +4,13 @@ Changelog
 
 
 ******
+v1.2.2
+******
+
+Fix issue where users could upgrade their own accounts to have staff permissions.
+
+
+******
 v1.2.1
 ******
 
