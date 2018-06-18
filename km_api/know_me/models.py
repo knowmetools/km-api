@@ -4,11 +4,11 @@
 import logging
 
 from django.conf import settings
-from django.core import mail
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
+
+import email_utils
 
 from rest_email_auth.models import EmailAddress
 
@@ -459,17 +459,18 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         context = {
             'name': self.km_user.name,
         }
-        message = render_to_string(
-            context=context,
-            template_name='know_me/emails/invite.txt',
-        )
 
-        mail.send_mail(
-            fail_silently=False,
-            from_email=None,
-            message=message,
+        email_utils.send_email(
+            context=context,
+            from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[self.email],
             subject=_('You Have Been Invited to Follow Someone on Know Me'),
+            template_name='know_me/emails/invite',
+        )
+
+        logger.info(
+            'Sent follow invitation to %s',
+            self.email,
         )
 
 
