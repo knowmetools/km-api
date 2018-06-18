@@ -1,3 +1,5 @@
+from unittest import mock
+
 from django.core.exceptions import ValidationError
 
 from rest_framework.reverse import reverse
@@ -266,7 +268,12 @@ def test_share_duplicate_email(
         km_user.share(email.email)
 
 
-def test_share_existing_user(email_factory, km_user_factory, user_factory):
+@mock.patch('know_me.models.KMUserAccessor.send_invite')
+def test_share_existing_user(
+        mock_send_invite,
+        email_factory,
+        km_user_factory,
+        user_factory):
     """
     If the provided email address belongs to an existing user, an
     accessor should be created for that user.
@@ -283,9 +290,12 @@ def test_share_existing_user(email_factory, km_user_factory, user_factory):
 
     assert accessor.email == user.primary_email.email
     assert accessor.is_admin
+    assert mock_send_invite.call_count == 1
 
 
+@mock.patch('know_me.models.KMUserAccessor.send_invite')
 def test_share_existing_user_unverified_email(
+        mock_send_invite,
         email_factory,
         km_user_factory,
         user_factory):
@@ -304,6 +314,7 @@ def test_share_existing_user_unverified_email(
 
     assert accessor.email == email.email
     assert accessor.user_with_access is None
+    assert mock_send_invite.call_count == 1
 
 
 def test_share_multiple_emails(
@@ -327,7 +338,8 @@ def test_share_multiple_emails(
         km_user.share(e2.email)
 
 
-def test_share_nonexistent_user(km_user_factory):
+@mock.patch('know_me.models.KMUserAccessor.send_invite')
+def test_share_nonexistent_user(mock_send_invite, km_user_factory):
     """
     If there is no user with the provided email address, The created
     accessor should only be linked to an email address.
@@ -341,6 +353,7 @@ def test_share_nonexistent_user(km_user_factory):
 
     assert accessor.email == email
     assert accessor.user_with_access is None
+    assert mock_send_invite.call_count == 1
 
 
 def test_share_self(km_user_factory):

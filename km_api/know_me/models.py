@@ -4,8 +4,10 @@
 import logging
 
 from django.conf import settings
+from django.core import mail
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
 from rest_email_auth.models import EmailAddress
@@ -297,6 +299,7 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             is_admin=is_admin,
             km_user=self,
             user_with_access=user)
+        accessor.send_invite()
 
         logger.info(
             'Shared Know Me user %s (ID %d) with %s',
@@ -448,6 +451,26 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
             to the instance.
         """
         return request.user == self.km_user.user
+
+    def send_invite(self):
+        """
+        Send a notification email about the invite.
+        """
+        context = {
+            'name': self.km_user.name,
+        }
+        message = render_to_string(
+            context=context,
+            template_name='know_me/emails/invite.txt',
+        )
+
+        mail.send_mail(
+            fail_silently=False,
+            from_email=None,
+            message=message,
+            recipient_list=[self.email],
+            subject=_('You Have Been Invited to Follow Someone on Know Me'),
+        )
 
 
 class LegacyUser(models.Model):

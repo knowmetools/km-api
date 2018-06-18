@@ -1,0 +1,15 @@
+{% load i18n %}{% blocktrans %}You have been invited to learn more about {{ name }} with the Know Me iOS app. Please use this email address to log into Know Me and view your invitation.
+
+
+Don't have Know Me? No Problem. You can download the app for free from the app store:
+
+https://itunes.apple.com/us/app/know-me-profile-communication/id1051805757?mt=8
+
+
+Thanks,
+The Know Me Team
+
+
+
+Replies to this email address are not monitored. If you would like to contact us, please send an email to team@knowmetools.com.
+{% endblocktrans %}
