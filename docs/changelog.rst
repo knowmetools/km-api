@@ -4,6 +4,14 @@ Changelog
 
 
 ******
+v1.3.0
+******
+
+Features
+  * :issue:`236`: Add email notifications when a user is invited to view another user's profiles.
+
+
+******
 v1.2.2
 ******
 

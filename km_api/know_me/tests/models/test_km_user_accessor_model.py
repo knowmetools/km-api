@@ -1,3 +1,6 @@
+from django.conf import settings
+from django.template.loader import render_to_string
+
 from rest_framework.reverse import reverse
 
 from know_me import models
@@ -212,6 +215,32 @@ def test_has_object_write_permission_owner(api_rf, km_user_accessor_factory):
     request = api_rf.get(accessor.get_absolute_url())
 
     assert accessor.has_object_write_permission(request)
+
+
+def test_send_invite(km_user_accessor_factory, mailoutbox):
+    """
+    Sending the invitation should send an email to the person granted
+    access through the accessor.
+    """
+    accessor = km_user_accessor_factory()
+    accessor.send_invite()
+
+    context = {
+        'name': accessor.km_user.name,
+    }
+    expected_content = render_to_string(
+        context=context,
+        template_name='know_me/emails/invite.txt',
+    )
+
+    assert len(mailoutbox) == 1
+
+    msg = mailoutbox[0]
+
+    assert msg.body == expected_content
+    assert msg.from_email == settings.DEFAULT_FROM_EMAIL
+    assert msg.subject == 'You Have Been Invited to Follow Someone on Know Me'
+    assert msg.to == [accessor.email]
 
 
 def test_string_conversion(km_user_accessor_factory):

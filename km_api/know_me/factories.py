@@ -18,6 +18,7 @@ class KMUserAccessorFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``KMUserAccessor`` instances.
     """
+    email = factory.Sequence(lambda n: 'invite{n}@example.com'.format(n=n))
     km_user = factory.SubFactory('know_me.factories.KMUserFactory')
 
     class Meta(object):
