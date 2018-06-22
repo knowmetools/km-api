@@ -3,6 +3,14 @@ Changelog
 #########
 
 
+**************
+In Development
+**************
+
+Features
+  * :issue:`364`: Add admin view for listing users.
+
+
 ******
 v1.3.0
 ******

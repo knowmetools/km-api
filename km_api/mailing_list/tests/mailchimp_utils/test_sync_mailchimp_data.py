@@ -1,7 +1,5 @@
 from unittest import mock
 
-from rest_email_auth.models import EmailAddress
-
 from mailing_list import mailchimp_utils, models
 
 
@@ -24,7 +22,7 @@ def test_create_user(mock_mc_client, user_factory):
 @mock.patch(
     'mailing_list.mailchimp_utils._member_create',
     autospec=True,
-    side_effect=EmailAddress.DoesNotExist)
+    return_value=None)
 def test_create_user_missing_email(mock_create, mock_mc_client, user_factory):
     """
     If the user has no primary email address, the update should abort.

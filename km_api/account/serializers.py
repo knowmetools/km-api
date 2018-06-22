@@ -40,6 +40,29 @@ class UserInfoSerializer(serializers.ModelSerializer):
         model = get_user_model()
 
 
+class UserListSerializer(serializers.ModelSerializer):
+    """
+    Serializer for listing users.
+    """
+    primary_email = serializers.EmailField(
+        read_only=True,
+        source='primary_email.email',
+    )
+
+    class Meta:
+        fields = (
+            'id',
+            'created_at',
+            'updated_at',
+            'first_name',
+            'is_active',
+            'is_staff',
+            'last_name',
+            'primary_email',
+        )
+        model = get_user_model()
+
+
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for ``User`` instances.

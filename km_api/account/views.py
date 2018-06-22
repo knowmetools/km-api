@@ -1,10 +1,12 @@
 """Views for the ``account`` module.
 """
 
-from rest_framework import generics
+from django.contrib.auth import get_user_model
+
+from rest_framework import generics, pagination
 from rest_framework.permissions import IsAuthenticated
 
-from account import serializers
+from account import permissions, serializers
 
 
 class UserDetailView(generics.RetrieveUpdateAPIView):
@@ -29,3 +31,14 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
             The user making the request.
         """
         return self.request.user
+
+
+class UserListView(generics.ListAPIView):
+    """
+    get:
+    List all users.
+    """
+    pagination_class = pagination.PageNumberPagination
+    permission_classes = (permissions.IsStaff,)
+    queryset = get_user_model().objects.all()
+    serializer_class = serializers.UserListSerializer
