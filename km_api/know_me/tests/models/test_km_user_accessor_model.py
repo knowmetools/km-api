@@ -1,5 +1,6 @@
+from unittest import mock
+
 from django.conf import settings
-from django.template.loader import render_to_string
 
 from rest_framework.reverse import reverse
 
@@ -217,7 +218,8 @@ def test_has_object_write_permission_owner(api_rf, km_user_accessor_factory):
     assert accessor.has_object_write_permission(request)
 
 
-def test_send_invite(km_user_accessor_factory, mailoutbox):
+@mock.patch('know_me.models.email_utils.send_email')
+def test_send_invite(mock_send_email, km_user_accessor_factory):
     """
     Sending the invitation should send an email to the person granted
     access through the accessor.
@@ -228,19 +230,15 @@ def test_send_invite(km_user_accessor_factory, mailoutbox):
     context = {
         'name': accessor.km_user.name,
     }
-    expected_content = render_to_string(
-        context=context,
-        template_name='know_me/emails/invite.txt',
-    )
 
-    assert len(mailoutbox) == 1
-
-    msg = mailoutbox[0]
-
-    assert msg.body == expected_content
-    assert msg.from_email == settings.DEFAULT_FROM_EMAIL
-    assert msg.subject == 'You Have Been Invited to Follow Someone on Know Me'
-    assert msg.to == [accessor.email]
+    assert mock_send_email.call_count == 1
+    assert mock_send_email.call_args[1] == {
+        'context': context,
+        'from_email': settings.DEFAULT_FROM_EMAIL,
+        'recipient_list': [accessor.email],
+        'subject': 'You Have Been Invited to Follow Someone on Know Me',
+        'template_name': 'know_me/emails/invite',
+    }
 
 
 def test_string_conversion(km_user_accessor_factory):

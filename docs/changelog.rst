@@ -4,6 +4,18 @@ Changelog
 
 
 ******
+v1.4.0
+******
+
+Features
+  * :issue:`349`: Customize email templates for account related actions.
+  * :issue:`364`: Add admin view for listing users.
+
+Bug Fixes
+  * :issue:`368`: Fix incorrect app store link in invitation notification email.
+
+
+******
 v1.3.0
 ******
 

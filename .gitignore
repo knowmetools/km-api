@@ -123,3 +123,6 @@ VAULT_PASSWORD_FILE
 
 # Pycharm Files
 .idea/
+
+# Don't ignore built emails
+!km_api/email_templates/dist

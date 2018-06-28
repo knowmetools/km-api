@@ -5,8 +5,9 @@ Pygments == 2.2.0
 boto3 == 1.7.37
 coreapi == 2.3.3
 django-cors-headers == 2.2.0
+django-email-utils == 0.1.1
 django-filter == 1.1.0
-django-rest-email-auth == 1.1.0
+django-rest-email-auth == 1.2.0
 django-ses == 0.8.5
 django-solo == 1.1.3
 django-storages == 1.6.6

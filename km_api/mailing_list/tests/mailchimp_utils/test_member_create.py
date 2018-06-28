@@ -75,3 +75,23 @@ def test_create_member_exists(mock_mc_client, user_factory):
     assert mailchimp_user.subscriber_hash == \
         mock_mc_client.lists.members.update.return_value['id']
     assert mailchimp_user.user == user
+
+
+@mock.patch(
+    'mailing_list.mailchimp_utils.get_member_info',
+    return_value=None,
+)
+def test_create_member_no_info(mock_user_data, mock_mc_client, user_factory):
+    """
+    If no information can be generated for the user, they should not be
+    created.
+    """
+    user = user_factory()
+
+    with mock.patch(
+        'mailing_list.mailchimp_utils._get_client',
+        return_value=mock_mc_client
+    ):
+        mailchimp_utils._member_create('list', user)
+
+    assert mock_mc_client.lists.members.create.call_count == 0

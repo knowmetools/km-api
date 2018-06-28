@@ -37,6 +37,30 @@ def test_update_user(mailchimp_user_factory, mock_mc_client):
         mock_mc_client.lists.members.update.return_value['id']
 
 
+@mock.patch(
+    'mailing_list.mailchimp_utils.get_member_info',
+    return_value=None,
+)
+def test_update_user_no_info(
+        mock_get_info,
+        mailchimp_user_factory,
+        mock_mc_client):
+    """
+    If no information could be generated for the user, the update should
+    be aborted.
+    """
+    mailchimp_user = mailchimp_user_factory()
+    user = mailchimp_user.user
+
+    with mock.patch(
+        'mailing_list.mailchimp_utils._get_client',
+        return_value=mock_mc_client
+    ):
+        mailchimp_utils._member_update('list', user, mailchimp_user)
+
+    assert mock_mc_client.lists.members.update.call_count == 0
+
+
 def test_update_user_nonexistent(mailchimp_user_factory, mock_mc_client):
     """
     If we have a record of a mailing list member but that member doesn't

@@ -7,6 +7,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from rest_email_auth.models import EmailAddress
+
 from account import managers
 
 
@@ -76,6 +78,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     objects = managers.UserManager()
 
     class Meta:
+        ordering = ('created_at',)
         verbose_name = _('user')
         verbose_name_plural = _('users')
 
@@ -106,4 +109,7 @@ class User(PermissionsMixin, AbstractBaseUser):
         """
         The user's primary email address.
         """
-        return self.email_addresses.get(is_primary=True)
+        try:
+            return self.email_addresses.get(is_primary=True)
+        except EmailAddress.DoesNotExist:
+            return None

@@ -13,5 +13,11 @@ urlpatterns = [
     url(
         r'^profile/$',
         views.UserDetailView.as_view(),
-        name='profile'),
+        name='profile',
+    ),
+    url(
+        r'^users/$',
+        views.UserListView.as_view(),
+        name='user-list',
+    ),
 ]

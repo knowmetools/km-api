@@ -7,8 +7,6 @@ from django.conf import settings
 
 import mailchimp3
 
-from rest_email_auth.models import EmailAddress
-
 from mailing_list import models
 
 
@@ -27,10 +25,20 @@ def get_member_info(user):
             The user to generate info for.
 
     Returns:
-        dict:
-            A dictionary containing the user's information in a format
-            readable by MailChimp.
+        A dictionary containing the user's information in a format
+        readable by MailChimp. If the user does not have a primary email
+        address, None is returned instead.
     """
+    email = user.primary_email
+
+    if email is None:
+        logger.warning(
+            "Can't create mailchimp user for user %s because they don't have "
+            "a primary email address.",
+            user,
+        )
+        return None
+
     return {
         'email_address': user.primary_email.email,
         'merge_fields': {
@@ -62,13 +70,7 @@ def sync_mailchimp_data(list_id, user):
 
         _member_update(list_id, user, mailchimp_user)
     else:
-        try:
-            _member_create(list_id, user)
-        except EmailAddress.DoesNotExist:
-            logger.warning(
-                ("Can't create mailchimp user for user %s because they don't "
-                 "have a primary email address."),
-                user)
+        _member_create(list_id, user)
 
 
 def _get_client():
@@ -98,6 +100,10 @@ def _member_create(list_id, user):
     client = _get_client()
 
     data = get_member_info(user)
+
+    if data is None:
+        return
+
     data.update({'status': 'subscribed'})
 
     try:
@@ -145,6 +151,9 @@ def _member_update(list_id, user, mailchimp_user):
     client = _get_client()
 
     data = get_member_info(user)
+
+    if data is None:
+        return
 
     try:
         response = client.lists.members.update(

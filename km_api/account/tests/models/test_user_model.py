@@ -69,3 +69,13 @@ def test_primary_email(email_factory, user_factory):
     email_factory(user=user)
 
     assert user.primary_email == primary
+
+
+def test_primary_email_no_primary(user_factory):
+    """
+    If the user has no primary email address, None should be returned.
+    """
+    user = user_factory()
+    user.email_addresses.update(is_primary=False)
+
+    assert user.primary_email is None
