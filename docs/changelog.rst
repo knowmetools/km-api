@@ -3,9 +3,9 @@ Changelog
 #########
 
 
-**************
-In Development
-**************
+******
+v1.4.0
+******
 
 Features
   * :issue:`349`: Customize email templates for account related actions.
