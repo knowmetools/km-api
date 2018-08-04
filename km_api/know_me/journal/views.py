@@ -10,9 +10,12 @@ from know_me.filters import KMUserAccessFilterBackend
 from know_me.journal import models, permissions, serializers
 from know_me.models import KMUser
 from know_me.permissions import HasKMUserAccess
+from permission_utils.view_mixins import DocumentActionMixin
 
 
-class EntryCommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+class EntryCommentDetailView(
+        DocumentActionMixin,
+        generics.RetrieveUpdateDestroyAPIView):
     """
     delete:
     Delete a specific comment on a journal entry.
