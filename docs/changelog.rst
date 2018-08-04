@@ -4,6 +4,14 @@ Changelog
 
 
 ******
+v1.4.1
+******
+
+Bug Fixes
+  * :issue:`371`: Restore journal owner's ability to delete user comments.
+
+
+******
 v1.4.0
 ******
 
