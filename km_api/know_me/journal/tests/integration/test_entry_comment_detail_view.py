@@ -22,6 +22,31 @@ def test_delete_comment(api_client, entry_comment_factory):
 
 
 @pytest.mark.integration
+def test_delete_comment_as_journal_owner(
+        api_client,
+        entry_factory,
+        entry_comment_factory,
+        km_user_factory):
+    """
+    The journal owner should be able to delete journal comments left by
+    other users.
+
+    Regression test for #371
+    """
+    km_user = km_user_factory()
+    api_client.force_authenticate(user=km_user.user)
+
+    entry = entry_factory(km_user=km_user)
+    comment = entry_comment_factory(entry=entry)
+
+    url = comment.get_absolute_url()
+    response = api_client.delete(url)
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert not models.EntryComment.objects.exists()
+
+
+@pytest.mark.integration
 def test_get_comment(api_client, api_rf, entry_comment_factory):
     """
     Sending a GET request to the view should return the information of
