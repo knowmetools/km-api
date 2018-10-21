@@ -9,6 +9,14 @@ from know_me import factories
 
 
 @pytest.fixture
+def apple_subscription_factory(db):
+    """
+    Fixture to get the factory used to create Apple subscription data.
+    """
+    return factories.SubscriptionAppleDataFactory
+
+
+@pytest.fixture
 def config_factory(db):
     """
     Fixture to get the factory used to create ``Config`` instances.
@@ -57,3 +65,11 @@ def legacy_user_factory(db):
     Fixture to get the factory used to create legacy users.
     """
     return factories.LegacyUserFactory
+
+
+@pytest.fixture
+def subscription_factory(db):
+    """
+    Fixture to get the factory used to create subscriptions.
+    """
+    return factories.SubscriptionFactory

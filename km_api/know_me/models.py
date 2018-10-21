@@ -542,3 +542,93 @@ class LegacyUser(models.Model):
             The absolute URL of the instance's detail view.
         """
         return reverse('know-me:legacy-user-detail', kwargs={'pk': self.pk})
+
+
+class Subscription(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    A subscription to Know Me.
+    """
+    is_active = models.BooleanField(
+        help_text=_('A boolean indicating if the subscription is active.'),
+        verbose_name=_('is active'),
+    )
+    time_created = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time that the subscription instance was created.'),
+        verbose_name=_('creation time'),
+    )
+    time_updated = models.DateTimeField(
+        auto_now=True,
+        help_text=_("The time of the subscription's last update."),
+        verbose_name=_('last update time'),
+    )
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        help_text=_('The user who has a Know Me subscription'),
+        on_delete=models.CASCADE,
+        related_name='know_me_subscription',
+        verbose_name=_('user'),
+    )
+
+    class Meta:
+        ordering = ('time_created',)
+        verbose_name = _('Know Me subscription')
+        verbose_name_plural = _('Know Me subscriptions')
+
+    def __str__(self):
+        """
+        Get a user readable string representation of the instance.
+
+        Returns:
+            A string containing the name of the user who owns the
+            subscription.
+        """
+        return 'Know Me subscription for {user}'.format(
+            user=self.user.get_full_name(),
+        )
+
+
+class SubscriptionAppleData(models.Model):
+    """
+    Data related to a subscription through Apple.
+    """
+    receipt_data = models.TextField(
+        help_text=_('The receipt data that is base 64 encoded.'),
+        verbose_name=_('receipt data'),
+    )
+    subscription = models.OneToOneField(
+        'know_me.Subscription',
+        help_text=_('The Know Me subscription the data belongs to.'),
+        on_delete=models.CASCADE,
+        related_name='apple_data',
+        verbose_name=_('subscription'),
+    )
+    time_created = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_(
+            'The time that the Apple subscription was initially recorded.',
+        ),
+        verbose_name=_('creation time'),
+    )
+    time_updated = models.DateTimeField(
+        auto_now=True,
+        help_text=_("The time of the subscription's last update."),
+        verbose_name=_('last update time'),
+    )
+
+    class Meta:
+        ordering = ('time_created',)
+        verbose_name = _('Apple subscription')
+        verbose_name_plural = _('Apple subscriptions')
+
+    def __str__(self):
+        """
+        Get a user readable string describing the instance.
+
+        Returns:
+            A string containing information about the parent
+            subscription.
+        """
+        return 'Apple subscription data for the {subscription}'.format(
+            subscription=self.subscription,
+        )

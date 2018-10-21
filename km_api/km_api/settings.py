@@ -179,6 +179,11 @@ CORS_ORIGIN_ALLOW_ALL = True
 MAILCHIMP_ENABLED = False
 
 
+# Apple Settings
+
+APPLE_RECEIPT_VALIDATION_ENDPOINT = 'https://sandbox.itunes.apple.com/verifyReceipt'    # noqa
+
+
 # Rest Email Auth
 
 REST_EMAIL_AUTH = {

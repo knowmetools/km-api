@@ -45,3 +45,25 @@ class LegacyUserFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = 'know_me.LegacyUser'
+
+
+class SubscriptionAppleDataFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``SubscriptionAppleData`` instances.
+    """
+    receipt_data = 'bogus receipt data'
+    subscription = factory.SubFactory('know_me.factories.SubscriptionFactory')
+
+    class Meta:
+        model = 'know_me.SubscriptionAppleData'
+
+
+class SubscriptionFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``Subscription`` instances.
+    """
+    is_active = True
+    user = factory.SubFactory('factories.UserFactory')
+
+    class Meta:
+        model = 'know_me.Subscription'
