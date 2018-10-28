@@ -6,6 +6,8 @@ cache: pip
 
 env:
   global:
+    - DJANGO_IN_MEMORY_FILES=True
+    - DJANGO_SECRET_KEY=test
     # Don't run tests in parallel. This fixes an issue with code coverage.
     - PYTEST_ADDOPTS="-n0"
 

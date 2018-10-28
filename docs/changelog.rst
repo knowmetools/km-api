@@ -2,6 +2,13 @@
 Changelog
 #########
 
+**************
+In Development
+**************
+
+Breaking Changes
+  * Completely changed the way that settings are provided. Rather than being specified in a separate python file that is then imported, behavior is now set through environment variables.
+
 
 ******
 v1.4.1

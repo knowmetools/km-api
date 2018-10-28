@@ -10,48 +10,68 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+AWS_APPLICATION_NAME = os.environ.get(
+    'DJANGO_AWS_APPLICATION_NAME',
+    'Know Me API',
+)
+AWS_DEFAULT_REGION = os.environ.get('DJANGO_AWS_REGION', 'us-east-1')
+
+
+SENTRY_DSN = os.environ.get('DJANGO_SENTRY_DSN')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 
-# This should be overridden in production.
-SECRET_KEY = 'secret'
-
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
+
+# This should be overridden in production.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', None)
+if not SECRET_KEY and DEBUG:
+    SECRET_KEY = 'secret'
+
+allowed_host_string = os.environ.get('DJANGO_ALLOWED_HOSTS', None)
 ALLOWED_HOSTS = []
+
+if allowed_host_string:
+    ALLOWED_HOSTS = allowed_host_string.split(',')
 
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+]
 
-    # Third Party Apps
+THIRD_PARTY_APPS = [
     'corsheaders',
     'django_filters',
     'dry_rest_permissions',
-    'raven.contrib.django.raven_compat',
     'rest_email_auth',
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
     'watson',
+]
 
-    # Custom Apps
+if SENTRY_DSN:
+    THIRD_PARTY_APPS.append('raven.contrib.django.raven_compat')
+
+CUSTOM_APPS = [
     'account',
     'custom_storages',
     'km_auth',
@@ -60,6 +80,9 @@ INSTALLED_APPS = [
     'know_me.profile',
     'mailing_list',
 ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -109,12 +132,30 @@ DEFAULT_FROM_EMAIL = 'Know Me <no-reply@knowmetools.com>'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+DB_HOST = os.environ.get('DJANGO_DB_HOST', 'localhost')
+DB_NAME = os.environ.get('DJANGO_DB_NAME')
+DB_PASSWORD = os.environ.get('DJANGO_DB_PASSWORD')
+DB_PORT = os.environ.get('DJANGO_DB_PORT', '5432')
+DB_USER = os.environ.get('DJANGO_DB_USER')
+
+if all((DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER)):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'HOST': DB_HOST,
+            'NAME': DB_NAME,
+            'PASSWORD': DB_PASSWORD,
+            'PORT': DB_PORT,
+            'USER': DB_USER,
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation
@@ -139,6 +180,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Email Configuration
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if os.environ.get('DJANGO_SES_ENABLED', 'False').lower() == 'true':
+    AWS_SES_REGION_NAME = os.environ.get('DJANGO_SES_AWS_REGION', AWS_DEFAULT_REGION)           # noqa
+    EMAIL_BACKEND = 'django_ses.SESBackend'
 
 
 # Internationalization
@@ -157,15 +201,40 @@ USE_TZ = True
 
 # Media Files (User Uploaded)
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.environ.get('DJANGO_MEDIA_ROOT')
 MEDIA_URL = '/media/'
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.environ.get('DJANGO_STATIC_ROOT')
 STATIC_URL = '/static/'
+
+
+# File Storage
+
+if os.environ.get('DJANGO_S3_STORAGE', 'False').lower() == 'true':
+    DEFAULT_FILE_STORAGE = 'custom_storages.backends.MediaStorage'
+    STATICFILES_STORAGE = 'custom_storages.backends.StaticStorage'
+
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=31536000',
+    }
+    AWS_S3_REGION_NAME = os.environ.get('DJANGO_S3_AWS_REGION', AWS_DEFAULT_REGION)         # noqa
+    AWS_STORAGE_BUCKET_NAME = os.environ.get('DJANGO_S3_BUCKET')
+
+
+if os.environ.get('DJANGO_IN_MEMORY_FILES', 'False').lower() == 'true':
+    DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'
+
+
+# Security Settings (HTTPS Related)
+
+if os.environ.get('DJANGO_HTTPS', 'False').lower() == 'true':
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
 
 
 # CORS Configurations
@@ -176,19 +245,44 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Mailchimp Configuration
 
-MAILCHIMP_ENABLED = False
+MAILCHIMP_ENABLED = os.environ.get(
+    'DJANGO_MAILCHIMP_ENABLED',
+    'False',
+).lower() == 'true'
+
+if MAILCHIMP_ENABLED:
+    MAILCHIMP_API_KEY = os.environ.get('DJANGO_MAILCHIMP_API_KEY')
+    MAILCHIMP_LIST_ID = os.environ.get('DJANGO_MAILCHIMP_LIST_ID')
 
 
 # Apple Settings
 
-APPLE_RECEIPT_VALIDATION_ENDPOINT = 'https://sandbox.itunes.apple.com/verifyReceipt'    # noqa
+APPLE_RECEIPT_VALIDATION_ENDPOINT = os.environ.get(
+    'DJANGO_APPLE_RECEIPT_VALIDATION_ENDPOINT',
+    'https://sandbox.itunes.apple.com/verifyReceipt',
+)
+
+
+# Raven (Sentry Logging)
+
+RAVEN_CONFIG = {
+    'dsn': SENTRY_DSN,
+    'environment': os.environ.get('DJANGO_SENTRY_ENVIRONMENT', 'default'),
+    'release': '1.4.1',
+}
 
 
 # Rest Email Auth
 
 REST_EMAIL_AUTH = {
-    'EMAIL_VERIFICATION_URL': 'https://example.com/verify/{key}',
-    'PASSWORD_RESET_URL': 'https://example.com/reset/{key}',
+    'EMAIL_VERIFICATION_URL': os.environ.get(
+        'DJANGO_EMAIL_VERIFICATION_URL',
+        'https://example.com/verify/{key}',
+    ),
+    'PASSWORD_RESET_URL': os.environ.get(
+        'DJANGO_PASSWORD_RESET_URL',
+        'https://example.com/reset/{key}',
+    ),
     'REGISTRATION_SERIALIZER': 'account.serializers.RegistrationSerializer',
 }
 
@@ -203,3 +297,80 @@ REST_FRAMEWORK = {
     ),
     'PAGE_SIZE': 10,
 }
+
+
+# Logging Configuration
+
+LOG_HANDLER_NAMES = ['console']
+LOG_HANDLERS = {
+    'console': {
+        'class': 'logging.StreamHandler',
+    },
+    'null': {
+        'class': 'logging.NullHandler',
+        'level': 'DEBUG',
+    },
+}
+
+if 'raven.contrib.django.raven_compat' in INSTALLED_APPS:
+    LOG_HANDLER_NAMES.append('sentry')
+    LOG_HANDLERS['sentry'] = {
+        'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+        'formatter': 'standard',
+        'level': 'WARNING',
+    }
+
+if os.environ.get('DJANGO_CLOUDWATCH_LOGGING', 'False').lower() == 'true':
+    LOG_HANDLER_NAMES.append('watchtower')
+    LOG_HANDLERS['watchtower'] = {
+        'class': 'watchtower.django.DjangoCloudWatchLogHandler',
+        'level': 'INFO',
+        'log_group': AWS_APPLICATION_NAME,
+    }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'datefmt': '%d/%b/%Y %H:%M:%S',
+            'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',  # noqa
+        },
+    },
+    'handlers': LOG_HANDLERS,
+    'loggers': {
+        # Root Handler
+        '': {
+            'handlers': LOG_HANDLER_NAMES,
+            'level': 'WARNING',
+        },
+
+        # Customized Handlers
+        'django.request': {
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.security.DisallowedHost': {
+            'handlers': ['null'],
+            'propagate': False,
+        },
+    }
+}
+
+LOGGING_CUSTOM_APPS = (
+    'account',
+    'custom_storages',
+    'km_auth',
+    'know_me',
+    'mailing_list',
+    'permission_utils',
+    'rest_order',
+    'templated_email',
+)
+
+for app in LOGGING_CUSTOM_APPS:
+    LOGGING['loggers'][app] = {
+        'handlers': LOG_HANDLER_NAMES,
+        'level': 'INFO',
+        'propagate': False,
+    }

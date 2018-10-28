@@ -46,6 +46,9 @@ Finally, install the project requirements ::
 
     $ pipenv install --dev
 
+The final step is to create a ``.env`` file in the root of your project. This file will be read by any commands executed through ``pipenv``. For convenience, create the file with the contents::
+
+    DJANGO_DEBUG=true
 
 Linting
 =======

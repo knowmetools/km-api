@@ -26,7 +26,9 @@ def test_sync_mailchimp_enabled(mock_sync, settings):
     If the ``MAILCHIMP_ENABLED`` setting is ``True``, user data should
     be synced to MailChimp.
     """
+    settings.MAILCHIMP_API_KEY = 'foo'
     settings.MAILCHIMP_ENABLED = True
+    settings.MAILCHIMP_LIST_ID = 'list'
 
     mailchimp_sync(None)
 
