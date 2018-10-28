@@ -1,0 +1,39 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"boto3" = "*"
+coreapi = "*"
+django-cors-headers = "*"
+django-email-utils = "*"
+django-filter = "*"
+django-rest-email-auth = "*"
+django-ses = "*"
+django-solo = "*"
+django-storages = "*"
+django-watson = "*"
+djangorestframework = "*"
+dry-rest-permissions = "*"
+"mailchimp3" = "*"
+raven = "*"
+watchtower = "*"
+"psycopg2" = "*"
+Django = "*"
+Markdown = "*"
+Pillow = "*"
+Pygments = "*"
+
+[dev-packages]
+codecov = "*"
+coverage = "*"
+dj-inmemorystorage = "*"
+factory_boy = "*"
+flake8 = "*"
+pytest = "*"
+pytest-django = "*"
+pytest-xdist = "*"
+
+[requires]
+python_version = "3.4"
