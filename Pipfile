@@ -41,4 +41,4 @@ sphinx_rtd_theme = "==0.4.0"
 sphinx-autobuild = "*"
 
 [requires]
-python_version = "3.4"
+python_version = "3.6"

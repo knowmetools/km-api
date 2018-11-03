@@ -2,14 +2,10 @@
 """
 
 import io
-
+import pytest
+from PIL import Image
 from django.contrib.auth.models import AnonymousUser
 from django.core.files.base import ContentFile
-
-import PIL
-
-import pytest
-
 from rest_framework.test import APIClient, APIRequestFactory
 
 import factories
@@ -104,7 +100,7 @@ def image():
     Returns:
         A ``ContentFile`` containing a simple image.
     """
-    image = PIL.Image.new('RGB', (200, 200), 'red')
+    image = Image.new('RGB', (200, 200), 'red')
 
     out_stream = io.BytesIO()
     image.save(out_stream, format='png')

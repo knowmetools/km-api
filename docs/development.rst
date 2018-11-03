@@ -16,7 +16,7 @@ Prerequisites
 
 We use git_ for version control and generally follow the development model laid out `here <git-branching-model_>`_. If you are looking for a tool to assist in following this model, we recommend git-flow_, a tool made by the same people that created the development model.
 
-This project runs on Python 3.4. You must have Python 3.4 installed to contribute. If you do not have it installed, you can find it `here <python34_>`_. To manage third-party Python packages, we use pipenv_.
+This project runs on Python 3.6. You must have Python 3.6 installed to contribute. If you do not have it installed, you can find it `here <python36_>`_. To manage third-party Python packages, we use pipenv_.
 
 
 .. _project-setup:
@@ -116,4 +116,4 @@ We use sphinx for building documentation, and the docs are automatically publish
 .. _pep8: https://www.python.org/dev/peps/pep-0008/
 .. _pipenv: https://pipenv.readthedocs.io/en/latest/
 .. _pytest: https://docs.pytest.org/en/latest/
-.. _python34: https://www.python.org/downloads/release/python-343/
+.. _python36: https://www.python.org/downloads/release/python-367/
