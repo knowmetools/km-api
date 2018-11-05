@@ -3,14 +3,63 @@
 
 from django.db.models import Case, Q, PositiveSmallIntegerField, Value, When
 from django.shortcuts import get_object_or_404
-
 from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
-
 from rest_framework import generics, pagination, status
 from rest_framework.response import Response
 
 from know_me import models, serializers
+from know_me.serializers import subscription_serializers
 from permission_utils.view_mixins import DocumentActionMixin
+
+
+class AppleSubscriptionView(generics.RetrieveAPIView):
+    """
+    get:
+    Retrieve the current user's Apple subscription. If the user does not
+    have an Apple subscription, a 404 response is returned.
+
+    put:
+    Set the Apple subscription for the current user by providing the
+    receipt from Apple for the purchase.
+    """
+    permission_classes = (DRYPermissions,)
+    serializer_class = subscription_serializers.AppleSubscriptionSerializer
+
+    def get_object(self):
+        """
+        Get the Apple subscription data instance that belongs to the
+        requesting user.
+
+        Returns:
+            The ``SubscriptionDataApple`` instance that belongs to the
+            requesting user.
+        """
+        return get_object_or_404(
+            models.SubscriptionAppleData,
+            subscription__user=self.request.user,
+        )
+
+    def put(self, request, *args, **kwargs):
+        # If the user has an existing Apple subscription, update it
+        try:
+            instance = models.SubscriptionAppleData.objects.get(
+                subscription__user=self.request.user,
+            )
+        except models.SubscriptionAppleData.DoesNotExist:
+            instance = None
+
+        # Validate the data provided to the serializer before we create
+        # the base subscription (if necessary).
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        base_subscription, _ = models.Subscription.objects.get_or_create(
+            user=self.request.user,
+            defaults={'is_active': True},
+        )
+        serializer.save(subscription=base_subscription)
+
+        return Response(serializer.data)
 
 
 class AccessorAcceptView(generics.GenericAPIView):

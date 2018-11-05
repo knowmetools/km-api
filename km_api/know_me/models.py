@@ -588,7 +588,7 @@ class Subscription(mixins.IsAuthenticatedMixin, models.Model):
         )
 
 
-class SubscriptionAppleData(models.Model):
+class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
     """
     Data related to a subscription through Apple.
     """
@@ -632,3 +632,33 @@ class SubscriptionAppleData(models.Model):
         return 'Apple subscription data for the {subscription}'.format(
             subscription=self.subscription,
         )
+
+    def has_object_read_permission(self, request):
+        """
+        Check if the requesting user has read permissions on the
+        instance.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has read
+            permissions to the instance.
+        """
+        return request.user == self.subscription.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check if the requesting user has write permissions on the
+        instance.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has write
+            permissions to the instance.
+        """
+        return request.user == self.subscription.user

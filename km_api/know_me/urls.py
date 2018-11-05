@@ -2,6 +2,7 @@
 """
 
 from django.conf.urls import include, url
+from django.urls import path
 
 from know_me import views
 
@@ -48,7 +49,11 @@ urlpatterns = [
         r'^legacy-users/(?P<pk>[0-9]+)/$',
         views.LegacyUserDetailView.as_view(),
         name='legacy-user-detail'),
-
+    path(
+        'subscription/apple/',
+        views.AppleSubscriptionView.as_view(),
+        name='apple-subscription-detail',
+    ),
     url(
         r'^users/$',
         views.KMUserListView.as_view(),
