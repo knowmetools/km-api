@@ -16,10 +16,6 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-AWS_APPLICATION_NAME = os.environ.get(
-    'DJANGO_AWS_APPLICATION_NAME',
-    'Know Me API',
-)
 AWS_DEFAULT_REGION = os.environ.get('DJANGO_AWS_REGION', 'us-east-1')
 
 
@@ -307,14 +303,6 @@ if 'raven.contrib.django.raven_compat' in INSTALLED_APPS:
         'level': 'WARNING',
     }
 
-if os.environ.get('DJANGO_CLOUDWATCH_LOGGING', 'False').lower() == 'true':
-    LOG_HANDLER_NAMES.append('watchtower')
-    LOG_HANDLERS['watchtower'] = {
-        'class': 'watchtower.django.DjangoCloudWatchLogHandler',
-        'level': 'INFO',
-        'log_group': AWS_APPLICATION_NAME,
-    }
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -349,7 +337,6 @@ LOGGING_CUSTOM_APPS = (
     'custom_storages',
     'km_auth',
     'know_me',
-    'mailing_list',
     'permission_utils',
     'rest_order',
     'templated_email',

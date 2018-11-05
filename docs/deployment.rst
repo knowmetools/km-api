@@ -35,26 +35,12 @@ The endpoint used to verify subscription receipts from Apple. This can take one 
 * ``https://sandbox.itunes.apple.com/verifyReceipt``
 * ``https://buy.itunes.apple.com/verifyReceipt``
 
-DJANGO_AWS_APPLICATION_NAME
----------------------------
-
-**Default:** ``Know Me API``
-
-The name of the application in AWS. This is used to group logs for CloudWatch.
-
 DJANGO_AWS_REGION
 -----------------
 
 **Default:** ``us-east-1``
 
 The AWS region to use for services such as S3 and SES.
-
-DJANGO_CLOUDWATCH_LOGGING
--------------------------
-
-**Default:** ``False``
-
-Set to ``True`` (case insensitive) to enable logging to AWS CloudWatch.
 
 DJANGO_DB_HOST
 --------------
