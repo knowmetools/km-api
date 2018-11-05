@@ -78,7 +78,6 @@ CUSTOM_APPS = [
     'know_me',
     'know_me.journal',
     'know_me.profile',
-    'mailing_list',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
@@ -241,18 +240,6 @@ if os.environ.get('DJANGO_HTTPS', 'False').lower() == 'true':
 # https://github.com/ottoyiu/django-cors-headers#configuration
 
 CORS_ORIGIN_ALLOW_ALL = True
-
-
-# Mailchimp Configuration
-
-MAILCHIMP_ENABLED = os.environ.get(
-    'DJANGO_MAILCHIMP_ENABLED',
-    'False',
-).lower() == 'true'
-
-if MAILCHIMP_ENABLED:
-    MAILCHIMP_API_KEY = os.environ.get('DJANGO_MAILCHIMP_API_KEY')
-    MAILCHIMP_LIST_ID = os.environ.get('DJANGO_MAILCHIMP_LIST_ID')
 
 
 # Apple Settings

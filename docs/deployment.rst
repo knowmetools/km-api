@@ -119,30 +119,6 @@ DJANGO_IN_MEMORY_FILES
 
 Set to ``True`` (case insensitive) to store static files in memory. This is mainly used for testing.
 
-DJANGO_MAILCHIMP_API_KEY
-------------------------
-
-**Default:** ``''``
-
-An API key for Mailchimp that is used to sync user emails to a mailing list. Only takes effect when ``DJANGO_MAILCHIMP_ENABLED`` is ``True``.
-
-DJANGO_MAILCHIMP_ENABLED
-------------------------
-
-**Default:** ``False``
-
-Set to ``True`` (case insensitive) to enable syncing of user emails with a Mailchimp list. Requires the following settings to be provided:
-
-* ``DJANGO_MAILCHIMP_API_KEY``
-* ``DJANGO_MAILCHIMP_LIST_ID``
-
-DJANGO_MAILCHIMIP_LIST_ID
--------------------------
-
-**Default:** ``''``
-
-The ID of the Mailchimp list to sync user emails to. Only takes effect when ``DJANGO_MAILCHIMP_ENABLED`` is ``True``.
-
 DJANGO_MEDIA_ROOT
 -----------------
 
