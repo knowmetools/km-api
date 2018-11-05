@@ -13,6 +13,7 @@ Miscellaneous
   * Completely changed the way that settings are provided. Rather than being specified in a separate python file that is then imported, behavior is now set through environment variables.
   * :issue:`383`: Remove MailChimp integration.
   * :issue:`384`: Remove CloudWatch integration.
+  * :issue:`386`: Remove deployment configuration. Deployment is now handled by `knowmetools/km-api-deployment <https://github.com/knowmetools/km-api-deployment>`_.
 
 
 ******

@@ -1,9 +1,0 @@
----
-apt_cache_time: 3600
-
-certbot_dependencies:
-  - software-properties-common
-certbot_repo: ppa:certbot/certbot
-
-letsencrypt_domains: ["{{ inventory_hostname }}"]
-letsencrypt_email: webmaster@{{ inventory_hostname }}
