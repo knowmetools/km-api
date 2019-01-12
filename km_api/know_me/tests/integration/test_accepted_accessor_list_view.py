@@ -6,15 +6,13 @@ from rest_framework.reverse import reverse
 from know_me import serializers
 
 
-url = reverse('know-me:accepted-accessor-list')
+url = reverse("know-me:accepted-accessor-list")
 
 
 @pytest.mark.integration
 def test_get_accepted_accessor_list(
-        api_client,
-        api_rf,
-        km_user_accessor_factory,
-        user_factory):
+    api_client, api_rf, km_user_accessor_factory, user_factory
+):
     """
     Sending a GET request to this view should return a list of the
     accessors accepted by the requesting user.
@@ -35,7 +33,7 @@ def test_get_accepted_accessor_list(
 
     serializer = serializers.KMUserAccessorSerializer(
         user.km_user_accessors.filter(is_accepted=True),
-        context={'request': request},
+        context={"request": request},
         many=True,
     )
 

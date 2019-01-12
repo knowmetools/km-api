@@ -5,14 +5,16 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('profile', '0010_mediaresource_link'),
-    ]
+    dependencies = [("profile", "0010_mediaresource_link")]
 
     operations = [
         migrations.AddField(
-            model_name='mediaresource',
-            name='cover_style',
-            field=models.PositiveSmallIntegerField(blank=True, default=0, help_text='An integer that provides a hint for clients as to how to style the resource.'),
-        ),
+            model_name="mediaresource",
+            name="cover_style",
+            field=models.PositiveSmallIntegerField(
+                blank=True,
+                default=0,
+                help_text="An integer that provides a hint for clients as to how to style the resource.",
+            ),
+        )
     ]

@@ -20,8 +20,8 @@ def test_get_own_km_user(api_rf, km_user_factory, user_factory):
     response = km_user_detail_view(request, pk=km_user.pk)
 
     serializer = serializers.KMUserDetailSerializer(
-        km_user,
-        context={'request': request})
+        km_user, context={"request": request}
+    )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.data == serializer.data
@@ -35,10 +35,8 @@ def test_update(api_rf, km_user_factory, user_factory):
     user = user_factory()
     api_rf.user = user
 
-    km_user = km_user_factory(quote='Old Quote.', user=user)
-    data = {
-        'quote': 'New Quote.',
-    }
+    km_user = km_user_factory(quote="Old Quote.", user=user)
+    data = {"quote": "New Quote."}
 
     request = api_rf.patch(km_user.get_absolute_url(), data)
     response = km_user_detail_view(request, pk=km_user.pk)
@@ -47,7 +45,7 @@ def test_update(api_rf, km_user_factory, user_factory):
 
     km_user.refresh_from_db()
     serializer = serializers.KMUserDetailSerializer(
-        km_user,
-        context={'request': request})
+        km_user, context={"request": request}
+    )
 
     assert response.data == serializer.data

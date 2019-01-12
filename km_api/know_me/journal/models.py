@@ -20,9 +20,9 @@ def get_entry_attachment_upload_path(entry, filename):
     Returns:
         The path to upload the attachment to.
     """
-    return 'know-me/users/{id}/journal/attachments/{file}'.format(
-        file=filename,
-        id=entry.km_user.id)
+    return "know-me/users/{id}/journal/attachments/{file}".format(
+        file=filename, id=entry.km_user.id
+    )
 
 
 class Entry(mixins.IsAuthenticatedMixin, models.Model):
@@ -30,34 +30,40 @@ class Entry(mixins.IsAuthenticatedMixin, models.Model):
     An entry in the journal that describes the events of a particular
     time period.
     """
+
     attachment = models.FileField(
         blank=True,
-        help_text=_('The file attached to the journal entry.'),
+        help_text=_("The file attached to the journal entry."),
         upload_to=get_entry_attachment_upload_path,
-        verbose_name=_('attachment'))
+        verbose_name=_("attachment"),
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
-        help_text=_('The time that the entry was created.'),
-        verbose_name=_('created at'))
+        help_text=_("The time that the entry was created."),
+        verbose_name=_("created at"),
+    )
     km_user = models.ForeignKey(
-        'know_me.KMUser',
-        help_text=_('The Know Me user who owns the entry.'),
+        "know_me.KMUser",
+        help_text=_("The Know Me user who owns the entry."),
         on_delete=models.CASCADE,
-        related_name='journal_entries',
-        related_query_name='journal_entry',
-        verbose_name=_('Know Me user'))
+        related_name="journal_entries",
+        related_query_name="journal_entry",
+        verbose_name=_("Know Me user"),
+    )
     text = models.TextField(
-        help_text=_('The text that the entry contains.'),
-        verbose_name=_('text'))
+        help_text=_("The text that the entry contains."),
+        verbose_name=_("text"),
+    )
     updated_at = models.DateTimeField(
         auto_now=True,
-        help_text=_('The time that the entry was last updated.'),
-        verbose_name=_('updated at'))
+        help_text=_("The time that the entry was last updated."),
+        verbose_name=_("updated at"),
+    )
 
     class Meta:
-        ordering = ('-created_at',)
-        verbose_name = _('journal entry')
-        verbose_name_plural = _('journal entries')
+        ordering = ("-created_at",)
+        verbose_name = _("journal entry")
+        verbose_name_plural = _("journal entries")
 
     def __str__(self):
         """
@@ -66,7 +72,7 @@ class Entry(mixins.IsAuthenticatedMixin, models.Model):
         Returns:
             A string containing the time that the entry was published.
         """
-        return 'Entry for {}'.format(self.created_at)
+        return "Entry for {}".format(self.created_at)
 
     def get_absolute_url(self):
         """
@@ -75,7 +81,7 @@ class Entry(mixins.IsAuthenticatedMixin, models.Model):
         Returns:
             The absolute URL of the instance's detail view.
         """
-        return reverse('know-me:journal:entry-detail', kwargs={'pk': self.pk})
+        return reverse("know-me:journal:entry-detail", kwargs={"pk": self.pk})
 
     def get_comments_url(self):
         """
@@ -85,8 +91,8 @@ class Entry(mixins.IsAuthenticatedMixin, models.Model):
             The absolute URL of the instance's comment list view.
         """
         return reverse(
-            'know-me:journal:entry-comment-list',
-            kwargs={'pk': self.pk})
+            "know-me:journal:entry-comment-list", kwargs={"pk": self.pk}
+        )
 
     def has_object_read_permission(self, request):
         """
@@ -121,35 +127,40 @@ class EntryComment(mixins.IsAuthenticatedMixin, models.Model):
     """
     A comment on a Journal Entry.
     """
+
     created_at = models.DateTimeField(
         auto_now_add=True,
-        help_text=_('The time that the comment was created.'),
-        verbose_name=_('created at'))
+        help_text=_("The time that the comment was created."),
+        verbose_name=_("created at"),
+    )
     entry = models.ForeignKey(
-        'journal.Entry',
-        help_text=_('The entry that the comment is attached to.'),
+        "journal.Entry",
+        help_text=_("The entry that the comment is attached to."),
         on_delete=models.CASCADE,
-        related_name='comments',
-        related_query_name='comment',
-        verbose_name=_('entry'))
+        related_name="comments",
+        related_query_name="comment",
+        verbose_name=_("entry"),
+    )
     text = models.TextField(
-        help_text=_('The body of the comment.'),
-        verbose_name=_('text'))
+        help_text=_("The body of the comment."), verbose_name=_("text")
+    )
     updated_at = models.DateTimeField(
         auto_now=True,
-        help_text=_('The time that the comment was last updated.'),
-        verbose_name=_('updated at'))
+        help_text=_("The time that the comment was last updated."),
+        verbose_name=_("updated at"),
+    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        help_text=_('The user who made the comment.'),
+        help_text=_("The user who made the comment."),
         on_delete=models.CASCADE,
-        related_name='journal_comments',
-        related_query_name='journal_comment',
-        verbose_name=_('user'))
+        related_name="journal_comments",
+        related_query_name="journal_comment",
+        verbose_name=_("user"),
+    )
 
     class Meta:
-        verbose_name = _('entry comment')
-        verbose_name_plural = _('entry comments')
+        verbose_name = _("entry comment")
+        verbose_name_plural = _("entry comments")
 
     def get_absolute_url(self):
         """
@@ -159,8 +170,8 @@ class EntryComment(mixins.IsAuthenticatedMixin, models.Model):
             The absolute URL of the instance's detail view.
         """
         return reverse(
-            'know-me:journal:entry-comment-detail',
-            kwargs={'pk': self.pk})
+            "know-me:journal:entry-comment-detail", kwargs={"pk": self.pk}
+        )
 
     def has_object_destroy_permission(self, request):
         """
@@ -180,7 +191,8 @@ class EntryComment(mixins.IsAuthenticatedMixin, models.Model):
         """
         return (
             request.user == self.user
-            or self.entry.has_object_write_permission(request))
+            or self.entry.has_object_write_permission(request)
+        )
 
     def has_object_read_permission(self, request):
         """
@@ -196,7 +208,8 @@ class EntryComment(mixins.IsAuthenticatedMixin, models.Model):
         """
         return (
             request.user == self.user
-            or self.entry.has_object_read_permission(request))
+            or self.entry.has_object_read_permission(request)
+        )
 
     def has_object_write_permission(self, request):
         """

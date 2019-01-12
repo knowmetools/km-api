@@ -45,9 +45,6 @@ class KMUserAccessFilterBackend(filters.BaseFilterBackend):
         # for details.
         km_user_query = models.KMUser.objects.filter(query).distinct()
 
-        km_user = get_object_or_404(
-            km_user_query,
-            pk=view.kwargs.get('pk'),
-        )
+        km_user = get_object_or_404(km_user_query, pk=view.kwargs.get("pk"))
 
         return queryset.filter(km_user=km_user)

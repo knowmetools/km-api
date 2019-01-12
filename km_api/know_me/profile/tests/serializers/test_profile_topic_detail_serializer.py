@@ -13,20 +13,17 @@ def test_serialize(api_rf, profile_item_factory, profile_topic_factory):
     profile_item_factory(topic=topic)
 
     serializer = serializers.ProfileTopicDetailSerializer(
-        topic,
-        context={'request': request})
+        topic, context={"request": request}
+    )
 
     item_serializer = serializers.ProfileItemListSerializer(
-        topic.items.all(),
-        context={'request': request},
-        many=True)
+        topic.items.all(), context={"request": request}, many=True
+    )
     list_serializer = serializers.ProfileTopicListSerializer(
-        topic,
-        context={'request': request})
+        topic, context={"request": request}
+    )
 
-    additional = {
-        'items': item_serializer.data,
-    }
+    additional = {"items": item_serializer.data}
 
     expected = dict(list_serializer.data.items())
     expected.update(additional)
@@ -39,10 +36,7 @@ def test_validate():
     Test validating the attributes required to create a new profile
     topic.
     """
-    data = {
-        'is_detailed': True,
-        'name': 'Test Topic',
-    }
+    data = {"is_detailed": True, "name": "Test Topic"}
     serializer = serializers.ProfileTopicDetailSerializer(data=data)
 
     assert serializer.is_valid()

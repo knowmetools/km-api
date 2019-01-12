@@ -5,13 +5,10 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('profile', '0011_mediaresource_cover_style'),
-    ]
+    dependencies = [("profile", "0011_mediaresource_cover_style")]
 
     operations = [
         migrations.AlterOrderWithRespectTo(
-            name='listentry',
-            order_with_respect_to='profile_item',
-        ),
+            name="listentry", order_with_respect_to="profile_item"
+        )
     ]

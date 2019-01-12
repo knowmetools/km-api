@@ -3,7 +3,7 @@ from unittest import mock
 from account import models, views, serializers
 
 
-@mock.patch('account.views.permissions.IsStaff.has_permission')
+@mock.patch("account.views.permissions.IsStaff.has_permission")
 def test_check_permissions(mock_has_permission):
     """
     The view should require a staff user.

@@ -7,65 +7,57 @@ from django.urls import path
 from know_me import views
 
 
-app_name = 'know-me'
+app_name = "know-me"
 
 
 urlpatterns = [
-    url(r'^', include('know_me.journal.urls')),
-    url(r'^', include('know_me.profile.urls')),
-
+    url(r"^", include("know_me.journal.urls")),
+    url(r"^", include("know_me.profile.urls")),
     url(
-        r'^accessors/accepted/$',
+        r"^accessors/accepted/$",
         views.AcceptedAccessorListView.as_view(),
-        name='accepted-accessor-list',
+        name="accepted-accessor-list",
     ),
-
     url(
-        r'^accessors/pending/$',
+        r"^accessors/pending/$",
         views.PendingAccessorListView.as_view(),
-        name='pending-accessor-list'),
-
-    url(
-        r'^accessors/(?P<pk>[0-9]+)/$',
-        views.AccessorDetailView.as_view(),
-        name='accessor-detail'),
-
-    url(
-        r'^accessors/(?P<pk>[0-9]+)/accept/$',
-        views.AccessorAcceptView.as_view(),
-        name='accessor-accept'),
-
-    url(
-        r'^config/$',
-        views.ConfigDetailView.as_view(),
-        name='config-detail'),
-
-    url(
-        r'^legacy-users/$',
-        views.LegacyUserListView.as_view(),
-        name='legacy-user-list'),
-
-    url(
-        r'^legacy-users/(?P<pk>[0-9]+)/$',
-        views.LegacyUserDetailView.as_view(),
-        name='legacy-user-detail'),
-    path(
-        'subscription/apple/',
-        views.AppleSubscriptionView.as_view(),
-        name='apple-subscription-detail',
+        name="pending-accessor-list",
     ),
     url(
-        r'^users/$',
-        views.KMUserListView.as_view(),
-        name='km-user-list'),
-
+        r"^accessors/(?P<pk>[0-9]+)/$",
+        views.AccessorDetailView.as_view(),
+        name="accessor-detail",
+    ),
     url(
-        r'^users/accessors/$',
+        r"^accessors/(?P<pk>[0-9]+)/accept/$",
+        views.AccessorAcceptView.as_view(),
+        name="accessor-accept",
+    ),
+    url(r"^config/$", views.ConfigDetailView.as_view(), name="config-detail"),
+    url(
+        r"^legacy-users/$",
+        views.LegacyUserListView.as_view(),
+        name="legacy-user-list",
+    ),
+    url(
+        r"^legacy-users/(?P<pk>[0-9]+)/$",
+        views.LegacyUserDetailView.as_view(),
+        name="legacy-user-detail",
+    ),
+    path(
+        "subscription/apple/",
+        views.AppleSubscriptionView.as_view(),
+        name="apple-subscription-detail",
+    ),
+    url(r"^users/$", views.KMUserListView.as_view(), name="km-user-list"),
+    url(
+        r"^users/accessors/$",
         views.AccessorListView.as_view(),
-        name='accessor-list'),
-
+        name="accessor-list",
+    ),
     url(
-        r'^users/(?P<pk>[0-9]+)/$',
+        r"^users/(?P<pk>[0-9]+)/$",
         views.KMUserDetailView.as_view(),
-        name='km-user-detail'),
+        name="km-user-detail",
+    ),
 ]

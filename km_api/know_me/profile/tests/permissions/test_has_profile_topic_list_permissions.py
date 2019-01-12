@@ -15,15 +15,18 @@ ALL_METHODS = SAFE_METHODS + UNSAFE_METHODS
 
 @pytest.mark.parametrize("method", ALL_METHODS)
 @mock.patch(
-    'know_me.profile.permissions.models.Profile.has_object_write_permission')
+    "know_me.profile.permissions.models.Profile.has_object_write_permission"
+)
 @mock.patch(
-    'know_me.profile.permissions.models.Profile.has_object_read_permission')
+    "know_me.profile.permissions.models.Profile.has_object_read_permission"
+)
 def test_has_permission(
-        mock_read_permission,
-        mock_write_permission,
-        api_rf,
-        method,
-        profile_factory):
+    mock_read_permission,
+    mock_write_permission,
+    api_rf,
+    method,
+    profile_factory,
+):
     """
     The permission check should be delegated to the profile whose topics
     are being listed.
@@ -31,10 +34,10 @@ def test_has_permission(
     profile = profile_factory()
 
     api_rf.user = profile.km_user.user
-    request = api_rf.generic(method, '/')
+    request = api_rf.generic(method, "/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': profile.pk}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": profile.pk}
 
     permission = permissions.HasProfileTopicListPermissions()
 
@@ -53,10 +56,10 @@ def test_has_permission_nonexistent_profile(api_rf, db):
     If there is no profile with the given ID, the permission check
     should raise an Http404 error.
     """
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': 1}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": 1}
 
     permission = permissions.HasProfileTopicListPermissions()
 

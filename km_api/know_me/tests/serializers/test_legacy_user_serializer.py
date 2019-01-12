@@ -9,15 +9,15 @@ def test_serialize(api_rf, legacy_user_factory, serialized_time):
     request = api_rf.get(user.get_absolute_url())
 
     serializer = serializers.LegacyUserSerializer(
-        user,
-        context={'request': request})
+        user, context={"request": request}
+    )
 
     expected = {
-        'id': user.id,
-        'url': request.build_absolute_uri(),
-        'created_at': serialized_time(user.created_at),
-        'updated_at': serialized_time(user.updated_at),
-        'email': user.email,
+        "id": user.id,
+        "url": request.build_absolute_uri(),
+        "created_at": serialized_time(user.created_at),
+        "updated_at": serialized_time(user.updated_at),
+        "email": user.email,
     }
 
     assert serializer.data == expected

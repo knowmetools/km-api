@@ -14,8 +14,8 @@ def test_create(user_factory):
     Test creating a km_user.
     """
     km_user = models.KMUser.objects.create(
-        quote='Life is like a box of chocolates.',
-        user=user_factory())
+        quote="Life is like a box of chocolates.", user=user_factory()
+    )
 
     assert not km_user.is_legacy_user
 
@@ -25,7 +25,7 @@ def test_get_absolute_url(km_user_factory):
     This method should return the URL of the km_user's detail view.
     """
     km_user = km_user_factory()
-    expected = reverse('know-me:km-user-detail', kwargs={'pk': km_user.pk})
+    expected = reverse("know-me:km-user-detail", kwargs={"pk": km_user.pk})
 
     assert km_user.get_absolute_url() == expected
 
@@ -37,8 +37,9 @@ def test_get_media_resource_category_list_url(km_user_factory):
     """
     km_user = km_user_factory()
     expected = reverse(
-        'know-me:profile:media-resource-category-list',
-        kwargs={'pk': km_user.pk})
+        "know-me:profile:media-resource-category-list",
+        kwargs={"pk": km_user.pk},
+    )
 
     assert km_user.get_media_resource_category_list_url() == expected
 
@@ -62,8 +63,8 @@ def test_get_media_resource_list_url(km_user_factory):
     """
     km_user = km_user_factory()
     expected = reverse(
-        'know-me:profile:media-resource-list',
-        kwargs={'pk': km_user.pk})
+        "know-me:profile:media-resource-list", kwargs={"pk": km_user.pk}
+    )
 
     assert km_user.get_media_resource_list_url() == expected
 
@@ -75,8 +76,8 @@ def test_get_profile_list_url(km_user_factory):
     """
     km_user = km_user_factory()
     expected = reverse(
-        'know-me:profile:profile-list',
-        kwargs={'pk': km_user.pk})
+        "know-me:profile:profile-list", kwargs={"pk": km_user.pk}
+    )
 
     assert km_user.get_profile_list_url() == expected
 
@@ -94,9 +95,8 @@ def test_get_profile_list_url_request(api_rf, km_user_factory):
 
 
 def test_has_object_read_permission_other(
-        api_rf,
-        km_user_factory,
-        user_factory):
+    api_rf, km_user_factory, user_factory
+):
     """
     Other users should not have read permissions on km_users they don't
     own.
@@ -104,15 +104,14 @@ def test_has_object_read_permission_other(
     km_user = km_user_factory()
 
     api_rf.user = user_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert not km_user.has_object_read_permission(request)
 
 
 def test_has_object_read_permission_shared(
-        api_rf,
-        km_user_accessor_factory,
-        km_user_factory):
+    api_rf, km_user_accessor_factory, km_user_factory
+):
     """
     The requesting user should be granted read access if there is an
     accessor granting them access.
@@ -121,15 +120,14 @@ def test_has_object_read_permission_shared(
     accessor = km_user_accessor_factory(is_accepted=True, km_user=km_user)
 
     api_rf.user = accessor.user_with_access
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert km_user.has_object_read_permission(request)
 
 
 def test_has_object_read_permission_shared_not_accepted(
-        api_rf,
-        km_user_accessor_factory,
-        km_user_factory):
+    api_rf, km_user_accessor_factory, km_user_factory
+):
     """
     If the accessor granting access has not been accepted yet, access
     should not be granted.
@@ -138,7 +136,7 @@ def test_has_object_read_permission_shared_not_accepted(
     accessor = km_user_accessor_factory(is_accepted=False, km_user=km_user)
 
     api_rf.user = accessor.user_with_access
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert not km_user.has_object_read_permission(request)
 
@@ -150,15 +148,14 @@ def test_has_object_read_permission_owner(api_rf, km_user_factory):
     km_user = km_user_factory()
 
     api_rf.user = km_user.user
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert km_user.has_object_read_permission(request)
 
 
 def test_has_object_write_permission_other(
-        api_rf,
-        km_user_factory,
-        user_factory):
+    api_rf, km_user_factory, user_factory
+):
     """
     Other users should not have write permissions on km_users they don't
     own.
@@ -166,7 +163,7 @@ def test_has_object_write_permission_other(
     km_user = km_user_factory()
 
     api_rf.user = user_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert not km_user.has_object_write_permission(request)
 
@@ -178,66 +175,60 @@ def test_has_object_write_permission_owner(api_rf, km_user_factory):
     km_user = km_user_factory()
 
     api_rf.user = km_user.user
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert km_user.has_object_write_permission(request)
 
 
 def test_has_object_write_permission_shared(
-        api_rf,
-        km_user_accessor_factory,
-        km_user_factory):
+    api_rf, km_user_accessor_factory, km_user_factory
+):
     """
     Users should be able to be granted write access through an accessor.
     """
     km_user = km_user_factory()
     accessor = km_user_accessor_factory(
-        is_accepted=True,
-        is_admin=True,
-        km_user=km_user)
+        is_accepted=True, is_admin=True, km_user=km_user
+    )
 
     api_rf.user = accessor.user_with_access
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert km_user.has_object_write_permission(request)
 
 
 def test_has_object_write_permission_shared_no_write(
-        api_rf,
-        km_user_accessor_factory,
-        km_user_factory):
+    api_rf, km_user_accessor_factory, km_user_factory
+):
     """
     Write access should not be granted from accessors that only grant
     read access.
     """
     km_user = km_user_factory()
     accessor = km_user_accessor_factory(
-        is_accepted=True,
-        is_admin=False,
-        km_user=km_user)
+        is_accepted=True, is_admin=False, km_user=km_user
+    )
 
     api_rf.user = accessor.user_with_access
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert not km_user.has_object_write_permission(request)
 
 
 def test_has_object_write_permission_shared_not_accepted(
-        api_rf,
-        km_user_accessor_factory,
-        km_user_factory):
+    api_rf, km_user_accessor_factory, km_user_factory
+):
     """
     If the accessor has not been accepted, it should not grant write
     access.
     """
     km_user = km_user_factory()
     accessor = km_user_accessor_factory(
-        is_accepted=False,
-        is_admin=True,
-        km_user=km_user)
+        is_accepted=False, is_admin=True, km_user=km_user
+    )
 
     api_rf.user = accessor.user_with_access
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert not km_user.has_object_write_permission(request)
 
@@ -253,9 +244,8 @@ def test_name(km_user_factory):
 
 
 def test_share_duplicate_email(
-        email_factory,
-        km_user_accessor_factory,
-        km_user_factory):
+    email_factory, km_user_accessor_factory, km_user_factory
+):
     """
     If there is already an accessor linking the provided email and Know
     Me user, a validation error should be raised.
@@ -268,12 +258,10 @@ def test_share_duplicate_email(
         km_user.share(email.email)
 
 
-@mock.patch('know_me.models.KMUserAccessor.send_invite')
+@mock.patch("know_me.models.KMUserAccessor.send_invite")
 def test_share_existing_user(
-        mock_send_invite,
-        email_factory,
-        km_user_factory,
-        user_factory):
+    mock_send_invite, email_factory, km_user_factory, user_factory
+):
     """
     If the provided email address belongs to an existing user, an
     accessor should be created for that user.
@@ -282,9 +270,7 @@ def test_share_existing_user(
 
     user = user_factory()
 
-    accessor = km_user.share(
-        user.primary_email.email,
-        is_admin=True)
+    accessor = km_user.share(user.primary_email.email, is_admin=True)
 
     assert km_user.km_user_accessors.count() == 1
 
@@ -293,12 +279,10 @@ def test_share_existing_user(
     assert mock_send_invite.call_count == 1
 
 
-@mock.patch('know_me.models.KMUserAccessor.send_invite')
+@mock.patch("know_me.models.KMUserAccessor.send_invite")
 def test_share_existing_user_unverified_email(
-        mock_send_invite,
-        email_factory,
-        km_user_factory,
-        user_factory):
+    mock_send_invite, email_factory, km_user_factory, user_factory
+):
     """
     If the provided email address exists but isn't verified, the
     accessor should not be assigned a user yet.
@@ -318,10 +302,8 @@ def test_share_existing_user_unverified_email(
 
 
 def test_share_multiple_emails(
-        email_factory,
-        km_user_accessor_factory,
-        km_user_factory,
-        user_factory):
+    email_factory, km_user_accessor_factory, km_user_factory, user_factory
+):
     """
     If a user has already been granted access through another email that
     they own, they should not be able to be granted access through
@@ -338,14 +320,14 @@ def test_share_multiple_emails(
         km_user.share(e2.email)
 
 
-@mock.patch('know_me.models.KMUserAccessor.send_invite')
+@mock.patch("know_me.models.KMUserAccessor.send_invite")
 def test_share_nonexistent_user(mock_send_invite, km_user_factory):
     """
     If there is no user with the provided email address, The created
     accessor should only be linked to an email address.
     """
     km_user = km_user_factory()
-    email = 'test-share@example.com'
+    email = "test-share@example.com"
 
     accessor = km_user.share(email)
 

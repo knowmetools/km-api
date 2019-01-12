@@ -28,6 +28,6 @@ class HasEntryCommentListPermissions(permissions.BasePermission):
             A boolean inidicating if the requesting user should be
             granted access to the view.
         """
-        entry = get_object_or_404(models.Entry, pk=view.kwargs.get('pk'))
+        entry = get_object_or_404(models.Entry, pk=view.kwargs.get("pk"))
 
         return entry.has_object_read_permission(request)

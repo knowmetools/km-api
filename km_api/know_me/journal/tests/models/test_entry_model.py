@@ -12,7 +12,8 @@ def test_create(file, km_user_factory):
     models.Entry.objects.create(
         attachment=file,
         km_user=km_user_factory(),
-        text='My sample entry text.')
+        text="My sample entry text.",
+    )
 
 
 def test_get_absolute_url(entry_factory):
@@ -21,9 +22,7 @@ def test_get_absolute_url(entry_factory):
     view.
     """
     entry = entry_factory()
-    expected = reverse(
-        'know-me:journal:entry-detail',
-        kwargs={'pk': entry.pk})
+    expected = reverse("know-me:journal:entry-detail", kwargs={"pk": entry.pk})
 
     assert entry.get_absolute_url() == expected
 
@@ -35,23 +34,22 @@ def test_get_comments_url(entry_factory):
     """
     entry = entry_factory()
     expected = reverse(
-        'know-me:journal:entry-comment-list',
-        kwargs={'pk': entry.pk})
+        "know-me:journal:entry-comment-list", kwargs={"pk": entry.pk}
+    )
 
     assert entry.get_comments_url() == expected
 
 
-@mock.patch('know_me.models.KMUser.has_object_read_permission')
+@mock.patch("know_me.models.KMUser.has_object_read_permission")
 def test_has_object_read_permission(
-        mock_parent_permission,
-        api_rf,
-        entry_factory):
+    mock_parent_permission, api_rf, entry_factory
+):
     """
     Journal entries should delegate the read permission check to their
     parent Know Me user.
     """
     entry = entry_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     expected = mock_parent_permission.return_value
 
@@ -60,17 +58,16 @@ def test_has_object_read_permission(
     assert mock_parent_permission.call_args[0] == (request,)
 
 
-@mock.patch('know_me.models.KMUser.has_object_write_permission')
+@mock.patch("know_me.models.KMUser.has_object_write_permission")
 def test_has_object_write_permission(
-        mock_parent_permission,
-        api_rf,
-        entry_factory):
+    mock_parent_permission, api_rf, entry_factory
+):
     """
     Journal entries should delegate the write permission check to their
     parent Know Me user.
     """
     entry = entry_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     expected = mock_parent_permission.return_value
 
@@ -96,6 +93,6 @@ def test_string_conversion(entry_factory):
     published.
     """
     entry = entry_factory()
-    expected = 'Entry for {}'.format(entry.created_at)
+    expected = "Entry for {}".format(entry.created_at)
 
     assert str(entry) == expected

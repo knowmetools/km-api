@@ -12,24 +12,75 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('journal', '0001_initial'),
+        ("journal", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='EntryComment',
+            name="EntryComment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='The time that the comment was created.', verbose_name='created at')),
-                ('text', models.TextField(help_text='The body of the comment.', verbose_name='text')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='The time that the comment was last updated.', verbose_name='updated at')),
-                ('entry', models.ForeignKey(help_text='The entry that the comment is attached to.', on_delete=django.db.models.deletion.CASCADE, related_name='comments', related_query_name='comment', to='journal.Entry', verbose_name='entry')),
-                ('user', models.ForeignKey(help_text='The user who made the comment.', on_delete=django.db.models.deletion.CASCADE, related_name='journal_comments', related_query_name='journal_comment', to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The time that the comment was created.",
+                        verbose_name="created at",
+                    ),
+                ),
+                (
+                    "text",
+                    models.TextField(
+                        help_text="The body of the comment.",
+                        verbose_name="text",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="The time that the comment was last updated.",
+                        verbose_name="updated at",
+                    ),
+                ),
+                (
+                    "entry",
+                    models.ForeignKey(
+                        help_text="The entry that the comment is attached to.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="comments",
+                        related_query_name="comment",
+                        to="journal.Entry",
+                        verbose_name="entry",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        help_text="The user who made the comment.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="journal_comments",
+                        related_query_name="journal_comment",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="user",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'entry comment',
-                'verbose_name_plural': 'entry comments',
+                "verbose_name": "entry comment",
+                "verbose_name_plural": "entry comments",
             },
-            bases=(permission_utils.model_mixins.IsAuthenticatedMixin, models.Model),
-        ),
+            bases=(
+                permission_utils.model_mixins.IsAuthenticatedMixin,
+                models.Model,
+            ),
+        )
     ]

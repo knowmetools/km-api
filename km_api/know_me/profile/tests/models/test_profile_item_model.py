@@ -13,11 +13,12 @@ def test_create(image, media_resource_factory, profile_topic_factory):
     topic = profile_topic_factory(profile__km_user=media_resource.km_user)
 
     models.ProfileItem.objects.create(
-        description='My test item.',
+        description="My test item.",
         image=image,
         media_resource=media_resource,
-        name='Test Item',
-        topic=topic)
+        name="Test Item",
+        topic=topic,
+    )
 
 
 def test_get_absolute_url(profile_item_factory):
@@ -27,8 +28,8 @@ def test_get_absolute_url(profile_item_factory):
     """
     item = profile_item_factory()
     expected = reverse(
-        'know-me:profile:profile-item-detail',
-        kwargs={'pk': item.pk})
+        "know-me:profile:profile-item-detail", kwargs={"pk": item.pk}
+    )
 
     assert item.get_absolute_url() == expected
 
@@ -40,23 +41,22 @@ def test_get_list_entries_url(profile_item_factory):
     """
     item = profile_item_factory()
     expected = reverse(
-        'know-me:profile:list-entry-list',
-        kwargs={'pk': item.pk})
+        "know-me:profile:list-entry-list", kwargs={"pk": item.pk}
+    )
 
     assert item.get_list_entries_url() == expected
 
 
-@mock.patch('know_me.profile.models.ProfileTopic.has_object_read_permission')
+@mock.patch("know_me.profile.models.ProfileTopic.has_object_read_permission")
 def test_has_object_read_permission(
-        mock_parent_permission,
-        api_rf,
-        profile_item_factory):
+    mock_parent_permission, api_rf, profile_item_factory
+):
     """
     Profile items should delegate the read permission check to their
     parent profile topic.
     """
     item = profile_item_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     expected = mock_parent_permission.return_value
 
@@ -65,17 +65,16 @@ def test_has_object_read_permission(
     assert mock_parent_permission.call_args[0] == (request,)
 
 
-@mock.patch('know_me.profile.models.ProfileTopic.has_object_write_permission')
+@mock.patch("know_me.profile.models.ProfileTopic.has_object_write_permission")
 def test_has_object_write_permission(
-        mock_parent_permission,
-        api_rf,
-        profile_item_factory):
+    mock_parent_permission, api_rf, profile_item_factory
+):
     """
     Profile items should delegate the write permission check to their
     parent profile topic.
     """
     item = profile_item_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     expected = mock_parent_permission.return_value
 

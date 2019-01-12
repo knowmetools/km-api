@@ -16,9 +16,7 @@ def test_create_profile(api_client, api_rf, km_user_factory):
     api_client.force_authenticate(user=km_user.user)
     api_rf.user = km_user.user
 
-    data = {
-        'name': 'Test Profile',
-    }
+    data = {"name": "Test Profile"}
 
     url = km_user.get_profile_list_url()
     request = api_rf.post(url, data)
@@ -27,18 +25,16 @@ def test_create_profile(api_client, api_rf, km_user_factory):
     assert response.status_code == status.HTTP_201_CREATED
 
     serializer = serializers.ProfileListSerializer(
-        km_user.profiles.get(),
-        context={'request': request})
+        km_user.profiles.get(), context={"request": request}
+    )
 
     assert response.data == serializer.data
 
 
 @pytest.mark.integration
 def test_get_profile_list(
-        api_client,
-        api_rf,
-        km_user_factory,
-        profile_factory):
+    api_client, api_rf, km_user_factory, profile_factory
+):
     """
     Sending a GET request to the view should return a list of profiles
     accessible to the requesting user.
@@ -59,19 +55,16 @@ def test_get_profile_list(
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.ProfileListSerializer(
-        km_user.profiles.all(),
-        context={'request': request},
-        many=True)
+        km_user.profiles.all(), context={"request": request}, many=True
+    )
 
     assert response.data == serializer.data
 
 
 @pytest.mark.integration
 def test_put_profile_order(
-        api_client,
-        api_rf,
-        km_user_factory,
-        profile_factory):
+    api_client, api_rf, km_user_factory, profile_factory
+):
     """
     Sending a PUT request to the view should set the order of the user's
     profiles.
@@ -85,9 +78,7 @@ def test_put_profile_order(
     p2 = profile_factory(km_user=km_user)
     p3 = profile_factory(km_user=km_user)
 
-    data = {
-        'order': [p1.id, p3.id, p2.id],
-    }
+    data = {"order": [p1.id, p3.id, p2.id]}
 
     url = km_user.get_profile_list_url()
     request = api_rf.put(url, data)
@@ -96,9 +87,8 @@ def test_put_profile_order(
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.ProfileListSerializer(
-        km_user.profiles.all(),
-        context={'request': request},
-        many=True)
+        km_user.profiles.all(), context={"request": request}, many=True
+    )
 
     assert response.data == serializer.data
-    assert list(km_user.get_profile_order()) == data['order']
+    assert list(km_user.get_profile_order()) == data["order"]

@@ -40,8 +40,8 @@ def test_get_profile_topic(api_client, api_rf, profile_topic_factory):
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.ProfileTopicListSerializer(
-        topic,
-        context={'request': request})
+        topic, context={"request": request}
+    )
 
     assert response.data == serializer.data
 
@@ -52,12 +52,10 @@ def test_update_profile_topic(api_client, profile_topic_factory):
     Sending a PATCH request to the view should update the specified
     profile topic with the provided data.
     """
-    topic = profile_topic_factory(name='Old Name')
+    topic = profile_topic_factory(name="Old Name")
     api_client.force_authenticate(user=topic.profile.km_user.user)
 
-    data = {
-        'name': 'New Name',
-    }
+    data = {"name": "New Name"}
 
     url = topic.get_absolute_url()
     response = api_client.patch(url, data)
@@ -65,4 +63,4 @@ def test_update_profile_topic(api_client, profile_topic_factory):
     topic.refresh_from_db()
 
     assert response.status_code == status.HTTP_200_OK
-    assert topic.name == data['name']
+    assert topic.name == data["name"]

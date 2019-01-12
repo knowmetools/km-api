@@ -27,9 +27,8 @@ def send_email(to, subject, template, context=dict()):
 
     try:
         html_content = utils.render_template(
-            template,
-            context=context,
-            extension='html')
+            template, context=context, extension="html"
+        )
     except TemplateDoesNotExist:
         html_content = None
 
@@ -38,4 +37,5 @@ def send_email(to, subject, template, context=dict()):
         html_message=html_content,
         message=text_content,
         recipient_list=[to],
-        subject=subject)
+        subject=subject,
+    )

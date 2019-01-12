@@ -11,25 +11,72 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('know_me', '0001_initial'),
-    ]
+    dependencies = [("know_me", "0001_initial")]
 
     operations = [
         migrations.CreateModel(
-            name='Profile',
+            name="Profile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='The time that the profile was created.', verbose_name='created at')),
-                ('is_private', models.BooleanField(default=False, help_text='A boolean indicating if the profile is private. Private profiles are only visible to team leaders.', verbose_name='is private')),
-                ('name', models.CharField(help_text='The name of the profile.', max_length=255, verbose_name='name')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='The time that the profile was last updated.', verbose_name='updated at')),
-                ('km_user', models.ForeignKey(help_text='The Know Me user who owns the profile.', on_delete=django.db.models.deletion.CASCADE, related_name='profiles', related_query_name='profile', to='know_me.KMUser', verbose_name='Know Me user')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The time that the profile was created.",
+                        verbose_name="created at",
+                    ),
+                ),
+                (
+                    "is_private",
+                    models.BooleanField(
+                        default=False,
+                        help_text="A boolean indicating if the profile is private. Private profiles are only visible to team leaders.",
+                        verbose_name="is private",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="The name of the profile.",
+                        max_length=255,
+                        verbose_name="name",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="The time that the profile was last updated.",
+                        verbose_name="updated at",
+                    ),
+                ),
+                (
+                    "km_user",
+                    models.ForeignKey(
+                        help_text="The Know Me user who owns the profile.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="profiles",
+                        related_query_name="profile",
+                        to="know_me.KMUser",
+                        verbose_name="Know Me user",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'profile',
-                'verbose_name_plural': 'profiles',
+                "verbose_name": "profile",
+                "verbose_name_plural": "profiles",
             },
-            bases=(permission_utils.model_mixins.IsAuthenticatedMixin, models.Model),
-        ),
+            bases=(
+                permission_utils.model_mixins.IsAuthenticatedMixin,
+                models.Model,
+            ),
+        )
     ]

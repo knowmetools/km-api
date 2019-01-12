@@ -1,5 +1,3 @@
-
-
 def test_string_conversion(subscription_factory):
     """
     Converting a subscription to a string should return a user readable
@@ -7,8 +5,8 @@ def test_string_conversion(subscription_factory):
     associated with.
     """
     subscription = subscription_factory()
-    expected = 'Know Me subscription for {user}'.format(
-        user=subscription.user.get_full_name(),
+    expected = "Know Me subscription for {user}".format(
+        user=subscription.user.get_full_name()
     )
 
     assert str(subscription) == expected

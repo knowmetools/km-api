@@ -10,27 +10,94 @@ import permission_utils.model_mixins
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('profile', '0004_profiletopic'),
-    ]
+    dependencies = [("profile", "0004_profiletopic")]
 
     operations = [
         migrations.CreateModel(
-            name='ProfileItem',
+            name="ProfileItem",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='The time that the item was created.', verbose_name='created at')),
-                ('description', models.TextField(blank=True, help_text="A more detailed description of the item's content", verbose_name='description')),
-                ('image', models.ImageField(blank=True, help_text='An optional image to attach to the profile item.', upload_to=know_me.profile.models.get_profile_item_image_upload_path, verbose_name='image')),
-                ('name', models.CharField(help_text='The name of the profile item.', max_length=255, verbose_name='name')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='The time that the item was last updated.', verbose_name='updated at')),
-                ('media_resource', models.ForeignKey(blank=True, help_text='The optional media resource attached to the item.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='profile_items', related_query_name='profile_item', to='profile.MediaResource', verbose_name='media resource')),
-                ('topic', models.ForeignKey(help_text='The profile topic that the item belongs to.', on_delete=django.db.models.deletion.CASCADE, related_name='items', related_query_name='item', to='profile.ProfileTopic', verbose_name='profile topic')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The time that the item was created.",
+                        verbose_name="created at",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True,
+                        help_text="A more detailed description of the item's content",
+                        verbose_name="description",
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="An optional image to attach to the profile item.",
+                        upload_to=know_me.profile.models.get_profile_item_image_upload_path,
+                        verbose_name="image",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="The name of the profile item.",
+                        max_length=255,
+                        verbose_name="name",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="The time that the item was last updated.",
+                        verbose_name="updated at",
+                    ),
+                ),
+                (
+                    "media_resource",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="The optional media resource attached to the item.",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="profile_items",
+                        related_query_name="profile_item",
+                        to="profile.MediaResource",
+                        verbose_name="media resource",
+                    ),
+                ),
+                (
+                    "topic",
+                    models.ForeignKey(
+                        help_text="The profile topic that the item belongs to.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="items",
+                        related_query_name="item",
+                        to="profile.ProfileTopic",
+                        verbose_name="profile topic",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'profile items',
-                'verbose_name': 'profile item',
+                "verbose_name_plural": "profile items",
+                "verbose_name": "profile item",
             },
-            bases=(permission_utils.model_mixins.IsAuthenticatedMixin, models.Model),
-        ),
+            bases=(
+                permission_utils.model_mixins.IsAuthenticatedMixin,
+                models.Model,
+            ),
+        )
     ]

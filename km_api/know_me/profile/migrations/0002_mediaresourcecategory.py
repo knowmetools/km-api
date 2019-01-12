@@ -9,24 +9,64 @@ import permission_utils.model_mixins
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('profile', '0001_initial'),
-    ]
+    dependencies = [("profile", "0001_initial")]
 
     operations = [
         migrations.CreateModel(
-            name='MediaResourceCategory',
+            name="MediaResourceCategory",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='The time that the category was created.', verbose_name='created at')),
-                ('name', models.CharField(help_text="The category's name.", max_length=255, verbose_name='name')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='The time that the category was last updated.', verbose_name='updated at')),
-                ('km_user', models.ForeignKey(help_text='The Know Me user who owns the category.', on_delete=django.db.models.deletion.CASCADE, related_name='media_resource_categories', related_query_name='media_resource_category', to='know_me.KMUser', verbose_name='media resource category')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The time that the category was created.",
+                        verbose_name="created at",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="The category's name.",
+                        max_length=255,
+                        verbose_name="name",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="The time that the category was last updated.",
+                        verbose_name="updated at",
+                    ),
+                ),
+                (
+                    "km_user",
+                    models.ForeignKey(
+                        help_text="The Know Me user who owns the category.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="media_resource_categories",
+                        related_query_name="media_resource_category",
+                        to="know_me.KMUser",
+                        verbose_name="media resource category",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'media resource category',
-                'verbose_name_plural': 'media resource categories',
+                "verbose_name": "media resource category",
+                "verbose_name_plural": "media resource categories",
             },
-            bases=(permission_utils.model_mixins.IsAuthenticatedMixin, models.Model),
-        ),
+            bases=(
+                permission_utils.model_mixins.IsAuthenticatedMixin,
+                models.Model,
+            ),
+        )
     ]

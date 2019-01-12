@@ -8,12 +8,12 @@ class SortModelMixin(object):
 
     def get_sort_serializer(self, *args, **kwargs):
         serializer_class = self.sort_serializer
-        kwargs['context'] = self.get_serializer_context()
+        kwargs["context"] = self.get_serializer_context()
 
         return serializer_class(*args, **kwargs)
 
     def sort(self, request, *args, **kwargs):
-        parent_pk = kwargs.get('pk', None)
+        parent_pk = kwargs.get("pk", None)
         parent = self.sort_parent.objects.get(pk=parent_pk)
 
         serializer = self.get_sort_serializer(data=request.data)

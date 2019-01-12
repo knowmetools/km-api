@@ -26,7 +26,7 @@ def create_km_user(user, **kwargs):
     """
     models.KMUser.objects.create(image=user.image, user=user)
 
-    logger.info('Created Know Me user for user %s', user)
+    logger.info("Created Know Me user for user %s", user)
 
 
 @receiver(post_save, sender=EmailAddress)
@@ -53,7 +53,8 @@ def legacy_user(instance, **kwargs):
             "legacy user.",
             instance.email,
             instance.user.km_user,
-            instance.user.km_user.id)
+            instance.user.km_user.id,
+        )
 
 
 @receiver(post_save, sender=EmailAddress)
@@ -70,19 +71,20 @@ def update_accessor(instance, **kwargs):
             The email address that was just saved.
     """
     logger.debug(
-        'Updating KMUserAccessor instances for email %s',
-        instance.email)
+        "Updating KMUserAccessor instances for email %s", instance.email
+    )
 
     try:
         accessor = models.KMUserAccessor.objects.get(
-            email=instance.email,
-            user_with_access=None)
+            email=instance.email, user_with_access=None
+        )
     except models.KMUserAccessor.DoesNotExist:
         return
 
     if instance.is_verified:
         dupe_query = accessor.km_user.km_user_accessors.filter(
-            user_with_access=instance.user)
+            user_with_access=instance.user
+        )
 
         if dupe_query.exists():
             duplicate = dupe_query.get()
@@ -90,8 +92,9 @@ def update_accessor(instance, **kwargs):
                 "Deleting accessor linking %s and %s because the user has "
                 "been granted access through the email address %s",
                 instance.email,
-                '{} (ID: {})'.format(accessor.km_user, accessor.km_user.id),
-                duplicate.email)
+                "{} (ID: {})".format(accessor.km_user, accessor.km_user.id),
+                duplicate.email,
+            )
             accessor.delete()
 
             return
@@ -99,4 +102,4 @@ def update_accessor(instance, **kwargs):
         accessor.user_with_access = instance.user
         accessor.save()
 
-        logger.info('Updated KMUserAccessor for email %s', instance.email)
+        logger.info("Updated KMUserAccessor for email %s", instance.email)

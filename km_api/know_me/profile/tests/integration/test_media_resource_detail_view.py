@@ -39,8 +39,8 @@ def test_get_media_resource(api_client, api_rf, media_resource_factory):
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.MediaResourceSerializer(
-        resource,
-        context={'request': request})
+        resource, context={"request": request}
+    )
 
     assert response.data == serializer.data
 
@@ -51,12 +51,10 @@ def test_update_media_resource(api_client, media_resource_factory):
     Sending a PATCH request to the view should update the specified
     media resource with the provided information.
     """
-    resource = media_resource_factory(name='Old Name')
+    resource = media_resource_factory(name="Old Name")
     api_client.force_authenticate(user=resource.km_user.user)
 
-    data = {
-        'name': 'New Name',
-    }
+    data = {"name": "New Name"}
 
     url = resource.get_absolute_url()
     response = api_client.patch(url, data)
@@ -64,4 +62,4 @@ def test_update_media_resource(api_client, media_resource_factory):
     resource.refresh_from_db()
 
     assert response.status_code == status.HTTP_200_OK
-    assert resource.name == data['name']
+    assert resource.name == data["name"]

@@ -4,7 +4,7 @@
 from django.template.loader import render_to_string
 
 
-def render_template(template_base, extension='txt', context=dict()):
+def render_template(template_base, extension="txt", context=dict()):
     """
     Render a template's text version.
 
@@ -20,8 +20,8 @@ def render_template(template_base, extension='txt', context=dict()):
         str:
             The result of rendering the given template.
     """
-    template_name = '{base}.{extension}'.format(
-        base=template_base,
-        extension=extension)
+    template_name = "{base}.{extension}".format(
+        base=template_base, extension=extension
+    )
 
     return render_to_string(template_name, context)

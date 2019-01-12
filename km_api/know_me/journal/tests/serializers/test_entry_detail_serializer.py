@@ -13,19 +13,16 @@ def test_serialize(api_rf, entry_comment_factory, entry_factory):
     entry_comment_factory(entry=entry)
 
     serializer = serializers.EntryDetailSerializer(
-        entry,
-        context={'request': request})
+        entry, context={"request": request}
+    )
     comment_serializer = serializers.EntryCommentSerializer(
-        entry.comments.all(),
-        context={'request': request},
-        many=True)
+        entry.comments.all(), context={"request": request}, many=True
+    )
     list_serializer = serializers.EntryListSerializer(
-        entry,
-        context={'request': request})
+        entry, context={"request": request}
+    )
 
-    additional = {
-        'comments': comment_serializer.data,
-    }
+    additional = {"comments": comment_serializer.data}
 
     expected = dict(list_serializer.data.items())
     expected.update(additional)
@@ -37,9 +34,7 @@ def test_validate():
     """
     Test validating the data required to create a comment.
     """
-    data = {
-        'text': 'My comment text.',
-    }
+    data = {"text": "My comment text."}
     serializer = serializers.EntryDetailSerializer(data=data)
 
     assert serializer.is_valid

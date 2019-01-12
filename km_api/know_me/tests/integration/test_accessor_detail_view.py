@@ -5,9 +5,8 @@ from rest_framework import status
 
 @pytest.mark.integration
 def test_delete_accessor_shared(
-        api_client,
-        km_user_accessor_factory,
-        user_factory):
+    api_client, km_user_accessor_factory, user_factory
+):
     """
     Sending a DELETE request as the user granted access through an
     accessor should delete the specified accessor.

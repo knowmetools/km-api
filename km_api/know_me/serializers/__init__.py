@@ -18,10 +18,11 @@ class ConfigSerializer(serializers.ModelSerializer):
     """
     Serializer for the Know Me config object.
     """
+
     permissions = DRYPermissionsField(global_only=True)
 
     class Meta:
-        fields = ('minimum_app_version_ios', 'permissions')
+        fields = ("minimum_app_version_ios", "permissions")
         model = models.Config
 
 
@@ -34,7 +35,7 @@ class KMUserInfoSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
-        fields = ('image', 'name')
+        fields = ("image", "name")
         model = models.KMUser
 
 
@@ -42,45 +43,52 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for multiple ``KMUser`` instances.
     """
+
     is_owned_by_current_user = serializers.SerializerMethodField()
     journal_entries_url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:journal:entry-list')
+        view_name="know-me:journal:entry-list"
+    )
     media_resource_categories_url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:profile:media-resource-category-list')
+        view_name="know-me:profile:media-resource-category-list"
+    )
     media_resources_url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:profile:media-resource-list')
+        view_name="know-me:profile:media-resource-list"
+    )
     permissions = DRYPermissionsField()
     profiles_url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:profile:profile-list')
+        view_name="know-me:profile:profile-list"
+    )
     url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:km-user-detail')
-    user_image = serializers.ImageField(read_only=True, source='user.image')
+        view_name="know-me:km-user-detail"
+    )
+    user_image = serializers.ImageField(read_only=True, source="user.image")
 
     class Meta:
         extra_kwargs = {
-            'image': {
-                'help_text': 'An image that represents the Know Me user.',
+            "image": {
+                "help_text": "An image that represents the Know Me user."
             },
-            'quote': {
-                'help_text': ("A quote for the Know Me user to introduce "
-                              "themself."),
+            "quote": {
+                "help_text": (
+                    "A quote for the Know Me user to introduce " "themself."
+                )
             },
         }
         fields = (
-            'id',
-            'url',
-            'created_at',
-            'updated_at',
-            'is_owned_by_current_user',
-            'image',
-            'journal_entries_url',
-            'media_resource_categories_url',
-            'media_resources_url',
-            'name',
-            'permissions',
-            'profiles_url',
-            'quote',
-            'user_image',
+            "id",
+            "url",
+            "created_at",
+            "updated_at",
+            "is_owned_by_current_user",
+            "image",
+            "journal_entries_url",
+            "media_resource_categories_url",
+            "media_resources_url",
+            "name",
+            "permissions",
+            "profiles_url",
+            "quote",
+            "user_image",
         )
         model = models.KMUser
 
@@ -97,7 +105,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             A boolean indicating if the requesting user owns the Know Me
             user bound to the serializer.
         """
-        return self.context['request'].user == km_user.user
+        return self.context["request"].user == km_user.user
 
 
 class KMUserDetailSerializer(KMUserListSerializer):
@@ -106,10 +114,11 @@ class KMUserDetailSerializer(KMUserListSerializer):
 
     This serializer builds off of the ``KMUserListSerializer``.
     """
+
     profiles = ProfileListSerializer(many=True, read_only=True)
 
     class Meta(KMUserListSerializer.Meta):
-        fields = KMUserListSerializer.Meta.fields + ('permissions', 'profiles')
+        fields = KMUserListSerializer.Meta.fields + ("permissions", "profiles")
 
 
 class KMUserAccessorAcceptSerializer(serializers.ModelSerializer):
@@ -126,29 +135,33 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for ``KMUserAccessor`` instances.
     """
+
     accept_url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:accessor-accept')
+        view_name="know-me:accessor-accept"
+    )
     km_user = KMUserInfoSerializer(read_only=True)
-    permissions = DRYPermissionsField(additional_actions=['accept'])
+    permissions = DRYPermissionsField(additional_actions=["accept"])
     url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:accessor-detail')
+        view_name="know-me:accessor-detail"
+    )
     user_with_access = UserInfoSerializer(read_only=True)
 
     class Meta:
         fields = (
-            'id',
-            'url',
-            'created_at',
-            'updated_at',
-            'accept_url',
-            'email',
-            'is_accepted',
-            'is_admin',
-            'km_user',
-            'permissions',
-            'user_with_access')
+            "id",
+            "url",
+            "created_at",
+            "updated_at",
+            "accept_url",
+            "email",
+            "is_accepted",
+            "is_admin",
+            "km_user",
+            "permissions",
+            "user_with_access",
+        )
         model = models.KMUserAccessor
-        read_only_fields = ('is_accepted',)
+        read_only_fields = ("is_accepted",)
 
     def create(self, validated_data):
         """
@@ -161,8 +174,8 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
         Returns:
             The newly created ``KMUserAccessor`` instance.
         """
-        km_user = validated_data.pop('km_user')
-        email = validated_data.pop('email')
+        km_user = validated_data.pop("km_user")
+        email = validated_data.pop("email")
 
         # If sharing fails (already shared, can't share with self, etc.)
         # we capture the error and echo it as a serializer error which
@@ -170,9 +183,9 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
         try:
             return km_user.share(email, **validated_data)
         except ValidationError as e:
-            raise serializers.ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: e.message,
-            })
+            raise serializers.ValidationError(
+                {api_settings.NON_FIELD_ERRORS_KEY: e.message}
+            )
 
     def validate_email(self, email):
         """
@@ -193,7 +206,8 @@ class KMUserAccessorSerializer(serializers.HyperlinkedModelSerializer):
         """
         if self.instance and email != self.instance.email:
             raise serializers.ValidationError(
-                _('The email of an existing share may not be changed.'))
+                _("The email of an existing share may not be changed.")
+            )
 
         return email
 
@@ -202,9 +216,11 @@ class LegacyUserSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for legacy users.
     """
+
     url = serializers.HyperlinkedIdentityField(
-        view_name='know-me:legacy-user-detail')
+        view_name="know-me:legacy-user-detail"
+    )
 
     class Meta:
-        fields = ('id', 'url', 'created_at', 'updated_at', 'email')
+        fields = ("id", "url", "created_at", "updated_at", "email")
         model = models.LegacyUser

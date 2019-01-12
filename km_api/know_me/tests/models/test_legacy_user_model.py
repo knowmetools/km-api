@@ -7,7 +7,7 @@ def test_create(db):
     """
     Test creating a legacy user.
     """
-    models.LegacyUser.objects.create(email='test@example.com')
+    models.LegacyUser.objects.create(email="test@example.com")
 
 
 def test_get_absolute_url(legacy_user_factory):
@@ -16,7 +16,7 @@ def test_get_absolute_url(legacy_user_factory):
     view.
     """
     user = legacy_user_factory()
-    expected = reverse('know-me:legacy-user-detail', kwargs={'pk': user.pk})
+    expected = reverse("know-me:legacy-user-detail", kwargs={"pk": user.pk})
 
     assert user.get_absolute_url() == expected
 
@@ -27,7 +27,7 @@ def test_has_read_permission_staff(api_rf, user_factory):
     """
     user = user_factory(is_staff=True)
     api_rf.user = user
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert models.LegacyUser.has_read_permission(request)
 
@@ -38,7 +38,7 @@ def test_has_read_permission_standard_user(api_rf, user_factory):
     """
     user = user_factory()
     api_rf.user = user
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert not models.LegacyUser.has_read_permission(request)
 
@@ -49,7 +49,7 @@ def test_has_write_permission_staff(api_rf, user_factory):
     """
     user = user_factory(is_staff=True)
     api_rf.user = user
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert models.LegacyUser.has_write_permission(request)
 
@@ -60,7 +60,7 @@ def test_has_write_permission_standard_user(api_rf, user_factory):
     """
     user = user_factory()
     api_rf.user = user
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     assert not models.LegacyUser.has_write_permission(request)
 

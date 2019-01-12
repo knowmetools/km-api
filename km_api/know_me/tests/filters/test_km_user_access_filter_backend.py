@@ -15,9 +15,8 @@ from know_me import filters, models
 
 
 def test_filter_list_by_km_user(
-        api_rf,
-        km_user_accessor_factory,
-        km_user_factory):
+    api_rf, km_user_accessor_factory, km_user_factory
+):
     """
     The filter backend should include items owned by the requesting user
     if that user's ID is also given in the URL.
@@ -28,26 +27,22 @@ def test_filter_list_by_km_user(
     km_user_accessor_factory()
 
     api_rf.user = km_user.user
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': km_user.pk}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": km_user.pk}
 
     backend = filters.KMUserAccessFilterBackend()
     result = backend.filter_queryset(
-        request,
-        models.KMUserAccessor.objects.all(),
-        view)
+        request, models.KMUserAccessor.objects.all(), view
+    )
 
     expected = km_user.km_user_accessors.all()
 
     assert list(result) == list(expected)
 
 
-def test_filter_list_inaccessible_user(
-        api_rf,
-        km_user_factory,
-        user_factory):
+def test_filter_list_inaccessible_user(api_rf, km_user_factory, user_factory):
     """
     If the requesting user does not have access to the user who owns the
     items, an Http404 exception should be raised.
@@ -55,18 +50,17 @@ def test_filter_list_inaccessible_user(
     km_user = km_user_factory()
 
     api_rf.user = user_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': km_user.pk}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": km_user.pk}
 
     backend = filters.KMUserAccessFilterBackend()
 
     with pytest.raises(Http404):
         backend.filter_queryset(
-            request,
-            models.KMUserAccessor.objects.all(),
-            view)
+            request, models.KMUserAccessor.objects.all(), view
+        )
 
 
 def test_filter_list_non_existent_user(api_rf, user_factory):
@@ -75,25 +69,22 @@ def test_filter_list_non_existent_user(api_rf, user_factory):
     Http404 exception should be raised.
     """
     api_rf.user = user_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': 1}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": 1}
 
     backend = filters.KMUserAccessFilterBackend()
 
     with pytest.raises(Http404):
         backend.filter_queryset(
-            request,
-            models.KMUserAccessor.objects.all(),
-            view)
+            request, models.KMUserAccessor.objects.all(), view
+        )
 
 
 def test_filter_list_owned_and_shared(
-        api_rf,
-        km_user_accessor_factory,
-        km_user_factory,
-        user_factory):
+    api_rf, km_user_accessor_factory, km_user_factory, user_factory
+):
     """
     If there is a situation where the user both owns the Know Me user
     being access and has an accessor granting them access to the same
@@ -107,28 +98,21 @@ def test_filter_list_owned_and_shared(
     user = user_factory()
     km_user = km_user_factory(user=user)
     km_user_accessor_factory(
-        is_accepted=True,
-        km_user=km_user,
-        user_with_access=user,
+        is_accepted=True, km_user=km_user, user_with_access=user
     )
     # We have to create a second accessor accessing the user for the bug
     # to trigger.
-    km_user_accessor_factory(
-        is_accepted=True,
-        km_user=km_user,
-    )
+    km_user_accessor_factory(is_accepted=True, km_user=km_user)
 
     api_rf.user = user
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': km_user.pk}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": km_user.pk}
 
     backend = filters.KMUserAccessFilterBackend()
     filtered = backend.filter_queryset(
-        request,
-        models.KMUserAccessor.objects.all(),
-        view,
+        request, models.KMUserAccessor.objects.all(), view
     )
 
     expected = km_user.km_user_accessors.all()
@@ -136,10 +120,7 @@ def test_filter_list_owned_and_shared(
     assert list(filtered) == list(expected)
 
 
-def test_filter_list_shared(
-        api_rf,
-        km_user_accessor_factory,
-        user_factory):
+def test_filter_list_shared(api_rf, km_user_accessor_factory, user_factory):
     """
     The filter should include items where the requesting user has been
     granted access to the specified Know Me user through an accessor.
@@ -149,21 +130,19 @@ def test_filter_list_shared(
 
     user = user_factory()
     km_user_accessor_factory(
-        is_accepted=True,
-        km_user=km_user,
-        user_with_access=user)
+        is_accepted=True, km_user=km_user, user_with_access=user
+    )
 
     api_rf.user = user
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': km_user.pk}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": km_user.pk}
 
     backend = filters.KMUserAccessFilterBackend()
     filtered = backend.filter_queryset(
-        request,
-        models.KMUserAccessor.objects.all(),
-        view)
+        request, models.KMUserAccessor.objects.all(), view
+    )
 
     expected = km_user.km_user_accessors.all()
 
@@ -171,9 +150,8 @@ def test_filter_list_shared(
 
 
 def test_filter_list_shared_not_accepted(
-        api_rf,
-        km_user_accessor_factory,
-        user_factory):
+    api_rf, km_user_accessor_factory, user_factory
+):
     """
     If the accessor has not been accepted then access to the shared
     items should not be granted.
@@ -183,20 +161,18 @@ def test_filter_list_shared_not_accepted(
 
     user = user_factory()
     km_user_accessor_factory(
-        is_accepted=False,
-        km_user=km_user,
-        user_with_access=user)
+        is_accepted=False, km_user=km_user, user_with_access=user
+    )
 
     api_rf.user = user
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': km_user.pk}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": km_user.pk}
 
     backend = filters.KMUserAccessFilterBackend()
 
     with pytest.raises(Http404):
         backend.filter_queryset(
-            request,
-            models.KMUserAccessor.objects.all(),
-            view)
+            request, models.KMUserAccessor.objects.all(), view
+        )

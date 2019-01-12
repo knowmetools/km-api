@@ -9,11 +9,12 @@ class KnowMeConfig(AppConfig):
     """
     Default app config.
     """
-    name = 'know_me'
-    verbose_name = _('Know Me')
+
+    name = "know_me"
+    verbose_name = _("Know Me")
 
     def ready(self):
         """
         Perform app initialization tasks.
         """
-        import know_me.signals      # noqa
+        import know_me.signals  # noqa

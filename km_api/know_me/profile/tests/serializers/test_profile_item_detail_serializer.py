@@ -6,12 +6,13 @@ from know_me.profile import serializers
 
 
 def test_serialize(
-        api_rf,
-        image,
-        list_entry_factory,
-        media_resource_factory,
-        profile_item_factory,
-        serialized_time):
+    api_rf,
+    image,
+    list_entry_factory,
+    media_resource_factory,
+    profile_item_factory,
+    serialized_time,
+):
     """
     Test serializing a profile item.
     """
@@ -19,7 +20,8 @@ def test_serialize(
     item = profile_item_factory(
         image=image,
         media_resource=media_resource,
-        topic__profile__km_user=media_resource.km_user)
+        topic__profile__km_user=media_resource.km_user,
+    )
 
     api_rf.user = media_resource.km_user.user
     request = api_rf.get(item.get_absolute_url())
@@ -28,23 +30,22 @@ def test_serialize(
     list_entry_factory(profile_item=item)
 
     serializer = serializers.ProfileItemDetailSerializer(
-        item,
-        context={'request': request})
+        item, context={"request": request}
+    )
     list_serializer = serializers.ProfileItemListSerializer(
-        item,
-        context={'request': request})
+        item, context={"request": request}
+    )
 
     list_entry_serializer = serializers.ListEntrySerializer(
-        item.list_entries.all(),
-        context={'request': request},
-        many=True)
+        item.list_entries.all(), context={"request": request}, many=True
+    )
     media_resource_serializer = serializers.MediaResourceSerializer(
-        media_resource,
-        context={'request': request})
+        media_resource, context={"request": request}
+    )
 
     additional = {
-        'list_entries': list_entry_serializer.data,
-        'media_resource': media_resource_serializer.data,
+        "list_entries": list_entry_serializer.data,
+        "media_resource": media_resource_serializer.data,
     }
 
     expected = dict(list_serializer.data.items())
@@ -59,14 +60,14 @@ def test_validate(image, media_resource_factory):
     """
     media_resource = media_resource_factory()
     data = {
-        'description': 'My test profile item.',
-        'image': image,
-        'media_resource_id': media_resource.id,
-        'name': 'Test Item',
+        "description": "My test profile item.",
+        "image": image,
+        "media_resource_id": media_resource.id,
+        "name": "Test Item",
     }
     serializer = serializers.ProfileItemDetailSerializer(
-        context={'km_user': media_resource.km_user},
-        data=data)
+        context={"km_user": media_resource.km_user}, data=data
+    )
 
     assert serializer.is_valid()
 
@@ -79,7 +80,8 @@ def test_validate_media_resource_id_by_context(media_resource_factory):
     """
     media_resource = media_resource_factory()
     serializer = serializers.ProfileItemDetailSerializer(
-        context={'km_user': media_resource.km_user})
+        context={"km_user": media_resource.km_user}
+    )
 
     result = serializer.validate_media_resource_id(media_resource)
 
@@ -87,9 +89,8 @@ def test_validate_media_resource_id_by_context(media_resource_factory):
 
 
 def test_validate_media_resource_id_by_item(
-        km_user_factory,
-        media_resource_factory,
-        profile_item_factory):
+    km_user_factory, media_resource_factory, profile_item_factory
+):
     """
     If the serializer is bound to a profile item, it should make sure
     the provided media resource belongs to the same user as the profile
@@ -118,9 +119,8 @@ def test_validate_media_resource_id_missing_context(media_resource_factory):
 
 
 def test_validate_media_resource_id_null(
-        km_user_factory,
-        media_resource_factory,
-        profile_item_factory):
+    km_user_factory, media_resource_factory, profile_item_factory
+):
     """
     Setting ``media_resource_id`` to ``None`` should detach the media resource
     from the profile item.
@@ -130,23 +130,20 @@ def test_validate_media_resource_id_null(
     km_user = km_user_factory()
     resource = media_resource_factory(km_user=km_user)
     item = profile_item_factory(
-        media_resource=resource,
-        topic__profile__km_user=km_user)
+        media_resource=resource, topic__profile__km_user=km_user
+    )
 
-    data = {
-        'media_resource_id': None,
-    }
+    data = {"media_resource_id": None}
     serializer = serializers.ProfileItemDetailSerializer(
-        item,
-        data=data,
-        partial=True)
+        item, data=data, partial=True
+    )
 
     assert serializer.is_valid()
 
 
 def test_validate_media_resource_id_other_user(
-        media_resource_factory,
-        profile_item_factory):
+    media_resource_factory, profile_item_factory
+):
     """
     If the provided media resource is owned by a different user than the
     one given to the serializer, a validation error should be raised.

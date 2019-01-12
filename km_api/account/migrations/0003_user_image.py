@@ -6,14 +6,17 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('account', '0002_user_timestamps'),
-    ]
+    dependencies = [("account", "0002_user_timestamps")]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='image',
-            field=models.ImageField(blank=True, help_text='A profile image for the user.', upload_to=account.models.get_user_image_path, verbose_name='profile image'),
-        ),
+            model_name="user",
+            name="image",
+            field=models.ImageField(
+                blank=True,
+                help_text="A profile image for the user.",
+                upload_to=account.models.get_user_image_path,
+                verbose_name="profile image",
+            ),
+        )
     ]

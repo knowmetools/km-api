@@ -7,9 +7,8 @@ from know_me.profile import models, serializers
 
 @pytest.mark.integration
 def test_attach_media_resource(
-        api_client,
-        media_resource_factory,
-        profile_item_factory):
+    api_client, media_resource_factory, profile_item_factory
+):
     """
     Attaching a media resource to a profile item should not raise an
     exception.
@@ -21,9 +20,7 @@ def test_attach_media_resource(
 
     api_client.force_authenticate(user=resource.km_user.user)
 
-    data = {
-        'media_resource_id': resource.id,
-    }
+    data = {"media_resource_id": resource.id}
 
     url = item.get_absolute_url()
     response = api_client.patch(url, data)
@@ -52,9 +49,8 @@ def test_delete_profile_item(api_client, profile_item_factory):
 
 @pytest.mark.integration
 def test_detach_media_resource(
-        api_client,
-        media_resource_factory,
-        profile_item_factory):
+    api_client, media_resource_factory, profile_item_factory
+):
     """
     Sending a null value for the media resource attached to a profile
     item should detach any media resource from the specified profile
@@ -64,14 +60,12 @@ def test_detach_media_resource(
     """
     resource = media_resource_factory()
     item = profile_item_factory(
-        media_resource=resource,
-        topic__profile__km_user=resource.km_user)
+        media_resource=resource, topic__profile__km_user=resource.km_user
+    )
 
     api_client.force_authenticate(user=resource.km_user.user)
 
-    data = {
-        'media_resource_id': '',
-    }
+    data = {"media_resource_id": ""}
 
     url = item.get_absolute_url()
     response = api_client.patch(url, data)
@@ -101,8 +95,8 @@ def test_get_profile_item(api_client, api_rf, profile_item_factory):
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.ProfileItemDetailSerializer(
-        item,
-        context={'request': request})
+        item, context={"request": request}
+    )
 
     assert response.data == serializer.data
 
@@ -113,12 +107,10 @@ def test_update_profile_item(api_client, profile_item_factory):
     Sending a PATCH request to the view should update the specified
     profile item's information.
     """
-    item = profile_item_factory(name='Old Name')
+    item = profile_item_factory(name="Old Name")
     api_client.force_authenticate(user=item.topic.profile.km_user.user)
 
-    data = {
-        'name': 'New Name',
-    }
+    data = {"name": "New Name"}
 
     url = item.get_absolute_url()
     response = api_client.patch(url, data)
@@ -126,4 +118,4 @@ def test_update_profile_item(api_client, profile_item_factory):
     item.refresh_from_db()
 
     assert response.status_code == status.HTTP_200_OK
-    assert item.name == data['name']
+    assert item.name == data["name"]

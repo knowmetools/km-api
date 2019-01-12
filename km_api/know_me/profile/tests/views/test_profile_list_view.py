@@ -4,11 +4,11 @@ from know_me.profile import models, serializers, views
 
 
 @mock.patch(
-    'know_me.profile.views.DRYPermissions.has_permission',
-    autospec=True)
+    "know_me.profile.views.DRYPermissions.has_permission", autospec=True
+)
 @mock.patch(
-    'know_me.profile.views.HasKMUserAccess.has_permission',
-    autospec=True)
+    "know_me.profile.views.HasKMUserAccess.has_permission", autospec=True
+)
 def test_check_permissions(mock_km_user_permission, mock_dry_permissions):
     """
     The view should check for model permissions as well as if the
@@ -22,9 +22,10 @@ def test_check_permissions(mock_km_user_permission, mock_dry_permissions):
     assert mock_dry_permissions.call_count == 1
 
 
-@mock.patch('know_me.profile.views.KMUserAccessFilterBackend.filter_queryset')
+@mock.patch("know_me.profile.views.KMUserAccessFilterBackend.filter_queryset")
 @mock.patch(
-    'know_me.profile.views.filters.ProfileFilterBackend.filter_queryset')
+    "know_me.profile.views.filters.ProfileFilterBackend.filter_queryset"
+)
 def test_filter_queryset(mock_profile_filter, mock_access_filter):
     """
     The view should filter its queryset by passing it through the filter
@@ -71,12 +72,12 @@ def test_perform_create(km_user_factory):
     """
     km_user = km_user_factory()
     view = views.ProfileListView()
-    view.kwargs = {'pk': km_user.pk}
+    view.kwargs = {"pk": km_user.pk}
 
-    serializer = mock.Mock(name='Mock ProfileListSerializer')
+    serializer = mock.Mock(name="Mock ProfileListSerializer")
 
     result = view.perform_create(serializer)
 
     assert result == serializer.save.return_value
     assert serializer.save.call_count == 1
-    assert serializer.save.call_args[1] == {'km_user': km_user}
+    assert serializer.save.call_args[1] == {"km_user": km_user}

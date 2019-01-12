@@ -40,8 +40,8 @@ def test_get_entry(api_client, api_rf, entry_factory):
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.EntryDetailSerializer(
-        entry,
-        context={'request': request})
+        entry, context={"request": request}
+    )
 
     assert response.data == serializer.data
 
@@ -52,12 +52,10 @@ def test_patch_entry(api_client, entry_factory):
     Sending a PATCH request to the view should update the specified
     journal entry with the provided information.
     """
-    entry = entry_factory(text='Old Text')
+    entry = entry_factory(text="Old Text")
     api_client.force_authenticate(user=entry.km_user.user)
 
-    data = {
-        'text': 'New Text',
-    }
+    data = {"text": "New Text"}
 
     url = entry.get_absolute_url()
     response = api_client.patch(url, data)
@@ -65,4 +63,4 @@ def test_patch_entry(api_client, entry_factory):
     entry.refresh_from_db()
 
     assert response.status_code == status.HTTP_200_OK
-    assert entry.text == data['text']
+    assert entry.text == data["text"]

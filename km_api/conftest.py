@@ -65,7 +65,7 @@ def api_client():
     return APIClient()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def api_rf():
     """
     Fixture to get a factory for making API requests.
@@ -100,17 +100,15 @@ def image():
     Returns:
         A ``ContentFile`` containing a simple image.
     """
-    image = Image.new('RGB', (200, 200), 'red')
+    image = Image.new("RGB", (200, 200), "red")
 
     out_stream = io.BytesIO()
-    image.save(out_stream, format='png')
+    image.save(out_stream, format="png")
 
-    return ContentFile(
-        content=out_stream.getvalue(),
-        name='foo.png')
+    return ContentFile(content=out_stream.getvalue(), name="foo.png")
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def serialized_time():
     """
     Fixture to get a function that returns a serialized version of a
@@ -121,10 +119,11 @@ def serialized_time():
     Logic taken from:
     https://github.com/encode/django-rest-framework/blob/6ea7d05979695cfb9db6ec3946d031b02a82952c/rest_framework/fields.py#L1217-L1221
     """
+
     def f(time):
         formatted = time.isoformat()
-        if formatted.endswith('+00:00'):
-            formatted = formatted[:-6] + 'Z'
+        if formatted.endswith("+00:00"):
+            formatted = formatted[:-6] + "Z"
 
         return formatted
 
@@ -140,9 +139,7 @@ def serializer_context(api_rf):
         dict:
             A dictionary containing dummy context for serializers.
     """
-    return {
-        'request': api_rf.get('/'),
-    }
+    return {"request": api_rf.get("/")}
 
 
 @pytest.fixture

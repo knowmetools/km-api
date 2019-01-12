@@ -23,10 +23,8 @@ def test_delete_comment(api_client, entry_comment_factory):
 
 @pytest.mark.integration
 def test_delete_comment_as_journal_owner(
-        api_client,
-        entry_factory,
-        entry_comment_factory,
-        km_user_factory):
+    api_client, entry_factory, entry_comment_factory, km_user_factory
+):
     """
     The journal owner should be able to delete journal comments left by
     other users.
@@ -63,8 +61,8 @@ def test_get_comment(api_client, api_rf, entry_comment_factory):
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.EntryCommentSerializer(
-        comment,
-        context={'request': request})
+        comment, context={"request": request}
+    )
 
     assert response.data == serializer.data
 
@@ -75,12 +73,10 @@ def test_patch_update_comment(api_client, entry_comment_factory):
     Sending a PATCH request to the view should update the specified
     comment with the provided information.
     """
-    comment = entry_comment_factory(text='Old comment text.')
+    comment = entry_comment_factory(text="Old comment text.")
     api_client.force_authenticate(user=comment.user)
 
-    data = {
-        'text': 'New comment text.',
-    }
+    data = {"text": "New comment text."}
 
     url = comment.get_absolute_url()
     response = api_client.patch(url, data)
@@ -88,4 +84,4 @@ def test_patch_update_comment(api_client, entry_comment_factory):
     comment.refresh_from_db()
 
     assert response.status_code == status.HTTP_200_OK
-    assert comment.text == data['text']
+    assert comment.text == data["text"]

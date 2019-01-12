@@ -31,15 +31,15 @@ class HasKMUserAccess(permissions.IsAuthenticated):
         if not super().has_permission(request, view):
             return False
 
-        km_user = get_object_or_404(models.KMUser, pk=view.kwargs.get('pk'))
+        km_user = get_object_or_404(models.KMUser, pk=view.kwargs.get("pk"))
 
         if km_user.user == request.user:
             return True
 
         try:
             accessor = km_user.km_user_accessors.get(
-                is_accepted=True,
-                user_with_access=request.user)
+                is_accepted=True, user_with_access=request.user
+            )
         except models.KMUserAccessor.DoesNotExist:
             raise Http404()
 

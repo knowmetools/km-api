@@ -5,7 +5,7 @@ from rest_framework.permissions import SAFE_METHODS
 from account import permissions
 
 
-UNSAFE_METHODS = ('DELETE', 'PATCH', 'POST', 'PUT')
+UNSAFE_METHODS = ("DELETE", "PATCH", "POST", "PUT")
 ALL_METHODS = SAFE_METHODS + UNSAFE_METHODS
 
 
@@ -18,7 +18,7 @@ def test_has_permission(api_rf, is_staff, method, user_factory):
     user = user_factory(is_staff=is_staff)
 
     api_rf.user = user
-    request = api_rf.generic(method, '/')
+    request = api_rf.generic(method, "/")
 
     permission = permissions.IsStaff()
 
@@ -30,7 +30,7 @@ def test_has_permission_unauthenticated(api_rf, method):
     """
     Unauthenticated users should not have permissions.
     """
-    request = api_rf.generic(method, '/')
+    request = api_rf.generic(method, "/")
     permission = permissions.IsStaff()
 
     assert not permission.has_permission(request, None)

@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 
-url = reverse('rest-email-auth:register')
+url = reverse("rest-email-auth:register")
 
 
 @pytest.mark.integration
@@ -17,11 +17,11 @@ def test_register(api_client, db, image):
     fields added to our registration serializer are accepted.
     """
     data = {
-        'email': 'test@example.com',
-        'password': 'uncommon-passw0rd',
-        'first_name': 'John',
-        'last_name': 'Doe',
-        'image': image,
+        "email": "test@example.com",
+        "password": "uncommon-passw0rd",
+        "first_name": "John",
+        "last_name": "Doe",
+        "image": image,
     }
 
     response = api_client.post(url, data)

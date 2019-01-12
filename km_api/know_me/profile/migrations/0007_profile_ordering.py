@@ -5,13 +5,10 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('profile', '0006_listentry'),
-    ]
+    dependencies = [("profile", "0006_listentry")]
 
     operations = [
         migrations.AlterOrderWithRespectTo(
-            name='profile',
-            order_with_respect_to='km_user',
-        ),
+            name="profile", order_with_respect_to="km_user"
+        )
     ]

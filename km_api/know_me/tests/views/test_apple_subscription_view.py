@@ -14,7 +14,7 @@ def test_get_object_exists(api_rf, apple_subscription_factory):
     """
     subscription = apple_subscription_factory()
     api_rf.user = subscription.subscription.user
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     view = views.AppleSubscriptionView()
     view.request = request
@@ -28,7 +28,7 @@ def test_get_object_missing(api_rf, user_factory):
     should be thrown for a ``GET`` request.
     """
     api_rf.user = user_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     view = views.AppleSubscriptionView()
     view.request = request
@@ -39,9 +39,8 @@ def test_get_object_missing(api_rf, user_factory):
 
 @pytest.mark.integration
 def test_GET_existing_subscription(
-        api_client,
-        api_rf,
-        apple_subscription_factory):
+    api_client, api_rf, apple_subscription_factory
+):
     """
     Sending a ``GET`` request to the endpoint as the owner of an
     existing Apple Subscription should return the details of the
@@ -52,15 +51,14 @@ def test_GET_existing_subscription(
     api_client.force_authenticate(subscription.subscription.user)
     api_rf.user = subscription.subscription.user
 
-    url = reverse('know-me:apple-subscription-detail')
+    url = reverse("know-me:apple-subscription-detail")
     request = api_rf.get(url)
     response = api_client.get(url)
 
     assert response.status_code == status.HTTP_200_OK
 
     serializer = subscription_serializers.AppleSubscriptionSerializer(
-        subscription,
-        context={'request': request},
+        subscription, context={"request": request}
     )
 
     assert response.data == serializer.data
@@ -68,22 +66,19 @@ def test_GET_existing_subscription(
 
 @pytest.mark.integration
 def test_PUT_existing_subscription(
-        api_client,
-        api_rf,
-        apple_subscription_factory):
+    api_client, api_rf, apple_subscription_factory
+):
     """
     If the user already has an Apple subscription, it should be updated.
     """
-    subscription = apple_subscription_factory(receipt_data='old receipt')
+    subscription = apple_subscription_factory(receipt_data="old receipt")
     user = subscription.subscription.user
     api_client.force_authenticate(user)
     api_rf.user = user
 
-    data = {
-        'receipt_data': 'new receipt',
-    }
+    data = {"receipt_data": "new receipt"}
 
-    url = reverse('know-me:apple-subscription-detail')
+    url = reverse("know-me:apple-subscription-detail")
     request = api_rf.put(url, data)
     response = api_client.put(url, data)
 
@@ -91,8 +86,7 @@ def test_PUT_existing_subscription(
     subscription.refresh_from_db()
 
     serializer = subscription_serializers.AppleSubscriptionSerializer(
-        subscription,
-        context={'request': request},
+        subscription, context={"request": request}
     )
 
     assert response.data == serializer.data
@@ -109,19 +103,16 @@ def test_PUT_new_subscription(api_client, api_rf, user_factory):
     api_client.force_authenticate(user)
     api_rf.user = user
 
-    data = {
-        'receipt_data': 'receipt data',
-    }
+    data = {"receipt_data": "receipt data"}
 
-    url = reverse('know-me:apple-subscription-detail')
+    url = reverse("know-me:apple-subscription-detail")
     request = api_rf.put(url, data)
     response = api_client.put(url, data)
 
     assert response.status_code == status.HTTP_200_OK
 
     serializer = subscription_serializers.AppleSubscriptionSerializer(
-        user.know_me_subscription.apple_data,
-        context={'request': request},
+        user.know_me_subscription.apple_data, context={"request": request}
     )
 
     assert response.data == serializer.data

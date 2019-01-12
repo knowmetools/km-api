@@ -4,11 +4,11 @@ from know_me.profile import models, serializers, views
 
 
 @mock.patch(
-    'know_me.profile.views.DRYPermissions.has_permission',
-    autospec=True)
+    "know_me.profile.views.DRYPermissions.has_permission", autospec=True
+)
 @mock.patch(
-    'know_me.profile.views.HasKMUserAccess.has_permission',
-    autospec=True)
+    "know_me.profile.views.HasKMUserAccess.has_permission", autospec=True
+)
 def test_check_permissions(mock_km_user_permission, mock_dry_permissions):
     """
     The view should check for model permissions as well as if the
@@ -31,7 +31,7 @@ def test_get_queryset(api_rf, media_resource_factory):
     media_resource_factory()
 
     view = views.MediaResourceListView()
-    view.request = view.initialize_request(api_rf.get('/'))
+    view.request = view.initialize_request(api_rf.get("/"))
 
     expected = models.MediaResource.objects.all()
 
@@ -39,10 +39,11 @@ def test_get_queryset(api_rf, media_resource_factory):
 
 
 def test_get_queryset_filtered(
-        api_rf,
-        km_user_factory,
-        media_resource_category_factory,
-        media_resource_factory):
+    api_rf,
+    km_user_factory,
+    media_resource_category_factory,
+    media_resource_factory,
+):
     """
     If a category is specified, only the resources in that category
     should be returned.
@@ -55,7 +56,8 @@ def test_get_queryset_filtered(
 
     view = views.MediaResourceListView()
     view.request = view.initialize_request(
-        api_rf.get('/', {'category': category.pk}))
+        api_rf.get("/", {"category": category.pk})
+    )
 
     assert list(view.get_queryset()) == [resource]
 
@@ -72,8 +74,9 @@ def test_get_serializer():
 
 
 @mock.patch(
-    'know_me.profile.views.KMUserAccessFilterBackend.filter_queryset',
-    autospec=True)
+    "know_me.profile.views.KMUserAccessFilterBackend.filter_queryset",
+    autospec=True,
+)
 def test_filter_queryset(mock_filter):
     """
     The queryset returned by the view should be passed through a filter
@@ -95,12 +98,12 @@ def test_perform_create(km_user_factory):
     serializer when creating a new category.
     """
     km_user = km_user_factory()
-    serializer = mock.Mock(name='Mock MediaResourceSerializer')
+    serializer = mock.Mock(name="Mock MediaResourceSerializer")
 
     view = views.MediaResourceListView()
-    view.kwargs = {'pk': km_user.pk}
+    view.kwargs = {"pk": km_user.pk}
 
     assert view.perform_create(serializer) == serializer.save.return_value
 
     assert serializer.save.call_count == 1
-    assert serializer.save.call_args[1] == {'km_user': km_user}
+    assert serializer.save.call_args[1] == {"km_user": km_user}

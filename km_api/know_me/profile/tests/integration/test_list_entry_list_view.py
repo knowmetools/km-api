@@ -17,9 +17,7 @@ def test_create_list_entry(api_client, api_rf, profile_item_factory):
     api_client.force_authenticate(user=user)
     api_rf.user = user
 
-    data = {
-        'text': 'Test list entry text.',
-    }
+    data = {"text": "Test list entry text."}
 
     url = item.get_list_entries_url()
     request = api_rf.post(url, data)
@@ -29,18 +27,16 @@ def test_create_list_entry(api_client, api_rf, profile_item_factory):
 
     item.refresh_from_db()
     serializer = serializers.ListEntrySerializer(
-        item.list_entries.get(),
-        context={'request': request})
+        item.list_entries.get(), context={"request": request}
+    )
 
     assert response.data == serializer.data
 
 
 @pytest.mark.integration
 def test_get_list_entries(
-        api_client,
-        api_rf,
-        list_entry_factory,
-        profile_item_factory):
+    api_client, api_rf, list_entry_factory, profile_item_factory
+):
     """
     Sending a GET request to the view should list the list entries
     attached to the specified profile item.
@@ -61,19 +57,16 @@ def test_get_list_entries(
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.ListEntrySerializer(
-        item.list_entries.all(),
-        context={'request': request},
-        many=True)
+        item.list_entries.all(), context={"request": request}, many=True
+    )
 
     assert response.data == serializer.data
 
 
 @pytest.mark.integration
 def test_put_profile_order(
-        api_client,
-        api_rf,
-        list_entry_factory,
-        profile_item_factory):
+    api_client, api_rf, list_entry_factory, profile_item_factory
+):
     """
     Sending a PUT request to the view should set the order of the user's
     profiles.
@@ -88,9 +81,7 @@ def test_put_profile_order(
     l2 = list_entry_factory(profile_item=item)
     l3 = list_entry_factory(profile_item=item)
 
-    data = {
-        'order': [l1.id, l3.id, l2.id],
-    }
+    data = {"order": [l1.id, l3.id, l2.id]}
 
     url = item.get_list_entries_url()
     request = api_rf.put(url, data)
@@ -99,9 +90,8 @@ def test_put_profile_order(
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.ListEntrySerializer(
-        item.list_entries.all(),
-        context={'request': request},
-        many=True)
+        item.list_entries.all(), context={"request": request}, many=True
+    )
 
     assert response.data == serializer.data
-    assert list(item.get_listentry_order()) == data['order']
+    assert list(item.get_listentry_order()) == data["order"]

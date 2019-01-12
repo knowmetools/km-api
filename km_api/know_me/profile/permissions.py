@@ -25,9 +25,7 @@ class HasListEntryListPermissions(permissions.BasePermission):
             A boolean indicating if the requesting user should be
             granted access to the view.
         """
-        item = get_object_or_404(
-            models.ProfileItem,
-            pk=view.kwargs.get('pk'))
+        item = get_object_or_404(models.ProfileItem, pk=view.kwargs.get("pk"))
 
         if request.method in permissions.SAFE_METHODS:
             return item.has_object_read_permission(request)
@@ -56,8 +54,8 @@ class HasProfileItemListPermissions(permissions.BasePermission):
             granted access to the view.
         """
         topic = get_object_or_404(
-            models.ProfileTopic,
-            pk=view.kwargs.get('pk'))
+            models.ProfileTopic, pk=view.kwargs.get("pk")
+        )
 
         if request.method in permissions.SAFE_METHODS:
             return topic.has_object_read_permission(request)
@@ -85,7 +83,7 @@ class HasProfileTopicListPermissions(permissions.BasePermission):
             A boolean indicating if the requesting user should be
             granted access to the view.
         """
-        profile = get_object_or_404(models.Profile, pk=view.kwargs.get('pk'))
+        profile = get_object_or_404(models.Profile, pk=view.kwargs.get("pk"))
 
         if request.method in permissions.SAFE_METHODS:
             return profile.has_object_read_permission(request)

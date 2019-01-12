@@ -4,14 +4,12 @@ from rest_framework.reverse import reverse
 from know_me import serializers
 
 
-url = reverse('know-me:pending-accessor-list')
+url = reverse("know-me:pending-accessor-list")
 
 
 def test_get_pending_accessors(
-        api_client,
-        api_rf,
-        km_user_accessor_factory,
-        user_factory):
+    api_client, api_rf, km_user_accessor_factory, user_factory
+):
     """
     Sending a GET request to the view should return a list of the
     accessors that the requesting user can accept.
@@ -30,7 +28,8 @@ def test_get_pending_accessors(
 
     serializer = serializers.KMUserAccessorSerializer(
         user.km_user_accessors.filter(is_accepted=False),
-        context={'request': request},
-        many=True)
+        context={"request": request},
+        many=True,
+    )
 
     assert response.data == serializer.data

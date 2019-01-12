@@ -9,25 +9,72 @@ import permission_utils.model_mixins
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('profile', '0003_mediaresource'),
-    ]
+    dependencies = [("profile", "0003_mediaresource")]
 
     operations = [
         migrations.CreateModel(
-            name='ProfileTopic',
+            name="ProfileTopic",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='The time that the topic was created.', verbose_name='created at')),
-                ('is_detailed', models.BooleanField(default=False, help_text="A boolean indicating if the topic should display its items' details in the main view.", verbose_name='is detailed')),
-                ('name', models.CharField(help_text='The name of the topic.', max_length=255, verbose_name='name')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='The time that the profile was last updated.', verbose_name='updated at')),
-                ('profile', models.ForeignKey(help_text='The profile that the topic belongs to.', on_delete=django.db.models.deletion.CASCADE, related_name='topics', related_query_name='topic', to='profile.Profile', verbose_name='profile')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The time that the topic was created.",
+                        verbose_name="created at",
+                    ),
+                ),
+                (
+                    "is_detailed",
+                    models.BooleanField(
+                        default=False,
+                        help_text="A boolean indicating if the topic should display its items' details in the main view.",
+                        verbose_name="is detailed",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="The name of the topic.",
+                        max_length=255,
+                        verbose_name="name",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="The time that the profile was last updated.",
+                        verbose_name="updated at",
+                    ),
+                ),
+                (
+                    "profile",
+                    models.ForeignKey(
+                        help_text="The profile that the topic belongs to.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="topics",
+                        related_query_name="topic",
+                        to="profile.Profile",
+                        verbose_name="profile",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'profile topics',
-                'verbose_name': 'profile topic',
+                "verbose_name_plural": "profile topics",
+                "verbose_name": "profile topic",
             },
-            bases=(permission_utils.model_mixins.IsAuthenticatedMixin, models.Model),
-        ),
+            bases=(
+                permission_utils.model_mixins.IsAuthenticatedMixin,
+                models.Model,
+            ),
+        )
     ]

@@ -9,5 +9,5 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
-        fields = ('id', 'time_created', 'time_updated', 'receipt_data')
+        fields = ("id", "time_created", "time_updated", "receipt_data")
         model = models.SubscriptionAppleData

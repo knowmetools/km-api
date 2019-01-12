@@ -6,12 +6,11 @@ from know_me import models, views
 
 
 @mock.patch(
-    'know_me.views.DRYGlobalPermissions.has_object_permission',
-    autospec=True,
+    "know_me.views.DRYGlobalPermissions.has_object_permission", autospec=True
 )
 def test_check_object_permissions(
-        mock_dry_permissions,
-        km_user_accessor_factory):
+    mock_dry_permissions, km_user_accessor_factory
+):
     """
     The view should check the permissions on the model.
     """
@@ -20,7 +19,7 @@ def test_check_object_permissions(
 
     with mock.patch.object(
         accessor,
-        'has_object_accept_permission',
+        "has_object_accept_permission",
         autospec=True,
         return_value=True,
     ) as mock_accept_perm:
@@ -31,17 +30,14 @@ def test_check_object_permissions(
 
 
 @mock.patch(
-    'know_me.views.DRYGlobalPermissions.has_object_permission',
-    autospec=True,
+    "know_me.views.DRYGlobalPermissions.has_object_permission", autospec=True
 )
 @mock.patch(
-    'know_me.views.AccessorAcceptView.permission_denied',
-    autospec=True,
+    "know_me.views.AccessorAcceptView.permission_denied", autospec=True
 )
 def test_check_object_permissions_no_accept_perm(
-        mock_permission_denied,
-        mock_dry_permissions,
-        km_user_accessor_factory):
+    mock_permission_denied, mock_dry_permissions, km_user_accessor_factory
+):
     """
     If the requesting user doesn't have accept permissions on the
     accessor, an exception should be raised.
@@ -51,7 +47,7 @@ def test_check_object_permissions_no_accept_perm(
 
     with mock.patch.object(
         accessor,
-        'has_object_accept_permission',
+        "has_object_accept_permission",
         autospec=True,
         return_value=False,
     ) as mock_accept_perm:
@@ -83,16 +79,14 @@ def test_post(api_rf, km_user_accessor_factory, user_factory):
     """
     user = user_factory()
     accessor = km_user_accessor_factory(
-        is_accepted=False,
-        user_with_access=user)
+        is_accepted=False, user_with_access=user
+    )
 
     api_rf.user = user
-    request = api_rf.post('/', {})
+    request = api_rf.post("/", {})
 
     view = views.AccessorAcceptView()
-    view.kwargs = {
-        'pk': accessor.pk,
-    }
+    view.kwargs = {"pk": accessor.pk}
     view.request = view.initialize_request(request)
 
     response = view.post(request)

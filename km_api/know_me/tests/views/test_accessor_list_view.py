@@ -13,7 +13,7 @@ def test_get_anonymous(api_rf):
 
     Regression test for #325
     """
-    request = api_rf.get('/')
+    request = api_rf.get("/")
     response = accessor_list_view(request)
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -31,15 +31,16 @@ def test_get_sharing_list(api_rf, km_user_accessor_factory, km_user_factory):
 
     api_rf.user = km_user.user
 
-    request = api_rf.get('/')
+    request = api_rf.get("/")
     response = accessor_list_view(request)
 
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.KMUserAccessorSerializer(
         km_user.km_user_accessors.all(),
-        context={'request': request},
-        many=True)
+        context={"request": request},
+        many=True,
+    )
 
     assert response.data == serializer.data
 
@@ -52,12 +53,9 @@ def test_post_new_share(api_rf, km_user_factory):
     km_user = km_user_factory()
     api_rf.user = km_user.user
 
-    data = {
-        'email': 'share@example.com',
-        'is_admin': True,
-    }
+    data = {"email": "share@example.com", "is_admin": True}
 
-    request = api_rf.post('/', data)
+    request = api_rf.post("/", data)
     response = accessor_list_view(request)
 
     assert response.status_code == status.HTTP_201_CREATED
@@ -65,10 +63,10 @@ def test_post_new_share(api_rf, km_user_factory):
 
     accessor = km_user.km_user_accessors.get()
 
-    assert accessor.email == data['email']
-    assert accessor.is_admin == data['is_admin']
+    assert accessor.email == data["email"]
+    assert accessor.is_admin == data["is_admin"]
     serializer = serializers.KMUserAccessorSerializer(
-        accessor,
-        context={'request': request})
+        accessor, context={"request": request}
+    )
 
     assert response.data == serializer.data

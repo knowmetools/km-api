@@ -7,10 +7,8 @@ from know_me.journal import serializers
 
 @pytest.mark.integration
 def test_get_comment_list(
-        api_client,
-        api_rf,
-        entry_comment_factory,
-        entry_factory):
+    api_client, api_rf, entry_comment_factory, entry_factory
+):
     """
     Sending a GET request to the view should return a list of the
     comments attached to the specified journal entry.
@@ -32,9 +30,8 @@ def test_get_comment_list(
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.EntryCommentSerializer(
-        entry.comments.all(),
-        context={'request': request},
-        many=True)
+        entry.comments.all(), context={"request": request}, many=True
+    )
 
     assert response.data == serializer.data
 
@@ -51,9 +48,7 @@ def test_post_new_comment(api_client, api_rf, entry_factory):
     api_client.force_authenticate(user=user)
     api_rf.user = user
 
-    data = {
-        'text': 'My comment text.',
-    }
+    data = {"text": "My comment text."}
 
     url = entry.get_comments_url()
     request = api_rf.post(url, data)
@@ -62,7 +57,7 @@ def test_post_new_comment(api_client, api_rf, entry_factory):
     assert response.status_code == status.HTTP_201_CREATED
 
     serializer = serializers.EntryCommentSerializer(
-        entry.comments.get(),
-        context={'request': request})
+        entry.comments.get(), context={"request": request}
+    )
 
     assert response.data == serializer.data

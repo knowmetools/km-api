@@ -19,10 +19,10 @@ def test_anonymous(api_rf, km_user_factory):
     """
     km_user = km_user_factory()
 
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': km_user.pk}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": km_user.pk}
 
     perm_instance = permissions.HasKMUserAccess()
 
@@ -38,10 +38,10 @@ def test_is_user(api_rf, km_user_factory, request_method):
     km_user = km_user_factory()
     api_rf.user = km_user.user
 
-    request = api_rf.generic(request_method, '/')
+    request = api_rf.generic(request_method, "/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': km_user.pk}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": km_user.pk}
 
     perm_instance = permissions.HasKMUserAccess()
 
@@ -50,11 +50,12 @@ def test_is_user(api_rf, km_user_factory, request_method):
 
 @pytest.mark.parametrize("request_method", ALL_METHODS)
 def test_shared_admin(
-        api_rf,
-        km_user_accessor_factory,
-        km_user_factory,
-        request_method,
-        user_factory):
+    api_rf,
+    km_user_accessor_factory,
+    km_user_factory,
+    request_method,
+    user_factory,
+):
     """
     A user who is granted write-access through an accessor should be
     granted access for any request method.
@@ -63,16 +64,14 @@ def test_shared_admin(
     user = user_factory()
 
     km_user_accessor_factory(
-        is_accepted=True,
-        is_admin=True,
-        km_user=km_user,
-        user_with_access=user)
+        is_accepted=True, is_admin=True, km_user=km_user, user_with_access=user
+    )
 
     api_rf.user = user
-    request = api_rf.generic(request_method, '/')
+    request = api_rf.generic(request_method, "/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': km_user.pk}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": km_user.pk}
 
     perm_instance = permissions.HasKMUserAccess()
 
@@ -81,11 +80,12 @@ def test_shared_admin(
 
 @pytest.mark.parametrize("request_method", ALL_METHODS)
 def test_shared_read_only(
-        api_rf,
-        km_user_accessor_factory,
-        km_user_factory,
-        request_method,
-        user_factory):
+    api_rf,
+    km_user_accessor_factory,
+    km_user_factory,
+    request_method,
+    user_factory,
+):
     """
     If the user only has read-access from the accessor, only safe
     methods should be permitted.
@@ -97,13 +97,14 @@ def test_shared_read_only(
         is_accepted=True,
         is_admin=False,
         km_user=km_user,
-        user_with_access=user)
+        user_with_access=user,
+    )
 
     api_rf.user = user
-    request = api_rf.generic(request_method, '/')
+    request = api_rf.generic(request_method, "/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': km_user.pk}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": km_user.pk}
 
     perm_instance = permissions.HasKMUserAccess()
 
@@ -114,11 +115,12 @@ def test_shared_read_only(
 
 @pytest.mark.parametrize("request_method", ALL_METHODS)
 def test_shared_unaccepted(
-        api_rf,
-        km_user_accessor_factory,
-        km_user_factory,
-        request_method,
-        user_factory):
+    api_rf,
+    km_user_accessor_factory,
+    km_user_factory,
+    request_method,
+    user_factory,
+):
     """
     Accessors that have not been accepted should not grant access.
     """
@@ -126,15 +128,14 @@ def test_shared_unaccepted(
     user = user_factory()
 
     km_user_accessor_factory(
-        is_accepted=False,
-        km_user=km_user,
-        user_with_access=user)
+        is_accepted=False, km_user=km_user, user_with_access=user
+    )
 
     api_rf.user = user
-    request = api_rf.generic(request_method, '/')
+    request = api_rf.generic(request_method, "/")
 
-    view = mock.Mock(name='Mock View')
-    view.kwargs = {'pk': km_user.pk}
+    view = mock.Mock(name="Mock View")
+    view.kwargs = {"pk": km_user.pk}
 
     perm_instance = permissions.HasKMUserAccess()
 

@@ -16,7 +16,7 @@ def test_delete_accessor(api_rf, km_user_accessor_factory):
 
     api_rf.user = km_user.user
 
-    request = api_rf.delete('/')
+    request = api_rf.delete("/")
     response = accessor_detail_view(request, pk=accessor.pk)
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -31,22 +31,21 @@ def test_get_accessor(api_rf, km_user_accessor_factory):
     accessor = km_user_accessor_factory()
     api_rf.user = accessor.km_user.user
 
-    request = api_rf.get('/')
+    request = api_rf.get("/")
     response = accessor_detail_view(request, pk=accessor.pk)
 
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.KMUserAccessorSerializer(
-        accessor,
-        context={'request': request})
+        accessor, context={"request": request}
+    )
 
     assert response.data == serializer.data
 
 
 def test_get_accessor_other_user(
-        api_rf,
-        km_user_accessor_factory,
-        user_factory):
+    api_rf, km_user_accessor_factory, user_factory
+):
     """
     Attempting to access an accessor that the requesting user doesn't
     own should raises a 404.
@@ -54,7 +53,7 @@ def test_get_accessor_other_user(
     accessor = km_user_accessor_factory()
     api_rf.user = user_factory()
 
-    request = api_rf.get('/')
+    request = api_rf.get("/")
     response = accessor_detail_view(request, pk=accessor.pk)
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -68,7 +67,7 @@ def test_get_accessor_shared(api_rf, km_user_accessor_factory, user_factory):
     accessor = km_user_accessor_factory(user_with_access=user_factory())
     api_rf.user = accessor.user_with_access
 
-    request = api_rf.get('/')
+    request = api_rf.get("/")
     response = accessor_detail_view(request, pk=accessor.pk)
 
     assert response.status_code == status.HTTP_200_OK
@@ -94,17 +93,15 @@ def test_patch_accessor(api_rf, km_user_accessor_factory):
     the given ID.
     """
     accessor = km_user_accessor_factory(is_admin=False)
-    data = {
-        'is_admin': True,
-    }
+    data = {"is_admin": True}
 
     api_rf.user = accessor.km_user.user
 
-    request = api_rf.patch('/', data)
+    request = api_rf.patch("/", data)
     response = accessor_detail_view(request, pk=accessor.pk)
 
     assert response.status_code == status.HTTP_200_OK
 
     accessor.refresh_from_db()
 
-    assert accessor.is_admin == data['is_admin']
+    assert accessor.is_admin == data["is_admin"]

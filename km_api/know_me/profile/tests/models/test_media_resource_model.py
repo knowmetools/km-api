@@ -15,8 +15,9 @@ def test_create(file, km_user_factory, media_resource_category_factory):
         category=media_resource_category_factory(km_user=km_user),
         file=file,
         km_user=km_user,
-        link='https://example.com',
-        name='Test Media Resource',)
+        link="https://example.com",
+        name="Test Media Resource",
+    )
 
 
 def test_get_absolute_url(media_resource_factory):
@@ -26,26 +27,26 @@ def test_get_absolute_url(media_resource_factory):
     """
     resource = media_resource_factory()
     expected = reverse(
-        'know-me:profile:media-resource-detail',
-        kwargs={'pk': resource.pk})
+        "know-me:profile:media-resource-detail", kwargs={"pk": resource.pk}
+    )
 
     assert resource.get_absolute_url() == expected
 
 
 @mock.patch(
-    'know_me.models.KMUser.has_object_read_permission',
+    "know_me.models.KMUser.has_object_read_permission",
     autospec=True,
-    return_value=True)
+    return_value=True,
+)
 def test_has_object_read_permission(
-        mock_parent_permission,
-        api_rf,
-        media_resource_factory):
+    mock_parent_permission, api_rf, media_resource_factory
+):
     """
     The permissions on a media resource should be dictated by the
     permissions on the Know Me user who owns the resource.
     """
     resource = media_resource_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     mock_func = resource.km_user.has_object_read_permission
     expected = mock_func.return_value
@@ -57,19 +58,19 @@ def test_has_object_read_permission(
 
 
 @mock.patch(
-    'know_me.models.KMUser.has_object_write_permission',
+    "know_me.models.KMUser.has_object_write_permission",
     autospec=True,
-    return_value=True)
+    return_value=True,
+)
 def test_has_object_write_permission(
-        mock_parent_permission,
-        api_rf,
-        media_resource_factory):
+    mock_parent_permission, api_rf, media_resource_factory
+):
     """
     The permissions on a media resource should be dictated by the
     permissions on the Know Me user who owns the resource.
     """
     resource = media_resource_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     mock_func = resource.km_user.has_object_write_permission
     expected = mock_func.return_value

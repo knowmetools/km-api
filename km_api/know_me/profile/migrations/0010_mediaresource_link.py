@@ -6,19 +6,27 @@ import know_me.profile.models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('profile', '0009_profileitem_ordering'),
-    ]
+    dependencies = [("profile", "0009_profileitem_ordering")]
 
     operations = [
         migrations.AddField(
-            model_name='mediaresource',
-            name='link',
-            field=models.URLField(blank=True, help_text='A link to an external resource.', max_length=255, verbose_name='link'),
+            model_name="mediaresource",
+            name="link",
+            field=models.URLField(
+                blank=True,
+                help_text="A link to an external resource.",
+                max_length=255,
+                verbose_name="link",
+            ),
         ),
         migrations.AlterField(
-            model_name='mediaresource',
-            name='file',
-            field=models.FileField(blank=True, help_text='The file to associate with the resource.', upload_to=know_me.profile.models.get_media_resource_upload_path, verbose_name='file'),
+            model_name="mediaresource",
+            name="file",
+            field=models.FileField(
+                blank=True,
+                help_text="The file to associate with the resource.",
+                upload_to=know_me.profile.models.get_media_resource_upload_path,
+                verbose_name="file",
+            ),
         ),
     ]

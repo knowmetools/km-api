@@ -12,29 +12,98 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0008_alter_user_username_max_length'),
+        ("auth", "0008_alter_user_username_max_length"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='User',
+            name="User",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_active', models.BooleanField(default=True, help_text='Inactive users are not able to log in.', verbose_name='is active')),
-                ('is_staff', models.BooleanField(default=False, help_text='Staff users are allowed to access the admin site.', verbose_name='is staff')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Super users are given all permissions without them being explicitly set.', verbose_name='is superuser')),
-                ('first_name', models.CharField(max_length=255, verbose_name='first name')),
-                ('last_name', models.CharField(max_length=255, verbose_name='last name')),
-                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.Group', verbose_name='groups')),
-                ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')),
-                ('created_at', models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now, verbose_name='created at')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "password",
+                    models.CharField(max_length=128, verbose_name="password"),
+                ),
+                (
+                    "last_login",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last login"
+                    ),
+                ),
+                (
+                    "is_active",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Inactive users are not able to log in.",
+                        verbose_name="is active",
+                    ),
+                ),
+                (
+                    "is_staff",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Staff users are allowed to access the admin site.",
+                        verbose_name="is staff",
+                    ),
+                ),
+                (
+                    "is_superuser",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Super users are given all permissions without them being explicitly set.",
+                        verbose_name="is superuser",
+                    ),
+                ),
+                (
+                    "first_name",
+                    models.CharField(
+                        max_length=255, verbose_name="first name"
+                    ),
+                ),
+                (
+                    "last_name",
+                    models.CharField(max_length=255, verbose_name="last name"),
+                ),
+                (
+                    "groups",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.Group",
+                        verbose_name="groups",
+                    ),
+                ),
+                (
+                    "user_permissions",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="Specific permissions for this user.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.Permission",
+                        verbose_name="user permissions",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        default=django.utils.timezone.now,
+                        verbose_name="created at",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'user',
-                'verbose_name_plural': 'users',
-            },
-        ),
+            options={"verbose_name": "user", "verbose_name_plural": "users"},
+        )
     ]

@@ -24,6 +24,7 @@ class ListEntryDetailView(generics.RetrieveUpdateDestroyAPIView):
     put:
     Update a specific list entry's information.
     """
+
     permission_classes = (DRYPermissions,)
     queryset = models.ListEntry.objects.all()
     serializer_class = serializers.ListEntrySerializer
@@ -41,11 +42,13 @@ class ListEntryListView(SortView, generics.ListCreateAPIView):
     Set the order of the list entries relative to their parent profile
     item.
     """
+
     permission_classes = (
         DRYPermissions,
-        permissions.HasListEntryListPermissions)
+        permissions.HasListEntryListPermissions,
+    )
     serializer_class = serializers.ListEntrySerializer
-    sort_child_name = 'list_entries'
+    sort_child_name = "list_entries"
     sort_parent = models.ProfileItem
     sort_serializer = create_sort_serializer(models.ListEntry)
 
@@ -63,7 +66,8 @@ class ListEntryListView(SortView, generics.ListCreateAPIView):
             profile item whose ID is given in the URL.
         """
         return models.ListEntry.objects.filter(
-            profile_item=self.kwargs.get('pk'))
+            profile_item=self.kwargs.get("pk")
+        )
 
     def perform_create(self, serializer):
         """
@@ -77,7 +81,7 @@ class ListEntryListView(SortView, generics.ListCreateAPIView):
         Returns:
             The newly created list entry.
         """
-        item = models.ProfileItem.objects.get(pk=self.kwargs.get('pk'))
+        item = models.ProfileItem.objects.get(pk=self.kwargs.get("pk"))
 
         return serializer.save(profile_item=item)
 
@@ -96,6 +100,7 @@ class MediaResourceDetailView(generics.RetrieveUpdateDestroyAPIView):
     put:
     Update the information for a specific media resource.
     """
+
     permission_classes = (DRYPermissions,)
     queryset = models.MediaResource.objects.all()
     serializer_class = serializers.MediaResourceSerializer
@@ -110,6 +115,7 @@ class MediaResourceListView(generics.ListCreateAPIView):
     post:
     Create a new media resource owned by the specified Know Me user.
     """
+
     filter_backends = (KMUserAccessFilterBackend,)
     permission_classes = (DRYPermissions, HasKMUserAccess)
     queryset = models.MediaResource.objects.all()
@@ -125,7 +131,7 @@ class MediaResourceListView(generics.ListCreateAPIView):
         """
         queryset = super().get_queryset()
 
-        category_id = self.request.query_params.get('category', None)
+        category_id = self.request.query_params.get("category", None)
         if category_id is not None:
             queryset = queryset.filter(category__id=category_id)
 
@@ -143,7 +149,7 @@ class MediaResourceListView(generics.ListCreateAPIView):
         Returns:
             The newly created media resource.
         """
-        km_user = KMUser.objects.get(pk=self.kwargs.get('pk'))
+        km_user = KMUser.objects.get(pk=self.kwargs.get("pk"))
 
         return serializer.save(km_user=km_user)
 
@@ -163,6 +169,7 @@ class MediaResourceCategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     put:
     Update the information of a specific media resource category.
     """
+
     permission_classes = (DRYPermissions,)
     queryset = models.MediaResourceCategory.objects.all()
     serializer_class = serializers.MediaResourceCategorySerializer
@@ -177,6 +184,7 @@ class MediaResourceCategoryListView(generics.ListCreateAPIView):
     post:
     Create a new media resource category for the given Know Me user.
     """
+
     filter_backends = (KMUserAccessFilterBackend,)
     permission_classes = (DRYPermissions, HasKMUserAccess)
     queryset = models.MediaResourceCategory.objects.all()
@@ -194,7 +202,7 @@ class MediaResourceCategoryListView(generics.ListCreateAPIView):
         Returns:
             The newly created media resource category.
         """
-        km_user = KMUser.objects.get(pk=self.kwargs.get('pk'))
+        km_user = KMUser.objects.get(pk=self.kwargs.get("pk"))
 
         return serializer.save(km_user=km_user)
 
@@ -213,6 +221,7 @@ class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     put:
     Update a specific profile.
     """
+
     permission_classes = (DRYPermissions,)
     queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileDetailSerializer
@@ -234,11 +243,12 @@ class ProfileListView(SortView, generics.ListCreateAPIView):
 
     Only team leaders or the Know Me user themself can update the order.
     """
+
     filter_backends = (KMUserAccessFilterBackend, filters.ProfileFilterBackend)
     permission_classes = (DRYPermissions, HasKMUserAccess)
     queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileListSerializer
-    sort_child_name = 'profiles'
+    sort_child_name = "profiles"
     sort_parent = KMUser
     sort_serializer = create_sort_serializer(models.Profile)
 
@@ -254,7 +264,7 @@ class ProfileListView(SortView, generics.ListCreateAPIView):
         Returns:
             The newly created profile.
         """
-        km_user = KMUser.objects.get(pk=self.kwargs.get('pk'))
+        km_user = KMUser.objects.get(pk=self.kwargs.get("pk"))
 
         return serializer.save(km_user=km_user)
 
@@ -273,6 +283,7 @@ class ProfileItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     put:
     Update a specific profile item's information.
     """
+
     permission_classes = (DRYPermissions,)
     queryset = models.ProfileItem.objects.all()
     serializer_class = serializers.ProfileItemDetailSerializer
@@ -289,12 +300,13 @@ class ProfileItemListView(SortView, generics.ListCreateAPIView):
     put:
     Set the order of the items in the specified topic.
     """
+
     permission_classes = (
         DRYPermissions,
         permissions.HasProfileItemListPermissions,
     )
     serializer_class = serializers.ProfileItemDetailSerializer
-    sort_child_name = 'items'
+    sort_child_name = "items"
     sort_parent = models.ProfileTopic
     sort_serializer = create_sort_serializer(models.ProfileItem)
 
@@ -311,7 +323,7 @@ class ProfileItemListView(SortView, generics.ListCreateAPIView):
             A queryset containing the items belonging to the topic whose
             ID is given in the URL.
         """
-        return models.ProfileItem.objects.filter(topic=self.kwargs.get('pk'))
+        return models.ProfileItem.objects.filter(topic=self.kwargs.get("pk"))
 
     def get_serializer_class(self):
         """
@@ -322,7 +334,7 @@ class ProfileItemListView(SortView, generics.ListCreateAPIView):
             or it is a POST request. The profile item list serializer is
             used otherwise.
         """
-        if self.request is None or self.request.method == 'POST':
+        if self.request is None or self.request.method == "POST":
             return serializers.ProfileItemDetailSerializer
 
         return serializers.ProfileItemListSerializer
@@ -337,11 +349,11 @@ class ProfileItemListView(SortView, generics.ListCreateAPIView):
         """
         context = super().get_serializer_context()
 
-        pk = self.kwargs.get('pk')
+        pk = self.kwargs.get("pk")
         if pk is not None:
-            context['km_user'] = KMUser.objects.get(profile__topic__pk=pk)
+            context["km_user"] = KMUser.objects.get(profile__topic__pk=pk)
         else:
-            context['km_user'] = None
+            context["km_user"] = None
 
         return context
 
@@ -357,7 +369,7 @@ class ProfileItemListView(SortView, generics.ListCreateAPIView):
         Returns:
             The newly created profile item instance.
         """
-        topic = models.ProfileTopic.objects.get(pk=self.kwargs.get('pk'))
+        topic = models.ProfileTopic.objects.get(pk=self.kwargs.get("pk"))
 
         return serializer.save(topic=topic)
 
@@ -376,6 +388,7 @@ class ProfileTopicDetailView(generics.RetrieveUpdateDestroyAPIView):
     put:
     Update a specific profile topic's information.
     """
+
     permission_classes = (DRYPermissions,)
     queryset = models.ProfileTopic.objects.all()
     serializer_class = serializers.ProfileTopicListSerializer
@@ -392,11 +405,12 @@ class ProfileTopicListView(SortView, generics.ListCreateAPIView):
     put:
     Set the order of the topics in the specified profile.
     """
+
     permission_classes = (
         DRYPermissions,
         permissions.HasProfileTopicListPermissions,
     )
-    sort_child_name = 'topics'
+    sort_child_name = "topics"
     sort_parent = models.Profile
     sort_serializer = create_sort_serializer(models.ProfileTopic)
 
@@ -414,7 +428,8 @@ class ProfileTopicListView(SortView, generics.ListCreateAPIView):
             whose ID is given in the URL.
         """
         return models.ProfileTopic.objects.filter(
-            profile__pk=self.kwargs.get('pk'))
+            profile__pk=self.kwargs.get("pk")
+        )
 
     def get_serializer_class(self):
         """
@@ -424,7 +439,7 @@ class ProfileTopicListView(SortView, generics.ListCreateAPIView):
             The profile topic detail serializer if there is no request
             or it is a POST request and the list serializer otherwise.
         """
-        if self.request is None or self.request.method == 'POST':
+        if self.request is None or self.request.method == "POST":
             return serializers.ProfileTopicDetailSerializer
 
         return serializers.ProfileTopicListSerializer
@@ -441,6 +456,6 @@ class ProfileTopicListView(SortView, generics.ListCreateAPIView):
         Returns:
             The newly created profile topic instance.
         """
-        profile = models.Profile.objects.get(pk=self.kwargs.get('pk'))
+        profile = models.Profile.objects.get(pk=self.kwargs.get("pk"))
 
         return serializer.save(profile=profile)

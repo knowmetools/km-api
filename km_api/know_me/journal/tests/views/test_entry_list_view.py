@@ -7,11 +7,11 @@ from know_me.journal import models, serializers, views
 
 
 @mock.patch(
-    'know_me.journal.views.DRYPermissions.has_permission',
-    autospec=True)
+    "know_me.journal.views.DRYPermissions.has_permission", autospec=True
+)
 @mock.patch(
-    'know_me.journal.views.HasKMUserAccess.has_permission',
-    autospec=True)
+    "know_me.journal.views.HasKMUserAccess.has_permission", autospec=True
+)
 def test_check_permissions(mock_km_user_permission, mock_dry_permissions):
     """
     The view should check for model permissions as well as if the
@@ -26,16 +26,17 @@ def test_check_permissions(mock_km_user_permission, mock_dry_permissions):
 
 
 @mock.patch(
-    'know_me.journal.views.KMUserAccessFilterBackend.filter_queryset',
+    "know_me.journal.views.KMUserAccessFilterBackend.filter_queryset",
     autospec=True,
-    return_value=models.Entry.objects.none())
+    return_value=models.Entry.objects.none(),
+)
 def test_filter_queryset(mock_filter, api_rf):
     """
     The queryset returned by the view should be passed through a filter
     to restrict access.
     """
     view = views.EntryListView()
-    view.request = view.initialize_request(api_rf.get('/'))
+    view.request = view.initialize_request(api_rf.get("/"))
 
     queryset = models.Entry.objects.none()
 
@@ -58,13 +59,14 @@ def test_filter_queryset_created_after(api_rf, entry_factory, km_user_factory):
     earlier = now - datetime.timedelta(hours=1)
     earliest = earlier - datetime.timedelta(hours=1)
 
-    with mock.patch('django.utils.timezone.now', return_value=earliest):
+    with mock.patch("django.utils.timezone.now", return_value=earliest):
         entry_factory()
 
     view = views.EntryListView()
-    view.kwargs = {'pk': km_user.pk}
+    view.kwargs = {"pk": km_user.pk}
     view.request = view.initialize_request(
-        api_rf.get('/', {'created_at__gte': earlier}))
+        api_rf.get("/", {"created_at__gte": earlier})
+    )
 
     query = models.Entry.objects.all()
 
@@ -72,9 +74,8 @@ def test_filter_queryset_created_after(api_rf, entry_factory, km_user_factory):
 
 
 def test_filter_queryset_created_before(
-        api_rf,
-        entry_factory,
-        km_user_factory):
+    api_rf, entry_factory, km_user_factory
+):
     """
     The client should be able to use GET parameters to provide a max
     'created_at' value.
@@ -88,13 +89,14 @@ def test_filter_queryset_created_before(
     later = now + datetime.timedelta(hours=1)
     latest = later + datetime.timedelta(hours=1)
 
-    with mock.patch('django.utils.timezone.now', return_value=latest):
+    with mock.patch("django.utils.timezone.now", return_value=latest):
         entry_factory()
 
     view = views.EntryListView()
-    view.kwargs = {'pk': km_user.pk}
+    view.kwargs = {"pk": km_user.pk}
     view.request = view.initialize_request(
-        api_rf.get('/', {'created_at__lte': later}))
+        api_rf.get("/", {"created_at__lte": later})
+    )
 
     query = models.Entry.objects.all()
 
@@ -110,14 +112,13 @@ def test_filter_queryset_keyword(api_rf, entry_factory, km_user_factory):
     api_rf.user = km_user.user
 
     foo_entry = entry_factory(
-        km_user=km_user,
-        text='This is an entry about foo only.')
-    entry_factory(km_user=km_user, text='This is an entry about bar only.')
+        km_user=km_user, text="This is an entry about foo only."
+    )
+    entry_factory(km_user=km_user, text="This is an entry about bar only.")
 
     view = views.EntryListView()
-    view.kwargs = {'pk': km_user.pk}
-    view.request = view.initialize_request(
-        api_rf.get('/', {'q': 'foo'}))
+    view.kwargs = {"pk": km_user.pk}
+    view.request = view.initialize_request(api_rf.get("/", {"q": "foo"}))
 
     query = models.Entry.objects.all()
 
@@ -133,7 +134,7 @@ def test_get_queryset(api_rf, entry_factory):
     entry_factory()
 
     view = views.EntryListView()
-    view.request = api_rf.get('/')
+    view.request = api_rf.get("/")
 
     expected = models.Entry.objects.all()
 
@@ -145,7 +146,7 @@ def test_get_serializer_class_get(api_rf):
     The view should use the entry list serializer for a GET request.
     """
     view = views.EntryListView()
-    view.request = api_rf.get('/')
+    view.request = api_rf.get("/")
 
     expected = serializers.EntryListSerializer
 
@@ -170,7 +171,7 @@ def test_get_serializer_class_post(api_rf):
     The view should use the entry detail serializer for a POST request.
     """
     view = views.EntryListView()
-    view.request = api_rf.post('/')
+    view.request = api_rf.post("/")
 
     expected = serializers.EntryDetailSerializer
 
@@ -183,11 +184,11 @@ def test_perform_create(km_user_factory):
     serializer when creating a new Journal Entry.
     """
     km_user = km_user_factory()
-    serializer = mock.Mock(name='Mock EntryDetailSerializer')
+    serializer = mock.Mock(name="Mock EntryDetailSerializer")
 
     view = views.EntryListView()
-    view.kwargs = {'pk': km_user.pk}
+    view.kwargs = {"pk": km_user.pk}
 
     assert view.perform_create(serializer) == serializer.save.return_value
     assert serializer.save.call_count == 1
-    assert serializer.save.call_args[1] == {'km_user': km_user}
+    assert serializer.save.call_args[1] == {"km_user": km_user}

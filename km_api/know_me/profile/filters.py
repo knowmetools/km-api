@@ -31,14 +31,14 @@ class ProfileFilterBackend(filters.BaseFilterBackend):
             A queryset containing the profiles accessible to the
             requesting user.
         """
-        km_user = KMUser.objects.get(pk=view.kwargs.get('pk'))
+        km_user = KMUser.objects.get(pk=view.kwargs.get("pk"))
 
         if request.user == km_user.user:
             return queryset
 
         if km_user.km_user_accessors.filter(
-                is_admin=True,
-                user_with_access=request.user).exists():
+            is_admin=True, user_with_access=request.user
+        ).exists():
             return queryset
 
         return queryset.filter(is_private=False)

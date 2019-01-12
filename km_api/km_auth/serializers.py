@@ -14,10 +14,11 @@ class TokenSerializer(serializers.Serializer):
     The actual generation of the auth token is intended to be handled by
     the view that utilizes this serializer.
     """
+
     email = serializers.EmailField(help_text="The user's email address.")
     password = serializers.CharField(
-        help_text="The user's password",
-        style={'input_type': 'password'})
+        help_text="The user's password", style={"input_type": "password"}
+    )
 
     def validate(self, data):
         """
@@ -38,9 +39,12 @@ class TokenSerializer(serializers.Serializer):
 
         if not user:
             raise serializers.ValidationError(
-                _('Invalid credentials. Check your email and password and try'
-                  'again.'))
+                _(
+                    "Invalid credentials. Check your email and password and "
+                    "try again."
+                )
+            )
 
-        data['user'] = user
+        data["user"] = user
 
         return data

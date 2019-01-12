@@ -4,11 +4,11 @@ from know_me.profile import models, serializers, views
 
 
 @mock.patch(
-    'know_me.profile.views.DRYPermissions.has_permission',
-    autospec=True)
+    "know_me.profile.views.DRYPermissions.has_permission", autospec=True
+)
 @mock.patch(
-    'know_me.profile.views.HasKMUserAccess.has_permission',
-    autospec=True)
+    "know_me.profile.views.HasKMUserAccess.has_permission", autospec=True
+)
 def test_check_permissions(mock_km_user_permission, mock_dry_permissions):
     """
     The view should check for model permissions as well as if the
@@ -48,8 +48,9 @@ def test_get_serializer():
 
 
 @mock.patch(
-    'know_me.profile.views.KMUserAccessFilterBackend.filter_queryset',
-    autospec=True)
+    "know_me.profile.views.KMUserAccessFilterBackend.filter_queryset",
+    autospec=True,
+)
 def test_filter_queryset(mock_filter):
     """
     The queryset returned by the view should be passed through a filter
@@ -71,12 +72,12 @@ def test_perform_create(km_user_factory):
     serializer when creating a new category.
     """
     km_user = km_user_factory()
-    serializer = mock.Mock(name='Mock MediaResourceCategorySerializer')
+    serializer = mock.Mock(name="Mock MediaResourceCategorySerializer")
 
     view = views.MediaResourceCategoryListView()
-    view.kwargs = {'pk': km_user.pk}
+    view.kwargs = {"pk": km_user.pk}
 
     assert view.perform_create(serializer) == serializer.save.return_value
 
     assert serializer.save.call_count == 1
-    assert serializer.save.call_args[1] == {'km_user': km_user}
+    assert serializer.save.call_args[1] == {"km_user": km_user}

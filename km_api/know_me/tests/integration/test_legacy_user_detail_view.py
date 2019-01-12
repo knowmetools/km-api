@@ -24,10 +24,8 @@ def test_delete_legacy_user(api_client, legacy_user_factory, user_factory):
 
 @pytest.mark.integration
 def test_get_legacy_user(
-        api_client,
-        api_rf,
-        legacy_user_factory,
-        user_factory):
+    api_client, api_rf, legacy_user_factory, user_factory
+):
     """
     Sending a GET request to the view should return the information of
     the specified legacy user.
@@ -44,8 +42,8 @@ def test_get_legacy_user(
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.LegacyUserSerializer(
-        legacy_user,
-        context={'request': request})
+        legacy_user, context={"request": request}
+    )
 
     assert response.data == serializer.data
 
@@ -59,8 +57,8 @@ def test_patch_legacy_user(api_client, legacy_user_factory, user_factory):
     user = user_factory(is_staff=True)
     api_client.force_authenticate(user=user)
 
-    legacy_user = legacy_user_factory(email='old@example.com')
-    data = {'email': 'new@example.com'}
+    legacy_user = legacy_user_factory(email="old@example.com")
+    data = {"email": "new@example.com"}
 
     url = legacy_user.get_absolute_url()
     response = api_client.patch(url, data)
@@ -68,4 +66,4 @@ def test_patch_legacy_user(api_client, legacy_user_factory, user_factory):
     legacy_user.refresh_from_db()
 
     assert response.status_code == status.HTTP_200_OK
-    assert legacy_user.email == data['email']
+    assert legacy_user.email == data["email"]

@@ -5,9 +5,7 @@ from rest_framework import pagination
 from know_me import models, serializers, views
 
 
-@mock.patch(
-    'know_me.views.DRYPermissions.has_permission',
-    autospec=True)
+@mock.patch("know_me.views.DRYPermissions.has_permission", autospec=True)
 def test_check_permissions(mock_dry_permissions):
     """
     The view should check for model permissions.

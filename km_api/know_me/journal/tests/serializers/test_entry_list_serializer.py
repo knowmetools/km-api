@@ -2,11 +2,8 @@ from know_me.journal import serializers
 
 
 def test_serialize(
-        api_rf,
-        entry_comment_factory,
-        entry_factory,
-        image,
-        serialized_time):
+    api_rf, entry_comment_factory, entry_factory, image, serialized_time
+):
     """
     Test serializing a journal entry.
     """
@@ -18,26 +15,26 @@ def test_serialize(
     entry_comment_factory(entry=entry)
 
     serializer = serializers.EntryListSerializer(
-        entry,
-        context={'request': request})
+        entry, context={"request": request}
+    )
 
     comments_url = api_rf.get(entry.get_comments_url()).build_absolute_uri()
     attachment_url = api_rf.get(entry.attachment.url).build_absolute_uri()
 
     expected = {
-        'id': entry.id,
-        'url': request.build_absolute_uri(),
-        'created_at': serialized_time(entry.created_at),
-        'updated_at': serialized_time(entry.updated_at),
-        'attachment': attachment_url,
-        'comment_count': entry.comments.count(),
-        'comments_url': comments_url,
-        'km_user_id': entry.km_user.id,
-        'permissions': {
-            'read': entry.has_object_read_permission(request),
-            'write': entry.has_object_write_permission(request),
+        "id": entry.id,
+        "url": request.build_absolute_uri(),
+        "created_at": serialized_time(entry.created_at),
+        "updated_at": serialized_time(entry.updated_at),
+        "attachment": attachment_url,
+        "comment_count": entry.comments.count(),
+        "comments_url": comments_url,
+        "km_user_id": entry.km_user.id,
+        "permissions": {
+            "read": entry.has_object_read_permission(request),
+            "write": entry.has_object_write_permission(request),
         },
-        'text': entry.text,
+        "text": entry.text,
     }
 
     assert serializer.data == expected

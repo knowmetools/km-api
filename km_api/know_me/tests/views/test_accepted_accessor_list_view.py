@@ -3,9 +3,7 @@ from unittest import mock
 from know_me import serializers, views
 
 
-@mock.patch(
-    'know_me.views.DRYPermissions.has_permission',
-    autospec=True)
+@mock.patch("know_me.views.DRYPermissions.has_permission", autospec=True)
 def test_check_permissions(mock_dry_permissions):
     """
     The view should check for model permissions.
@@ -29,7 +27,7 @@ def test_get_queryset(api_rf, km_user_accessor_factory, user_factory):
     km_user_accessor_factory(is_accepted=False, user_with_access=user)
 
     view = views.AcceptedAccessorListView()
-    view.request = api_rf.get('/')
+    view.request = api_rf.get("/")
 
     expected = user.km_user_accessors.filter(is_accepted=True)
 

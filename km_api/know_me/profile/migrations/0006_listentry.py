@@ -9,24 +9,64 @@ import permission_utils.model_mixins
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('profile', '0005_profileitem'),
-    ]
+    dependencies = [("profile", "0005_profileitem")]
 
     operations = [
         migrations.CreateModel(
-            name='ListEntry',
+            name="ListEntry",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='The time that the list entry was created.', verbose_name='created at')),
-                ('text', models.CharField(help_text='The text associated with the entry.', max_length=255, verbose_name='text')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='The time that the list entry was last updated.', verbose_name='updated at')),
-                ('profile_item', models.ForeignKey(help_text='The profile item that the list entry belongs to.', on_delete=django.db.models.deletion.CASCADE, related_name='list_entries', related_query_name='list_entry', to='profile.ProfileItem', verbose_name='profile item')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The time that the list entry was created.",
+                        verbose_name="created at",
+                    ),
+                ),
+                (
+                    "text",
+                    models.CharField(
+                        help_text="The text associated with the entry.",
+                        max_length=255,
+                        verbose_name="text",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="The time that the list entry was last updated.",
+                        verbose_name="updated at",
+                    ),
+                ),
+                (
+                    "profile_item",
+                    models.ForeignKey(
+                        help_text="The profile item that the list entry belongs to.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="list_entries",
+                        related_query_name="list_entry",
+                        to="profile.ProfileItem",
+                        verbose_name="profile item",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'profile item list entry',
-                'verbose_name_plural': 'profile item list entries',
+                "verbose_name": "profile item list entry",
+                "verbose_name_plural": "profile item list entries",
             },
-            bases=(permission_utils.model_mixins.IsAuthenticatedMixin, models.Model),
-        ),
+            bases=(
+                permission_utils.model_mixins.IsAuthenticatedMixin,
+                models.Model,
+            ),
+        )
     ]

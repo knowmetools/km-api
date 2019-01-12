@@ -37,9 +37,9 @@ def get_km_user_image_upload_path(km_user, imagename):
             The original image filename prefixed with
             `users/<user_id>/{file}`.
     """
-    return 'know-me/users/{id}/images/{file}'.format(
-            file=imagename,
-            id=km_user.id)
+    return "know-me/users/{id}/images/{file}".format(
+        file=imagename, id=km_user.id
+    )
 
 
 class Config(SingletonModel):
@@ -49,14 +49,18 @@ class Config(SingletonModel):
     This model is a singleton for holding variables global to the Know
     Me app.
     """
+
     minimum_app_version_ios = models.CharField(
         blank=True,
-        help_text=_('The minimum version of the iOS app that is usable '
-                    'without a required update.'),
-        max_length=31)
+        help_text=_(
+            "The minimum version of the iOS app that is usable "
+            "without a required update."
+        ),
+        max_length=31,
+    )
 
     class Meta:
-        verbose_name = _('config')
+        verbose_name = _("config")
 
     @staticmethod
     def has_read_permission(request):
@@ -90,7 +94,7 @@ class Config(SingletonModel):
         Returns:
             The string 'Config'.
         """
-        return 'Config'
+        return "Config"
 
 
 class KMUser(mixins.IsAuthenticatedMixin, models.Model):
@@ -98,41 +102,50 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
     A KMUser tracks information associated with each user of the
     Know Me app.
     """
+
     created_at = models.DateTimeField(
         auto_now_add=True,
-        help_text=_('The time that the Know Me user was created.'),
-        verbose_name=_('created at'))
+        help_text=_("The time that the Know Me user was created."),
+        verbose_name=_("created at"),
+    )
     image = models.ImageField(
         blank=True,
         help_text=_("The image to use as the user's hero image."),
         max_length=255,
         null=True,
         upload_to=get_km_user_image_upload_path,
-        verbose_name=_('image'))
+        verbose_name=_("image"),
+    )
     is_legacy_user = models.BooleanField(
         default=False,
-        help_text=_('A boolean indicating if the user used a prior version of '
-                    'Know Me.'),
-        verbose_name=_('is legacy user'))
+        help_text=_(
+            "A boolean indicating if the user used a prior version of "
+            "Know Me."
+        ),
+        verbose_name=_("is legacy user"),
+    )
     quote = models.TextField(
         blank=True,
         help_text=_("A quote to introduce the user."),
         null=True,
-        verbose_name=_('quote'))
+        verbose_name=_("quote"),
+    )
     updated_at = models.DateTimeField(
         auto_now=True,
-        help_text=_('The time that the Know Me user was last updated.'),
-        verbose_name=_('updated at'))
+        help_text=_("The time that the Know Me user was last updated."),
+        verbose_name=_("updated at"),
+    )
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        help_text=_('The user who owns the Know Me app account.'),
+        help_text=_("The user who owns the Know Me app account."),
         on_delete=models.CASCADE,
-        related_name='km_user',
-        verbose_name=_('user'))
+        related_name="km_user",
+        verbose_name=_("user"),
+    )
 
     class Meta:
-        verbose_name = _('Know Me user')
-        verbose_name_plural = _('Know Me users')
+        verbose_name = _("Know Me user")
+        verbose_name_plural = _("Know Me users")
 
     def __str__(self):
         """
@@ -160,7 +173,7 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             str:
                 The absolute URL of the instance's detail view.
         """
-        return reverse('know-me:km-user-detail', kwargs={'pk': self.pk})
+        return reverse("know-me:km-user-detail", kwargs={"pk": self.pk})
 
     def get_media_resource_category_list_url(self, request=None):
         """
@@ -179,9 +192,10 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
                 category list view.
         """
         return reverse(
-            'know-me:profile:media-resource-category-list',
-            kwargs={'pk': self.pk},
-            request=request)
+            "know-me:profile:media-resource-category-list",
+            kwargs={"pk": self.pk},
+            request=request,
+        )
 
     def get_media_resource_list_url(self):
         """
@@ -191,8 +205,8 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             The URL of the instance's media resource list view.
         """
         return reverse(
-            'know-me:profile:media-resource-list',
-            kwargs={'pk': self.pk})
+            "know-me:profile:media-resource-list", kwargs={"pk": self.pk}
+        )
 
     def get_profile_list_url(self, request=None):
         """
@@ -209,9 +223,10 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
                 The absolute URL of the instance's profile list view.
         """
         return reverse(
-            'know-me:profile:profile-list',
-            kwargs={'pk': self.pk},
-            request=request)
+            "know-me:profile:profile-list",
+            kwargs={"pk": self.pk},
+            request=request,
+        )
 
     def has_object_read_permission(self, request):
         """
@@ -232,8 +247,8 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             return True
 
         return self.km_user_accessors.filter(
-            is_accepted=True,
-            user_with_access=request.user).exists()
+            is_accepted=True, user_with_access=request.user
+        ).exists()
 
     def has_object_write_permission(self, request):
         """
@@ -252,9 +267,8 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             return True
 
         return self.km_user_accessors.filter(
-            is_accepted=True,
-            is_admin=True,
-            user_with_access=request.user).exists()
+            is_accepted=True, is_admin=True, user_with_access=request.user
+        ).exists()
 
     def share(self, email, is_admin=False):
         """
@@ -272,40 +286,37 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         """
         if self.km_user_accessors.filter(email=email).exists():
             raise ValidationError(
-                _('%s has already been invited to view your profiles.') % (
-                    email,
-                ))
+                _("%s has already been invited to view your profiles.")
+                % (email,)
+            )
 
         try:
-            user = EmailAddress.objects.get(
-                email=email,
-                is_verified=True).user
+            user = EmailAddress.objects.get(email=email, is_verified=True).user
         except EmailAddress.DoesNotExist:
             user = None
 
         if user is not None:
             if user == self.user:
                 raise ValidationError(
-                    _('You may not share your own user with yourself.'),
+                    _("You may not share your own user with yourself.")
                 )
 
             if self.km_user_accessors.filter(user_with_access=user):
                 raise ValidationError(
-                    _('That user already has access through a different email '
-                      'address.'))
+                    _(
+                        "That user already has access through a different "
+                        "email address."
+                    )
+                )
 
         accessor = KMUserAccessor.objects.create(
-            email=email,
-            is_admin=is_admin,
-            km_user=self,
-            user_with_access=user)
+            email=email, is_admin=is_admin, km_user=self, user_with_access=user
+        )
         accessor.send_invite()
 
         logger.info(
-            'Shared Know Me user %s (ID %d) with %s',
-            self.name,
-            self.id,
-            email)
+            "Shared Know Me user %s (ID %d) with %s", self.name, self.id, email
+        )
 
         return accessor
 
@@ -314,44 +325,52 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
     """
     Model to store KMUser access information.
     """
+
     created_at = models.DateTimeField(
         auto_now_add=True,
-        help_text=_('The time that the accessor was created.'),
-        verbose_name=_('created at'))
+        help_text=_("The time that the accessor was created."),
+        verbose_name=_("created at"),
+    )
     email = models.EmailField(
-        help_text=_('The email address used to invite the user.'),
-        verbose_name=_('email'))
+        help_text=_("The email address used to invite the user."),
+        verbose_name=_("email"),
+    )
     is_accepted = models.BooleanField(
         default=False,
-        help_text=_('The KMUser has accepted the access.'),
-        verbose_name=_('is accepted'))
+        help_text=_("The KMUser has accepted the access."),
+        verbose_name=_("is accepted"),
+    )
     is_admin = models.BooleanField(
         default=False,
-        help_text=_('A boolean indicating if the user has admin access.'),
-        verbose_name=_('is admin'))
+        help_text=_("A boolean indicating if the user has admin access."),
+        verbose_name=_("is admin"),
+    )
     km_user = models.ForeignKey(
-        'know_me.KMUser',
-        help_text=_('The Know Me user this accessor grants access to.'),
+        "know_me.KMUser",
+        help_text=_("The Know Me user this accessor grants access to."),
         on_delete=models.CASCADE,
-        related_name='km_user_accessors',
-        related_query_name='km_user_accessor',
-        verbose_name=_('Know Me user'))
+        related_name="km_user_accessors",
+        related_query_name="km_user_accessor",
+        verbose_name=_("Know Me user"),
+    )
     updated_at = models.DateTimeField(
         auto_now=True,
-        help_text=_('The time that the accessor was last updated.'),
-        verbose_name=_('updated at'))
+        help_text=_("The time that the accessor was last updated."),
+        verbose_name=_("updated at"),
+    )
     user_with_access = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
         on_delete=models.CASCADE,
-        related_name='km_user_accessors',
-        related_query_name='km_user_accessor',
-        verbose_name=_('user'))
+        related_name="km_user_accessors",
+        related_query_name="km_user_accessor",
+        verbose_name=_("user"),
+    )
 
     class Meta(object):
-        unique_together = ('km_user', 'user_with_access')
-        verbose_name = _('Know Me user accessor')
-        verbose_name_plural = _('Know Me user accessors')
+        unique_together = ("km_user", "user_with_access")
+        verbose_name = _("Know Me user accessor")
+        verbose_name_plural = _("Know Me user accessors")
 
     def __str__(self):
         """
@@ -362,14 +381,14 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
                 A string stating which Know Me user the instance gives
                 access to.
         """
-        return 'Accessor for {user}'.format(user=self.km_user.name)
+        return "Accessor for {user}".format(user=self.km_user.name)
 
     @property
     def accept_url(self):
         """
         The absolute URL of the accessor's accept view.
         """
-        return reverse('know-me:accessor-accept', kwargs={'pk': self.pk})
+        return reverse("know-me:accessor-accept", kwargs={"pk": self.pk})
 
     def get_absolute_url(self, request=None):
         """
@@ -387,9 +406,8 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
             current domain is returned.
         """
         return reverse(
-            'know-me:accessor-detail',
-            kwargs={'pk': self.pk},
-            request=request)
+            "know-me:accessor-detail", kwargs={"pk": self.pk}, request=request
+        )
 
     def has_object_accept_permission(self, request):
         """
@@ -456,46 +474,45 @@ class KMUserAccessor(mixins.IsAuthenticatedMixin, models.Model):
         """
         Send a notification email about the invite.
         """
-        context = {
-            'name': self.km_user.name,
-        }
+        context = {"name": self.km_user.name}
 
         email_utils.send_email(
             context=context,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[self.email],
-            subject=_('You Have Been Invited to Follow Someone on Know Me'),
-            template_name='know_me/emails/invite',
+            subject=_("You Have Been Invited to Follow Someone on Know Me"),
+            template_name="know_me/emails/invite",
         )
 
-        logger.info(
-            'Sent follow invitation to %s',
-            self.email,
-        )
+        logger.info("Sent follow invitation to %s", self.email)
 
 
 class LegacyUser(models.Model):
     """
     Model to track legacy users.
     """
+
     created_at = models.DateTimeField(
         auto_now_add=True,
-        help_text=_('The time the legacy user was created.'),
-        verbose_name=_('created at'))
+        help_text=_("The time the legacy user was created."),
+        verbose_name=_("created at"),
+    )
     email = models.EmailField(
         help_text=_("The user's email address."),
         max_length=255,
         unique=True,
-        verbose_name=_('email'))
+        verbose_name=_("email"),
+    )
     updated_at = models.DateTimeField(
         auto_now=True,
-        help_text=_('The time the legacy user was last updated.'),
-        verbose_name=_('updated at'))
+        help_text=_("The time the legacy user was last updated."),
+        verbose_name=_("updated at"),
+    )
 
     class Meta:
-        ordering = ('email',)
-        verbose_name = _('legacy user')
-        verbose_name_plural = _('legacy users')
+        ordering = ("email",)
+        verbose_name = _("legacy user")
+        verbose_name_plural = _("legacy users")
 
     def __str__(self):
         """
@@ -541,39 +558,40 @@ class LegacyUser(models.Model):
         Returns:
             The absolute URL of the instance's detail view.
         """
-        return reverse('know-me:legacy-user-detail', kwargs={'pk': self.pk})
+        return reverse("know-me:legacy-user-detail", kwargs={"pk": self.pk})
 
 
 class Subscription(mixins.IsAuthenticatedMixin, models.Model):
     """
     A subscription to Know Me.
     """
+
     is_active = models.BooleanField(
-        help_text=_('A boolean indicating if the subscription is active.'),
-        verbose_name=_('is active'),
+        help_text=_("A boolean indicating if the subscription is active."),
+        verbose_name=_("is active"),
     )
     time_created = models.DateTimeField(
         auto_now_add=True,
-        help_text=_('The time that the subscription instance was created.'),
-        verbose_name=_('creation time'),
+        help_text=_("The time that the subscription instance was created."),
+        verbose_name=_("creation time"),
     )
     time_updated = models.DateTimeField(
         auto_now=True,
         help_text=_("The time of the subscription's last update."),
-        verbose_name=_('last update time'),
+        verbose_name=_("last update time"),
     )
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
-        help_text=_('The user who has a Know Me subscription'),
+        help_text=_("The user who has a Know Me subscription"),
         on_delete=models.CASCADE,
-        related_name='know_me_subscription',
-        verbose_name=_('user'),
+        related_name="know_me_subscription",
+        verbose_name=_("user"),
     )
 
     class Meta:
-        ordering = ('time_created',)
-        verbose_name = _('Know Me subscription')
-        verbose_name_plural = _('Know Me subscriptions')
+        ordering = ("time_created",)
+        verbose_name = _("Know Me subscription")
+        verbose_name_plural = _("Know Me subscriptions")
 
     def __str__(self):
         """
@@ -583,8 +601,8 @@ class Subscription(mixins.IsAuthenticatedMixin, models.Model):
             A string containing the name of the user who owns the
             subscription.
         """
-        return 'Know Me subscription for {user}'.format(
-            user=self.user.get_full_name(),
+        return "Know Me subscription for {user}".format(
+            user=self.user.get_full_name()
         )
 
 
@@ -592,34 +610,35 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
     """
     Data related to a subscription through Apple.
     """
+
     receipt_data = models.TextField(
-        help_text=_('The receipt data that is base 64 encoded.'),
-        verbose_name=_('receipt data'),
+        help_text=_("The receipt data that is base 64 encoded."),
+        verbose_name=_("receipt data"),
     )
     subscription = models.OneToOneField(
-        'know_me.Subscription',
-        help_text=_('The Know Me subscription the data belongs to.'),
+        "know_me.Subscription",
+        help_text=_("The Know Me subscription the data belongs to."),
         on_delete=models.CASCADE,
-        related_name='apple_data',
-        verbose_name=_('subscription'),
+        related_name="apple_data",
+        verbose_name=_("subscription"),
     )
     time_created = models.DateTimeField(
         auto_now_add=True,
         help_text=_(
-            'The time that the Apple subscription was initially recorded.',
+            "The time that the Apple subscription was initially recorded."
         ),
-        verbose_name=_('creation time'),
+        verbose_name=_("creation time"),
     )
     time_updated = models.DateTimeField(
         auto_now=True,
         help_text=_("The time of the subscription's last update."),
-        verbose_name=_('last update time'),
+        verbose_name=_("last update time"),
     )
 
     class Meta:
-        ordering = ('time_created',)
-        verbose_name = _('Apple subscription')
-        verbose_name_plural = _('Apple subscriptions')
+        ordering = ("time_created",)
+        verbose_name = _("Apple subscription")
+        verbose_name_plural = _("Apple subscriptions")
 
     def __str__(self):
         """
@@ -629,8 +648,8 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
             A string containing information about the parent
             subscription.
         """
-        return 'Apple subscription data for the {subscription}'.format(
-            subscription=self.subscription,
+        return "Apple subscription data for the {subscription}".format(
+            subscription=self.subscription
         )
 
     def has_object_read_permission(self, request):

@@ -25,8 +25,8 @@ class UserManager(BaseUserManager):
         Returns:
             The new superuser instance.
         """
-        kwargs['is_staff'] = True
-        kwargs['is_superuser'] = True
+        kwargs["is_staff"] = True
+        kwargs["is_superuser"] = True
 
         return self.create_user(*args, **kwargs)
 
@@ -48,10 +48,7 @@ class UserManager(BaseUserManager):
         Returns:
             A new ``User`` instance with the given attributes.
         """
-        user = self.model(
-            first_name=first_name,
-            last_name=last_name,
-            **kwargs)
+        user = self.model(first_name=first_name, last_name=last_name, **kwargs)
         user.set_password(password)
         user.save()
 

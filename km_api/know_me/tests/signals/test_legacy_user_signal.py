@@ -2,9 +2,8 @@ from know_me import models
 
 
 def test_unverified_legacy(
-        email_factory,
-        km_user_factory,
-        legacy_user_factory):
+    email_factory, km_user_factory, legacy_user_factory
+):
     """
     Saving an email address that is not verified should not do anything.
     """
@@ -38,9 +37,8 @@ def test_verify_email(email_factory, km_user_factory):
 
 
 def test_verify_legacy_email(
-        email_factory,
-        km_user_factory,
-        legacy_user_factory):
+    email_factory, km_user_factory, legacy_user_factory
+):
     """
     If a user verifies an email address that corresponds to a legacy
     user, that user should be marked accordingly and the legacy user

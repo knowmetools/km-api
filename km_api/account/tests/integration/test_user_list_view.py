@@ -9,7 +9,7 @@ from rest_framework.settings import api_settings
 from account import serializers
 
 
-url = reverse('account:user-list')
+url = reverse("account:user-list")
 
 
 @pytest.mark.integration
@@ -30,8 +30,7 @@ def test_get_user_list(api_client, user_factory):
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.UserListSerializer(
-        get_user_model().objects.all()[:api_settings.PAGE_SIZE],
-        many=True,
+        get_user_model().objects.all()[: api_settings.PAGE_SIZE], many=True
     )
 
-    assert response.data['results'] == serializer.data
+    assert response.data["results"] == serializer.data

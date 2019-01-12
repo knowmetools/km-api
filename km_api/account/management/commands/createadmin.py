@@ -13,8 +13,11 @@ class Command(BaseCommand):
     """
     Command to create an admin user.
     """
-    help = ('Creates an admin user with the credentials given in the '
-            'ADMIN_EMAIL and ADMIN_PASSWORD environment variables.')
+
+    help = (
+        "Creates an admin user with the credentials given in the "
+        "ADMIN_EMAIL and ADMIN_PASSWORD environment variables."
+    )
 
     def handle(self, *args, **options):
         """
@@ -26,8 +29,8 @@ class Command(BaseCommand):
             options:
                 Keyword arguments given to the command.
         """
-        email = os.environ['ADMIN_EMAIL']
-        password = os.environ['ADMIN_PASSWORD']
+        email = os.environ["ADMIN_EMAIL"]
+        password = os.environ["ADMIN_PASSWORD"]
 
         if EmailAddress.objects.filter(email=email).exists():
             email_instance = EmailAddress.objects.get(email=email)
@@ -40,20 +43,21 @@ class Command(BaseCommand):
             admin.is_superuser = True
             admin.save()
 
-            self.stdout.write(self.style.NOTICE('Updated existing user.'))
+            self.stdout.write(self.style.NOTICE("Updated existing user."))
         else:
             admin = get_user_model().objects.create_superuser(
-                first_name='Admin',
-                last_name='User',
-                password=password)
+                first_name="Admin", last_name="User", password=password
+            )
 
             EmailAddress.objects.create(
-                email=email,
-                is_primary=True,
-                is_verified=True,
-                user=admin)
+                email=email, is_primary=True, is_verified=True, user=admin
+            )
 
-            self.stdout.write(self.style.NOTICE('Created new admin user.'))
+            self.stdout.write(self.style.NOTICE("Created new admin user."))
 
-        self.stdout.write(self.style.SUCCESS(
-            'Successfully created admin user with a verified email address.'))
+        self.stdout.write(
+            self.style.SUCCESS(
+                "Successfully created admin user with a verified email "
+                "address."
+            )
+        )

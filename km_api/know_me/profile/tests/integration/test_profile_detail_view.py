@@ -39,8 +39,8 @@ def test_get_profile(api_client, api_rf, profile_factory):
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.ProfileDetailSerializer(
-        profile,
-        context={'request': request})
+        profile, context={"request": request}
+    )
 
     assert response.data == serializer.data
 
@@ -51,12 +51,10 @@ def test_update_profile(api_client, profile_factory):
     Sending a PATCH request to the view should update the specified
     profile's information.
     """
-    profile = profile_factory(name='Old Name')
+    profile = profile_factory(name="Old Name")
     api_client.force_authenticate(user=profile.km_user.user)
 
-    data = {
-        'name': 'New Name',
-    }
+    data = {"name": "New Name"}
 
     url = profile.get_absolute_url()
     response = api_client.patch(url, data)
@@ -64,4 +62,4 @@ def test_update_profile(api_client, profile_factory):
     profile.refresh_from_db()
 
     assert response.status_code == status.HTTP_200_OK
-    assert profile.name == data['name']
+    assert profile.name == data["name"]

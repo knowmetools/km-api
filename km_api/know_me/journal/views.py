@@ -14,8 +14,8 @@ from permission_utils.view_mixins import DocumentActionMixin
 
 
 class EntryCommentDetailView(
-        DocumentActionMixin,
-        generics.RetrieveUpdateDestroyAPIView):
+    DocumentActionMixin, generics.RetrieveUpdateDestroyAPIView
+):
     """
     delete:
     Delete a specific comment on a journal entry.
@@ -36,6 +36,7 @@ class EntryCommentDetailView(
 
     Only the user who made the comment is allowed to update it.
     """
+
     permission_classes = (DRYPermissions,)
     queryset = models.EntryComment.objects.all()
     serializer_class = serializers.EntryCommentSerializer
@@ -49,9 +50,11 @@ class EntryCommentListView(generics.ListCreateAPIView):
     post:
     Add a new comment to a specific journal entry.
     """
+
     permission_classes = (
         DRYPermissions,
-        permissions.HasEntryCommentListPermissions)
+        permissions.HasEntryCommentListPermissions,
+    )
     serializer_class = serializers.EntryCommentSerializer
 
     def get_queryset(self):
@@ -62,7 +65,7 @@ class EntryCommentListView(generics.ListCreateAPIView):
             A queryset containing the comments attached to the journal
             entry whose ID is specified in the URL.
         """
-        entry = models.Entry.objects.get(pk=self.kwargs.get('pk'))
+        entry = models.Entry.objects.get(pk=self.kwargs.get("pk"))
 
         return entry.comments.all()
 
@@ -78,7 +81,7 @@ class EntryCommentListView(generics.ListCreateAPIView):
         Returns:
             The newly created comment instance.
         """
-        entry = models.Entry.objects.get(pk=self.kwargs.get('pk'))
+        entry = models.Entry.objects.get(pk=self.kwargs.get("pk"))
 
         return serializer.save(entry=entry, user=self.request.user)
 
@@ -97,6 +100,7 @@ class EntryDetailView(generics.RetrieveUpdateDestroyAPIView):
     put:
     Update a specific journal entry.
     """
+
     permission_classes = (DRYPermissions,)
     queryset = models.Entry.objects.all()
     serializer_class = serializers.EntryDetailSerializer
@@ -113,16 +117,11 @@ class EntryListView(generics.ListCreateAPIView):
     post:
     Create a new journal entry for the specified Know Me user.
     """
-    filter_backends = (
-        KMUserAccessFilterBackend,
-        filters.DjangoFilterBackend)
-    filter_fields = {
-        'created_at': ['gte', 'lte'],
-    }
+
+    filter_backends = (KMUserAccessFilterBackend, filters.DjangoFilterBackend)
+    filter_fields = {"created_at": ["gte", "lte"]}
     pagination_class = pagination.PageNumberPagination
-    permission_classes = (
-        DRYPermissions,
-        HasKMUserAccess)
+    permission_classes = (DRYPermissions, HasKMUserAccess)
     queryset = models.Entry.objects.all()
 
     def filter_queryset(self, queryset):
@@ -137,7 +136,7 @@ class EntryListView(generics.ListCreateAPIView):
         """
         queryset = super().filter_queryset(queryset)
 
-        search_term = self.request.query_params.get('q', None)
+        search_term = self.request.query_params.get("q", None)
         if search_term is not None:
             queryset = watson.filter(queryset, search_term)
 
@@ -151,7 +150,7 @@ class EntryListView(generics.ListCreateAPIView):
             The entry detail serializer for a POST request and the list
             serializer for any other method.
         """
-        if self.request is None or self.request.method == 'POST':
+        if self.request is None or self.request.method == "POST":
             return serializers.EntryDetailSerializer
 
         return serializers.EntryListSerializer
@@ -173,6 +172,6 @@ class EntryListView(generics.ListCreateAPIView):
         Returns:
             The newly created serializer instance.
         """
-        km_user = KMUser.objects.get(pk=self.kwargs.get('pk'))
+        km_user = KMUser.objects.get(pk=self.kwargs.get("pk"))
 
         return serializer.save(km_user=km_user)

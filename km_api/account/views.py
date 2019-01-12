@@ -20,6 +20,7 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
     patch:
     Endpoint for partially updating the current user's information.
     """
+
     permission_classes = (IsAuthenticated,)
     serializer_class = serializers.UserSerializer
 
@@ -38,6 +39,7 @@ class UserListView(generics.ListAPIView):
     get:
     List all users.
     """
+
     pagination_class = pagination.PageNumberPagination
     permission_classes = (permissions.IsStaff,)
     queryset = get_user_model().objects.all()

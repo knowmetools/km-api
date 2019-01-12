@@ -5,7 +5,7 @@ from account import serializers, views
 
 
 user_detail_view = views.UserDetailView.as_view()
-url = reverse('account:profile')
+url = reverse("account:profile")
 
 
 def test_anonymous(api_rf):
@@ -31,7 +31,7 @@ def test_get_user_details(api_rf, user_factory):
 
     assert response.status_code == status.HTTP_200_OK
 
-    serializer = serializers.UserSerializer(user, context={'request': request})
+    serializer = serializers.UserSerializer(user, context={"request": request})
 
     assert response.data == serializer.data
 
@@ -41,12 +41,10 @@ def test_update_user_details(api_rf, user_factory):
     Sending a PATCH request to the view should update the requesting
     user's information.
     """
-    user = user_factory(first_name='Bob')
+    user = user_factory(first_name="Bob")
     api_rf.user = user
 
-    data = {
-        'first_name': 'John',
-    }
+    data = {"first_name": "John"}
 
     request = api_rf.patch(url, data)
     response = user_detail_view(request)
@@ -54,10 +52,8 @@ def test_update_user_details(api_rf, user_factory):
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.UserSerializer(
-        user,
-        context={'request': request},
-        data=data,
-        partial=True)
+        user, context={"request": request}, data=data, partial=True
+    )
     assert serializer.is_valid()
 
     assert response.data == serializer.data

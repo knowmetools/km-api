@@ -3,7 +3,7 @@ from unittest import mock
 from know_me.profile import models, serializers, views
 
 
-@mock.patch('know_me.profile.views.DRYPermissions.has_permission')
+@mock.patch("know_me.profile.views.DRYPermissions.has_permission")
 def test_check_permissions(mock_dry_permissions):
     """
     The view should use DRYPermissions to check object permissions.

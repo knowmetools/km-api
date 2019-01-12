@@ -7,8 +7,8 @@ from know_me.profile import models, serializers
 
 @pytest.mark.integration
 def test_delete_media_resource_category(
-        api_client,
-        media_resource_category_factory):
+    api_client, media_resource_category_factory
+):
     """
     Sending a DELETE request to the view should delete the category with
     the given ID.
@@ -25,9 +25,8 @@ def test_delete_media_resource_category(
 
 @pytest.mark.integration
 def test_retrieve_media_resource_category(
-        api_client,
-        api_rf,
-        media_resource_category_factory):
+    api_client, api_rf, media_resource_category_factory
+):
     """
     Sending a GET request to the view should return the details of the
     category with the given ID.
@@ -44,26 +43,24 @@ def test_retrieve_media_resource_category(
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.MediaResourceCategorySerializer(
-        category,
-        context={'request': request})
+        category, context={"request": request}
+    )
 
     assert response.data == serializer.data
 
 
 @pytest.mark.integration
 def test_update_media_resource_category(
-        api_client,
-        media_resource_category_factory):
+    api_client, media_resource_category_factory
+):
     """
     Sending a PATCH request to the view should update the category with
     the given ID.
     """
-    category = media_resource_category_factory(name='Old Name')
+    category = media_resource_category_factory(name="Old Name")
     api_client.force_authenticate(user=category.km_user.user)
 
-    data = {
-        'name': 'New Name',
-    }
+    data = {"name": "New Name"}
 
     url = category.get_absolute_url()
     response = api_client.patch(url, data)
@@ -72,4 +69,4 @@ def test_update_media_resource_category(
 
     category.refresh_from_db()
 
-    assert category.name == data['name']
+    assert category.name == data["name"]

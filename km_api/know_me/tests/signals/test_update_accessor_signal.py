@@ -1,10 +1,9 @@
+"""Tests for accessor update signal."""
 
 
 def test_update_accessor_duplicate(
-        email_factory,
-        km_user_factory,
-        km_user_accessor_factory,
-        user_factory):
+    email_factory, km_user_factory, km_user_accessor_factory, user_factory
+):
     """
     If a user is granted access through two emails, one verified and one
     unverified, then when they verify the second email, a duplicate
@@ -17,9 +16,8 @@ def test_update_accessor_duplicate(
     e2 = email_factory(is_verified=False, user=user)
 
     km_user_accessor_factory(
-        email=e1.email,
-        km_user=km_user,
-        user_with_access=user)
+        email=e1.email, km_user=km_user, user_with_access=user
+    )
     accessor = km_user_accessor_factory(email=e2.email, km_user=km_user)
 
     e2.is_verified = True
@@ -45,8 +43,8 @@ def test_update_accessor_user(email_factory, km_user_accessor_factory):
 
 
 def test_update_accessor_user_unverified_email(
-        email_factory,
-        km_user_accessor_factory):
+    email_factory, km_user_accessor_factory
+):
     """
     If the email address is not verified, the accessor should not be
     updated.
@@ -62,9 +60,8 @@ def test_update_accessor_user_unverified_email(
 
 
 def test_update_accessor_with_user(
-        email_factory,
-        km_user_accessor_factory,
-        user_factory):
+    email_factory, km_user_accessor_factory, user_factory
+):
     """
     If the accessor already has an associated user it should not be
     updated.
@@ -72,8 +69,8 @@ def test_update_accessor_with_user(
     user = user_factory()
     email = email_factory(is_verified=True)
     accessor = km_user_accessor_factory(
-        email=email.email,
-        user_with_access=user)
+        email=email.email, user_with_access=user
+    )
 
     email.save()
 

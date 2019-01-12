@@ -5,23 +5,51 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('know_me', '0003_config'),
-    ]
+    dependencies = [("know_me", "0003_config")]
 
     operations = [
         migrations.CreateModel(
-            name='LegacyUser',
+            name="LegacyUser",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='The time the legacy user was created.', verbose_name='created at')),
-                ('email', models.EmailField(help_text="The user's email address.", max_length=255, unique=True, verbose_name='email')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='The time the legacy user was last updated.', verbose_name='updated at')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The time the legacy user was created.",
+                        verbose_name="created at",
+                    ),
+                ),
+                (
+                    "email",
+                    models.EmailField(
+                        help_text="The user's email address.",
+                        max_length=255,
+                        unique=True,
+                        verbose_name="email",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="The time the legacy user was last updated.",
+                        verbose_name="updated at",
+                    ),
+                ),
             ],
             options={
-                'ordering': ('email',),
-                'verbose_name': 'legacy user',
-                'verbose_name_plural': 'legacy users',
+                "ordering": ("email",),
+                "verbose_name": "legacy user",
+                "verbose_name_plural": "legacy users",
             },
-        ),
+        )
     ]

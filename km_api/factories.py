@@ -14,20 +14,22 @@ class EmailFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``EmailAddress`` instances.
     """
-    email = factory.Sequence(lambda n: 'test{}@example.com'.format(n))
-    user = factory.SubFactory('factories.UserFactory')
+
+    email = factory.Sequence(lambda n: "test{}@example.com".format(n))
+    user = factory.SubFactory("factories.UserFactory")
 
     class Meta:
-        model = 'rest_email_auth.EmailAddress'
+        model = "rest_email_auth.EmailAddress"
 
 
 class UserFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``User`` instances.
     """
-    first_name = 'John'
-    last_name = 'Doe'
-    password = 'password'
+
+    first_name = "John"
+    last_name = "Doe"
+    password = "password"
 
     class Meta:
         model = get_user_model()
@@ -39,12 +41,13 @@ class UserFactory(factory.django.DjangoModelFactory):
         """
         if obj.email_addresses.count() == 0:
             EmailAddress.objects.create(
-                email='{name}{id}@example.com'.format(
-                    id=obj.id,
-                    name=obj.first_name),
+                email="{name}{id}@example.com".format(
+                    id=obj.id, name=obj.first_name
+                ),
                 is_primary=True,
                 is_verified=True,
-                user=obj)
+                user=obj,
+            )
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):

@@ -10,9 +10,10 @@ class MediaStorage(S3Boto3Storage):
 
     Prefixes all file paths with ``media/``.
     """
-    default_acl = 'private'
+
+    default_acl = "private"
     encryption = True
-    location = 'media'
+    location = "media"
 
 
 class StaticStorage(S3Boto3Storage):
@@ -21,6 +22,7 @@ class StaticStorage(S3Boto3Storage):
 
     Prefixes all file paths with ``static/``.
     """
-    default_acl = 'public-read'
-    location = 'static'
+
+    default_acl = "public-read"
+    location = "static"
     querystring_auth = False

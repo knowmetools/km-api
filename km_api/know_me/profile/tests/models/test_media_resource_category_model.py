@@ -10,8 +10,8 @@ def test_create(km_user_factory):
     Test creating a media resource.
     """
     models.MediaResourceCategory.objects.create(
-        km_user=km_user_factory(),
-        name='Test Category')
+        km_user=km_user_factory(), name="Test Category"
+    )
 
 
 def test_get_absolute_url(media_resource_category_factory):
@@ -20,26 +20,27 @@ def test_get_absolute_url(media_resource_category_factory):
     """
     category = media_resource_category_factory()
     expected = reverse(
-        'know-me:profile:media-resource-category-detail',
-        kwargs={'pk': category.pk})
+        "know-me:profile:media-resource-category-detail",
+        kwargs={"pk": category.pk},
+    )
 
     assert category.get_absolute_url() == expected
 
 
 @mock.patch(
-    'know_me.models.KMUser.has_object_read_permission',
+    "know_me.models.KMUser.has_object_read_permission",
     autospec=True,
-    return_value=True)
+    return_value=True,
+)
 def test_has_object_read_permission(
-        mock_parent_permission,
-        api_rf,
-        media_resource_category_factory):
+    mock_parent_permission, api_rf, media_resource_category_factory
+):
     """
     The permissions on a media resource category should be dictated by
     the permissions on the Know Me user who owns the category.
     """
     category = media_resource_category_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     mock_func = category.km_user.has_object_read_permission
     expected = mock_func.return_value
@@ -51,19 +52,19 @@ def test_has_object_read_permission(
 
 
 @mock.patch(
-    'know_me.models.KMUser.has_object_write_permission',
+    "know_me.models.KMUser.has_object_write_permission",
     autospec=True,
-    return_value=True)
+    return_value=True,
+)
 def test_has_object_write_permission(
-        mock_parent_permission,
-        api_rf,
-        media_resource_category_factory):
+    mock_parent_permission, api_rf, media_resource_category_factory
+):
     """
     The permissions on a media resource category should be dictated by
     the permissions on the Know Me user who owns the category.
     """
     category = media_resource_category_factory()
-    request = api_rf.get('/')
+    request = api_rf.get("/")
 
     mock_func = category.km_user.has_object_write_permission
     expected = mock_func.return_value

@@ -3,8 +3,10 @@ from unittest import mock
 from know_me.profile import serializers, views
 
 
-@mock.patch('know_me.profile.views.DRYPermissions.has_permission')
-@mock.patch('know_me.profile.views.permissions.HasProfileTopicListPermissions.has_permission')  # noqa
+@mock.patch("know_me.profile.views.DRYPermissions.has_permission")
+@mock.patch(
+    "know_me.profile.views.permissions.HasProfileTopicListPermissions.has_permission"  # noqa
+)
 def test_check_permissions(mock_list_permissions, mock_dry_permissions):
     """
     The view should use the appropriate permissions checks.
@@ -27,7 +29,7 @@ def test_get_queryset(profile_factory, profile_topic_factory):
     profile_topic_factory()
 
     view = views.ProfileTopicListView()
-    view.kwargs = {'pk': profile.pk}
+    view.kwargs = {"pk": profile.pk}
 
     assert list(view.get_queryset()) == list(profile.topics.all())
 
@@ -37,7 +39,7 @@ def test_get_serializer_class_get(api_rf):
     The view should use the list serializer for a GET request.
     """
     view = views.ProfileTopicListView()
-    view.request = api_rf.get('/')
+    view.request = api_rf.get("/")
 
     expected = serializers.ProfileTopicListSerializer
 
@@ -62,7 +64,7 @@ def test_get_serializer_class_post(api_rf):
     The view should use the detail serializer for a POST request.
     """
     view = views.ProfileTopicListView()
-    view.request = api_rf.post('/')
+    view.request = api_rf.post("/")
 
     expected = serializers.ProfileTopicDetailSerializer
 
@@ -77,12 +79,12 @@ def test_perform_create(profile_factory):
     profile = profile_factory()
 
     view = views.ProfileTopicListView()
-    view.kwargs = {'pk': profile.pk}
+    view.kwargs = {"pk": profile.pk}
 
-    serializer = mock.Mock(name='Mock ProfileTopicSerializer')
+    serializer = mock.Mock(name="Mock ProfileTopicSerializer")
 
     result = view.perform_create(serializer)
 
     assert result == serializer.save.return_value
     assert serializer.save.call_count == 1
-    assert serializer.save.call_args[1] == {'profile': profile}
+    assert serializer.save.call_args[1] == {"profile": profile}

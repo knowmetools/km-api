@@ -22,6 +22,7 @@ class AppleSubscriptionView(generics.RetrieveAPIView):
     Set the Apple subscription for the current user by providing the
     receipt from Apple for the purchase.
     """
+
     permission_classes = (DRYPermissions,)
     serializer_class = subscription_serializers.AppleSubscriptionSerializer
 
@@ -35,15 +36,14 @@ class AppleSubscriptionView(generics.RetrieveAPIView):
             requesting user.
         """
         return get_object_or_404(
-            models.SubscriptionAppleData,
-            subscription__user=self.request.user,
+            models.SubscriptionAppleData, subscription__user=self.request.user
         )
 
     def put(self, request, *args, **kwargs):
         # If the user has an existing Apple subscription, update it
         try:
             instance = models.SubscriptionAppleData.objects.get(
-                subscription__user=self.request.user,
+                subscription__user=self.request.user
             )
         except models.SubscriptionAppleData.DoesNotExist:
             instance = None
@@ -54,8 +54,7 @@ class AppleSubscriptionView(generics.RetrieveAPIView):
         serializer.is_valid(raise_exception=True)
 
         base_subscription, _ = models.Subscription.objects.get_or_create(
-            user=self.request.user,
-            defaults={'is_active': True},
+            user=self.request.user, defaults={"is_active": True}
         )
         serializer.save(subscription=base_subscription)
 
@@ -69,6 +68,7 @@ class AccessorAcceptView(generics.GenericAPIView):
 
     Only the user granted access by the accessor may accept it.
     """
+
     # We use the global permissions check because the normal check
     # assumes we're checking write permissions for a POST request.
     permission_classes = (DRYGlobalPermissions,)
@@ -110,6 +110,7 @@ class AcceptedAccessorListView(generics.ListAPIView):
     Retrieve the accessors granting the requesting user access to other
     users' accounts that have been accepted.
     """
+
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserAccessorSerializer
 
@@ -125,8 +126,8 @@ class AcceptedAccessorListView(generics.ListAPIView):
 
 
 class AccessorDetailView(
-        DocumentActionMixin,
-        generics.RetrieveUpdateDestroyAPIView):
+    DocumentActionMixin, generics.RetrieveUpdateDestroyAPIView
+):
     """
     get:
     Endpoint for retrieving the details of a specific accessor.
@@ -140,6 +141,7 @@ class AccessorDetailView(
     delete:
     Endpoint for deleting a specific accessor.
     """
+
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserAccessorSerializer
 
@@ -167,6 +169,7 @@ class AccessorListView(generics.ListCreateAPIView):
     Endpoint for creating a new accessor for the current user's
     profiles.
     """
+
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserAccessorSerializer
 
@@ -214,6 +217,7 @@ class ConfigDetailView(generics.RetrieveUpdateAPIView):
 
     Only staff users may perform this action.
     """
+
     permission_classes = (DRYGlobalPermissions,)
     serializer_class = serializers.ConfigSerializer
 
@@ -240,6 +244,7 @@ class KMUserDetailView(generics.RetrieveUpdateAPIView):
     Endpoint for partially updating the details of a specific Know Me
     user.
     """
+
     permission_classes = (DRYPermissions,)
     queryset = models.KMUser.objects.all()
     serializer_class = serializers.KMUserDetailSerializer
@@ -254,6 +259,7 @@ class KMUserListView(generics.ListAPIView):
     The Know Me user owned by the requesting user is guaranteed to be
     the first element returned.
     """
+
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserListSerializer
 
@@ -279,16 +285,13 @@ class KMUserListView(generics.ListAPIView):
         # https://docs.djangoproject.com/en/dev/ref/models/conditional-expressions/
         query = query.annotate(
             owned_by_user=Case(
-                When(
-                    user=self.request.user,
-                    then=Value(1)
-                ),
+                When(user=self.request.user, then=Value(1)),
                 default=Value(0),
                 output_field=PositiveSmallIntegerField(),
-            ),
+            )
         )
 
-        return query.order_by('-owned_by_user', 'created_at')
+        return query.order_by("-owned_by_user", "created_at")
 
 
 class LegacyUserDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -305,6 +308,7 @@ class LegacyUserDetailView(generics.RetrieveUpdateDestroyAPIView):
     put:
     Update the specified legacy user's information.
     """
+
     permission_classes = (DRYGlobalPermissions,)
     queryset = models.LegacyUser.objects.all()
     serializer_class = serializers.LegacyUserSerializer
@@ -318,6 +322,7 @@ class LegacyUserListView(generics.ListCreateAPIView):
     post:
     Add a new legacy user.
     """
+
     pagination_class = pagination.PageNumberPagination
     permission_classes = (DRYPermissions,)
     queryset = models.LegacyUser.objects.all()
@@ -328,6 +333,7 @@ class PendingAccessorListView(generics.ListAPIView):
     """
     Endpoint for listing the accessors that the current user can accept.
     """
+
     permission_classes = (DRYPermissions,)
     serializer_class = serializers.KMUserAccessorSerializer
 

@@ -4,8 +4,8 @@ from know_me import models, serializers, views
 
 
 @mock.patch(
-    'know_me.views.DRYGlobalPermissions.has_object_permission',
-    autospec=True)
+    "know_me.views.DRYGlobalPermissions.has_object_permission", autospec=True
+)
 def test_check_object_permissions(mock_dry_permissions, api_rf):
     """
     The view should check the permissions on the model.

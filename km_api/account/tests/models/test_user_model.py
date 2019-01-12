@@ -15,8 +15,9 @@ def test_create(image):
         is_active=True,
         is_staff=True,
         is_superuser=True,
-        first_name='John',
-        last_name='Doe')
+        first_name="John",
+        last_name="Doe",
+    )
 
 
 def test_get_full_name(user_factory):
@@ -24,9 +25,9 @@ def test_get_full_name(user_factory):
     A user's full name should be composed of their first and last name.
     """
     user = user_factory()
-    expected = '{first} {last}'.format(
-        first=user.first_name,
-        last=user.last_name)
+    expected = "{first} {last}".format(
+        first=user.first_name, last=user.last_name
+    )
 
     assert user.get_full_name() == expected
 
@@ -40,18 +41,18 @@ def test_get_short_name(user_factory):
     assert user.get_short_name() == user.first_name
 
 
-@mock.patch('account.models.uuid.uuid4')
+@mock.patch("account.models.uuid.uuid4")
 def test_get_user_image_path(mock_uuid):
     """
     User images should be uploaded to the 'users/' directory using a
     UUID as the filename.
     """
-    filename = 'foo.jpg'
+    filename = "foo.jpg"
 
-    result = models.get_user_image_path(None, 'foo.jpg')
-    expected = 'users/{name}.{ext}'.format(
-        ext=filename.rsplit('.', 1)[-1],
-        name=mock_uuid.return_value)
+    result = models.get_user_image_path(None, "foo.jpg")
+    expected = "users/{name}.{ext}".format(
+        ext=filename.rsplit(".", 1)[-1], name=mock_uuid.return_value
+    )
 
     assert mock_uuid.call_count == 1
     assert result == expected

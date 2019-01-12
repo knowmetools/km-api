@@ -16,9 +16,7 @@ def test_create_media_resource_category(api_client, api_rf, km_user_factory):
     api_client.force_authenticate(user=km_user.user)
     api_rf.user = km_user.user
 
-    data = {
-        'name': 'Test Category',
-    }
+    data = {"name": "Test Category"}
 
     url = km_user.get_media_resource_category_list_url()
     request = api_rf.post(url, data)
@@ -27,18 +25,16 @@ def test_create_media_resource_category(api_client, api_rf, km_user_factory):
     assert response.status_code == status.HTTP_201_CREATED
 
     serializer = serializers.MediaResourceCategorySerializer(
-        km_user.media_resource_categories.get(),
-        context={'request': request})
+        km_user.media_resource_categories.get(), context={"request": request}
+    )
 
     assert response.data == serializer.data
 
 
 @pytest.mark.integration
 def test_list_media_resource_categories(
-        api_client,
-        api_rf,
-        km_user_factory,
-        media_resource_category_factory):
+    api_client, api_rf, km_user_factory, media_resource_category_factory
+):
     """
     Sending a GET request to the view should list the media resource
     categories accessible to that user.
@@ -60,7 +56,8 @@ def test_list_media_resource_categories(
 
     serializer = serializers.MediaResourceCategorySerializer(
         km_user.media_resource_categories.all(),
-        context={'request': request},
-        many=True)
+        context={"request": request},
+        many=True,
+    )
 
     assert response.data == serializer.data

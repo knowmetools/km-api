@@ -42,8 +42,8 @@ def test_get_list_entry(api_client, api_rf, list_entry_factory):
     assert response.status_code == status.HTTP_200_OK
 
     serializer = serializers.ListEntrySerializer(
-        entry,
-        context={'request': request})
+        entry, context={"request": request}
+    )
 
     assert response.data == serializer.data
 
@@ -54,18 +54,16 @@ def test_update_list_entry(api_client, list_entry_factory):
     Sending a PATCH request to the view should update the specified list
     entry's information.
     """
-    entry = list_entry_factory(text='Old Text')
+    entry = list_entry_factory(text="Old Text")
     user = entry.profile_item.topic.profile.km_user.user
 
     api_client.force_authenticate(user=user)
 
-    data = {
-        'text': 'New Text',
-    }
+    data = {"text": "New Text"}
 
     url = entry.get_absolute_url()
     response = api_client.patch(url, data)
     entry.refresh_from_db()
 
     assert response.status_code == status.HTTP_200_OK
-    assert entry.text == data['text']
+    assert entry.text == data["text"]

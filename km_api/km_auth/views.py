@@ -16,4 +16,5 @@ class ObtainTokenView(ObtainAuthToken, generics.GenericAPIView):
     The user provides their email and password and a token that can be
     used to authenticate further requests is returned.
     """
+
     serializer_class = serializers.TokenSerializer
