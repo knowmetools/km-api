@@ -17,6 +17,7 @@ install:
   - pipenv sync --dev
 
 script:
+  - pipenv run black --check .
   - pipenv run flake8
   - COVERAGE_FILE=.coverage.unit pipenv run coverage run -m pytest -m "not integration" km_api/
   - COVERAGE_FILE=.coverage.int pipenv run coverage run -m pytest -m "integration" km_api/

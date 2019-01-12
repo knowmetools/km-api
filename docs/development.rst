@@ -53,17 +53,11 @@ The final step is to create a ``.env`` file in the root of your project. This fi
 Linting
 =======
 
-We use flake8_ to lint our code, which is a tool for checking compliance with python's style guide: pep8_. To lint the source code, run flake8 from the project root::
+We use a combination of flake8_ and black_ for linting and formatting our code, respectively. To ensure that there are no formatting/linting errors on each commit, we use the pre-commit_ tool. To install it, simply run::
 
-    $ pipenv run flake8
+    pipenv run pre-commit install
 
-If you want to run the linter on every commit, which is useful because our CI tool fails a build with linting errors, you can install flake8's git hook::
-
-    $ pipenv run flake8 --install-hook git
-    $ git config flake8.lazy true
-    $ git config flake8.strict true
-
-The configuration options ensure that only the code being committed is linted, and that linting errors will stop the commit process.
+This will ensure that your code is formatted prior to every commit. If the tool is somehow circumvented or not run, our CI process also runs the same checks and will fail a build that has formatting or linting errors.
 
 
 .. _dev-overview:
@@ -109,11 +103,12 @@ We use sphinx for building documentation, and the docs are automatically publish
     $ pipenv run make html
 
 
+.. _black: https://github.com/ambv/black
 .. _flake8: http://flake8.pycqa.org/en/latest/
 .. _git: https://git-scm.com/downloads
 .. _git-branching-model: http://nvie.com/posts/a-successful-git-branching-model/
 .. _git-flow: https://github.com/nvie/gitflow
-.. _pep8: https://www.python.org/dev/peps/pep-0008/
 .. _pipenv: https://pipenv.readthedocs.io/en/latest/
+.. _pre-commit: https://pre-commit.com/
 .. _pytest: https://docs.pytest.org/en/latest/
 .. _python36: https://www.python.org/downloads/release/python-367/
