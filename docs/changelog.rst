@@ -2,9 +2,9 @@
 Changelog
 #########
 
-**************
-In Development
-**************
+******
+v1.5.0
+******
 
 Features
   * :issue:`379`: Add endpoint to retrieve/update a user's Know Me subscription through Apple.
