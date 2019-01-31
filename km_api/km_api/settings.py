@@ -242,10 +242,19 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Apple Settings
 
+km_premium_codes_str = os.getenv(
+    "DJANGO_APPLE_PRODUCT_CODES_KNOW_ME_PREMIUM", ""
+)
+km_premium_codes = (
+    km_premium_codes_str.split(",") if km_premium_codes_str else []
+)
+APPLE_PRODUCT_CODES = {"KNOW_ME_PREMIUM": km_premium_codes}
+
 APPLE_RECEIPT_VALIDATION_ENDPOINT = os.environ.get(
     "DJANGO_APPLE_RECEIPT_VALIDATION_ENDPOINT",
     "https://sandbox.itunes.apple.com/verifyReceipt",
 )
+APPLE_SHARED_SECRET = os.getenv("DJANGO_APPLE_SHARED_SECRET", "")
 
 
 # Raven (Sentry Logging)

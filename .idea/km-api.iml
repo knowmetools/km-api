@@ -20,11 +20,25 @@
     <orderEntry type="jdk" jdkName="Pipenv (km-api)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="PackageRequirementsSettings">
+    <option name="requirementsPath" value="" />
+  </component>
+  <component name="PyDocumentationSettings">
+    <option name="myDocStringFormat" value="Google" />
+  </component>
+  <component name="ReSTService">
+    <option name="workdir" value="$MODULE_DIR$/docs" />
+    <option name="DOC_DIR" value="$MODULE_DIR$/docs" />
+  </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_FOLDERS">
       <list>
         <option value="$MODULE_DIR$/km_api/email_templates" />
       </list>
     </option>
+  </component>
+  <component name="TestRunnerService">
+    <option name="projectConfiguration" value="pytest" />
+    <option name="PROJECT_TEST_RUNNER" value="pytest" />
   </component>
 </module>

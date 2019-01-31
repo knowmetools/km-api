@@ -2,6 +2,11 @@
 """
 
 import io
+import logging
+import socket
+import time
+from threading import Thread
+
 import pytest
 from PIL import Image
 from django.contrib.auth.models import AnonymousUser
@@ -9,6 +14,20 @@ from django.core.files.base import ContentFile
 from rest_framework.test import APIClient, APIRequestFactory
 
 import factories
+from test_utils.apple_receipt_validator import (
+    apple_validator_app,
+    AppleReceiptValidationClient,
+)
+
+logger = logging.getLogger(__name__)
+
+
+def get_free_port():
+    s = socket.socket(socket.AF_INET, type=socket.SOCK_STREAM)
+    s.bind(("localhost", 0))
+    address, port = s.getsockname()
+    s.close()
+    return port
 
 
 class UserAPIRequestFactory(APIRequestFactory):
@@ -79,6 +98,58 @@ def api_rf():
         ``user`` attribute of the factory instance.
     """
     return UserAPIRequestFactory(user=AnonymousUser())
+
+
+@pytest.fixture
+def apple_receipt_client(apple_validation_server, settings):
+    host, port = apple_validation_server
+    client = AppleReceiptValidationClient(
+        f"http://{host}:{port}", settings.APPLE_SHARED_SECRET
+    )
+
+    yield client
+
+    # After the client has been used, all enqueued mock responses should
+    # be consumed.
+    status = client.get_server_status()
+
+    assert status["is_empty"], (
+        "The Apple receipt validation server has queued status responses that "
+        "were not consumed:\n{}"
+    ).format(status["store"])
+
+
+@pytest.fixture(autouse=True)
+def apple_receipt_validation_settings(apple_validation_server, settings):
+    host, port = apple_validation_server
+
+    settings.APPLE_SHARED_SECRET = "mock-secret"
+    settings.APPLE_RECEIPT_VALIDATION_ENDPOINT = f"http://{host}:{port}"
+
+
+@pytest.fixture(autouse=True, scope="session")
+def apple_validation_server():
+    """
+    Fixture to launch a server that mocks the implementation of the
+    Apple receipt validation service.
+
+    Returns:
+        A tuple containing the hostname and port of the launched server.
+    """
+    port = get_free_port()
+    mock_server_thread = Thread(
+        target=apple_validator_app.run,
+        kwargs={"host": "localhost", "port": port},
+    )
+    mock_server_thread.setDaemon(True)
+    mock_server_thread.start()
+
+    # Give the Flask app time to boot
+    logger.info("Booting mock Apple receipt validation server...")
+    time.sleep(1)
+    logger.info("Finished booting Apple receipt validation server.")
+
+    return "localhost", port
 
 
 @pytest.fixture
