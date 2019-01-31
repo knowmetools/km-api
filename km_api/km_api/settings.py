@@ -253,7 +253,7 @@ APPLE_RECEIPT_VALIDATION_ENDPOINT = os.environ.get(
 RAVEN_CONFIG = {
     "dsn": SENTRY_DSN,
     "environment": os.environ.get("DJANGO_SENTRY_ENVIRONMENT", "default"),
-    "release": "1.4.1",
+    "release": "1.5.0",
 }
 
 
