@@ -260,6 +260,7 @@ RAVEN_CONFIG = {
 # Rest Email Auth
 
 REST_EMAIL_AUTH = {
+    "EMAIL_VERIFICATION_PASSWORD_REQUIRED": False,
     "EMAIL_VERIFICATION_URL": os.environ.get(
         "DJANGO_EMAIL_VERIFICATION_URL", "https://example.com/verify/{key}"
     ),

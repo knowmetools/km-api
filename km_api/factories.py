@@ -10,6 +10,17 @@ from rest_email_auth.models import EmailAddress
 import factory
 
 
+class EmailConfirmationFactory(factory.DjangoModelFactory):
+    """
+    Factory for generating :class:`EmailConfirmation` instances.
+    """
+
+    email = factory.SubFactory("factories.EmailFactory")
+
+    class Meta:
+        model = "rest_email_auth.EmailConfirmation"
+
+
 class EmailFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``EmailAddress`` instances.

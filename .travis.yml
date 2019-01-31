@@ -21,6 +21,7 @@ script:
   - pipenv run flake8
   - COVERAGE_FILE=.coverage.unit pipenv run coverage run -m pytest -m "not integration" km_api/
   - COVERAGE_FILE=.coverage.int pipenv run coverage run -m pytest -m "integration" km_api/
+  - COVERAGE_FILE=.coverage.e2e pipenv run coverage run -m pytest km_api/functional_tests/
 
 after_success:
   - pipenv run coverage combine

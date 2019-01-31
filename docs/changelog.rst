@@ -8,6 +8,7 @@ In Development
 
 Features
   * :issue:`379`: Add endpoint to retrieve/update a user's Know Me subscription through Apple.
+  * :issue:`393`: Allow users to verify their email address without their password.
 
 Miscellaneous
   * Completely changed the way that settings are provided. Rather than being specified in a separate python file that is then imported, behavior is now set through environment variables.
