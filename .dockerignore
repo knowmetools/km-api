@@ -1,0 +1,21 @@
+# Compiled Files
+**/__pycache__/
+**/*.py[cod]
+
+# Non-Source Artifacts
+**/.pytest_cache/
+**/*.sqlite3
+.git/
+.idea/
+km_api/media/
+km_api/static/
+
+# Local Configuration
+.env
+
+# Build Files
+docs/_build/
+
+# We only care about the production-ready email files
+km_api/email_templates/
+!km_api/email_templates/dist
