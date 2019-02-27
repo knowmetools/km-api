@@ -17,11 +17,20 @@ class AppleReceiptCodes(enum.IntEnum):
     https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html#//apple_ref/doc/uid/TP40010573-CH104-SW5
     """
 
+    VALID = 0
     MALFORMED_RECEIPT_DATA = 21002
+    COULD_NOT_AUTHENTICATE = 21003
     UNAVAILABLE = 21005
+    COULD_NOT_AUTHORIZE = 21010
 
 
 APPLE_ERROR_MSGS = {
+    AppleReceiptCodes.COULD_NOT_AUTHENTICATE: _(
+        "The provided receipt data is not valid."
+    ),
+    AppleReceiptCodes.COULD_NOT_AUTHORIZE: _(
+        "The provided receipt data is not valid."
+    ),
     AppleReceiptCodes.MALFORMED_RECEIPT_DATA: _(
         "The provided receipt data is malformed."
     ),
@@ -149,16 +158,26 @@ def validate_apple_receipt_response(receipt_response):
     """
     status = receipt_response["status"]
 
-    if status == AppleReceiptCodes.MALFORMED_RECEIPT_DATA:
-        logger.info("Received malformed receipt data.")
-
-        raise InvalidReceiptTypeException(APPLE_ERROR_MSGS[status])
-
+    # Handle unavailability as a special case since it throws a
+    # different exception type.
     if status == AppleReceiptCodes.UNAVAILABLE:
         logger.error("Apple receipt validation service unavailable.")
 
         raise ReceiptServerException(
             APPLE_ERROR_MSGS[AppleReceiptCodes.UNAVAILABLE]
+        )
+
+    # If the received status is present in the mapping of error messages
+    # then raise an error.
+    if status in APPLE_ERROR_MSGS:
+        raise InvalidReceiptTypeException(APPLE_ERROR_MSGS[status])
+
+    # Before we start processing receipt data, ensure that only a valid
+    # receipt is allowed through.
+    if status != AppleReceiptCodes.VALID:
+        raise ValueError(
+            f"Expected Apple receipt to have a valid status code. Got "
+            f"{status} instead."
         )
 
     if "latest_receipt" not in receipt_response:

@@ -57,10 +57,7 @@ def test_set_valid_apple_receipt(
     receipt_data = "base64-encoded-receipt-data"
     apple_receipt_client.enqueue_status(
         receipt_data,
-        {
-            "status": 0,
-            "latest_receipt_info": [{"product_id": PREMIUM_PRODUCT_CODE}],
-        },
+        {"status": 0, "latest_receipt": {"product_id": PREMIUM_PRODUCT_CODE}},
     )
 
     # ...then when he sets that receipt as his Know Me subscription...

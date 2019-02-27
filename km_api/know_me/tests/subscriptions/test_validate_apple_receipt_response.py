@@ -1,22 +1,50 @@
+import enum
+
 import pytest
 
 from know_me.subscriptions import (
     InvalidReceiptTypeException,
     validate_apple_receipt_response,
     ReceiptServerException,
+    AppleReceiptCodes,
 )
 
 
-class ReceiptCode:
+class ReceiptCode(enum.IntEnum):
     VALID = 0
     MALFORMED_RECEIPT_DATA = 21002
+    COULD_NOT_BE_AUTHENTICATED = 21003
     UNAVAILABLE = 21005
+    COULD_NOT_BE_AUTHORIZED = 21010
+
+
+def test_validate_apple_receipt_could_not_authenticate():
+    """
+    If Apple returns a response indicating that the provided receipt
+    data could not be authenticated, a validation error should be
+    raised.
+    """
+    receipt_response = {"status": ReceiptCode.COULD_NOT_BE_AUTHENTICATED}
+
+    with pytest.raises(InvalidReceiptTypeException):
+        validate_apple_receipt_response(receipt_response)
+
+
+def test_validate_apple_receipt_could_not_authorized():
+    """
+    If Apple returns a response indicating that the provided receipt
+    data could not be authorized, a validation error should be raised.
+    """
+    receipt_response = {"status": ReceiptCode.COULD_NOT_BE_AUTHORIZED}
+
+    with pytest.raises(InvalidReceiptTypeException):
+        validate_apple_receipt_response(receipt_response)
 
 
 def test_validate_apple_receipt_invalid_product_code(settings):
     """
-    If any of the transactions in the receipt have an invalid product
-    code, a validation error should be raised.
+    If the latest transaction has an invalid product code, a validation
+    error should be raised.
     """
     settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"] = ["annual"]
     receipt_response = {
@@ -59,6 +87,20 @@ def test_validate_apple_receipt_unavailable():
 
     with pytest.raises(ReceiptServerException):
         validate_apple_receipt_response(receipt_response)
+
+
+def test_validate_apple_receipt_unknown_status():
+    """
+    If we get an unknown status code, an exception should be thrown.
+    """
+    unknown_status = 123
+
+    # Quick sanity check to ensure that our code isn't one that is
+    # actually used.
+    assert unknown_status not in AppleReceiptCodes
+
+    with pytest.raises(ValueError):
+        validate_apple_receipt_response({"status": unknown_status})
 
 
 @pytest.mark.parametrize("product_code", ["annual", "monthly"])
