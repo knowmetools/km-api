@@ -20,10 +20,7 @@ def test_validate_apple_receipt_invalid_product_code(settings):
     """
     settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"] = ["annual"]
     receipt_response = {
-        "latest_receipt_info": [
-            {"product_id": "annual"},
-            {"product_id": "invalid"},
-        ],
+        "latest_receipt": {"product_id": "invalid"},
         "status": ReceiptCode.VALID,
     }
 
@@ -73,7 +70,7 @@ def test_validate_apple_receipt_valid(product_code, settings):
 
     validate_apple_receipt_response(
         {
-            "latest_receipt_info": [{"product_id": product_code}],
+            "latest_receipt": {"product_id": product_code},
             "status": ReceiptCode.VALID,
         }
     )

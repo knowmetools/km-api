@@ -161,7 +161,7 @@ def validate_apple_receipt_response(receipt_response):
             APPLE_ERROR_MSGS[AppleReceiptCodes.UNAVAILABLE]
         )
 
-    if "latest_receipt_info" not in receipt_response:
+    if "latest_receipt" not in receipt_response:
         raise InvalidReceiptTypeException(
             ugettext(
                 "Expected a subscription receipt but received a consumable "
@@ -169,18 +169,15 @@ def validate_apple_receipt_response(receipt_response):
             )
         )
 
-    for transaction in receipt_response["latest_receipt_info"]:
-        product = transaction.get("product_id")
+    product = receipt_response["latest_receipt"].get("product_id")
 
-        if product not in settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"]:
-            logger.warning(
-                "Received receipt that included a transaction for the unknown "
-                'product "%s"',
-                product,
-            )
+    if product not in settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"]:
+        logger.warning(
+            "Received receipt that included a transaction for the unknown "
+            'product "%s"',
+            product,
+        )
 
-            raise InvalidReceiptTypeException(
-                ugettext(
-                    "Receipt contains transactions for an invalid product."
-                )
-            )
+        raise InvalidReceiptTypeException(
+            ugettext("Receipt contains transactions for an invalid product.")
+        )
