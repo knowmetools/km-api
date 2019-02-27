@@ -116,7 +116,28 @@ def get_apple_receipt_info(receipt_data):
     return data
 
 
-def validate_apple_receipt(receipt_response):
+def validate_apple_receipt(receipt_data):
+    """
+    A wrapper around :py:func:`get_apple_receipt_info` and
+    :py:func:`validate_apple_receipt_response`. It takes the provided
+    receipt data, gets a response from the Apple receipt validation
+    server, passes that to the validation method, then returns the
+    result.
+
+    Args:
+        receipt_data:
+            The receipt data to validate.
+
+    Returns:
+        The output of the :py:func:`validate_apple_receipt_response`
+        function.
+    """
+    receipt_info = get_apple_receipt_info(receipt_data)
+
+    return validate_apple_receipt_response(receipt_info)
+
+
+def validate_apple_receipt_response(receipt_response):
     """
     Validate an Apple receipt to ensure it is an auto-renewable
     subscription for a valid product.

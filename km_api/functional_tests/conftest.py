@@ -2,6 +2,7 @@ from urllib.parse import urljoin
 
 import pytest
 import requests
+from rest_framework.reverse import reverse
 
 
 class APIClient(requests.Session):
@@ -20,6 +21,24 @@ class APIClient(requests.Session):
         super().__init__()
 
         self.base_url = url
+
+    def log_in(self, email, password):
+        """
+        Log in to the API and persist the returned token.
+
+        Args:
+            email:
+                The email address of the user to log in as.
+            password:
+                The password of the user to log in as.
+        """
+        url = reverse("auth:login")
+        response = self.post(url, json={"email": email, "password": password})
+        response.raise_for_status()
+
+        self.headers.update(
+            {"Authorization": f'Token {response.json()["token"]}'}
+        )
 
     def request(self, method, url, **kwargs):
         """
