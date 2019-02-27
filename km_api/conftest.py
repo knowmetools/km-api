@@ -14,6 +14,8 @@ from django.core.files.base import ContentFile
 from rest_framework.test import APIClient, APIRequestFactory
 
 import factories
+import test_utils
+from know_me.factories import SubscriptionAppleDataFactory
 from test_utils.apple_receipt_validator import (
     apple_validator_app,
     AppleReceiptValidationClient,
@@ -127,6 +129,14 @@ def apple_receipt_validation_settings(apple_validation_server, settings):
     settings.APPLE_RECEIPT_VALIDATION_ENDPOINT = f"http://{host}:{port}"
 
 
+@pytest.fixture
+def apple_subscription_factory(db):
+    """
+    Fixture to get the factory used to create Apple subscription data.
+    """
+    return SubscriptionAppleDataFactory
+
+
 @pytest.fixture(autouse=True, scope="session")
 def apple_validation_server():
     """
@@ -197,19 +207,8 @@ def serialized_time():
     datetime instance.
 
     The output matches that of DRF's DateTimeField.
-
-    Logic taken from:
-    https://github.com/encode/django-rest-framework/blob/6ea7d05979695cfb9db6ec3946d031b02a82952c/rest_framework/fields.py#L1217-L1221
     """
-
-    def f(time):
-        formatted = time.isoformat()
-        if formatted.endswith("+00:00"):
-            formatted = formatted[:-6] + "Z"
-
-        return formatted
-
-    return f
+    return test_utils.serialized_time
 
 
 @pytest.fixture
