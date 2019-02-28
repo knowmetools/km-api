@@ -25,6 +25,13 @@ A comma separated list of allowed hosts.
 
     This must be set if ``DJANGO_DEBUG`` is set to ``False``.
 
+DJANGO_APPLE_PRODUCT_CODES_KNOW_ME_PREMIUM
+------------------------------------------
+
+**Default:** ``''``
+
+A comma separated list of product IDs that should be accepted to mark purchases of Know Me's premium version. This allows us to have multiple in-app purchases that activate the premium version. For example, we can have one subscription be monthly and another be billed annually.
+
 DJANGO_APPLE_RECEIPT_VALIDATION_ENDPOINT
 ----------------------------------------
 
@@ -34,6 +41,17 @@ The endpoint used to verify subscription receipts from Apple. This can take one 
 
 * ``https://sandbox.itunes.apple.com/verifyReceipt``
 * ``https://buy.itunes.apple.com/verifyReceipt``
+
+DJANGO_APPLE_SHARED_SECRET
+--------------------------
+
+**Default:** ``''``
+
+The shared secret used to verify receipts with the Apple store.
+
+.. note::
+
+    This must be provided. If it is not, all Apple receipt validations will fail.
 
 DJANGO_AWS_REGION
 -----------------

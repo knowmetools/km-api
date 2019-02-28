@@ -2,6 +2,14 @@
 Changelog
 #########
 
+**************
+In Development
+**************
+
+Features
+  * :issue:`382`: Verify Apple receipts using the Apple store's receipt validation service.
+
+
 ******
 v1.5.0
 ******
