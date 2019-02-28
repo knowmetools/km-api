@@ -6,6 +6,7 @@ import logging
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 import email_utils
@@ -611,6 +612,14 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
     Data related to a subscription through Apple.
     """
 
+    expiration_time = models.DateTimeField(
+        default=timezone.now,
+        help_text=_(
+            "The expiration time of the most recent transaction associated "
+            "with the receipt."
+        ),
+        verbose_name=_("expiration time"),
+    )
     receipt_data = models.TextField(
         help_text=_("The receipt data that is base 64 encoded."),
         verbose_name=_("receipt data"),

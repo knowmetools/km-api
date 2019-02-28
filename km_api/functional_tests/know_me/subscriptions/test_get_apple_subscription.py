@@ -38,6 +38,7 @@ def test_get_existing_subscription(
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
+        "expiration_time": serialized_time(subscription.expiration_time),
         "id": subscription.id,
         "receipt_data": subscription.receipt_data,
         "time_created": serialized_time(subscription.time_created),

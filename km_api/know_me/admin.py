@@ -8,9 +8,14 @@ class AppleSubscriptionInline(admin.StackedInline):
     Inline admin editor for Apple subscription data.
     """
 
-    fields = ("receipt_data", "time_created", "time_updated")
+    fields = (
+        "receipt_data",
+        "expiration_time",
+        "time_created",
+        "time_updated",
+    )
     model = models.SubscriptionAppleData
-    readonly_fields = ("time_created", "time_updated")
+    readonly_fields = ("expiration_time", "time_created", "time_updated")
 
 
 @admin.register(models.Subscription)

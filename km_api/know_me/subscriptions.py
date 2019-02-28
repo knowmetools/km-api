@@ -1,3 +1,4 @@
+import datetime
 import enum
 import logging
 
@@ -85,6 +86,50 @@ class ReceiptServerException(ReceiptException):
     pass
 
 
+class AppleReceipt:
+    """
+    A container for a single transaction from an auto-renewable
+    subscription.
+
+    The class provides some useful helper methods for accessing data
+    from the dictionary returned by Apple.
+    """
+
+    def __init__(self, receipt_info):
+        """
+        Create a new Apple receipt.
+
+        Args:
+            receipt_info:
+                The dictionary returned from Apple containing
+                information about the receipt.
+        """
+        self.raw_info = receipt_info
+
+        # The raw expiration date is a string version of a timestamp.
+        self.expires_date_ms = int(receipt_info.get("expires_date_ms", 0))
+        self.product_id = receipt_info.get("product_id")
+
+    def __eq__(self, other):
+        if isinstance(other, AppleReceipt):
+            return self.raw_info == other.raw_info
+
+        return super().__eq__(other)
+
+    @property
+    def expires_date(self):
+        """
+        Returns:
+            A :class:`datetime.datetime` instance representing the
+            expiration date of the receipt.
+        """
+        # The expiration date from Apple is in milliseconds but we need
+        # a time in seconds so we have to do a quick conversion.
+        return datetime.datetime.fromtimestamp(
+            self.expires_date_ms // 1000, datetime.timezone.utc
+        )
+
+
 def get_apple_receipt_info(receipt_data):
     """
     Get information about an Apple receipt by sending its base64 encoded
@@ -155,6 +200,10 @@ def validate_apple_receipt_response(receipt_response):
         receipt_response:
             The response data for the receipt received from the Apple
             receipt validation service.
+
+    Returns:
+        The information of the most recent transaction associated with
+        the receipt.
     """
     status = receipt_response["status"]
 
@@ -180,7 +229,7 @@ def validate_apple_receipt_response(receipt_response):
             f"{status} instead."
         )
 
-    if "latest_receipt" not in receipt_response:
+    if "latest_receipt_info" not in receipt_response:
         raise InvalidReceiptTypeException(
             ugettext(
                 "Expected a subscription receipt but received a consumable "
@@ -188,7 +237,14 @@ def validate_apple_receipt_response(receipt_response):
             )
         )
 
-    product = receipt_response["latest_receipt"].get("product_id")
+    latest_receipts = receipt_response["latest_receipt_info"]
+    if not latest_receipts:
+        raise InvalidReceiptTypeException(
+            ugettext("The provided receipt does not have any transactions.")
+        )
+
+    latest_receipt = latest_receipts[-1]
+    product = latest_receipt.get("product_id")
 
     if product not in settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"]:
         logger.warning(
@@ -200,3 +256,5 @@ def validate_apple_receipt_response(receipt_response):
         raise InvalidReceiptTypeException(
             ugettext("Receipt contains transactions for an invalid product.")
         )
+
+    return AppleReceipt(latest_receipt)

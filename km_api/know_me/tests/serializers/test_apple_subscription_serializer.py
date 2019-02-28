@@ -1,34 +1,17 @@
+import datetime
 from unittest import mock
 
 import pytest
+from django.utils import timezone
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from know_me import subscriptions
 from know_me.serializers import subscription_serializers
+from know_me.subscriptions import AppleReceipt
+from test_utils import serialized_time
 
 
-@mock.patch(
-    "know_me.serializers.subscription_serializers.subscriptions.validate_apple_receipt",  # noqa
-    autospec=True,
-)
-def test_create(_, subscription_factory):
-    """
-    Test deserializing data to create an Apple subscription.
-    """
-    base_subscription = subscription_factory()
-    data = {"receipt_data": "receipt data"}
-
-    serializer = subscription_serializers.AppleSubscriptionSerializer(
-        data=data
-    )
-    assert serializer.is_valid()
-
-    subscription = serializer.save(subscription=base_subscription)
-
-    assert subscription.receipt_data == data["receipt_data"]
-
-
-def test_serialize(apple_subscription_factory, serialized_time):
+def test_serialize(apple_subscription_factory):
     """
     Test serializing an Apple subscription.
     """
@@ -41,6 +24,7 @@ def test_serialize(apple_subscription_factory, serialized_time):
         "id": subscription.id,
         "time_created": serialized_time(subscription.time_created),
         "time_updated": serialized_time(subscription.time_updated),
+        "expiration_time": serialized_time(subscription.expiration_time),
         "receipt_data": subscription.receipt_data,
     }
 
@@ -56,15 +40,26 @@ def test_validate_receipt_data(mock_validate_apple):
     The serializer should validate the provided receipt data using the
     Apple subscription verification method.
     """
+    expires = timezone.now().replace(microsecond=0) + datetime.timedelta(
+        days=30
+    )
+
+    receipt_response = {
+        "expires_date_ms": str(int(expires.timestamp() * 1000)),
+        "product_id": "foo",
+    }
+    mock_validate_apple.return_value = AppleReceipt(receipt_response)
+
     receipt_data = "test-data"
     serializer = subscription_serializers.AppleSubscriptionSerializer(
         data={"receipt_data": receipt_data}
     )
 
-    serializer.validate_receipt_data(receipt_data)
+    assert serializer.is_valid()
 
     assert mock_validate_apple.call_count == 1
     assert mock_validate_apple.call_args[0] == (receipt_data,)
+    assert serializer.validated_data["expiration_time"] == expires
 
 
 def test_validate_receipt_data_invalid():
@@ -76,7 +71,9 @@ def test_validate_receipt_data_invalid():
     ex_msg = "Invalid foo bar."
     receipt_data = "invalid-data"
 
-    serializer = subscription_serializers.AppleSubscriptionSerializer()
+    serializer = subscription_serializers.AppleSubscriptionSerializer(
+        data={"receipt_data": receipt_data}
+    )
 
     with mock.patch(
         "know_me.serializers.subscription_serializers.subscriptions.validate_apple_receipt",  # noqa
@@ -84,7 +81,7 @@ def test_validate_receipt_data_invalid():
         side_effect=subscriptions.ReceiptException(ex_msg, ex_code),
     ):
         with pytest.raises(DRFValidationError) as error:
-            serializer.validate_receipt_data(receipt_data)
+            serializer.is_valid(raise_exception=True)
 
-    assert error.value.detail[0] == ex_msg
-    assert error.value.detail[0].code == ex_code
+    assert error.value.detail["receipt_data"][0] == ex_msg
+    assert error.value.detail["receipt_data"][0].code == ex_code

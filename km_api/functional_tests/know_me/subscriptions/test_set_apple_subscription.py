@@ -1,7 +1,11 @@
+import datetime
+
 import pytest
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.reverse import reverse
 
+from test_utils import serialized_time
 
 PREMIUM_PRODUCT_CODE = "premium"
 
@@ -48,6 +52,10 @@ def test_set_valid_apple_receipt(
     If a user sends a PUT request with a valid Apple receipt for a valid
     product the endpoint should return a 200 response.
     """
+    expires = timezone.now().replace(microsecond=0) + datetime.timedelta(
+        days=30
+    )
+
     # Given Jimmy, who is a valid user, is logged in.
     password = "password"
     user = user_factory(first_name="Jimmy", password=password)
@@ -57,7 +65,15 @@ def test_set_valid_apple_receipt(
     receipt_data = "base64-encoded-receipt-data"
     apple_receipt_client.enqueue_status(
         receipt_data,
-        {"status": 0, "latest_receipt": {"product_id": PREMIUM_PRODUCT_CODE}},
+        {
+            "status": 0,
+            "latest_receipt_info": [
+                {
+                    "expires_date_ms": str(int(expires.timestamp() * 1000)),
+                    "product_id": PREMIUM_PRODUCT_CODE,
+                }
+            ],
+        },
     )
 
     # ...then when he sets that receipt as his Know Me subscription...
@@ -68,4 +84,5 @@ def test_set_valid_apple_receipt(
 
     # ...he should receive a 200 response.
     assert response.status_code == status.HTTP_200_OK
+    assert response_data["expiration_time"] == serialized_time(expires)
     assert response_data["receipt_data"] == receipt_data

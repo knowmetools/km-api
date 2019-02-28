@@ -9,20 +9,33 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
-        fields = ("id", "time_created", "time_updated", "receipt_data")
+        fields = (
+            "id",
+            "time_created",
+            "time_updated",
+            "expiration_time",
+            "receipt_data",
+        )
         model = models.SubscriptionAppleData
 
-    def validate_receipt_data(self, receipt_data):
+    def validate(self, data):
         """
         Ensure the provided receipt data corresponds to a valid Apple
         receipt.
 
         Returns:
-            The validated receipt data.
+            The validated data.
         """
-        try:
-            subscriptions.validate_apple_receipt(receipt_data)
-        except subscriptions.ReceiptException as e:
-            raise serializers.ValidationError(code=e.code, detail=e.msg)
+        validated_data = data.copy()
+        receipt_data = validated_data["receipt_data"]
 
-        return receipt_data
+        try:
+            receipt = subscriptions.validate_apple_receipt(receipt_data)
+        except subscriptions.ReceiptException as e:
+            raise serializers.ValidationError(
+                code=e.code, detail={"receipt_data": e.msg}
+            )
+
+        validated_data["expiration_time"] = receipt.expires_date
+
+        return validated_data

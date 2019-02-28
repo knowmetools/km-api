@@ -7,6 +7,7 @@ from know_me.subscriptions import (
     validate_apple_receipt_response,
     ReceiptServerException,
     AppleReceiptCodes,
+    AppleReceipt,
 )
 
 
@@ -48,7 +49,7 @@ def test_validate_apple_receipt_invalid_product_code(settings):
     """
     settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"] = ["annual"]
     receipt_response = {
-        "latest_receipt": {"product_id": "invalid"},
+        "latest_receipt_info": [{"product_id": "invalid"}],
         "status": ReceiptCode.VALID,
     }
 
@@ -65,6 +66,17 @@ def tests_validate_apple_receipt_malformed_data():
 
     with pytest.raises(InvalidReceiptTypeException):
         validate_apple_receipt_response(receipt_response)
+
+
+def test_validate_apple_receipt_no_transactions():
+    """
+    If the provided response does not include any transactions, an
+    exception should be raised.
+    """
+    with pytest.raises(InvalidReceiptTypeException):
+        validate_apple_receipt_response(
+            {"status": ReceiptCode.VALID, "latest_receipt_info": []}
+        )
 
 
 def test_validate_apple_receipt_not_auto_renewable():
@@ -106,13 +118,17 @@ def test_validate_apple_receipt_unknown_status():
 @pytest.mark.parametrize("product_code", ["annual", "monthly"])
 def test_validate_apple_receipt_valid(product_code, settings):
     """
-    If the provided receipt data is valid, nothing should happen.
+    If the provided receipt data is valid, the most recent transaction
+    should be returned.
     """
     settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"] = ["annual", "monthly"]
+    receipt_info = {"product_id": product_code}
 
-    validate_apple_receipt_response(
+    result = validate_apple_receipt_response(
         {
-            "latest_receipt": {"product_id": product_code},
+            "latest_receipt_info": [{"product_id": "foo"}, receipt_info],
             "status": ReceiptCode.VALID,
         }
     )
+
+    assert result == AppleReceipt(receipt_info)
