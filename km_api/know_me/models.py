@@ -3,22 +3,17 @@
 
 import logging
 
+import email_utils
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-
-import email_utils
-
 from rest_email_auth.models import EmailAddress
-
 from rest_framework.reverse import reverse
-
 from solo.models import SingletonModel
 
 from permission_utils import model_mixins as mixins
-
 
 logger = logging.getLogger(__name__)
 
@@ -690,3 +685,14 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
             permissions to the instance.
         """
         return request.user == self.subscription.user
+
+    def save(self, *args, **kwargs):
+        """
+        Update the base subscription's 'active' status based on the
+        Apple receipt's expiration date.
+        """
+        super().save(*args, **kwargs)
+
+        now = timezone.now()
+        self.subscription.is_active = self.expiration_time > now
+        self.subscription.save()
