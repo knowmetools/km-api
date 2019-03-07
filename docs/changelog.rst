@@ -9,6 +9,7 @@ In Development
 Features
   * :issue:`382`: Verify Apple receipts using the Apple store's receipt validation service.
   * :issue:`397`: Ensure Apple receipts are unique (i.e. multiple people can't use the same receipt).
+  * :issue:`399`: Add ``is_premium_user`` property to Know Me user response.
 
 
 ******

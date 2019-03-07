@@ -266,6 +266,17 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             is_accepted=True, is_admin=True, user_with_access=request.user
         ).exists()
 
+    @property
+    def is_premium_user(self):
+        """
+        Returns:
+            A boolean indicating if the Know Me user has an active
+            premium subscription.
+        """
+        return Subscription.objects.filter(
+            is_active=True, user=self.user
+        ).exists()
+
     def share(self, email, is_admin=False):
         """
         Share a Know Me account with another user.

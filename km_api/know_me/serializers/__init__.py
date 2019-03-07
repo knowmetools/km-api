@@ -44,6 +44,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     Serializer for multiple ``KMUser`` instances.
     """
 
+    is_premium_user = serializers.BooleanField(read_only=True)
     is_owned_by_current_user = serializers.SerializerMethodField()
     journal_entries_url = serializers.HyperlinkedIdentityField(
         view_name="know-me:journal:entry-list"
@@ -70,7 +71,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             },
             "quote": {
                 "help_text": (
-                    "A quote for the Know Me user to introduce " "themself."
+                    "A quote for the Know Me user to introduce themself."
                 )
             },
         }
@@ -79,6 +80,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             "url",
             "created_at",
             "updated_at",
+            "is_premium_user",
             "is_owned_by_current_user",
             "image",
             "journal_entries_url",

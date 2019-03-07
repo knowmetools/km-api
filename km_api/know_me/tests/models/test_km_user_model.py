@@ -233,6 +233,42 @@ def test_has_object_write_permission_shared_not_accepted(
     assert not km_user.has_object_write_permission(request)
 
 
+def test_is_premium_user_no_subscription(km_user_factory):
+    """
+    If the Know Me user does not have an associated subscription
+    instance, they should not be a premium user.
+    """
+    km_user = km_user_factory()
+
+    assert not km_user.is_premium_user
+
+
+def test_is_premium_user_inactive_subscription(
+    km_user_factory, subscription_factory
+):
+    """
+    If the subscription associated with a Know Me user is inactive, that
+    user should not be a premium user.
+    """
+    km_user = km_user_factory()
+    subscription_factory(is_active=False, user=km_user.user)
+
+    assert not km_user.is_premium_user
+
+
+def test_is_premium_user_with_subscription(
+    km_user_factory, subscription_factory
+):
+    """
+    If the Know Me user has an associated active subscription, they
+    should be a premium user.
+    """
+    km_user = km_user_factory()
+    subscription_factory(is_active=True, user=km_user.user)
+
+    assert km_user.is_premium_user
+
+
 def test_name(km_user_factory):
     """
     The know me user's name property should return the associated user's

@@ -42,27 +42,8 @@ def km_user_accessor_factory(db):
 
 
 @pytest.fixture
-def km_user_factory(db):
-    """
-    Fixture to get the factory used to create a Know Me User.
-
-    Returns:
-        The factory class used to create test ``KMUser`` instances.
-    """
-    return factories.KMUserFactory
-
-
-@pytest.fixture
 def legacy_user_factory(db):
     """
     Fixture to get the factory used to create legacy users.
     """
     return factories.LegacyUserFactory
-
-
-@pytest.fixture
-def subscription_factory(db):
-    """
-    Fixture to get the factory used to create subscriptions.
-    """
-    return factories.SubscriptionFactory

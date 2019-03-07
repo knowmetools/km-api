@@ -15,7 +15,11 @@ from rest_framework.test import APIClient, APIRequestFactory
 
 import factories
 import test_utils
-from know_me.factories import SubscriptionAppleDataFactory
+from know_me.factories import (
+    SubscriptionAppleDataFactory,
+    KMUserFactory,
+    SubscriptionFactory,
+)
 from test_utils.apple_receipt_validator import (
     apple_validator_app,
     AppleReceiptValidationClient,
@@ -200,6 +204,17 @@ def image():
     return ContentFile(content=out_stream.getvalue(), name="foo.png")
 
 
+@pytest.fixture
+def km_user_factory(db):
+    """
+    Fixture to get the factory used to create a Know Me User.
+
+    Returns:
+        The factory class used to create test ``KMUser`` instances.
+    """
+    return KMUserFactory
+
+
 @pytest.fixture(scope="session")
 def serialized_time():
     """
@@ -221,6 +236,14 @@ def serializer_context(api_rf):
             A dictionary containing dummy context for serializers.
     """
     return {"request": api_rf.get("/")}
+
+
+@pytest.fixture
+def subscription_factory(db):
+    """
+    Fixture to get the factory used to create subscriptions.
+    """
+    return SubscriptionFactory
 
 
 @pytest.fixture

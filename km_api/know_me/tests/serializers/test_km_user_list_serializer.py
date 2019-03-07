@@ -85,6 +85,7 @@ def test_serialize(
         "created_at": serialized_time(km_user.created_at),
         "updated_at": serialized_time(km_user.updated_at),
         "image": image_url,
+        "is_premium_user": km_user.is_premium_user,
         "is_owned_by_current_user": km_user.user == request.user,
         "journal_entries_url": entries_url,
         "media_resource_categories_url": categories_url,
