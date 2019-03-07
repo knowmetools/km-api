@@ -1,3 +1,4 @@
+from django.utils.translation import ugettext
 from rest_framework import serializers
 
 from know_me import models, subscriptions
@@ -28,6 +29,17 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
         """
         validated_data = data.copy()
         receipt_data = validated_data["receipt_data"]
+
+        if models.SubscriptionAppleData.objects.filter(
+            receipt_data=receipt_data
+        ).exists():
+            raise serializers.ValidationError(
+                {
+                    "receipt_data": ugettext(
+                        "This receipt has already been used."
+                    )
+                }
+            )
 
         try:
             receipt = subscriptions.validate_apple_receipt(receipt_data)

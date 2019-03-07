@@ -18,8 +18,38 @@ def set_know_me_premium_product_codes(settings):
     settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"] = [PREMIUM_PRODUCT_CODE]
 
 
+def test_set_duplicate_apple_receipt(
+    api_client, apple_subscription_factory, user_factory
+):
+    """
+    If a user attempts to upload a receipt that is already in use, they
+    should receive an error message.
+    """
+    # Assume there is an existing subscription for an Apple receipt.
+    receipt_data = "some-existing-receipt-data"
+    apple_subscription_factory(receipt_data=receipt_data)
+
+    # If Ross is logged in...
+    password = "password"
+    user = user_factory(first_name="Ross")
+    api_client.log_in(user.primary_email.email, password)
+
+    # ...and attempts to upload the same receipt data that is already in
+    # use...
+    data = {"receipt_data": receipt_data}
+    url = reverse("know-me:apple-subscription-detail")
+    response = api_client.put(url, data)
+
+    # ...then he should receive a 400 response with an error indicating
+    # the receipt is already in use.
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {
+        "receipt_data": ["This receipt has already been used."]
+    }
+
+
 def test_set_invalid_apple_receipt(
-    api_client, apple_receipt_client, email_factory, user_factory
+    api_client, apple_receipt_client, user_factory
 ):
     """
     If a user sends a PUT request with an invalid Apple receipt they
@@ -46,7 +76,7 @@ def test_set_invalid_apple_receipt(
 
 
 def test_set_valid_apple_receipt(
-    api_client, apple_receipt_client, email_factory, user_factory
+    api_client, apple_receipt_client, user_factory
 ):
     """
     If a user sends a PUT request with a valid Apple receipt for a valid

@@ -31,11 +31,29 @@ def test_serialize(apple_subscription_factory):
     assert serializer.data == expected
 
 
+def test_validate_duplicate_receipt(apple_subscription_factory):
+    """
+    If the receipt data provided is already in use, validation should
+    raise an error.
+    """
+    receipt_data = "some-receipt-data"
+    apple_subscription_factory(receipt_data=receipt_data)
+
+    serializer = subscription_serializers.AppleSubscriptionSerializer(
+        data={"receipt_data": receipt_data}
+    )
+
+    assert not serializer.is_valid()
+    assert serializer.errors == {
+        "receipt_data": ["This receipt has already been used."]
+    }
+
+
 @mock.patch(
     "know_me.serializers.subscription_serializers.subscriptions.validate_apple_receipt",  # noqa
     autospec=True,
 )
-def test_validate_receipt_data(mock_validate_apple):
+def test_validate_receipt_data(mock_validate_apple, db):
     """
     The serializer should validate the provided receipt data using the
     Apple subscription verification method.
@@ -62,7 +80,7 @@ def test_validate_receipt_data(mock_validate_apple):
     assert serializer.validated_data["expiration_time"] == expires
 
 
-def test_validate_receipt_data_invalid():
+def test_validate_receipt_data_invalid(db):
     """
     If the receipt validation returns an error, it should be caught and
     re-raised as a ``ValidationError``.
