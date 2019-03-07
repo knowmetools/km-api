@@ -1,5 +1,6 @@
 """Factories to generate model instances for testing.
 """
+import hashlib
 
 import factory
 
@@ -60,6 +61,11 @@ class SubscriptionAppleDataFactory(factory.django.DjangoModelFactory):
     """
 
     receipt_data = "bogus receipt data"
+    receipt_data_hash = factory.LazyAttribute(
+        lambda instance: hashlib.sha256(
+            instance.receipt_data.encode()
+        ).hexdigest()
+    )
     subscription = factory.SubFactory("know_me.factories.SubscriptionFactory")
 
     class Meta:

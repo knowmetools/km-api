@@ -10,12 +10,18 @@ class AppleSubscriptionInline(admin.StackedInline):
 
     fields = (
         "receipt_data",
+        "receipt_data_hash",
         "expiration_time",
         "time_created",
         "time_updated",
     )
     model = models.SubscriptionAppleData
-    readonly_fields = ("expiration_time", "time_created", "time_updated")
+    readonly_fields = (
+        "expiration_time",
+        "receipt_data_hash",
+        "time_created",
+        "time_updated",
+    )
 
 
 @admin.register(models.Subscription)

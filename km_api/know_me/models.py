@@ -619,6 +619,12 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
         help_text=_("The receipt data that is base 64 encoded."),
         verbose_name=_("receipt data"),
     )
+    receipt_data_hash = models.CharField(
+        help_text=_("The hash of the receipt data."),
+        max_length=64,
+        unique=True,
+        verbose_name=_("receipt data hash"),
+    )
     subscription = models.OneToOneField(
         "know_me.Subscription",
         help_text=_("The Know Me subscription the data belongs to."),

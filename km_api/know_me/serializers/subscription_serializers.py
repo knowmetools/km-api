@@ -1,7 +1,13 @@
+import hashlib
+import logging
+
 from django.utils.translation import ugettext
 from rest_framework import serializers
 
 from know_me import models, subscriptions
+
+
+logger = logging.getLogger(__name__)
 
 
 class AppleSubscriptionSerializer(serializers.ModelSerializer):
@@ -30,9 +36,14 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
         validated_data = data.copy()
         receipt_data = validated_data["receipt_data"]
 
+        data_hash = hashlib.sha256(receipt_data.encode()).hexdigest()
         if models.SubscriptionAppleData.objects.filter(
-            receipt_data=receipt_data
+            receipt_data_hash=data_hash
         ).exists():
+            logger.warning(
+                "Duplicate Apple receipt submitted with hash: %s", data_hash
+            )
+
             raise serializers.ValidationError(
                 {
                     "receipt_data": ugettext(
