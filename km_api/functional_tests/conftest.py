@@ -22,6 +22,19 @@ class APIClient(requests.Session):
 
         self.base_url = url
 
+    def build_full_url(self, path):
+        """
+        Build a full URL from an absolute path.
+
+        Args:
+            path:
+                The absolute path to create a full URL for.
+
+        Returns:
+            The given path prepended with the base URL of the client.
+        """
+        return urljoin(self.base_url, path)
+
     def log_in(self, email, password):
         """
         Log in to the API and persist the returned token.
@@ -59,7 +72,7 @@ class APIClient(requests.Session):
             The response returned from the server at the provided URL.
         """
         if not url.startswith("http"):
-            url = urljoin(self.base_url, url)
+            url = self.build_full_url(url)
 
         return super().request(method, url, **kwargs)
 

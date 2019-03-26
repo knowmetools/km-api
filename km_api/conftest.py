@@ -16,13 +16,14 @@ from rest_framework.test import APIClient, APIRequestFactory
 import factories
 import test_utils
 from know_me.factories import (
-    SubscriptionAppleDataFactory,
     KMUserFactory,
+    SubscriptionAppleDataFactory,
     SubscriptionFactory,
 )
+from know_me.journal.factories import EntryCommentFactory
 from test_utils.apple_receipt_validator import (
-    apple_validator_app,
     AppleReceiptValidationClient,
+    apple_validator_app,
 )
 
 logger = logging.getLogger(__name__)
@@ -186,6 +187,15 @@ def email_factory(db):
         The factory class used to create ``EmailAddress`` instances.
     """
     return factories.EmailFactory
+
+
+@pytest.fixture
+def entry_comment_factory(db):
+    """
+    Returns:
+        The factory used to create journal entry comments for testing.
+    """
+    return EntryCommentFactory
 
 
 @pytest.fixture
