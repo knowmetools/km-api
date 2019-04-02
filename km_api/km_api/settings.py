@@ -233,6 +233,11 @@ if os.environ.get("DJANGO_HTTPS", "False").lower() == "true":
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
 
+    # If Django is running behind a load balancer that terminates SSL we
+    # can use the following header to determine if the original
+    # connection came over HTTPS.
+    if os.getenv("DJANGO_HTTPS_LOAD_BALANCER", "False").lower() == "true":
+        SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # CORS Configurations
 # https://github.com/ottoyiu/django-cors-headers#configuration

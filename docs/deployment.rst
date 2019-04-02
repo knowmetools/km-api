@@ -109,12 +109,25 @@ DJANGO_EMAIL_VERIFICATION_URL
 
 The template used to construct links for verifying a user's email address. The ``{key}`` portion of the template will be replaced with a unique token.
 
+.. _DJANGO_HTTPS:
+
 DJANGO_HTTPS
 ------------
 
 **Default:** ``False``
 
 Set to ``True`` (case insensitive) if the application is served over HTTPS.
+
+DJANGO_HTTPS_LOAD_BALANCER
+--------------------------
+
+**Default:** ``False``
+
+Set to ``True`` (case insensitive) if the application is served over HTTPS but is located behind a load balancer that terminates SSL. If this is enabled, requests with the header ``HTTP_X_FORWARDED_PROTO`` set to ``https`` will be treated as if they came in over HTTPS.
+
+.. note::
+
+    This has no effect unless :ref:`DJANGO_HTTPS` is set to ``True``.
 
 DJANGO_IN_MEMORY_FILES
 ----------------------
