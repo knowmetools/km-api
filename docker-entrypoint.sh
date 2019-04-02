@@ -8,6 +8,7 @@ MANAGE_CMD="python $MANAGE_PATH"
 if [[ "$1" = 'migrate' ]]; then
     ${MANAGE_CMD} migrate
     ${MANAGE_CMD} collectstatic --no-input
+    ${MANAGE_CMD} createadmin
     exit 0
 fi
 
