@@ -176,10 +176,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 if os.environ.get("DJANGO_SES_ENABLED", "False").lower() == "true":
-    AWS_SES_REGION_NAME = os.environ.get(
+    AWS_SES_REGION = os.environ.get(
         "DJANGO_SES_AWS_REGION", AWS_DEFAULT_REGION
-    )  # noqa
-    EMAIL_BACKEND = "django_ses.SESBackend"
+    )
+    EMAIL_BACKEND = "django_amazon_ses.EmailBackend"
 
 
 # Internationalization
