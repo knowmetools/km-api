@@ -9,7 +9,7 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN ["chmod", "+x", "/usr/local/bin/docker-entrypoint.sh"]
 
 # Install Dependencies
-RUN apk add --no-cache build-base libjpeg-turbo-dev postgresql-dev zlib-dev
+RUN apk add --no-cache build-base libjpeg-turbo-dev postgresql-client postgresql-dev zlib-dev
 RUN pip install --upgrade pip pipenv
 
 # Copy application

@@ -21,7 +21,7 @@ create_db_user() {
 	)
 
     export PGPASSWORD=${DATABASE_ADMIN_PASSWORD}
-	psql --host ${DJANGO_DB_HOST} --port ${DJANGO_DB_PORT} --user ${DATABASE_ADMIN_USER} --dbname ${DJANGO_DB_NAME} < ${CREATE_ROLE}
+	echo ${CREATE_ROLE} | psql --host ${DJANGO_DB_HOST} --port ${DJANGO_DB_PORT} --user ${DATABASE_ADMIN_USER} --dbname ${DJANGO_DB_NAME}
 }
 
 if [[ "$1" = 'migrate' ]]; then
