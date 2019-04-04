@@ -1,11 +1,31 @@
 #!/bin/sh
 
-set -e
+set -euf
 
 MANAGE_PATH=/opt/km-api/km_api/manage.py
 MANAGE_CMD="python $MANAGE_PATH"
 
+create_db_user() {
+    # Note that the tabs in the following statement are used to preserve
+    # indentation in the SQL statements.
+    CREATE_ROLE=$(cat <<-EOF
+		DO \$\$
+		BEGIN
+		    CREATE ROLE ${DJANGO_DB_USER} WITH LOGIN PASSWORD '${DJANGO_DB_PASSWORD}';
+		    EXCEPTION WHEN OTHERS THEN
+			    RAISE NOTICE 'not creating role ${DJANGO_DB_USER} -- it already exists';
+			    ALTER ROLE ${DJANGO_DB_USER} WITH LOGIN PASSWORD '${DJANGO_DB_PASSWORD}';
+		END
+		\$\$;
+	EOF
+	)
+
+    export PGPASSWORD=${DATABASE_ADMIN_PASSWORD}
+	psql --host ${DJANGO_DB_HOST} --port ${DJANGO_DB_PORT} --user ${DATABASE_ADMIN_USER} --dbname ${DJANGO_DB_NAME} < ${CREATE_ROLE}
+}
+
 if [[ "$1" = 'migrate' ]]; then
+    create_db_user
     ${MANAGE_CMD} migrate
     ${MANAGE_CMD} collectstatic --no-input
     ${MANAGE_CMD} createadmin
