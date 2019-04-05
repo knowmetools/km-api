@@ -6,16 +6,12 @@ from django.http import Http404
 from know_me.permissions import OwnerHasPremium
 
 
-def test_has_object_permission_active_subscription(
-    api_rf, subscription_factory, user_factory
-):
+def test_has_object_permission_active_subscription(api_rf, user_factory):
     """
     If the user that the view states is the object's owner has an active
     premium subscription, the check should return ``True``.
     """
-    user = user_factory()
-    subscription_factory(is_active=True, user=user)
-
+    user = user_factory(has_premium=True)
     request = api_rf.get("/")
 
     view = mock.Mock(name="Mock View")
@@ -28,16 +24,12 @@ def test_has_object_permission_active_subscription(
     assert view.get_subscription_owner.call_args[0] == (request, obj)
 
 
-def test_has_object_permission_inactive_subscription(
-    api_rf, subscription_factory, user_factory
-):
+def test_has_object_permission_inactive_subscription(api_rf, user_factory):
     """
     If the user that the view states is the object's owner has an
     inactive premium subscription, the check should return ``False``.
     """
-    user = user_factory()
-    subscription_factory(is_active=False, user=user)
-
+    user = user_factory(has_premium=False)
     request = api_rf.get("/")
 
     view = mock.Mock(name="Mock View")

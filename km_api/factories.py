@@ -3,11 +3,9 @@
 These factories are used project-wide.
 """
 
-from django.contrib.auth import get_user_model
-
-from rest_email_auth.models import EmailAddress
-
 import factory
+from django.contrib.auth import get_user_model
+from rest_email_auth.models import EmailAddress
 
 
 class EmailConfirmationFactory(factory.DjangoModelFactory):
@@ -45,6 +43,15 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = get_user_model()
 
+    class Params:
+        has_premium = factory.Trait(
+            know_me_subscription=factory.RelatedFactory(
+                factory="know_me.factories.SubscriptionFactory",
+                factory_related_name="user",
+                is_active=True,
+            )
+        )
+
     @classmethod
     def _after_postgeneration(cls, obj, create, results=None):
         """
@@ -52,9 +59,7 @@ class UserFactory(factory.django.DjangoModelFactory):
         """
         if obj.email_addresses.count() == 0:
             EmailAddress.objects.create(
-                email="{name}{id}@example.com".format(
-                    id=obj.id, name=obj.first_name
-                ),
+                email=f"{obj.first_name}{obj.pk}@example.com",
                 is_primary=True,
                 is_verified=True,
                 user=obj,
