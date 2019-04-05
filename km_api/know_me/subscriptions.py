@@ -247,7 +247,7 @@ def validate_apple_receipt_response(receipt_response):
     product = latest_receipt.get("product_id")
 
     if product not in settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"]:
-        logger.warning(
+        logger.info(
             "Received receipt that included a transaction for the unknown "
             'product "%s"',
             product,
