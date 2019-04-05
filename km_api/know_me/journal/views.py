@@ -9,7 +9,7 @@ from watson import search as watson
 from know_me.filters import KMUserAccessFilterBackend
 from know_me.journal import models, permissions, serializers
 from know_me.models import KMUser
-from know_me.permissions import HasKMUserAccess
+from know_me.permissions import HasKMUserAccess, OwnerHasPremium
 from permission_utils.view_mixins import DocumentActionMixin
 
 
@@ -37,9 +37,25 @@ class EntryCommentDetailView(
     Only the user who made the comment is allowed to update it.
     """
 
-    permission_classes = (DRYPermissions,)
+    permission_classes = (DRYPermissions, OwnerHasPremium)
     queryset = models.EntryComment.objects.all()
     serializer_class = serializers.EntryCommentSerializer
+
+    @staticmethod
+    def get_subscription_owner(request, comment):
+        """
+        Get the user to check for an active premium subscription.
+
+        Args:
+            request:
+                The request being made.
+            comment:
+                The comment being accessed.
+
+        Returns:
+            The user who owns the journal that the comment was made in.
+        """
+        return comment.entry.km_user.user
 
 
 class EntryCommentListView(generics.ListCreateAPIView):

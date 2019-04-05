@@ -1,12 +1,15 @@
 from rest_framework import status
 
 
-def test_delete_comment_anonymous(api_client, entry_comment_factory):
+def test_delete_comment_anonymous(
+    api_client, entry_comment_factory, subscription_factory
+):
     """
     Anonymous users should receive a 403 response if they try to
     delete a comment on a journal entry.
     """
     comment = entry_comment_factory()
+    subscription_factory(is_active=True, user=comment.entry.km_user.user)
 
     url = f"/know-me/journal/comments/{comment.pk}/"
     response = api_client.delete(url)
@@ -15,7 +18,7 @@ def test_delete_comment_anonymous(api_client, entry_comment_factory):
 
 
 def test_delete_comment_as_journal_owner(
-    api_client, entry_comment_factory, user_factory
+    api_client, entry_comment_factory, subscription_factory, user_factory
 ):
     """
     The owner of the journal that a comment was made on should be able
@@ -23,9 +26,10 @@ def test_delete_comment_as_journal_owner(
 
     Regression test for #371.
     """
-    # If Sally is a journal owner...
+    # If Sally is a journal owner with an active premium subscription...
     password = "password"
     user = user_factory(first_name="Sally", password="password")
+    subscription_factory(is_active=True, user=user)
     api_client.log_in(user.primary_email.email, password)
 
     # ...and a comment is made on an entry in her journal
@@ -39,7 +43,7 @@ def test_delete_comment_as_journal_owner(
 
 
 def test_delete_comment_as_owner(
-    api_client, entry_comment_factory, user_factory
+    api_client, entry_comment_factory, subscription_factory, user_factory
 ):
     """
     The owner of a comment should be able to delete it.
@@ -49,8 +53,10 @@ def test_delete_comment_as_owner(
     user = user_factory(first_name="Jason", password=password)
     api_client.log_in(user.primary_email.email, password)
 
-    # If he makes a comment...
+    # If he makes a comment on an entry whose owner has an active
+    # premium subscription...
     comment = entry_comment_factory(user=user)
+    subscription_factory(is_active=True, user=comment.entry.km_user.user)
 
     # ...he should be able to delete it.
     url = f"/know-me/journal/comments/{comment.pk}/"

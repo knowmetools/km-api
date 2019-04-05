@@ -15,6 +15,19 @@ def test_check_permissions(mock_dry_permissions):
     assert mock_dry_permissions.call_count == 1
 
 
+def test_get_subscription_owner(entry_comment_factory):
+    """
+    The method should return the user who owns the journal that the
+    comment was made in.
+    """
+    comment = entry_comment_factory()
+    owner = comment.entry.km_user.user
+
+    view = views.EntryCommentDetailView()
+
+    assert view.get_subscription_owner(None, comment) == owner
+
+
 def test_get_queryset(entry_comment_factory):
     """
     The view should operate on all comments.

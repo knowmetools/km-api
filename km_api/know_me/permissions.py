@@ -47,3 +47,43 @@ class HasKMUserAccess(permissions.IsAuthenticated):
             return True
 
         return request.method in permissions.SAFE_METHODS
+
+
+class OwnerHasPremium(permissions.BasePermission):
+    """
+    Permission class to ensure the owner of some object or collection
+    has a premium subscription.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        """
+        Determine if the requesting user has permission to access the
+        given object.
+
+        Args:
+            request:
+                The request being made.
+            view:
+                The view being accessed.
+            obj:
+                The object being accessed.
+
+        Returns:
+            A boolean indicating if the request should be allowed to
+            continue.
+        """
+        assert hasattr(view, "get_subscription_owner"), (
+            "In order to use the `OwnerHasPremium` permission, the view must "
+            "have a `get_subscription_owner(request, obj)` method that "
+            "returns the user who owns the subscription that should be "
+            "checked for the given object."
+        )
+
+        user = view.get_subscription_owner(request, obj)
+
+        if not models.Subscription.objects.filter(
+            is_active=True, user=user
+        ).exists():
+            raise Http404
+
+        return True
