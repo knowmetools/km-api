@@ -24,6 +24,7 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
             "receipt_data",
         )
         model = models.SubscriptionAppleData
+        read_only_fields = ("expiration_time",)
 
     def validate(self, data):
         """
