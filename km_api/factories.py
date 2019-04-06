@@ -5,7 +5,6 @@ These factories are used project-wide.
 
 import factory
 from django.contrib.auth import get_user_model
-from rest_email_auth.models import EmailAddress
 
 
 class EmailConfirmationFactory(factory.DjangoModelFactory):
@@ -36,6 +35,15 @@ class UserFactory(factory.django.DjangoModelFactory):
     Factory for generating ``User`` instances.
     """
 
+    email = factory.RelatedFactory(
+        email=factory.LazyAttribute(
+            lambda e: f"{e.user.first_name}{e.user.pk}@example.com"
+        ),
+        factory="factories.EmailFactory",
+        factory_related_name="user",
+        is_primary=True,
+        is_verified=True,
+    )
     first_name = "John"
     last_name = "Doe"
     password = "password"
@@ -51,19 +59,6 @@ class UserFactory(factory.django.DjangoModelFactory):
                 is_active=True,
             )
         )
-
-    @classmethod
-    def _after_postgeneration(cls, obj, create, results=None):
-        """
-        Create an email address for the user.
-        """
-        if obj.email_addresses.count() == 0:
-            EmailAddress.objects.create(
-                email=f"{obj.first_name}{obj.pk}@example.com",
-                is_primary=True,
-                is_verified=True,
-                user=obj,
-            )
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
