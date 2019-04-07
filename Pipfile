@@ -20,10 +20,10 @@ django-watson = "*"
 djangorestframework = "*"
 dry-rest-permissions = "*"
 gunicorn = "*"
-psycopg2 = "*"
-raven = "*"
+psycopg2-binary = "*"
 requests = "*"
 django-amazon-ses = "*"
+sentry-sdk = "*"
 
 [dev-packages]
 black = "*"

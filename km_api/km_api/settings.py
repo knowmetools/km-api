@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import logging
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -19,7 +20,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AWS_DEFAULT_REGION = os.environ.get("DJANGO_AWS_REGION", "us-east-1")
 
 
+# Configure logging to Sentry if a DSN is provided.
 SENTRY_DSN = os.environ.get("DJANGO_SENTRY_DSN")
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.logging import LoggingIntegration
+
+    sentry_logging = LoggingIntegration(
+        event_level=logging.WARNING, level=logging.INFO
+    )
+    sentry_sdk.init(
+        dsn=SENTRY_DSN, integrations=[DjangoIntegration(), sentry_logging]
+    )
 
 
 # Quick-start development settings - unsuitable for production
@@ -63,9 +76,6 @@ THIRD_PARTY_APPS = [
     "storages",
     "watson",
 ]
-
-if SENTRY_DSN:
-    THIRD_PARTY_APPS.append("raven.contrib.django.raven_compat")
 
 CUSTOM_APPS = [
     "account",
@@ -300,18 +310,6 @@ REST_FRAMEWORK = {
 # Logging Configuration
 
 LOG_HANDLER_NAMES = ["console"]
-LOG_HANDLERS = {
-    "console": {"class": "logging.StreamHandler"},
-    "null": {"class": "logging.NullHandler", "level": "DEBUG"},
-}
-
-if "raven.contrib.django.raven_compat" in INSTALLED_APPS:
-    LOG_HANDLER_NAMES.append("sentry")
-    LOG_HANDLERS["sentry"] = {
-        "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
-        "formatter": "standard",
-        "level": "WARNING",
-    }
 
 LOGGING = {
     "version": 1,
@@ -322,7 +320,10 @@ LOGGING = {
             "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",  # noqa
         }
     },
-    "handlers": LOG_HANDLERS,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+        "null": {"class": "logging.NullHandler", "level": "DEBUG"},
+    },
     "loggers": {
         # Root Handler
         "": {"handlers": LOG_HANDLER_NAMES, "level": "WARNING"},
