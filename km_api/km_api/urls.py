@@ -26,8 +26,9 @@ urlpatterns = [
     url(
         r"^api-auth/",
         include("rest_framework.urls", namespace="rest_framework"),
-    ),  # noqa
+    ),
     url(r"^auth/", include("km_auth.urls")),
     url(r"^docs/", include_docs_urls(title="Know Me API")),
     url(r"^know-me/", include("know_me.urls")),
+    url(r"^status/", include("status.urls")),
 ]
