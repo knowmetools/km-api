@@ -31,17 +31,6 @@ def file():
 
 
 @pytest.fixture
-def km_user_accessor_factory(db):
-    """
-    Fixture to get the factory used to create km user accessors.
-
-    Returns:
-        The factory class used to create ``KMUser Access`` instances.
-    """
-    return factories.KMUserAccessorFactory
-
-
-@pytest.fixture
 def legacy_user_factory(db):
     """
     Fixture to get the factory used to create legacy users.

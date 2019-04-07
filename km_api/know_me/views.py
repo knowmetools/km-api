@@ -271,9 +271,14 @@ class KMUserListView(generics.ListAPIView):
             A queryset containing the ``KMUser`` instances accessible to
             the requesting user.
         """
-        # User granted access through an accessor
-        filter_args = Q(km_user_accessor__user_with_access=self.request.user)
-        filter_args &= Q(km_user_accessor__is_accepted=True)
+        # User granted access through an accessor. Note that the owner
+        # of the Know Me user being shared must have an active premium
+        # subscription.
+        filter_args = Q(km_user_accessor__is_accepted=True)
+        filter_args &= Q(
+            km_user_accessor__km_user__user__know_me_subscription__is_active=True  # noqa
+        )
+        filter_args &= Q(km_user_accessor__user_with_access=self.request.user)
 
         # Requesting user is the user
         filter_args |= Q(user=self.request.user)

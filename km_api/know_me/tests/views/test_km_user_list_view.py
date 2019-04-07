@@ -1,32 +1,9 @@
-from rest_framework import status
 from rest_framework.reverse import reverse
 
-from know_me import serializers, views
+from know_me import views
 
 
-km_user_list_view = views.KMUserListView.as_view()
 url = reverse("know-me:km-user-list")
-
-
-def test_get_own_km_user(api_rf, km_user_factory, user_factory):
-    """
-    If the requesting user has a km_user, then a GET request to this
-    view should contain that km_user.
-    """
-    user = user_factory()
-    api_rf.user = user
-
-    km_user = km_user_factory(user=user)
-
-    request = api_rf.get(url)
-    response = km_user_list_view(request)
-
-    serializer = serializers.KMUserListSerializer(
-        [km_user], context={"request": request}, many=True
-    )
-
-    assert response.status_code == status.HTTP_200_OK
-    assert response.data == serializer.data
 
 
 def test_get_queryset_duplicates(
@@ -66,14 +43,14 @@ def test_get_queryset_order(
     user = user_factory()
     api_rf.user = user
 
-    k1 = km_user_factory()
+    k1 = km_user_factory(user__has_premium=True)
     km_user_accessor_factory(
         is_accepted=True, km_user=k1, user_with_access=user
     )
 
     k2 = km_user_factory(user=user)
 
-    k3 = km_user_factory()
+    k3 = km_user_factory(user__has_premium=True)
     km_user_accessor_factory(
         is_accepted=True, km_user=k3, user_with_access=user
     )
@@ -86,53 +63,69 @@ def test_get_queryset_order(
     assert list(view.get_queryset()) == expected
 
 
-def test_get_shared(api_rf, km_user_accessor_factory, user_factory):
+def test_get_queryset_shared(api_rf, km_user_accessor_factory, user_factory):
     """
-    The list should include the users that the requesting user has
-    access to through accessors.
+    If the requesting user is granted access to another Know Me user via
+    an accessor and the owner of the other user has an active premium
+    subscription, then the Know Me user should be included in the view's
+    queryset.
     """
     user = user_factory()
-    accessor = km_user_accessor_factory(
-        is_accepted=True, user_with_access=user
-    )
-
     api_rf.user = user
 
-    expected = [accessor.km_user]
-
-    request = api_rf.get(url)
-    response = km_user_list_view(request)
-
-    assert response.status_code == status.HTTP_200_OK
-
-    serializer = serializers.KMUserListSerializer(
-        expected, context={"request": request}, many=True
+    accessor = km_user_accessor_factory(
+        is_accepted=True,
+        km_user__user__has_premium=True,
+        user_with_access=user,
     )
 
-    assert response.data == serializer.data
+    view = views.KMUserListView()
+    view.request = api_rf.get(url)
+
+    assert list(view.get_queryset()) == [accessor.km_user]
 
 
-def test_get_shared_not_accepted(
+def test_get_queryset_shared_not_accepted(
     api_rf, km_user_accessor_factory, user_factory
 ):
     """
-    The list should not include the users where access is granted by an
-    accessor that has not been accepted.
+    If the requesting user is granted access to another Know Me user via
+    an accessor that they have not accepted, then the Know Me user
+    should not be present in the queryset.
     """
     user = user_factory()
-    km_user_accessor_factory(is_accepted=False, user_with_access=user)
-
     api_rf.user = user
 
-    expected = []
-
-    request = api_rf.get(url)
-    response = km_user_list_view(request)
-
-    assert response.status_code == status.HTTP_200_OK
-
-    serializer = serializers.KMUserListSerializer(
-        expected, context={"request": request}, many=True
+    km_user_accessor_factory(
+        is_accepted=False,
+        km_user__user__has_premium=True,
+        user_with_access=user,
     )
 
-    assert response.data == serializer.data
+    view = views.KMUserListView()
+    view.request = api_rf.get(url)
+
+    assert len(view.get_queryset()) == 0
+
+
+def test_get_queryset_shared_without_premium(
+    api_rf, km_user_accessor_factory, user_factory
+):
+    """
+    If the requesting user is granted access to another Know Me user
+    through an accessor but the other user does not have an active
+    premium subscription, they should not be included in the queryset.
+    """
+    user = user_factory()
+    api_rf.user = user
+
+    km_user_accessor_factory(
+        is_accepted=True,
+        km_user__user__has_premium=False,
+        user_with_access=user,
+    )
+
+    view = views.KMUserListView()
+    view.request = api_rf.get(url)
+
+    assert list(view.get_queryset()) == []
