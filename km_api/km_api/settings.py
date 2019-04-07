@@ -262,7 +262,6 @@ if os.environ.get("DJANGO_IN_MEMORY_FILES", "False").lower() == "true":
 
 if os.environ.get("DJANGO_HTTPS", "False").lower() == "true":
     CSRF_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
 
     # If Django is running behind a load balancer that terminates SSL we
