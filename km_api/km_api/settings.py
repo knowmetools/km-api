@@ -14,6 +14,8 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import logging
 import os
 
+import requests
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -53,6 +55,26 @@ ALLOWED_HOSTS = []
 
 if allowed_host_string:
     ALLOWED_HOSTS = allowed_host_string.split(",")
+
+# If we are running in an ECS environment, we need to add the IP of the
+# host machine running the task. This is needed because the load
+# balancer checks the status endpoint on the private IP rather than the
+# domain name we have set up.
+EC2_PRIVATE_IP = None
+
+try:
+    resp = requests.get("http://169.254.170.2/v2/metadata")
+    data = resp.json()
+
+    container_meta = data["Containers"][0]
+    EC2_PRIVATE_IP = container_meta["Networks"][0]["IPv4Addresses"][0]
+# We catch all exceptions because any kind of failure here violates our
+# assumption that we are in an ECS cluster, so we want to silently fail.
+except:  # noqa
+    pass
+
+if EC2_PRIVATE_IP:
+    ALLOWED_HOSTS.append(EC2_PRIVATE_IP)
 
 
 # Application definition
