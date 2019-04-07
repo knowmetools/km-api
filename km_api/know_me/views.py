@@ -1,13 +1,13 @@
 """Views for the ``know_me`` module.
 """
 
-from django.db.models import Case, Q, PositiveSmallIntegerField, Value, When
+from django.db.models import Case, PositiveSmallIntegerField, Q, Value, When
 from django.shortcuts import get_object_or_404
 from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
 from rest_framework import generics, pagination, status
 from rest_framework.response import Response
 
-from know_me import models, serializers, permissions
+from know_me import models, permissions, serializers
 from know_me.serializers import subscription_serializers
 from permission_utils.view_mixins import DocumentActionMixin
 
@@ -357,3 +357,20 @@ class PendingAccessorListView(generics.ListAPIView):
             give access to the requesting user and are not yet accepted.
         """
         return self.request.user.km_user_accessors.filter(is_accepted=False)
+
+
+class SubscriptionTransferView(generics.CreateAPIView):
+    """
+    post:
+    Transfer a Know Me premium subscription to another user.
+
+    Requirements:
+    * The authenticated user must have an active Know Me premium
+      subscription.
+    * The specified recipient email address must exist in the system and
+      be verified.
+    * The recipient must not have an active premium subscription.
+    """
+
+    permission_classes = (permissions.HasPremium,)
+    serializer_class = subscription_serializers.SubscriptionTransferSerializer

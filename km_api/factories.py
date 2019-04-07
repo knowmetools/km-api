@@ -5,6 +5,7 @@ These factories are used project-wide.
 
 import factory
 from django.contrib.auth import get_user_model
+from rest_email_auth.signals import user_registered
 
 
 class EmailConfirmationFactory(factory.DjangoModelFactory):
@@ -83,3 +84,10 @@ class UserFactory(factory.django.DjangoModelFactory):
         manager = cls._get_manager(model_class)
 
         return manager.create_user(*args, **kwargs)
+
+    @factory.post_generation
+    def registration_signal(obj, create, extracted, **kwargs):
+        if not create or not kwargs.get("send", False):
+            return
+
+        user_registered.send(sender=UserFactory, user=obj)

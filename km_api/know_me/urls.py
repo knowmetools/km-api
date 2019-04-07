@@ -49,6 +49,11 @@ urlpatterns = [
         views.AppleSubscriptionView.as_view(),
         name="apple-subscription-detail",
     ),
+    path(
+        "subscription/transfer/",
+        views.SubscriptionTransferView.as_view(),
+        name="subscription-transfer-create",
+    ),
     url(r"^users/$", views.KMUserListView.as_view(), name="km-user-list"),
     url(
         r"^users/accessors/$",
