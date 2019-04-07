@@ -16,6 +16,7 @@ from rest_framework.test import APIClient, APIRequestFactory
 import factories
 import test_utils
 from know_me.factories import (
+    KMUserAccessorFactory,
     KMUserFactory,
     SubscriptionAppleDataFactory,
     SubscriptionFactory,
@@ -212,6 +213,17 @@ def image():
     image.save(out_stream, format="png")
 
     return ContentFile(content=out_stream.getvalue(), name="foo.png")
+
+
+@pytest.fixture
+def km_user_accessor_factory(db):
+    """
+    Fixture to get the factory used to create km user accessors.
+
+    Returns:
+        The factory class used to create ``KMUser Access`` instances.
+    """
+    return KMUserAccessorFactory
 
 
 @pytest.fixture
