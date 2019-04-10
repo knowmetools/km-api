@@ -1,13 +1,10 @@
 [run]
 branch = True
 omit = \
+    */functional_tests/*,
+    */migrations/*,
     */test_utils/*,
     */test/*,
     */tests/*,
-    km_api/manage.py,
-    km_api/km_api/wsgi.py,
-    */migrations/*,
-    */admin.py,
-    km_api/functional_tests/*,
-    km_api/km_api/*
+    */manage.py
 source = km_api
