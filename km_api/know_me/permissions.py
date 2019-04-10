@@ -49,6 +49,35 @@ class HasKMUserAccess(permissions.IsAuthenticated):
         return request.method in permissions.SAFE_METHODS
 
 
+class HasPremium(permissions.IsAuthenticated):
+    """
+    Permission class to ensure the requesting user has an active Know Me
+    premium subscription.
+    """
+
+    def has_permission(self, request, view):
+        """
+        Determine if the requesting user has an active premium
+        subscription.
+
+        Args:
+            request:
+                The request being made.
+            view:
+                The view being accessed.
+
+        Returns:
+            A boolean indicating if the requesting user has an active
+            premium subscription.
+        """
+        if not super().has_permission(request, view):
+            return False
+
+        return models.Subscription.objects.filter(
+            is_active=True, user=request.user
+        ).exists()
+
+
 class OwnerHasPremium(permissions.BasePermission):
     """
     Permission class to ensure the owner of some object or collection

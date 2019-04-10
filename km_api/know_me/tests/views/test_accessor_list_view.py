@@ -1,72 +1,80 @@
-from rest_framework import status
+from unittest import mock
+
+import pytest
+from django.http import Http404
 
 from know_me import serializers, views
 
 
-accessor_list_view = views.AccessorListView.as_view()
-
-
-def test_get_anonymous(api_rf):
+def test_get_queryset(api_rf, km_user_accessor_factory, km_user_factory):
     """
-    Sending a GET request to the view as an anonymous user should return
-    a permissions error.
-
-    Regression test for #325
-    """
-    request = api_rf.get("/")
-    response = accessor_list_view(request)
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-
-
-def test_get_sharing_list(api_rf, km_user_accessor_factory, km_user_factory):
-    """
-    Sending a GET request to the view should return a list of all the
-    accessors for the given Know Me user.
+    The queryset for the view should include all accessors granting
+    access to the requesting user's Know Me user.
     """
     km_user = km_user_factory()
+    api_rf.user = km_user.user
 
     km_user_accessor_factory(km_user=km_user)
-    km_user_accessor_factory()
+    km_user_accessor_factory(km_user=km_user)
 
-    api_rf.user = km_user.user
+    view = views.AccessorListView()
+    view.request = api_rf.get("/")
 
-    request = api_rf.get("/")
-    response = accessor_list_view(request)
-
-    assert response.status_code == status.HTTP_200_OK
-
-    serializer = serializers.KMUserAccessorSerializer(
-        km_user.km_user_accessors.all(),
-        context={"request": request},
-        many=True,
-    )
-
-    assert response.data == serializer.data
+    assert list(view.get_queryset()) == list(km_user.km_user_accessors.all())
 
 
-def test_post_new_share(api_rf, km_user_factory):
+def test_get_queryset_no_km_user(api_rf, user_factory):
     """
-    Sending a POST request should create a new accessor with the
-    provided permissions.
+    If the requesting user has no associated Know Me user, a 404 error
+    should be raised.
+    """
+    user = user_factory()
+    api_rf.user = user
+
+    view = views.AccessorListView()
+    view.request = api_rf.get("/")
+
+    with pytest.raises(Http404):
+        view.get_queryset()
+
+
+def test_get_serializer_class():
+    """
+    Test the serializer class used by the view.
+    """
+    view = views.AccessorListView()
+
+    assert view.get_serializer_class() == serializers.KMUserAccessorSerializer
+
+
+def test_perform_create(api_rf, km_user_factory):
+    """
+    If the requesting user has an associated Know Me user, that Know Me
+    user should be passed to the serializer being saved.
     """
     km_user = km_user_factory()
     api_rf.user = km_user.user
 
-    data = {"email": "share@example.com", "is_admin": True}
+    serializer = mock.Mock(name="Mock Serializer")
+    view = views.AccessorListView()
+    view.request = api_rf.post("/")
 
-    request = api_rf.post("/", data)
-    response = accessor_list_view(request)
+    view.perform_create(serializer)
 
-    assert response.status_code == status.HTTP_201_CREATED
-    assert km_user.km_user_accessors.count() == 1
+    assert serializer.save.call_args[1] == {"km_user": km_user}
 
-    accessor = km_user.km_user_accessors.get()
 
-    assert accessor.email == data["email"]
-    assert accessor.is_admin == data["is_admin"]
-    serializer = serializers.KMUserAccessorSerializer(
-        accessor, context={"request": request}
-    )
+def test_perform_create_no_km_user(api_rf, user_factory):
+    """
+    If the requesting user does not have an associated Know Me user, the
+    method should throw a 404 exception.
+    """
+    user = user_factory()
+    api_rf.user = user
 
-    assert response.data == serializer.data
+    serializer = mock.Mock(name="Mock Serializer")
+    view = views.AccessorListView()
+    view.request = api_rf.post("/")
+
+    with pytest.raises(Http404):
+        view.perform_create(serializer)

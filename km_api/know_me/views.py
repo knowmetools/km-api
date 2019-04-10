@@ -7,7 +7,7 @@ from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
 from rest_framework import generics, pagination, status
 from rest_framework.response import Response
 
-from know_me import models, serializers
+from know_me import models, serializers, permissions
 from know_me.serializers import subscription_serializers
 from permission_utils.view_mixins import DocumentActionMixin
 
@@ -165,12 +165,18 @@ class AccessorListView(generics.ListCreateAPIView):
     Endpoint for listing the accessors that grant access to the current
     user's Know Me profiles.
 
+    *__Note:__ The requesting user must have an active premium
+    subscription to access this view.*
+
     post:
     Endpoint for creating a new accessor for the current user's
     profiles.
+
+    *__Note:__ The requesting user must have an active premium
+    subscription to access this view.*
     """
 
-    permission_classes = (DRYPermissions,)
+    permission_classes = (DRYPermissions, permissions.HasPremium)
     serializer_class = serializers.KMUserAccessorSerializer
 
     def get_queryset(self):

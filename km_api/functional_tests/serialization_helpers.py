@@ -10,6 +10,47 @@ indicates that a potentially breaking change was made.
 from test_utils import serialized_time
 
 
+def _has_destroy_perm(_):
+    return False
+
+
+def _is_owner(_):
+    return True
+
+
+def km_user_accessor(
+    accessor,
+    build_full_url,
+    has_destroy_perm=_has_destroy_perm,
+    is_owner=_is_owner,
+):
+    return {
+        "id": accessor.pk,
+        "url": build_full_url(f"/know-me/accessors/{accessor.pk}/"),
+        "created_at": serialized_time(accessor.created_at),
+        "updated_at": serialized_time(accessor.updated_at),
+        "accept_url": build_full_url(
+            f"/know-me/accessors/{accessor.pk}/accept/"
+        ),
+        "email": accessor.email,
+        "is_accepted": accessor.is_accepted,
+        "is_admin": accessor.is_admin,
+        "km_user": {
+            "image": build_full_file_url(
+                accessor.km_user.image, build_full_url
+            ),
+            "name": accessor.km_user.name,
+        },
+        "permissions": {
+            "accept": has_destroy_perm(accessor),
+            "destroy": is_owner(accessor),
+            "read": is_owner(accessor),
+            "write": is_owner(accessor),
+        },
+        "user_with_access": user_info(accessor.user_with_access),
+    }
+
+
 def build_full_file_url(file_field, build_full_url):
     """
     Build the full URL for a file field.
@@ -88,6 +129,9 @@ def user_info(user):
         A dictionary containing the serialized representation of the
         given user's information.
     """
+    if not user:
+        return None
+
     return {
         "first_name": user.first_name,
         "image": None,
