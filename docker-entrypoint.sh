@@ -24,6 +24,12 @@ create_db_user() {
 	echo ${CREATE_ROLE} | psql --host ${DJANGO_DB_HOST} --port ${DJANGO_DB_PORT} --user ${DATABASE_ADMIN_USER} --dbname ${DJANGO_DB_NAME}
 }
 
+if [[ "$1" = 'background-jobs' ]]; then
+    ${MANAGE_CMD} cleanemailconfirmations
+    ${MANAGE_CMD} updatesubscriptions
+    exit 0
+fi
+
 if [[ "$1" = 'migrate' ]]; then
     create_db_user
     ${MANAGE_CMD} migrate
