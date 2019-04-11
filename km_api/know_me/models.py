@@ -1,6 +1,6 @@
 """Models for the Know Me app.
 """
-
+import hashlib
 import logging
 
 import email_utils
@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ugettext
 from rest_email_auth.models import EmailAddress
 from rest_framework.reverse import reverse
 from solo.models import SingletonModel
@@ -673,6 +673,17 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
             subscription=self.subscription
         )
 
+    def clean(self):
+        """
+        Ensure the hash fields of the instance are populated and
+        updated.
+        """
+        super().clean()
+
+        self.receipt_data_hash = hashlib.sha256(
+            self.receipt_data.encode()
+        ).hexdigest()
+
     def has_object_read_permission(self, request):
         """
         Check if the requesting user has read permissions on the
@@ -713,3 +724,25 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
         now = timezone.now()
         self.subscription.is_active = self.expiration_time > now
         self.subscription.save()
+
+    def validate_unique(self, exclude=None):
+        """
+        Ensure that the receipt data for the instance is unique.
+
+        Args:
+            exclude:
+                A collection of fields to exclude from the uniqueness
+                check.
+        """
+        super().validate_unique(exclude)
+
+        if self.__class__.objects.filter(
+            receipt_data_hash=self.receipt_data_hash
+        ).exists():
+            raise ValidationError(
+                {
+                    "receipt_data": ugettext(
+                        "The provided receipt data is already in use."
+                    )
+                }
+            )

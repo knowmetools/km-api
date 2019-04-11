@@ -1,7 +1,25 @@
 import datetime
+import hashlib
 from unittest import mock
 
+import pytest
+from django.core.exceptions import ValidationError
 from django.utils import timezone
+
+from know_me import models
+
+
+def test_clean():
+    """
+    Cleaning the model should populate the receipt data hash field.
+    """
+    receipt_data = "base64-encoded-receipt-data"
+    data = models.SubscriptionAppleData(receipt_data=receipt_data)
+    expected = hashlib.sha256(receipt_data.encode()).hexdigest()
+
+    data.clean()
+
+    assert data.receipt_data_hash == expected
 
 
 def test_has_object_read_permission_owner(api_rf, apple_subscription_factory):
@@ -107,3 +125,29 @@ def test_string_conversion(apple_subscription_factory):
     )
 
     assert str(data) == expected
+
+
+def test_validate_unique_different_receipts(apple_subscription_factory):
+    """
+    If there are no other apple subscriptions with the instance's
+    receipt data, the unique validation should pass.
+    """
+    apple_subscription_factory(receipt_data="data-1")
+
+    apple_data = models.SubscriptionAppleData(receipt_data="data-2")
+    apple_data.validate_unique()
+
+
+def test_validate_unique_duplicate_receipt_data(apple_subscription_factory):
+    """
+    If there is an existing Apple receipt with the same receipt data as
+    the instance, the unique validation should fail.
+    """
+    existing_data = apple_subscription_factory()
+    new_data = models.SubscriptionAppleData(
+        receipt_data=existing_data.receipt_data
+    )
+    new_data.clean()
+
+    with pytest.raises(ValidationError):
+        new_data.validate_unique()
