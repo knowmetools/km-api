@@ -734,7 +734,11 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
                 A collection of fields to exclude from the uniqueness
                 check.
         """
-        super().validate_unique(exclude)
+        # For some reason the admin only uses our custom unique
+        # validation rather than the one in the super call so we
+        # exclude the default one.
+        exclude = exclude or []
+        super().validate_unique(exclude + ["receipt_data_hash"])
 
         if self.__class__.objects.filter(
             receipt_data_hash=self.receipt_data_hash

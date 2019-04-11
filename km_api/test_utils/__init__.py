@@ -1,3 +1,20 @@
+import hashlib
+
+
+def receipt_data_hash(data):
+    """
+    Get the hash of some receipt data.
+
+    Args:
+        data:
+            The receipt data to get the hash of.
+
+    Returns:
+        The SHA256 hash of the given data.
+    """
+    return hashlib.sha256(data.encode()).hexdigest()
+
+
 def serialized_time(time):
     """
     Return a serialized version of a datetime instance in the format of

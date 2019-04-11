@@ -24,9 +24,10 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
             "time_updated",
             "expiration_time",
             "receipt_data",
+            "receipt_data_hash",
         )
         model = models.SubscriptionAppleData
-        read_only_fields = ("expiration_time",)
+        read_only_fields = ("expiration_time", "receipt_data_hash")
 
     def validate(self, data):
         """
@@ -43,7 +44,7 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
         if models.SubscriptionAppleData.objects.filter(
             receipt_data_hash=data_hash
         ).exists():
-            logger.warning(
+            logger.info(
                 "Duplicate Apple receipt submitted with hash: %s", data_hash
             )
 
@@ -63,6 +64,7 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
             )
 
         validated_data["expiration_time"] = receipt.expires_date
+        validated_data["receipt_data_hash"] = data_hash
 
         return validated_data
 

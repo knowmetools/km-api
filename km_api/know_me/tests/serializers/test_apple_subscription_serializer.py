@@ -8,7 +8,7 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from know_me import subscriptions
 from know_me.serializers import subscription_serializers
 from know_me.subscriptions import AppleReceipt
-from test_utils import serialized_time
+from test_utils import serialized_time, receipt_data_hash
 
 
 def test_serialize(apple_subscription_factory):
@@ -26,6 +26,7 @@ def test_serialize(apple_subscription_factory):
         "time_updated": serialized_time(subscription.time_updated),
         "expiration_time": serialized_time(subscription.expiration_time),
         "receipt_data": subscription.receipt_data,
+        "receipt_data_hash": receipt_data_hash(subscription.receipt_data),
     }
 
     assert serializer.data == expected
