@@ -32,6 +32,16 @@ class Command(management.BaseCommand):
             **options:
                 Keyword arguments provided to the command.
         """
+        self.stdout.write(
+            "Deactivating all subscriptions without a receipt..."
+        )
+        orphan_sub_count = models.Subscription.objects.filter(
+            apple_data__isnull=True, is_active=True
+        ).update(is_active=False)
+        self.stdout.write(
+            f"Deactivated {orphan_sub_count} orphan subscription(s)."
+        )
+
         cutoff_time = timezone.now() + self.EXPIRATION_WINDOW
         self.stdout.write(
             f"Updating Apple subscriptions that expire before "

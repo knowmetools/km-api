@@ -123,3 +123,18 @@ def test_handle_still_expired_apple_subscription(
     apple_data.refresh_from_db()
 
     assert not apple_data.subscription.is_active
+
+
+def test_handle_subscription_no_receipt(subscription_factory):
+    """
+    If there is an active subscription without any receipt data (ie the
+    receipt data got deleted), it should be set to inactive when the
+    command is run.
+    """
+    subscription = subscription_factory(is_active=True)
+
+    command = Command()
+    command.handle()
+    subscription.refresh_from_db()
+
+    assert not subscription.is_active
