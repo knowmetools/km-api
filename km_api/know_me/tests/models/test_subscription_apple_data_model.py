@@ -1,10 +1,7 @@
-import datetime
 import hashlib
-from unittest import mock
 
 import pytest
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 
 from know_me import models
 
@@ -70,48 +67,6 @@ def test_has_object_write_permission_other(
     request = api_rf.get("/")
 
     assert not subscription.has_object_write_permission(request)
-
-
-def test_save_update_base_subscription_active(apple_subscription_factory):
-    """
-    If the expiration date of the Apple subscription has not passed, the
-    base subscription should be made active when the Apple subscription
-    is saved.
-    """
-    future_time = timezone.now() + datetime.timedelta(days=1)
-
-    apple_subscription = apple_subscription_factory()
-    apple_subscription.expiration_time = future_time
-    apple_subscription.subscription.is_active = False
-
-    with mock.patch.object(
-        apple_subscription.subscription, "save"
-    ) as mock_save:
-        apple_subscription.save()
-
-    assert apple_subscription.subscription.is_active
-    assert mock_save.call_count == 1
-
-
-def test_save_update_base_subscription_expired(apple_subscription_factory):
-    """
-    If the expiration date of the Apple subscription has passed, the
-    base subscription should be made inactive when the Apple
-    subscription is saved.
-    """
-    past_time = timezone.now() - datetime.timedelta(days=1)
-
-    apple_subscription = apple_subscription_factory()
-    apple_subscription.expiration_time = past_time
-    apple_subscription.subscription.is_active = True
-
-    with mock.patch.object(
-        apple_subscription.subscription, "save"
-    ) as mock_save:
-        apple_subscription.save()
-
-    assert not apple_subscription.subscription.is_active
-    assert mock_save.call_count == 1
 
 
 def test_string_conversion(apple_subscription_factory):

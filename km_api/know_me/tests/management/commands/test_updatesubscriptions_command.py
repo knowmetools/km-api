@@ -37,9 +37,7 @@ def test_handle_expiring_apple_subscription(
     expires = timezone.now().replace(microsecond=0) - datetime.timedelta(
         days=30
     )
-    apple_data = apple_subscription_factory()
-    apple_data.subscription.is_active = True
-    apple_data.subscription.save()
+    apple_data = apple_subscription_factory(subscription__is_active=True)
 
     apple_receipt_client.enqueue_status(
         apple_data.receipt_data,

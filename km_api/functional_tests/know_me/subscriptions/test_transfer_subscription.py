@@ -3,24 +3,6 @@ from rest_framework import status
 TRANSFER_URL = "/know-me/subscription/transfer/"
 
 
-def user_is_premium(api_client):
-    """
-    Determine if the user logged in to the API client has a premium
-    subscription.
-
-    Args:
-        api_client:
-            The client to use to determine premium status.
-
-    Returns:
-        A boolean indicating if the user is a premium user.
-    """
-    response = api_client.get("/know-me/users/")
-    response.raise_for_status()
-
-    return response.json()[0]["is_premium_user"]
-
-
 def test_transfer_anonymous(api_client):
     """
     Anonymous users should receive a 403 response if they attempt to
@@ -159,9 +141,9 @@ def test_transfer_recipient_no_subscription(
     assert transfer_response.status_code == status.HTTP_201_CREATED
 
     # Shawn should no longer be a premium user.
-    assert not user_is_premium(api_client)
+    assert not api_client.user_has_premium
 
     # Juliet should be a premium user.
     api_client.log_in(user2.primary_email.email, password)
 
-    assert user_is_premium(api_client)
+    assert api_client.user_has_premium

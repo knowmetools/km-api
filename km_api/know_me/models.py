@@ -714,17 +714,6 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
         """
         return request.user == self.subscription.user
 
-    def save(self, *args, **kwargs):
-        """
-        Update the base subscription's 'active' status based on the
-        Apple receipt's expiration date.
-        """
-        super().save(*args, **kwargs)
-
-        now = timezone.now()
-        self.subscription.is_active = self.expiration_time > now
-        self.subscription.save()
-
     def validate_unique(self, exclude=None):
         """
         Ensure that the receipt data for the instance is unique.
