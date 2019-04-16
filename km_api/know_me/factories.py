@@ -1,8 +1,10 @@
 """Factories to generate model instances for testing.
 """
+import datetime
 import hashlib
 
 import factory
+from django.utils import timezone
 
 
 class ConfigFactory(factory.django.DjangoModelFactory):
@@ -60,6 +62,9 @@ class SubscriptionAppleDataFactory(factory.django.DjangoModelFactory):
     Factory for generating ``SubscriptionAppleData`` instances.
     """
 
+    expiration_time = factory.LazyFunction(
+        lambda: timezone.now() + datetime.timedelta(minutes=30)
+    )
     receipt_data = "bogus receipt data"
     receipt_data_hash = factory.LazyAttribute(
         lambda instance: hashlib.sha256(

@@ -76,6 +76,22 @@ class APIClient(requests.Session):
 
         return super().request(method, url, **kwargs)
 
+    @property
+    def user_has_premium(self):
+        """
+        .. note:
+            For now, the authenticated user must have an associated
+            Know Me user in order for this check to be performed.
+
+        Returns:
+            A boolean indicating if the currently authenticated user has
+            an active premium subscription.
+        """
+        response = self.get("/know-me/users/")
+        response.raise_for_status()
+
+        return response.json()[0]["is_premium_user"]
+
 
 @pytest.fixture
 def api_client(live_server):

@@ -1,5 +1,6 @@
 """Views for the ``know_me`` module.
 """
+import logging
 
 from django.db.models import Case, PositiveSmallIntegerField, Q, Value, When
 from django.shortcuts import get_object_or_404
@@ -12,8 +13,16 @@ from know_me.serializers import subscription_serializers
 from permission_utils.view_mixins import DocumentActionMixin
 
 
-class AppleSubscriptionView(generics.RetrieveAPIView):
+logger = logging.getLogger(__name__)
+
+
+class AppleSubscriptionView(generics.RetrieveDestroyAPIView):
     """
+    delete:
+    Delete the Apple receipt associated with the requesting user's
+    Know Me premium subscription. Deleting the receipt will also
+    immediately deactivate the user's premium subscription.
+
     get:
     Retrieve the current user's Apple subscription. If the user does not
     have an Apple subscription, a 404 response is returned.
@@ -37,6 +46,26 @@ class AppleSubscriptionView(generics.RetrieveAPIView):
         """
         return get_object_or_404(
             models.SubscriptionAppleData, subscription__user=self.request.user
+        )
+
+    def perform_destroy(self, instance):
+        """
+        Delete the requesting user's Apple receipt and deactivate their
+        premium subscription.
+
+        Args:
+            instance:
+                The Apple receipt data to delete.
+        """
+        subscription = instance.subscription
+        subscription.is_active = False
+        subscription.save()
+
+        instance.delete()
+
+        logger.info(
+            "Deleted Apple receipt associated with subscription %d",
+            subscription.pk,
         )
 
     def put(self, request, *args, **kwargs):

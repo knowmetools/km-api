@@ -56,11 +56,17 @@ class Command(management.BaseCommand):
         )
 
         for apple_sub in query:
+            is_active = False
+
             try:
                 updated = subscriptions.validate_apple_receipt(
                     apple_sub.receipt_data
                 )
                 apple_sub.expiration_time = updated.expires_date
+                apple_sub.save()
+
+                if apple_sub.expiration_time > timezone.now():
+                    is_active = True
             except subscriptions.ReceiptException:
                 self.stdout.write(
                     self.style.NOTICE(
@@ -69,7 +75,13 @@ class Command(management.BaseCommand):
                     )
                 )
 
-            apple_sub.save()
+                # If there is an error verifying the receipt, the
+                # subscription should be deactivated.
+                is_active = False
+
+            models.Subscription.objects.filter(apple_data=apple_sub).update(
+                is_active=is_active
+            )
 
         self.stdout.write(
             self.style.SUCCESS("Finished updating Apple subscriptions.")
