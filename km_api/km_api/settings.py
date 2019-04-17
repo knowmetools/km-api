@@ -16,6 +16,17 @@ import os
 
 import requests
 
+
+# Ignored warnings:
+SILENCED_SYSTEM_CHECKS = [
+    # Our username field can be non-unique because we use emails for
+    # authentication.
+    "auth.W004",
+    # We define a default page size for consistency but not all views
+    # are paginated.
+    "rest_framework.W001",
+]
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
