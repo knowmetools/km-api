@@ -2,6 +2,7 @@ import hashlib
 import logging
 
 from django.db import transaction
+from django.db.models import Q
 from django.utils.translation import ugettext, ugettext_lazy as _
 from rest_email_auth.models import EmailAddress
 from rest_framework import serializers
@@ -10,6 +11,9 @@ from know_me import models, subscriptions
 
 
 logger = logging.getLogger(__name__)
+
+
+RECEIPT_IN_USE = _("This receipt has already been used.")
 
 
 class AppleReceiptInfoSerializer(serializers.ModelSerializer):
@@ -34,11 +38,26 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
             "time_created",
             "time_updated",
             "expiration_time",
+            "latest_receipt_data",
+            "latest_receipt_data_hash",
             "receipt_data",
             "receipt_data_hash",
         )
         model = models.SubscriptionAppleData
-        read_only_fields = ("expiration_time", "receipt_data_hash")
+        read_only_fields = (
+            "expiration_time",
+            "latest_receipt_data",
+            "latest_receipt_data_hash",
+            "receipt_data_hash",
+        )
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize cached properties.
+        """
+        super().__init__(*args, **kwargs)
+
+        self._receipt_data_hash = None
 
     def validate(self, data):
         """
@@ -51,22 +70,6 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
         validated_data = data.copy()
         receipt_data = validated_data["receipt_data"]
 
-        data_hash = hashlib.sha256(receipt_data.encode()).hexdigest()
-        if models.SubscriptionAppleData.objects.filter(
-            receipt_data_hash=data_hash
-        ).exists():
-            logger.info(
-                "Duplicate Apple receipt submitted with hash: %s", data_hash
-            )
-
-            raise serializers.ValidationError(
-                {
-                    "receipt_data": ugettext(
-                        "This receipt has already been used."
-                    )
-                }
-            )
-
         try:
             receipt = subscriptions.validate_apple_receipt(receipt_data)
         except subscriptions.ReceiptException as e:
@@ -74,10 +77,51 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
                 code=e.code, detail={"receipt_data": e.msg}
             )
 
+        # If a user attempts to upload an old version of a receipt that
+        # is in use, then we can detect that using the latest receipt
+        # data returned from the verification process.
+        latest_data = receipt.latest_receipt_data
+        latest_hash = hashlib.sha256(latest_data.encode()).hexdigest()
+
+        query = Q(latest_receipt_data_hash=latest_hash)
+        query |= Q(receipt_data_hash=latest_hash)
+
+        if models.SubscriptionAppleData.objects.filter(query).exists():
+            raise serializers.ValidationError({"receipt_data": RECEIPT_IN_USE})
+
+        # Populate information included in the verification response
+        # from Apple.
         validated_data["expiration_time"] = receipt.expires_date
-        validated_data["receipt_data_hash"] = data_hash
+        validated_data["latest_receipt_data"] = latest_data
+        validated_data["latest_receipt_data_hash"] = latest_hash
+        validated_data["receipt_data_hash"] = self._receipt_data_hash
 
         return validated_data
+
+    def validate_receipt_data(self, data):
+        """
+        Validate incoming receipt data to ensure it has not been used
+        before.
+
+        Args:
+            data:
+                The receipt data to validate.
+
+        Returns:
+            The validated receipt data.
+        """
+        data_hash = hashlib.sha256(data.encode()).hexdigest()
+
+        query = Q(latest_receipt_data_hash=data_hash)
+        query |= Q(receipt_data_hash=data_hash)
+
+        if models.SubscriptionAppleData.objects.filter(query).exists():
+            raise serializers.ValidationError(RECEIPT_IN_USE)
+
+        # Cache receipt data hash
+        self._receipt_data_hash = data_hash
+
+        return data
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):

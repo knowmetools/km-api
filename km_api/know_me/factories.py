@@ -65,7 +65,15 @@ class SubscriptionAppleDataFactory(factory.django.DjangoModelFactory):
     expiration_time = factory.LazyFunction(
         lambda: timezone.now() + datetime.timedelta(minutes=30)
     )
-    receipt_data = "bogus receipt data"
+    latest_receipt_data = factory.LazyAttribute(
+        lambda receipt: receipt.receipt_data
+    )
+    latest_receipt_data_hash = factory.LazyAttribute(
+        lambda receipt: hashlib.sha256(
+            receipt.latest_receipt_data.encode()
+        ).hexdigest()
+    )
+    receipt_data = factory.Sequence(lambda n: f"bogus receipt data {n}")
     receipt_data_hash = factory.LazyAttribute(
         lambda instance: hashlib.sha256(
             instance.receipt_data.encode()

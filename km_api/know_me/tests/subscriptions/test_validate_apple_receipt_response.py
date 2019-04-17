@@ -122,13 +122,15 @@ def test_validate_apple_receipt_valid(product_code, settings):
     should be returned.
     """
     settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"] = ["annual", "monthly"]
+    latest_receipt_data = "receipt-data"
     receipt_info = {"product_id": product_code}
 
     result = validate_apple_receipt_response(
         {
+            "latest_receipt": latest_receipt_data,
             "latest_receipt_info": [{"product_id": "foo"}, receipt_info],
             "status": ReceiptCode.VALID,
         }
     )
 
-    assert result == AppleReceipt(receipt_info)
+    assert result == AppleReceipt(receipt_info, latest_receipt_data)

@@ -98,6 +98,7 @@ def test_set_multiple_apple_receipts(
         receipt_1,
         {
             "status": 0,
+            "latest_receipt": receipt_1,
             "latest_receipt_info": [
                 {
                     "expires_date_ms": str(int(expires.timestamp() * 1000)),
@@ -110,6 +111,7 @@ def test_set_multiple_apple_receipts(
         receipt_2,
         {
             "status": 0,
+            "latest_receipt": receipt_2,
             "latest_receipt_info": [
                 {
                     "expires_date_ms": str(int(expires.timestamp() * 1000)),
@@ -153,6 +155,7 @@ def test_set_valid_apple_receipt(
         receipt_data,
         {
             "status": 0,
+            "latest_receipt": receipt_data,
             "latest_receipt_info": [
                 {
                     "expires_date_ms": str(int(expires.timestamp() * 1000)),
@@ -170,6 +173,10 @@ def test_set_valid_apple_receipt(
     # ...he should receive a 200 response.
     assert response.status_code == status.HTTP_200_OK
     assert response_data["expiration_time"] == serialized_time(expires)
+    assert response_data["latest_receipt_data"] == receipt_data
+    assert response_data["latest_receipt_data_hash"] == receipt_data_hash(
+        receipt_data
+    )
     assert response_data["receipt_data"] == receipt_data
     assert response_data["receipt_data_hash"] == receipt_data_hash(
         receipt_data

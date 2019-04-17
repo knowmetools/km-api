@@ -1,6 +1,8 @@
 import datetime
+import hashlib
 
 from django.core import management
+from django.db.models import Q
 from django.utils import timezone
 
 from know_me import models, subscriptions
@@ -62,11 +64,38 @@ class Command(management.BaseCommand):
                 updated = subscriptions.validate_apple_receipt(
                     apple_sub.receipt_data
                 )
-                apple_sub.expiration_time = updated.expires_date
-                apple_sub.save()
 
-                if apple_sub.expiration_time > timezone.now():
-                    is_active = True
+                latest_hash = hashlib.sha256(
+                    updated.latest_receipt_data.encode()
+                ).hexdigest()
+
+                unique_query = Q(latest_receipt_data_hash=latest_hash)
+                unique_query |= Q(receipt_data_hash=latest_hash)
+
+                if (
+                    models.SubscriptionAppleData.objects.exclude(
+                        pk=apple_sub.pk
+                    )
+                    .filter(unique_query)
+                    .exists()
+                ):
+                    self.stdout.write(
+                        self.style.NOTICE(
+                            f"Apple receipt with ID {apple_sub.pk} has an "
+                            f"updated hash that conflicts with another "
+                            f"receipt: {latest_hash}"
+                        )
+                    )
+
+                    is_active = False
+                else:
+                    apple_sub.expiration_time = updated.expires_date
+                    apple_sub.latest_receipt_data = updated.latest_receipt_data
+                    apple_sub.clean()
+                    apple_sub.save()
+
+                    if apple_sub.expiration_time > timezone.now():
+                        is_active = True
             except subscriptions.ReceiptException:
                 self.stdout.write(
                     self.style.NOTICE(

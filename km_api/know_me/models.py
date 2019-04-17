@@ -7,6 +7,7 @@ import email_utils
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _, ugettext
 from rest_email_auth.models import EmailAddress
@@ -626,12 +627,24 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
         ),
         verbose_name=_("expiration time"),
     )
+    latest_receipt_data = models.TextField(
+        help_text=_("The latest base64 encoded data for the receipt."),
+        verbose_name=_("latest receipt data"),
+    )
+    latest_receipt_data_hash = models.CharField(
+        help_text=_("The SHA256 hash of the latest receipt data."),
+        max_length=64,
+        unique=True,
+        verbose_name=_("latest receipt data hash"),
+    )
     receipt_data = models.TextField(
-        help_text=_("The receipt data that is base 64 encoded."),
+        help_text=_(
+            "The base64 encoded receipt data that was originally uploaded."
+        ),
         verbose_name=_("receipt data"),
     )
     receipt_data_hash = models.CharField(
-        help_text=_("The hash of the receipt data."),
+        help_text=_("The SHA256 hash of the original receipt data."),
         max_length=64,
         unique=True,
         verbose_name=_("receipt data hash"),
@@ -680,6 +693,13 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
         """
         super().clean()
 
+        if not self.latest_receipt_data:
+            self.latest_receipt_data = self.receipt_data
+
+        self.latest_receipt_data_hash = hashlib.sha256(
+            self.latest_receipt_data.encode()
+        ).hexdigest()
+
         self.receipt_data_hash = hashlib.sha256(
             self.receipt_data.encode()
         ).hexdigest()
@@ -727,11 +747,16 @@ class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
         # validation rather than the one in the super call so we
         # exclude the default one.
         exclude = exclude or []
-        super().validate_unique(exclude + ["receipt_data_hash"])
+        super().validate_unique(
+            exclude + ["latest_receipt_data_hash", "receipt_data_hash"]
+        )
 
-        if self.__class__.objects.filter(
-            receipt_data_hash=self.receipt_data_hash
-        ).exists():
+        query = Q(latest_receipt_data_hash=self.latest_receipt_data_hash)
+        query |= Q(latest_receipt_data_hash=self.receipt_data_hash)
+        query |= Q(receipt_data_hash=self.latest_receipt_data_hash)
+        query |= Q(receipt_data_hash=self.receipt_data_hash)
+
+        if self.__class__.objects.filter(query).exists():
             raise ValidationError(
                 {
                     "receipt_data": ugettext(

@@ -49,12 +49,14 @@ class AppleReceiptQueryView(APIView):
     )
 
     def get(self, request, *args, **kwargs):
-        query = models.SubscriptionAppleData.objects.filter(
-            receipt_data_hash=self.kwargs["receipt_hash"]
-        )
-        s = status.HTTP_200_OK if query.exists() else status.HTTP_404_NOT_FOUND
+        receipt_hash = self.kwargs["receipt_hash"]
+        filters = Q(latest_receipt_data_hash=receipt_hash)
+        filters |= Q(receipt_data_hash=receipt_hash)
 
-        return Response(status=s)
+        exists = models.SubscriptionAppleData.objects.filter(filters)
+        code = status.HTTP_200_OK if exists else status.HTTP_404_NOT_FOUND
+
+        return Response(status=code)
 
 
 class AppleSubscriptionView(generics.RetrieveDestroyAPIView):

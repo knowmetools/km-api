@@ -95,7 +95,7 @@ class AppleReceipt:
     from the dictionary returned by Apple.
     """
 
-    def __init__(self, receipt_info):
+    def __init__(self, receipt_info, latest_receipt_data):
         """
         Create a new Apple receipt.
 
@@ -103,8 +103,12 @@ class AppleReceipt:
             receipt_info:
                 The dictionary returned from Apple containing
                 information about the receipt.
+            latest_receipt_data:
+                The base64 encoded data for the most recent version of
+                the receipt.
         """
         self.raw_info = receipt_info
+        self.latest_receipt_data = latest_receipt_data
 
         # The raw expiration date is a string version of a timestamp.
         self.expires_date_ms = int(receipt_info.get("expires_date_ms", 0))
@@ -112,7 +116,10 @@ class AppleReceipt:
 
     def __eq__(self, other):
         if isinstance(other, AppleReceipt):
-            return self.raw_info == other.raw_info
+            return (
+                self.raw_info == other.raw_info
+                and self.latest_receipt_data == other.latest_receipt_data
+            )
 
         return super().__eq__(other)
 
@@ -257,4 +264,4 @@ def validate_apple_receipt_response(receipt_response):
             ugettext("Receipt contains transactions for an invalid product.")
         )
 
-    return AppleReceipt(latest_receipt)
+    return AppleReceipt(latest_receipt, receipt_response["latest_receipt"])

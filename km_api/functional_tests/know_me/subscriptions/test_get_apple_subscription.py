@@ -39,6 +39,10 @@ def test_get_existing_subscription(
     assert response.json() == {
         "expiration_time": serialized_time(subscription.expiration_time),
         "id": subscription.id,
+        "latest_receipt_data": subscription.latest_receipt_data,
+        "latest_receipt_data_hash": receipt_data_hash(
+            subscription.latest_receipt_data
+        ),
         "receipt_data": subscription.receipt_data,
         "receipt_data_hash": receipt_data_hash(subscription.receipt_data),
         "time_created": serialized_time(subscription.time_created),

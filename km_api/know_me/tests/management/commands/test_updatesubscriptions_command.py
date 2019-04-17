@@ -4,7 +4,7 @@ import pytest
 from django.utils import timezone
 
 from know_me.management.commands.updatesubscriptions import Command
-
+from test_utils import receipt_data_hash
 
 PREMIUM_PRODUCT_CODE = "premium"
 
@@ -43,6 +43,7 @@ def test_handle_expiring_apple_subscription(
         apple_data.receipt_data,
         {
             "status": 0,
+            "latest_receipt": apple_data.receipt_data,
             "latest_receipt_info": [
                 {
                     "expires_data_ms": str(int(expires.timestamp() * 1000)),
@@ -75,11 +76,13 @@ def test_handle_renewed_apple_subscription(
         expiration_time=timezone.now() + Command.EXPIRATION_WINDOW,
         subscription__is_active=False,
     )
+    new_receipt_data = "new-receipt-data"
 
     apple_receipt_client.enqueue_status(
         apple_data.receipt_data,
         {
             "status": 0,
+            "latest_receipt": new_receipt_data,
             "latest_receipt_info": [
                 {
                     "expires_date_ms": str(
@@ -96,7 +99,103 @@ def test_handle_renewed_apple_subscription(
     apple_data.refresh_from_db()
 
     assert apple_data.expiration_time == new_expires
+    assert apple_data.latest_receipt_data == new_receipt_data
+    assert apple_data.latest_receipt_data_hash == receipt_data_hash(
+        new_receipt_data
+    )
     assert apple_data.subscription.is_active
+
+
+def test_handle_renewed_apple_subscription_duplicate_latest(
+    apple_receipt_client, apple_subscription_factory
+):
+    """
+    If the latest receipt data returned when updating an Apple receipt
+    conflicts with another receipt's latest data, the subscription
+    should be deactivated and the offending Apple receipt deleted.
+    """
+    new_expires = timezone.now().replace(microsecond=0) + datetime.timedelta(
+        days=30
+    )
+    existing_receipt = apple_subscription_factory(
+        # Far future expires so it isn't updated
+        expiration_time=timezone.now() + datetime.timedelta(days=30),
+        latest_receipt_data="foo",
+        receipt_data="bar",
+    )
+    apple_data = apple_subscription_factory(
+        expiration_time=timezone.now() + Command.EXPIRATION_WINDOW,
+        subscription__is_active=True,
+    )
+    subscription = apple_data.subscription
+
+    apple_receipt_client.enqueue_status(
+        apple_data.receipt_data,
+        {
+            "status": 0,
+            "latest_receipt": existing_receipt.latest_receipt_data,
+            "latest_receipt_info": [
+                {
+                    "expires_date_ms": str(
+                        int(new_expires.timestamp() * 1000)
+                    ),
+                    "product_id": PREMIUM_PRODUCT_CODE,
+                }
+            ],
+        },
+    )
+
+    command = Command()
+    command.handle()
+    subscription.refresh_from_db()
+
+    assert not subscription.is_active
+
+
+def test_handle_renewed_apple_subscription_duplicate_original(
+    apple_receipt_client, apple_subscription_factory
+):
+    """
+    If the latest receipt data returned when updating an Apple receipt
+    conflicts with another receipt's original data, the subscription
+    should be deactivated and the offending Apple receipt deleted.
+    """
+    new_expires = timezone.now().replace(microsecond=0) + datetime.timedelta(
+        days=30
+    )
+    existing_receipt = apple_subscription_factory(
+        # Far future expires so it isn't updated
+        expiration_time=timezone.now() + datetime.timedelta(days=30),
+        latest_receipt_data="foo",
+        receipt_data="bar",
+    )
+    apple_data = apple_subscription_factory(
+        expiration_time=timezone.now() + Command.EXPIRATION_WINDOW,
+        subscription__is_active=True,
+    )
+    subscription = apple_data.subscription
+
+    apple_receipt_client.enqueue_status(
+        apple_data.receipt_data,
+        {
+            "status": 0,
+            "latest_receipt": existing_receipt.receipt_data,
+            "latest_receipt_info": [
+                {
+                    "expires_date_ms": str(
+                        int(new_expires.timestamp() * 1000)
+                    ),
+                    "product_id": PREMIUM_PRODUCT_CODE,
+                }
+            ],
+        },
+    )
+
+    command = Command()
+    command.handle()
+    subscription.refresh_from_db()
+
+    assert not subscription.is_active
 
 
 def test_handle_still_expired_apple_subscription(
