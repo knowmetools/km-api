@@ -2,6 +2,7 @@ from urllib.parse import urljoin
 
 import pytest
 import requests
+from rest_framework import status
 from rest_framework.reverse import reverse
 
 
@@ -87,10 +88,14 @@ class APIClient(requests.Session):
             A boolean indicating if the currently authenticated user has
             an active premium subscription.
         """
-        response = self.get("/know-me/users/")
+        response = self.get("/know-me/subscription/")
+
+        if response.status_code == status.HTTP_404_NOT_FOUND:
+            return False
+
         response.raise_for_status()
 
-        return response.json()[0]["is_premium_user"]
+        return response.json()["is_active"]
 
 
 @pytest.fixture

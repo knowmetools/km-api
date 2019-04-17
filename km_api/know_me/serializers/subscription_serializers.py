@@ -12,6 +12,17 @@ from know_me import models, subscriptions
 logger = logging.getLogger(__name__)
 
 
+class AppleReceiptInfoSerializer(serializers.ModelSerializer):
+    """
+    Read-only serializer for getting information about an Apple receipt.
+    """
+
+    class Meta:
+        fields = ("expiration_time", "receipt_data_hash")
+        model = models.SubscriptionAppleData
+        read_only_fields = ("__all__",)
+
+
 class AppleSubscriptionSerializer(serializers.ModelSerializer):
     """
     Serializer for an Apple subscription.
@@ -67,6 +78,20 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
         validated_data["receipt_data_hash"] = data_hash
 
         return validated_data
+
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for getting an overview of a user's Know Me premium
+    subscription.
+    """
+
+    apple_receipt = AppleReceiptInfoSerializer(source="apple_data")
+
+    class Meta:
+        fields = ("apple_receipt", "is_active")
+        model = models.Subscription
+        read_only_fields = ("__all__",)
 
 
 class SubscriptionTransferSerializer(serializers.Serializer):

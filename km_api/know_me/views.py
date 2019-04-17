@@ -6,6 +6,7 @@ from django.db.models import Case, PositiveSmallIntegerField, Q, Value, When
 from django.shortcuts import get_object_or_404
 from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
 from rest_framework import generics, pagination, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from know_me import models, permissions, serializers
@@ -386,6 +387,29 @@ class PendingAccessorListView(generics.ListAPIView):
             give access to the requesting user and are not yet accepted.
         """
         return self.request.user.km_user_accessors.filter(is_accepted=False)
+
+
+class SubscriptionDetailView(generics.RetrieveAPIView):
+    """
+    get:
+    Get an overview of the requesting user's Know Me premium
+    subscription.
+    """
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = subscription_serializers.SubscriptionSerializer
+
+    def get_object(self):
+        """
+        Returns:
+            The subscription instance owned by the requesting user.
+
+        Raises:
+            Http404:
+                If the requesting user does not have a subscription
+                instance.
+        """
+        return get_object_or_404(models.Subscription, user=self.request.user)
 
 
 class SubscriptionTransferView(generics.CreateAPIView):

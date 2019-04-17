@@ -24,12 +24,7 @@ def test_delete_apple_subscription(
     # Assume Matt is an existing user with an Apple receipt added to his
     # account.
     password = "password"
-    user = user_factory(
-        first_name="Matt",
-        has_premium=True,
-        password=password,
-        registration_signal__send=True,
-    )
+    user = user_factory(first_name="Matt", has_premium=True, password=password)
     apple_subscription_factory(subscription=user.know_me_subscription)
 
     # If he deletes his Apple receipt, his premium subscription should be

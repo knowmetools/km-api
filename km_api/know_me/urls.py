@@ -45,6 +45,11 @@ urlpatterns = [
         name="legacy-user-detail",
     ),
     path(
+        "subscription/",
+        views.SubscriptionDetailView.as_view(),
+        name="subscription-detail",
+    ),
+    path(
         "subscription/apple/",
         views.AppleSubscriptionView.as_view(),
         name="apple-subscription-detail",

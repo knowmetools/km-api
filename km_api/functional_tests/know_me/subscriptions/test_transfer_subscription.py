@@ -122,14 +122,9 @@ def test_transfer_recipient_no_subscription(
     # active premium subscription.
     password = "password"
     user1 = user_factory(
-        first_name="Shawn",
-        has_premium=True,
-        password=password,
-        registration_signal__send=True,
+        first_name="Shawn", has_premium=True, password=password
     )
-    user2 = user_factory(
-        first_name="Juliet", password=password, registration_signal__send=True
-    )
+    user2 = user_factory(first_name="Juliet", password=password)
 
     # If Shawn logs in, he should be able to transfer his subscription
     # to Juliet.
