@@ -105,4 +105,8 @@ def api_client(live_server):
         An API client instance configured to interact with a live server
         for testing.
     """
-    return APIClient(live_server.url)
+    client = APIClient(live_server.url)
+
+    yield client
+
+    client.close()

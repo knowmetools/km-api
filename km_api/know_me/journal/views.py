@@ -135,7 +135,7 @@ class EntryListView(generics.ListCreateAPIView):
     """
 
     filter_backends = (KMUserAccessFilterBackend, filters.DjangoFilterBackend)
-    filter_fields = {"created_at": ["gte", "lte"]}
+    filterset_fields = {"created_at": ["gte", "lte"]}
     pagination_class = pagination.PageNumberPagination
     permission_classes = (DRYPermissions, HasKMUserAccess)
     queryset = models.Entry.objects.all()
