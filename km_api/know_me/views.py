@@ -2,12 +2,16 @@
 """
 import logging
 
+import coreapi
+import coreschema
 from django.db.models import Case, PositiveSmallIntegerField, Q, Value, When
 from django.shortcuts import get_object_or_404
 from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
 from rest_framework import generics, pagination, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.schemas import AutoSchema
+from rest_framework.views import APIView
 
 from know_me import models, permissions, serializers
 from know_me.serializers import subscription_serializers
@@ -15,6 +19,42 @@ from permission_utils.view_mixins import DocumentActionMixin
 
 
 logger = logging.getLogger(__name__)
+
+
+class AppleReceiptQueryView(APIView):
+    """
+    get:
+    Determine if an Apple receipt is in use. If a 200 response is
+    returned, that means there is an Apple receipt whose receipt data
+    hashes to the value provided in the URL. A 404 response will be
+    returned if there is no Apple receipt on file matching the provided
+    hash.
+    """
+
+    schema = AutoSchema(
+        manual_fields=[
+            coreapi.Field(
+                "receipt_hash",
+                location="path",
+                required=True,
+                schema=coreschema.String(
+                    description=(
+                        "The SHA256 hash of the receipt data of the Apple "
+                        "subscription to check for the existence of. The hash "
+                        "should be encoded as hexadecmial characters."
+                    )
+                ),
+            )
+        ]
+    )
+
+    def get(self, request, *args, **kwargs):
+        query = models.SubscriptionAppleData.objects.filter(
+            receipt_data_hash=self.kwargs["receipt_hash"]
+        )
+        s = status.HTTP_200_OK if query.exists() else status.HTTP_404_NOT_FOUND
+
+        return Response(status=s)
 
 
 class AppleSubscriptionView(generics.RetrieveDestroyAPIView):
