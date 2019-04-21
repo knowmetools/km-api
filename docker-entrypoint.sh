@@ -5,6 +5,13 @@ set -euf
 MANAGE_PATH=/opt/km-api/km_api/manage.py
 MANAGE_CMD="python $MANAGE_PATH"
 
+# Get sentry to generate a release version based on the current commit
+# hash.
+VERSION="know-me-api@$(cat /opt/km-api/VERSION)"
+echo "Running ${VERSION}"
+
+export DJANGO_SENTRY_RELEASE=${VERSION}
+
 create_db_user() {
     # Note that the tabs in the following statement are used to preserve
     # indentation in the SQL statements.

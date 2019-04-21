@@ -1,5 +1,7 @@
 FROM python:3.6-alpine
 
+ARG VERSION=unknown
+
 # set environment varibles
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -15,6 +17,9 @@ RUN pip install --upgrade pip pipenv
 # Copy application
 WORKDIR /opt/km-api
 COPY . /opt/km-api
+
+# Persist Commit Hash
+RUN echo $VERSION > /opt/km-api/VERSION
 
 # Install Third Party Packages
 RUN pipenv install --ignore-pipfile --system

@@ -44,7 +44,9 @@ if SENTRY_DSN:
         event_level=logging.WARNING, level=logging.INFO
     )
     sentry_sdk.init(
-        dsn=SENTRY_DSN, integrations=[DjangoIntegration(), sentry_logging]
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration(), sentry_logging],
+        release=os.getenv("DJANGO_SENTRY_RELEASE", "unknown"),
     )
 
 
