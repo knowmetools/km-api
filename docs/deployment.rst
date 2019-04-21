@@ -198,6 +198,14 @@ DJANGO_SENTRY_ENVIRONMENT
 
 The name of the environment that should be provided as context when logging to Sentry. Only takes effect when ``DJANGO_SENTRY_DSN`` is provided.
 
+DJANGO_SENTRY_RELEASE
+---------------------
+
+**Default:** ``unknown``
+
+An identifier sent with all events to Sentry that lets us identify which version
+of the application caused the issue.
+
 DJANGO_SES_AWS_REGION
 ---------------------
 

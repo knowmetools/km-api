@@ -22,4 +22,15 @@ Developer Documentation
 About
 *****
 
-This is the API behind our Know Me app. It is written in Python using Django and Django Rest Framework.
+This is the API behind our Know Me app. It is written in Python using Django and
+Django Rest Framework.
+
+**********
+Deployment
+**********
+
+Changes to this repository are automatically deployed based on the configuration
+in `our deployment repository <deploy-repo_>`_.
+
+
+.. _deploy-repo: https://github.com/knowmetools/km-api-deployment

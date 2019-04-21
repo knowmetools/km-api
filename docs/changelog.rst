@@ -2,6 +2,11 @@
 Changelog
 #########
 
+.. warning::
+
+    This changelog is no longer updated since we adopted continuous integration
+    and deployment practices. It exists purely for historical reasons.
+
 **************
 In Development
 **************
