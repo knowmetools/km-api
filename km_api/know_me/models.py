@@ -172,28 +172,6 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         """
         return reverse("know-me:km-user-detail", kwargs={"pk": self.pk})
 
-    def get_media_resource_category_list_url(self, request=None):
-        """
-        Get the absolute URL of the instance's media resource category
-        list view.
-
-        Args:
-            request (optional):
-                A request used as context when constructing the URL. If
-                given, the resulting URL will be a full URI with a
-                protocol and domain name.
-
-        Returns:
-            str:
-                The absolute URL of the instance's media resource
-                category list view.
-        """
-        return reverse(
-            "know-me:profile:media-resource-category-list",
-            kwargs={"pk": self.pk},
-            request=request,
-        )
-
     def get_media_resource_list_url(self):
         """
         Get the absolute URL of the instance's media resource list view.

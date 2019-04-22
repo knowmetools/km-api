@@ -154,59 +154,6 @@ class MediaResourceListView(generics.ListCreateAPIView):
         return serializer.save(km_user=km_user)
 
 
-class MediaResourceCategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    delete:
-    Delete a specific media resource category.
-
-    get:
-    Retrieve information about a specific media resource category.
-
-    patch:
-    Partially update the information of a specific media resource
-    category.
-
-    put:
-    Update the information of a specific media resource category.
-    """
-
-    permission_classes = (DRYPermissions,)
-    queryset = models.MediaResourceCategory.objects.all()
-    serializer_class = serializers.MediaResourceCategorySerializer
-
-
-class MediaResourceCategoryListView(generics.ListCreateAPIView):
-    """
-    get:
-    Retrieve the list of media resource categories that belong to the
-    given Know Me user.
-
-    post:
-    Create a new media resource category for the given Know Me user.
-    """
-
-    filter_backends = (KMUserAccessFilterBackend,)
-    permission_classes = (DRYPermissions, HasKMUserAccess)
-    queryset = models.MediaResourceCategory.objects.all()
-    serializer_class = serializers.MediaResourceCategorySerializer
-
-    def perform_create(self, serializer):
-        """
-        Create a new media resource category.
-
-        Args:
-            serializer:
-                An instance of the view's serializer class containing
-                the data passed to the view.
-
-        Returns:
-            The newly created media resource category.
-        """
-        km_user = KMUser.objects.get(pk=self.kwargs.get("pk"))
-
-        return serializer.save(km_user=km_user)
-
-
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     delete:

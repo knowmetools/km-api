@@ -281,18 +281,6 @@ class MediaResourceCategory(mixins.IsAuthenticatedMixin, models.Model):
         """
         return self.name
 
-    def get_absolute_url(self):
-        """
-        Get the URL of the instance's detail view.
-
-        Returns:
-            The absolute URL of the instance's detail view.
-        """
-        return reverse(
-            "know-me:profile:media-resource-category-detail",
-            kwargs={"pk": self.pk},
-        )
-
     def has_object_read_permission(self, request):
         """
         Check read permissions on the instance for a given request.

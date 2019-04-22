@@ -49,9 +49,6 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
     journal_entries_url = serializers.HyperlinkedIdentityField(
         view_name="know-me:journal:entry-list"
     )
-    media_resource_categories_url = serializers.HyperlinkedIdentityField(
-        view_name="know-me:profile:media-resource-category-list"
-    )
     media_resources_url = serializers.HyperlinkedIdentityField(
         view_name="know-me:profile:media-resource-list"
     )
@@ -84,7 +81,6 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             "is_owned_by_current_user",
             "image",
             "journal_entries_url",
-            "media_resource_categories_url",
             "media_resources_url",
             "name",
             "permissions",

@@ -99,9 +99,6 @@ def km_user_list(km_users, is_owned_by_user, build_full_url):
             "journal_entries_url": build_full_url(
                 f"/know-me/users/{user.pk}/journal-entries/"
             ),
-            "media_resource_categories_url": build_full_url(
-                f"/know-me/users/{user.pk}/media-resource-categories/"
-            ),
             "media_resources_url": build_full_url(
                 f"/know-me/users/{user.pk}/media-resources/"
             ),

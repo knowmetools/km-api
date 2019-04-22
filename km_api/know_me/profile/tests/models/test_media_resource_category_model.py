@@ -1,7 +1,5 @@
 from unittest import mock
 
-from rest_framework.reverse import reverse
-
 from know_me.profile import models
 
 
@@ -12,19 +10,6 @@ def test_create(km_user_factory):
     models.MediaResourceCategory.objects.create(
         km_user=km_user_factory(), name="Test Category"
     )
-
-
-def test_get_absolute_url(media_resource_category_factory):
-    """
-    The instance's absolute URL should be the URL of its detail view.
-    """
-    category = media_resource_category_factory()
-    expected = reverse(
-        "know-me:profile:media-resource-category-detail",
-        kwargs={"pk": category.pk},
-    )
-
-    assert category.get_absolute_url() == expected
 
 
 @mock.patch(

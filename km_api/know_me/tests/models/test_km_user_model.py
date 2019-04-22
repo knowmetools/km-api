@@ -30,32 +30,6 @@ def test_get_absolute_url(km_user_factory):
     assert km_user.get_absolute_url() == expected
 
 
-def test_get_media_resource_category_list_url(km_user_factory):
-    """
-    This method should return the URL of the Know Me user's media
-    resource category list view.
-    """
-    km_user = km_user_factory()
-    expected = reverse(
-        "know-me:profile:media-resource-category-list",
-        kwargs={"pk": km_user.pk},
-    )
-
-    assert km_user.get_media_resource_category_list_url() == expected
-
-
-def test_get_media_resource_category_list_url_request(api_rf, km_user_factory):
-    """
-    If given a request as context, the method should return the full URI
-    if the Know Me user's media resource category list view.
-    """
-    km_user = km_user_factory()
-    request = api_rf.get(km_user.get_media_resource_category_list_url())
-    expected = request.build_absolute_uri()
-
-    assert km_user.get_media_resource_category_list_url(request) == expected
-
-
 def test_get_media_resource_list_url(km_user_factory):
     """
     This method should return the absolute URL of the Know Me user's

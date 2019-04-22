@@ -7,32 +7,6 @@ from rest_framework import serializers
 from know_me.profile import models
 
 
-class MediaResourceCategorySerializer(serializers.HyperlinkedModelSerializer):
-    """
-    Serializer for ``MediaResourceCategory`` instances.
-    """
-
-    km_user_id = serializers.PrimaryKeyRelatedField(
-        read_only=True, source="km_user"
-    )
-    permissions = DRYPermissionsField()
-    url = serializers.HyperlinkedIdentityField(
-        view_name="know-me:profile:media-resource-category-detail"
-    )
-
-    class Meta:
-        fields = (
-            "id",
-            "url",
-            "created_at",
-            "updated_at",
-            "km_user_id",
-            "name",
-            "permissions",
-        )
-        model = models.MediaResourceCategory
-
-
 class MediaResourceSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for ``MediaResource`` instances.

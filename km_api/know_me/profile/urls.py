@@ -13,11 +13,6 @@ profile_urls = [
         name="list-entry-detail",
     ),
     url(
-        r"^media-resource-categories/(?P<pk>[0-9]+)/$",
-        views.MediaResourceCategoryDetailView.as_view(),
-        name="media-resource-category-detail",
-    ),
-    url(
         r"^media-resources/(?P<pk>[0-9]+)/$",
         views.MediaResourceDetailView.as_view(),
         name="media-resource-detail",
@@ -56,11 +51,6 @@ profile_urls = [
 
 
 user_detail_urls = [
-    url(
-        r"^media-resource-categories/$",
-        views.MediaResourceCategoryListView.as_view(),
-        name="media-resource-category-list",
-    ),
     url(
         r"^media-resources/$",
         views.MediaResourceListView.as_view(),

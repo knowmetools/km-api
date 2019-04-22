@@ -60,11 +60,6 @@ def test_serialize(
 
     image_url = api_rf.get(km_user.image.url).build_absolute_uri()
 
-    categories_request = api_rf.get(
-        km_user.get_media_resource_category_list_url()
-    )
-    categories_url = categories_request.build_absolute_uri()
-
     entries_request = api_rf.get(
         reverse("know-me:journal:entry-list", kwargs={"pk": km_user.pk})
     )
@@ -88,7 +83,6 @@ def test_serialize(
         "is_premium_user": km_user.is_premium_user,
         "is_owned_by_current_user": km_user.user == request.user,
         "journal_entries_url": entries_url,
-        "media_resource_categories_url": categories_url,
         "media_resources_url": media_resources_url,
         "name": km_user.user.get_short_name(),
         "permissions": {

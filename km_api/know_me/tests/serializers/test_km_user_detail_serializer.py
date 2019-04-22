@@ -14,9 +14,6 @@ def test_serialize(api_rf, image, km_user_factory):
     ProfileFactory(km_user=km_user)
     ProfileFactory(km_user=km_user)
 
-    api_rf.user = km_user.user
-    request = api_rf.get("/")
-
     serializer = serializers.KMUserDetailSerializer(
         km_user, context={"request": request}
     )
