@@ -38,10 +38,9 @@ pre-commit = "*"
 pytest = "*"
 pytest-django = "*"
 pytest-xdist = "*"
-sphinx-issues = "==0.4.0"
-sphinxcontrib-httpdomain = "==1.6.1"
-Sphinx = "==1.7.5"
-sphinx_rtd_theme = "==0.4.0"
+sphinx-issues = "*"
+Sphinx = "*"
+sphinx_rtd_theme = "*"
 sphinx-autobuild = "*"
 
 [requires]
