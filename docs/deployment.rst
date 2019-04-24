@@ -150,6 +150,15 @@ DJANGO_PASSWORD_RESET_URL
 
 The template used to construct password reset links. The ``{key}`` portion of the template will be replaced with a unique token.
 
+DJANGO_RUNNING_ON_ECS
+---------------------
+
+**Default:** ``False``
+
+A boolean indicating if the application is running as an ECS task. If it is, the
+application automatically adds the private IP of the ECS task to the list of
+allowed hosts.
+
 DJANGO_S3_AWS_REGION
 --------------------
 

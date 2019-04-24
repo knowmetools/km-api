@@ -73,21 +73,14 @@ if allowed_host_string:
 # host machine running the task. This is needed because the load
 # balancer checks the status endpoint on the private IP rather than the
 # domain name we have set up.
-EC2_PRIVATE_IP = None
-
-try:
+if os.getenv("DJANGO_RUNNING_ON_ECS", "False").lower() == "true":
     resp = requests.get("http://169.254.170.2/v2/metadata")
     data = resp.json()
 
     container_meta = data["Containers"][0]
-    EC2_PRIVATE_IP = container_meta["Networks"][0]["IPv4Addresses"][0]
-# We catch all exceptions because any kind of failure here violates our
-# assumption that we are in an ECS cluster, so we want to silently fail.
-except:  # noqa
-    pass
+    private_ip = container_meta["Networks"][0]["IPv4Addresses"][0]
 
-if EC2_PRIVATE_IP:
-    ALLOWED_HOSTS.append(EC2_PRIVATE_IP)
+    ALLOWED_HOSTS.append(private_ip)
 
 
 # Application definition
