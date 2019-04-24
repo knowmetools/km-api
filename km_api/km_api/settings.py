@@ -379,3 +379,16 @@ for app in LOGGING_CUSTOM_APPS:
         "level": "INFO",
         "propagate": False,
     }
+
+
+########################################################################
+#                             Feature Flags                            #
+########################################################################
+
+KNOW_ME_PREMIUM_ENABLED = (
+    os.getenv("DJANGO_KNOW_ME_PREMIUM_ENABLED", "False").lower() == "true"
+)
+"""
+Boolean indicating if a premium subscription should be required to
+perform various Know Me operations.
+"""

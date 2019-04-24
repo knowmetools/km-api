@@ -6,7 +6,9 @@ from django.http import Http404
 from know_me.permissions import OwnerHasPremium
 
 
-def test_has_object_permission_active_subscription(api_rf, user_factory):
+def test_has_object_permission_active_subscription(
+    api_rf, enable_premium_requirement, user_factory
+):
     """
     If the user that the view states is the object's owner has an active
     premium subscription, the check should return ``True``.
@@ -24,7 +26,9 @@ def test_has_object_permission_active_subscription(api_rf, user_factory):
     assert view.get_subscription_owner.call_args[0] == (request, obj)
 
 
-def test_has_object_permission_inactive_subscription(api_rf, user_factory):
+def test_has_object_permission_inactive_subscription(
+    api_rf, enable_premium_requirement, user_factory
+):
     """
     If the user that the view states is the object's owner has an
     inactive premium subscription, the check should return ``False``.
@@ -42,3 +46,20 @@ def test_has_object_permission_inactive_subscription(api_rf, user_factory):
         perm.has_object_permission(request, view, obj)
 
     assert view.get_subscription_owner.call_args[0] == (request, obj)
+
+
+def test_has_object_permission_inactive_subscription_feature_disabled(
+    api_rf, user_factory
+):
+    """
+    If the user that the view states is the object's owner has an
+    inactive premium subscription but the premium feature is not
+    enabled, then the check should return ``True``.
+    """
+    request = api_rf.get("/")
+    view = mock.Mock(name="Mock View")
+
+    perm = OwnerHasPremium()
+    obj = mock.Mock(name="Mock Object")
+
+    assert perm.has_object_permission(request, view, obj)

@@ -191,6 +191,15 @@ def email_factory(db):
 
 
 @pytest.fixture
+def enable_premium_requirement(settings):
+    """
+    Fixture to enable the feature flag requiring certain operations to
+    need a premium subscription.
+    """
+    settings.KNOW_ME_PREMIUM_ENABLED = True
+
+
+@pytest.fixture
 def entry_comment_factory(db):
     """
     Returns:

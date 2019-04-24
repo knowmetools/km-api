@@ -4,6 +4,7 @@ import logging
 
 import coreapi
 import coreschema
+from django.conf import settings
 from django.db.models import Case, PositiveSmallIntegerField, Q, Value, When
 from django.shortcuts import get_object_or_404
 from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
@@ -353,10 +354,14 @@ class KMUserListView(generics.ListAPIView):
         # of the Know Me user being shared must have an active premium
         # subscription.
         filter_args = Q(km_user_accessor__is_accepted=True)
-        filter_args &= Q(
-            km_user_accessor__km_user__user__know_me_subscription__is_active=True  # noqa
-        )
         filter_args &= Q(km_user_accessor__user_with_access=self.request.user)
+
+        # If the premium requirement is enabled, the shared user must
+        # have an active premium subscription.
+        if settings.KNOW_ME_PREMIUM_ENABLED:
+            filter_args &= Q(
+                km_user_accessor__km_user__user__know_me_subscription__is_active=True  # noqa
+            )
 
         # Requesting user is the user
         filter_args |= Q(user=self.request.user)

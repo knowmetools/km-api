@@ -109,7 +109,7 @@ def test_get_queryset_shared_not_accepted(
 
 
 def test_get_queryset_shared_without_premium(
-    api_rf, km_user_accessor_factory, user_factory
+    api_rf, enable_premium_requirement, km_user_accessor_factory, user_factory
 ):
     """
     If the requesting user is granted access to another Know Me user
@@ -129,3 +129,26 @@ def test_get_queryset_shared_without_premium(
     view.request = api_rf.get(url)
 
     assert list(view.get_queryset()) == []
+
+
+def test_get_shared_without_premium_feature_disabled(
+    api_rf, km_user_accessor_factory, user_factory
+):
+    """
+    If the shared user being potentially listed does not have a premium
+    subscription but the premium requirement feature is disabled, the
+    user should still be listed.
+    """
+    user = user_factory()
+    api_rf.user = user
+
+    accessor = km_user_accessor_factory(
+        is_accepted=True,
+        km_user__user__has_premium=False,
+        user_with_access=user,
+    )
+
+    view = views.KMUserListView()
+    view.request = api_rf.get(url)
+
+    assert list(view.get_queryset()) == [accessor.km_user]

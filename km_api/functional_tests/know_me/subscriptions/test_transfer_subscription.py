@@ -3,7 +3,7 @@ from rest_framework import status
 TRANSFER_URL = "/know-me/subscription/transfer/"
 
 
-def test_transfer_anonymous(api_client):
+def test_transfer_anonymous(api_client, enable_premium_requirement):
     """
     Anonymous users should receive a 403 response if they attempt to
     initiate a transfer.
@@ -16,7 +16,7 @@ def test_transfer_anonymous(api_client):
 
 
 def test_transfer_initiator_no_premium(
-    api_client, subscription_factory, user_factory
+    api_client, enable_premium_requirement, subscription_factory, user_factory
 ):
     """
     If the user initiating the transfer does not have an active premium
@@ -40,7 +40,7 @@ def test_transfer_initiator_no_premium(
 
 
 def test_transfer_recipient_active_subscription(
-    api_client, subscription_factory, user_factory
+    api_client, enable_premium_requirement, subscription_factory, user_factory
 ):
     """
     If the intended recipient has an active subscription, the transfer
@@ -73,7 +73,10 @@ def test_transfer_recipient_active_subscription(
 
 
 def test_transfer_recipient_apple_data(
-    api_client, apple_subscription_factory, user_factory
+    api_client,
+    enable_premium_requirement,
+    apple_subscription_factory,
+    user_factory,
 ):
     """
     If the intended recipient has an Apple receipt associated with their
@@ -111,7 +114,7 @@ def test_transfer_recipient_apple_data(
 
 
 def test_transfer_recipient_no_subscription(
-    api_client, subscription_factory, user_factory
+    api_client, enable_premium_requirement, subscription_factory, user_factory
 ):
     """
     If we have two users, one who has an active subscription and one who

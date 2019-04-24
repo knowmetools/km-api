@@ -14,7 +14,9 @@ def test_create_anonymous(api_client, km_user_factory):
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_create_as_non_premium_user(api_client, km_user_factory):
+def test_create_as_non_premium_user(
+    api_client, enable_premium_requirement, km_user_factory
+):
     """
     Non-premium users should receive a 403 response if they try to add a
     new accessor.

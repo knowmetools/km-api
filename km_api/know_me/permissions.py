@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
@@ -70,6 +71,10 @@ class HasPremium(permissions.IsAuthenticated):
             A boolean indicating if the requesting user has an active
             premium subscription.
         """
+        # If premium is not required, bail out of the permission check.
+        if not settings.KNOW_ME_PREMIUM_ENABLED:
+            return True
+
         if not super().has_permission(request, view):
             return False
 
@@ -101,6 +106,10 @@ class OwnerHasPremium(permissions.BasePermission):
             A boolean indicating if the request should be allowed to
             continue.
         """
+        # If premium is not required, bail out of the permission check.
+        if not settings.KNOW_ME_PREMIUM_ENABLED:
+            return True
+
         assert hasattr(view, "get_subscription_owner"), (
             "In order to use the `OwnerHasPremium` permission, the view must "
             "have a `get_subscription_owner(request, obj)` method that "

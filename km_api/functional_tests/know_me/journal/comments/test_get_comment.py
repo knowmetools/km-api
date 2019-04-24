@@ -84,7 +84,7 @@ def test_get_comment_as_journal_owner(
 
 
 def test_get_comment_expired_subscription(
-    api_client, entry_comment_factory, user_factory
+    api_client, enable_premium_requirement, entry_comment_factory, user_factory
 ):
     """
     If the owner of the journal entry that the comment was made on does

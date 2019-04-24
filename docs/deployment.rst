@@ -136,6 +136,14 @@ DJANGO_IN_MEMORY_FILES
 
 Set to ``True`` (case insensitive) to store static files in memory. This is mainly used for testing.
 
+DJANGO_KNOW_ME_PREMIUM_ENABLED
+------------------------------
+
+**Default:** ``False``
+
+Set to ``True`` (case insensitive) to require a premium subscription to perform
+various Know Me operations such as storing profile data or viewing followers.
+
 DJANGO_MEDIA_ROOT
 -----------------
 

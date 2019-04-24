@@ -72,7 +72,9 @@ def test_list_own_first(
     )
 
 
-def test_list_own_no_premium(api_client, km_user_factory):
+def test_list_own_no_premium(
+    api_client, enable_premium_requirement, km_user_factory
+):
     """
     If a user does not have premium, the list should still include their
     own Know Me user.
@@ -95,7 +97,10 @@ def test_list_own_no_premium(api_client, km_user_factory):
 
 
 def test_list_shared_with_premium(
-    api_client, km_user_accessor_factory, user_factory
+    api_client,
+    enable_premium_requirement,
+    km_user_accessor_factory,
+    user_factory,
 ):
     """
     If the requesting user has been granted access to another profile
@@ -123,7 +128,10 @@ def test_list_shared_with_premium(
 
 
 def test_list_shared_without_premium(
-    api_client, km_user_accessor_factory, user_factory
+    api_client,
+    enable_premium_requirement,
+    km_user_accessor_factory,
+    user_factory,
 ):
     """
     If a user has access to a profile through an accessor but the

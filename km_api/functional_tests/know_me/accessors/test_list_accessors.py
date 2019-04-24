@@ -50,7 +50,9 @@ def test_list_accessors(
     )
 
 
-def test_list_accessors_non_premium(api_client, km_user_factory):
+def test_list_accessors_non_premium(
+    api_client, enable_premium_requirement, km_user_factory
+):
     """
     If a user does not have a premium subscription, they should receive
     a 403 response if they try to list the accessors granting access to
