@@ -41,7 +41,7 @@ class AppleReceiptQueryView(APIView):
                     description=(
                         "The SHA256 hash of the receipt data of the Apple "
                         "subscription to check for the existence of. The hash "
-                        "should be encoded as hexadecmial characters."
+                        "should be encoded as hexadecimal characters."
                     )
                 ),
             )
