@@ -1,11 +1,12 @@
 """
 Collection of helper functions for reducing repetition when dealing with
-serialization in tests.
+serialization in functional tests.
 
 The main codebase simply uses the actual serializer responsible for the
 object type, but we want to maintain a clear separation of the codebase
 and these functional tests. Having to change the serialization here
-indicates that a potentially breaking change was made.
+indicates that a potentially breaking change was made to the output of
+an endpoint.
 """
 from test_utils import serialized_time
 
@@ -67,6 +68,28 @@ def build_full_file_url(file_field, build_full_url):
         exists. If the field is empty, ``None`` is returned instead.
     """
     return build_full_url(file_field.url) if file_field else None
+
+
+def journal_comment(comment, build_full_url, is_list=False):
+    """
+    Serialize a comment on a journal entry.
+    """
+
+    def serialize(value):
+        return {
+            "id": value.pk,
+            "url": build_full_url(f"/know-me/journal/comments/{value.pk}/"),
+            "created_at": serialized_time(value.created_at),
+            "updated_at": serialized_time(value.updated_at),
+            "permissions": {"destroy": True, "read": True, "write": False},
+            "text": value.text,
+            "user": user_info(value.user),
+        }
+
+    if is_list:
+        return list(map(serialize, comment))
+
+    return serialize(comment)
 
 
 def km_user_list(km_users, is_owned_by_user, build_full_url):

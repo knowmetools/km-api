@@ -21,7 +21,7 @@ from know_me.factories import (
     SubscriptionAppleDataFactory,
     SubscriptionFactory,
 )
-from know_me.journal.factories import EntryCommentFactory
+from know_me.journal.factories import EntryCommentFactory, EntryFactory
 from test_utils.apple_receipt_validator import (
     AppleReceiptValidationClient,
     apple_validator_app,
@@ -222,6 +222,22 @@ def image():
     image.save(out_stream, format="png")
 
     return ContentFile(content=out_stream.getvalue(), name="foo.png")
+
+
+@pytest.fixture
+def journal_entry_comment_factory(db):
+    """
+    Fixture to get the factory used to create journal entry comments.
+    """
+    return EntryCommentFactory
+
+
+@pytest.fixture
+def journal_entry_factory(db):
+    """
+    Fixture to get the factory used to create journal entries.
+    """
+    return EntryFactory
 
 
 @pytest.fixture

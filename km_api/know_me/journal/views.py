@@ -63,8 +63,14 @@ class EntryCommentListView(generics.ListCreateAPIView):
     get:
     List the comments attached to a journal entry.
 
+    The owner of the journal entry must have an active premium
+    subscription in order for comments to be listed.
+
     post:
     Add a new comment to a specific journal entry.
+
+    The owner of the journal entry must have an active premium
+    subscription in order for comments to be created.
     """
 
     permission_classes = (
