@@ -123,9 +123,26 @@ class EntryDetailView(generics.RetrieveUpdateDestroyAPIView):
     Update a specific journal entry.
     """
 
-    permission_classes = (DRYPermissions,)
+    permission_classes = (DRYPermissions, OwnerHasPremium)
     queryset = models.Entry.objects.all()
     serializer_class = serializers.EntryDetailSerializer
+
+    @staticmethod
+    def get_subscription_owner(request, entry):
+        """
+        Get the user who must have an active subscription from a journal
+        entry.
+
+        Args:
+            request:
+                The request being made.
+            entry:
+                The journal entry to get the owner of.
+
+        Returns:
+            The user who owns the journal entry.
+        """
+        return entry.km_user.user
 
 
 class EntryListView(generics.ListCreateAPIView):

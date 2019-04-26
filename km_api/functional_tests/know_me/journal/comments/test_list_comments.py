@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from functional_tests import serialization_helpers
+from functional_tests.know_me.journal import serialization_helpers
 
 
 def test_list_comments_as_anonymous(api_client, journal_entry_factory):
@@ -41,7 +41,7 @@ def test_list_comments_as_owner(
     response = api_client.get(url)
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == serialization_helpers.journal_comment(
+    assert response.json() == serialization_helpers.serialize_comment(
         [c1, c2], api_client.build_full_url, is_list=True
     )
 
