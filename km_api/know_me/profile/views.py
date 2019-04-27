@@ -121,22 +121,6 @@ class MediaResourceListView(generics.ListCreateAPIView):
     queryset = models.MediaResource.objects.all()
     serializer_class = serializers.MediaResourceSerializer
 
-    def get_queryset(self):
-        """
-        Get the media resources for a specific request.
-
-        Returns:
-            If a category is given in the URL, only its media resources
-            are returned. Otherwise, all media resources are returned.
-        """
-        queryset = super().get_queryset()
-
-        category_id = self.request.query_params.get("category", None)
-        if category_id is not None:
-            queryset = queryset.filter(category__id=category_id)
-
-        return queryset
-
     def perform_create(self, serializer):
         """
         Create a new media resource.

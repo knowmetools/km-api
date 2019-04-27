@@ -15,18 +15,6 @@ class ListEntryFactory(factory.django.DjangoModelFactory):
         model = "profile.ListEntry"
 
 
-class MediaResourceCategoryFactory(factory.django.DjangoModelFactory):
-    """
-    Factory for creating ``MediaResourceCategory`` instances.
-    """
-
-    km_user = factory.SubFactory("know_me.factories.KMUserFactory")
-    name = factory.Sequence(lambda n: "Category {n}".format(n=n))
-
-    class Meta:
-        model = "profile.MediaResourceCategory"
-
-
 class MediaResourceFactory(factory.django.DjangoModelFactory):
     """
     Factory for creating ``MediaResource`` instances.

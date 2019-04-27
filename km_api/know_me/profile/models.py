@@ -132,16 +132,6 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
     Some form of media file owned by a Know Me user.
     """
 
-    category = models.ForeignKey(
-        "profile.MediaResourceCategory",
-        blank=True,
-        help_text=_("The category that the resource belongs to."),
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name="media_resources",
-        related_query_name="media_resource",
-        verbose_name=_("category"),
-    )
     cover_style = models.PositiveSmallIntegerField(
         blank=True,
         default=0,
@@ -209,77 +199,6 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
         return reverse(
             "know-me:profile:media-resource-detail", kwargs={"pk": self.pk}
         )
-
-    def has_object_read_permission(self, request):
-        """
-        Check read permissions on the instance for a given request.
-
-        Args:
-            request:
-                The request to check permissions for.
-
-        Returns:
-            The permissions granted by the instance's parent Know Me
-            user.
-        """
-        return self.km_user.has_object_read_permission(request)
-
-    def has_object_write_permission(self, request):
-        """
-        Check write permissions on the instance for a given request.
-
-        Args:
-            request:
-                The request to check permissions for.
-
-        Returns:
-            The permissions granted by the instance's parent Know Me
-            user.
-        """
-        return self.km_user.has_object_write_permission(request)
-
-
-class MediaResourceCategory(mixins.IsAuthenticatedMixin, models.Model):
-    """
-    Category that a media resource can be placed in.
-    """
-
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        help_text=_("The time that the category was created."),
-        verbose_name=_("created at"),
-    )
-    km_user = models.ForeignKey(
-        "know_me.KMUser",
-        help_text=_("The Know Me user who owns the category."),
-        on_delete=models.CASCADE,
-        related_name="media_resource_categories",
-        related_query_name="media_resource_category",
-        verbose_name=_("media resource category"),
-    )
-    name = models.CharField(
-        help_text=_("The category's name."),
-        max_length=255,
-        verbose_name=_("name"),
-    )
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        help_text=_("The time that the category was last updated."),
-        verbose_name=_("updated at"),
-    )
-
-    class Meta:
-        verbose_name = _("media resource category")
-        verbose_name_plural = _("media resource categories")
-
-    def __str__(self):
-        """
-        Get a string representation of the category.
-
-        Returns:
-            The category's name.
-        """
-        return self.name
 
     def has_object_read_permission(self, request):
         """

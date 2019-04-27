@@ -2,10 +2,7 @@ from know_me.profile import serializers
 
 
 def test_serialize(
-    api_rf,
-    media_resource_category_factory,
-    media_resource_factory,
-    serialized_time,
+    api_rf, km_user_factory, media_resource_factory, serialized_time
 ):
     """
     Test serializing a media resource.
@@ -13,12 +10,12 @@ def test_serialize(
     # Note that it is not intended for a resource to have both a file
     # and link defined at the same time. This is enforced by serializer
     # validation. We do it here for testing purposes.
-    category = media_resource_category_factory()
+    km_user = km_user_factory()
     resource = media_resource_factory(
-        category=category, km_user=category.km_user, link="https://example.com"
+        km_user=km_user, link="https://example.com"
     )
 
-    api_rf.user = category.km_user.user
+    api_rf.user = km_user.user
     request = api_rf.get(resource.get_absolute_url())
 
     serializer = serializers.MediaResourceSerializer(
@@ -32,14 +29,13 @@ def test_serialize(
         "url": request.build_absolute_uri(),
         "created_at": serialized_time(resource.created_at),
         "updated_at": serialized_time(resource.updated_at),
-        "category_id": resource.category.id,
         "cover_style": resource.cover_style,
         "file": file_request.build_absolute_uri(),
         "link": resource.link,
         "name": resource.name,
         "permissions": {
-            "read": category.has_object_read_permission(request),
-            "write": category.has_object_write_permission(request),
+            "read": resource.has_object_read_permission(request),
+            "write": resource.has_object_write_permission(request),
         },
     }
 

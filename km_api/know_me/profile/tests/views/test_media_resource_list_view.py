@@ -38,30 +38,6 @@ def test_get_queryset(api_rf, media_resource_factory):
     assert list(view.get_queryset()) == list(expected)
 
 
-def test_get_queryset_filtered(
-    api_rf,
-    km_user_factory,
-    media_resource_category_factory,
-    media_resource_factory,
-):
-    """
-    If a category is specified, only the resources in that category
-    should be returned.
-    """
-    km_user = km_user_factory()
-    category = media_resource_category_factory(km_user=km_user)
-    resource = media_resource_factory(category=category, km_user=km_user)
-
-    media_resource_factory(km_user=km_user)
-
-    view = views.MediaResourceListView()
-    view.request = view.initialize_request(
-        api_rf.get("/", {"category": category.pk})
-    )
-
-    assert list(view.get_queryset()) == [resource]
-
-
 def test_get_serializer():
     """
     The serializer for the view should be
