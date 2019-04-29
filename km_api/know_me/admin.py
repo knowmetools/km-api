@@ -24,6 +24,28 @@ class AppleSubscriptionInline(admin.StackedInline):
     )
 
 
+@admin.register(models.KMUser)
+class KMUserAdmin(admin.ModelAdmin):
+    """
+    Admin for Know Me users.
+    """
+
+    autocomplete_fields = ("user",)
+    date_hierarchy = "created_at"
+    fields = (
+        "user",
+        "image",
+        "is_legacy_user",
+        "quote",
+        "created_at",
+        "updated_at",
+    )
+    list_display = ("user", "is_legacy_user", "created_at", "updated_at")
+    list_filter = ("is_legacy_user",)
+    readonly_fields = ("created_at", "updated_at")
+    search_fields = ("user__first_name", "user__last_name")
+
+
 @admin.register(models.Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     """
