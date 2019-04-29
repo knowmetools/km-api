@@ -2,6 +2,7 @@
 """
 import hashlib
 import logging
+import uuid
 
 import email_utils
 from django.conf import settings
@@ -37,6 +38,134 @@ def get_km_user_image_upload_path(km_user, imagename):
     return "know-me/users/{id}/images/{file}".format(
         file=imagename, id=km_user.id
     )
+
+
+class AppleReceipt(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    An Apple receipt for a subscription.
+    """
+
+    expiration_time = models.DateTimeField(
+        default=timezone.now,
+        help_text=_(
+            "The expiration time of the most recent transaction associated "
+            "with the receipt."
+        ),
+        verbose_name=_("expiration time"),
+    )
+    id = models.UUIDField(
+        default=uuid.uuid4,
+        help_text=_("A unique identifier for the receipt."),
+        primary_key=True,
+        verbose_name=_("ID"),
+    )
+    receipt_data = models.TextField(
+        help_text=_(
+            "The base64 encoded data used to identify the receipt with Apple."
+        ),
+        verbose_name=_("receipt data"),
+    )
+    receipt_data_hash = models.CharField(
+        help_text=_("The SHA256 hash of the receipt data."),
+        max_length=64,
+        unique=True,
+        verbose_name=_("receipt data hash"),
+    )
+    subscription = models.OneToOneField(
+        "know_me.Subscription",
+        help_text=_("The Know Me subscription the receipt belongs to."),
+        on_delete=models.CASCADE,
+        related_name="apple_receipt",
+        verbose_name=_("subscription"),
+    )
+    time_created = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_("The time that the Apple receipt was initially uploaded."),
+        verbose_name=_("creation time"),
+    )
+    time_updated = models.DateTimeField(
+        auto_now=True,
+        help_text=_("The time of the receipt's last update."),
+        verbose_name=_("last update time"),
+    )
+    transaction_id = models.PositiveIntegerField(
+        help_text=_("The ID of the original transaction from the receipt."),
+        unique=True,
+        verbose_name=_("original transaction ID"),
+    )
+
+    class Meta:
+        ordering = ("time_created",)
+        verbose_name = _("Apple receipt")
+        verbose_name_plural = _("Apple receipts")
+
+    def __repr__(self):
+        """
+        Returns:
+            A string containing the information required to find the
+            instance again in a debugging situation.
+        """
+        return f"<{self.__class__.__name__}: id='{self.id}'>"
+
+    def __str__(self):
+        """
+        Returns:
+            A human-readable string describing the receipt.
+        """
+        return f"Apple receipt for {self.subscription}"
+
+    @staticmethod
+    def hash_data(data: str) -> str:
+        """
+        Compute the hash for some receipt data.
+
+        Args:
+            data:
+                The data to hash.
+
+        Returns:
+            The SHA256 hash of the given data, encoded as hexadecimal
+            characters.
+        """
+        return hashlib.sha256(data.encode()).hexdigest()
+
+    def clean(self):
+        """
+        Populate the instance's receipt data hash field.
+        """
+        super().clean()
+
+        self.receipt_data_hash = self.hash_data(self.receipt_data)
+
+    def has_object_read_permission(self, request):
+        """
+        Check if the requesting user has read permissions on the
+        instance.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has read
+            permissions to the instance.
+        """
+        return self.subscription.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        """
+        Check if the requesting user has write permissions on the
+        instance.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has write
+            permissions to the instance.
+        """
+        return self.subscription.has_object_write_permission(request)
 
 
 class Config(SingletonModel):
@@ -590,6 +719,36 @@ class Subscription(mixins.IsAuthenticatedMixin, models.Model):
         return "Know Me subscription for {user}".format(
             user=self.user.get_full_name()
         )
+
+    def has_object_read_permission(self, request):
+        """
+        Check if the requesting user has read permissions on the
+        instance.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has read
+            permissions to the instance.
+        """
+        return request.user == self.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check if the requesting user has write permissions on the
+        instance.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has write
+            permissions to the instance.
+        """
+        return request.user == self.user
 
 
 class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):

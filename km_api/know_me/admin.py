@@ -3,24 +3,26 @@ from django.contrib import admin
 from know_me import models
 
 
-class AppleSubscriptionInline(admin.StackedInline):
+class AppleReceiptInline(admin.StackedInline):
     """
-    Inline admin editor for Apple subscription data.
+    Inline admin editor for Apple receipts.
     """
 
     fields = (
         "receipt_data",
         "receipt_data_hash",
         "expiration_time",
+        "transaction_id",
         "time_created",
         "time_updated",
     )
-    model = models.SubscriptionAppleData
+    model = models.AppleReceipt
     readonly_fields = (
         "expiration_time",
         "receipt_data_hash",
         "time_created",
         "time_updated",
+        "transaction_id",
     )
 
 
@@ -55,7 +57,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
     autocomplete_fields = ("user",)
     date_hierarchy = "time_created"
     fields = ("user", "is_active", "time_created", "time_updated")
-    inlines = (AppleSubscriptionInline,)
+    inlines = (AppleReceiptInline,)
     readonly_fields = ("time_created", "time_updated")
     list_display = ("user", "is_active", "time_created", "time_updated")
     list_filter = ("is_active",)
