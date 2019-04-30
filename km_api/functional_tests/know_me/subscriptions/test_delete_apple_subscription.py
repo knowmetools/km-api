@@ -15,7 +15,7 @@ def test_delete_anonymous(api_client):
 
 
 def test_delete_apple_subscription(
-    api_client, apple_subscription_factory, user_factory
+    api_client, apple_receipt_factory, user_factory
 ):
     """
     A user should be able to remove an Apple receipt they have
@@ -25,7 +25,7 @@ def test_delete_apple_subscription(
     # account.
     password = "password"
     user = user_factory(first_name="Matt", has_premium=True, password=password)
-    apple_subscription_factory(subscription=user.know_me_subscription)
+    apple_receipt_factory(subscription=user.know_me_subscription)
 
     # If he deletes his Apple receipt, his premium subscription should be
     # deactivated.

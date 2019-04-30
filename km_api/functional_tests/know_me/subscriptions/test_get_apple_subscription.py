@@ -17,7 +17,7 @@ def test_get_anonymous(api_client):
 
 
 def test_get_existing_subscription(
-    api_client, apple_subscription_factory, user_factory
+    api_client, apple_receipt_factory, user_factory
 ):
     """
     Users should be able to fetch information about their existing
@@ -28,23 +28,19 @@ def test_get_existing_subscription(
     user = user_factory(first_name="James", password=password)
     api_client.log_in(user.primary_email.email, password)
 
-    # ...who has an existing Apple subscription...
-    subscription = apple_subscription_factory(subscription__user=user)
+    # ...who has an existing Apple receipt...
+    receipt = apple_receipt_factory(subscription__user=user)
 
     # ...then he should be able to view information about his Apple
-    # subscription.
+    # receipt.
     response = api_client.get(URL)
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        "expiration_time": serialized_time(subscription.expiration_time),
-        "id": subscription.id,
-        "latest_receipt_data": subscription.latest_receipt_data,
-        "latest_receipt_data_hash": receipt_data_hash(
-            subscription.latest_receipt_data
-        ),
-        "receipt_data": subscription.receipt_data,
-        "receipt_data_hash": receipt_data_hash(subscription.receipt_data),
-        "time_created": serialized_time(subscription.time_created),
-        "time_updated": serialized_time(subscription.time_updated),
+        "expiration_time": serialized_time(receipt.expiration_time),
+        "id": str(receipt.pk),
+        "receipt_data": receipt.receipt_data,
+        "receipt_data_hash": receipt_data_hash(receipt.receipt_data),
+        "time_created": serialized_time(receipt.time_created),
+        "time_updated": serialized_time(receipt.time_updated),
     }

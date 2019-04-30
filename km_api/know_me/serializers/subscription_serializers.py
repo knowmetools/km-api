@@ -1,14 +1,11 @@
-import hashlib
 import logging
 
 from django.db import transaction
-from django.db.models import Q
 from django.utils.translation import ugettext, ugettext_lazy as _
 from rest_email_auth.models import EmailAddress
 from rest_framework import serializers
 
 from know_me import models, subscriptions
-
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +24,9 @@ class AppleReceiptInfoSerializer(serializers.ModelSerializer):
         read_only_fields = ("__all__",)
 
 
-class AppleSubscriptionSerializer(serializers.ModelSerializer):
+class AppleReceiptSerializer(serializers.ModelSerializer):
     """
-    Serializer for an Apple subscription.
+    Serializer for an Apple receipt.
     """
 
     class Meta:
@@ -38,88 +35,59 @@ class AppleSubscriptionSerializer(serializers.ModelSerializer):
             "time_created",
             "time_updated",
             "expiration_time",
-            "latest_receipt_data",
-            "latest_receipt_data_hash",
             "receipt_data",
             "receipt_data_hash",
         )
-        model = models.SubscriptionAppleData
+        model = models.AppleReceipt
         read_only_fields = (
             "expiration_time",
-            "latest_receipt_data",
-            "latest_receipt_data_hash",
+            "id",
             "receipt_data_hash",
+            "time_created",
+            "time_updated",
         )
 
-    def __init__(self, *args, **kwargs):
+    def save(self, subscription):
         """
-        Initialize cached properties.
-        """
-        super().__init__(*args, **kwargs)
+        Save the :class:`AppleReceipt` instance associated with the
+        serializer.
 
-        self._receipt_data_hash = None
+        Args:
+            subscription:
+                The subscription to associate the Apple receipt being
+                saved with.
+        """
+        self.instance.subscription = subscription
+        self.instance.save()
 
     def validate(self, data):
         """
-        Ensure the provided receipt data corresponds to a valid Apple
-        receipt.
+        Validate that the provided receipt data corresponds to a valid
+        Apple receipt for a subscription that we recognize.
+
+        Args:
+            data:
+                The data to validate.
 
         Returns:
             The validated data.
         """
-        validated_data = data.copy()
-        receipt_data = validated_data["receipt_data"]
+        self.instance = self.instance or models.AppleReceipt()
+        self.instance.receipt_data = data["receipt_data"]
 
         try:
-            receipt = subscriptions.validate_apple_receipt(receipt_data)
+            self.instance.update_info()
         except subscriptions.ReceiptException as e:
             raise serializers.ValidationError(
                 code=e.code, detail={"receipt_data": e.msg}
             )
 
-        # If a user attempts to upload an old version of a receipt that
-        # is in use, then we can detect that using the latest receipt
-        # data returned from the verification process.
-        latest_data = receipt.latest_receipt_data
-        latest_hash = hashlib.sha256(latest_data.encode()).hexdigest()
-
-        query = Q(latest_receipt_data_hash=latest_hash)
-        query |= Q(receipt_data_hash=latest_hash)
-
-        if models.SubscriptionAppleData.objects.filter(query).exists():
+        if (
+            models.AppleReceipt.objects.exclude(pk=self.instance.pk)
+            .filter(transaction_id=self.instance.transaction_id)
+            .exists()
+        ):
             raise serializers.ValidationError({"receipt_data": RECEIPT_IN_USE})
-
-        # Populate information included in the verification response
-        # from Apple.
-        validated_data["expiration_time"] = receipt.expires_date
-        validated_data["latest_receipt_data"] = latest_data
-        validated_data["latest_receipt_data_hash"] = latest_hash
-        validated_data["receipt_data_hash"] = self._receipt_data_hash
-
-        return validated_data
-
-    def validate_receipt_data(self, data):
-        """
-        Validate incoming receipt data to ensure it has not been used
-        before.
-
-        Args:
-            data:
-                The receipt data to validate.
-
-        Returns:
-            The validated receipt data.
-        """
-        data_hash = hashlib.sha256(data.encode()).hexdigest()
-
-        query = Q(latest_receipt_data_hash=data_hash)
-        query |= Q(receipt_data_hash=data_hash)
-
-        if models.SubscriptionAppleData.objects.filter(query).exists():
-            raise serializers.ValidationError(RECEIPT_IN_USE)
-
-        # Cache receipt data hash
-        self._receipt_data_hash = data_hash
 
         return data
 

@@ -77,7 +77,7 @@ class AppleSubscriptionView(generics.RetrieveDestroyAPIView):
     """
 
     permission_classes = (DRYPermissions,)
-    serializer_class = subscription_serializers.AppleSubscriptionSerializer
+    serializer_class = subscription_serializers.AppleReceiptSerializer
 
     def get_object(self):
         """
@@ -85,11 +85,11 @@ class AppleSubscriptionView(generics.RetrieveDestroyAPIView):
         requesting user.
 
         Returns:
-            The ``SubscriptionDataApple`` instance that belongs to the
-            requesting user.
+            The ``AppleReceipt`` instance that belongs to the requesting
+            user.
         """
         return get_object_or_404(
-            models.SubscriptionAppleData, subscription__user=self.request.user
+            models.AppleReceipt, subscription__user=self.request.user
         )
 
     def perform_destroy(self, instance):
@@ -115,10 +115,10 @@ class AppleSubscriptionView(generics.RetrieveDestroyAPIView):
     def put(self, request, *args, **kwargs):
         # If the user has an existing Apple subscription, update it
         try:
-            instance = models.SubscriptionAppleData.objects.get(
+            instance = models.AppleReceipt.objects.get(
                 subscription__user=self.request.user
             )
-        except models.SubscriptionAppleData.DoesNotExist:
+        except models.AppleReceipt.DoesNotExist:
             instance = None
 
         # Validate the data provided to the serializer before we create

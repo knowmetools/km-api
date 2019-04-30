@@ -15,6 +15,7 @@ from rest_email_auth.models import EmailAddress
 from rest_framework.reverse import reverse
 from solo.models import SingletonModel
 
+from know_me import subscriptions
 from permission_utils import model_mixins as mixins
 
 logger = logging.getLogger(__name__)
@@ -166,6 +167,27 @@ class AppleReceipt(mixins.IsAuthenticatedMixin, models.Model):
             permissions to the instance.
         """
         return self.subscription.has_object_write_permission(request)
+
+    def update_info(self):
+        """
+        Revalidate the instance's information with the Apple store and
+        update the instance's fields based on the returned information.
+
+        If the verification process returns an error, the receipt's
+        expiration time is marked as the current time.
+
+        .. note::
+
+            This method does **NOT** save the instance, it only updates
+            the fields on the instance itself. To persist the updated
+            information, the ``save`` method must be called explicitly.
+        """
+        transaction = subscriptions.validate_apple_receipt(self.receipt_data)
+
+        self.expiration_time = transaction.expires_date
+        self.receipt_data = transaction.latest_receipt_data
+        self.receipt_data_hash = self.hash_data(self.receipt_data)
+        self.transaction_id = transaction.original_transaction_id
 
 
 class Config(SingletonModel):

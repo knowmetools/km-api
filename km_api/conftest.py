@@ -16,6 +16,7 @@ from rest_framework.test import APIClient, APIRequestFactory
 import factories
 import test_utils
 from know_me.factories import (
+    AppleReceiptFactory,
     KMUserAccessorFactory,
     KMUserFactory,
     SubscriptionAppleDataFactory,
@@ -125,6 +126,15 @@ def apple_receipt_client(apple_validation_server, settings):
         "The Apple receipt validation server has queued status responses that "
         "were not consumed:\n{}"
     ).format(status["store"])
+
+
+@pytest.fixture
+def apple_receipt_factory(db):
+    """
+    Returns:
+        The factory class used to generate Apple receipts for testing.
+    """
+    return AppleReceiptFactory
 
 
 @pytest.fixture(autouse=True)

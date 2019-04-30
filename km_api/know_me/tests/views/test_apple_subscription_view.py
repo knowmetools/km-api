@@ -1,31 +1,51 @@
+from unittest import mock
+
 import pytest
 from django.http import Http404
 
 from know_me import views, models
 
 
-def test_get_object_exists(api_rf, apple_subscription_factory):
+@pytest.fixture
+def mock_apple_receipt_qs():
+    mock_queryset = mock.Mock(spec=models.AppleReceipt.objects)
+    mock_queryset.all.return_value = mock_queryset
+    mock_queryset.model.DoesNotExist = models.AppleReceipt.DoesNotExist
+
+    with mock.patch(
+        "know_me.models.AppleReceipt.objects", new=mock_queryset
+    ), mock.patch(
+        "know_me.models.AppleReceipt._meta.default_manager", new=mock_queryset
+    ):
+        yield mock_queryset
+
+
+def test_get_object_exists(mock_apple_receipt_qs):
     """
-    If there is an Apple subscription for the requesting user, it should
-    be returned.
+    If there is an Apple receipt for the requesting user, it should be
+    returned.
     """
-    subscription = apple_subscription_factory()
-    api_rf.user = subscription.subscription.user
-    request = api_rf.get("/")
+    receipt = mock.Mock(name="Mock Receipt")
+    mock_apple_receipt_qs.get.return_value = receipt
+    request = mock.Mock(name="Mock Request")
+    request.user = receipt.subscription.user
 
     view = views.AppleSubscriptionView()
     view.request = request
 
-    assert view.get_object() == subscription
+    assert view.get_object() == receipt
+    assert mock_apple_receipt_qs.get.call_args[1] == {
+        "subscription__user": receipt.subscription.user
+    }
 
 
-def test_get_object_missing(api_rf, user_factory):
+def test_get_object_missing(mock_apple_receipt_qs):
     """
     If the requesting user has no Apple subscription, an ``Http404``
     should be thrown for a ``GET`` request.
     """
-    api_rf.user = user_factory()
-    request = api_rf.get("/")
+    mock_apple_receipt_qs.get.side_effect = models.AppleReceipt.DoesNotExist
+    request = mock.Mock(name="Mock Request")
 
     view = views.AppleSubscriptionView()
     view.request = request
@@ -34,17 +54,18 @@ def test_get_object_missing(api_rf, user_factory):
         view.get_object()
 
 
-def test_perform_destroy(apple_subscription_factory):
+def test_perform_destroy():
     """
     Destroying an Apple receipt should also deactivate the parent
     subscription.
     """
-    apple_sub = apple_subscription_factory(subscription__is_active=True)
+    receipt = mock.Mock(name="Mock Receipt")
+    receipt.subscription.is_active = True
+    receipt.subscription.pk = 42
+
     view = views.AppleSubscriptionView()
+    view.perform_destroy(receipt)
 
-    view.perform_destroy(apple_sub)
-
-    assert not models.SubscriptionAppleData.objects.filter(
-        pk=apple_sub.pk
-    ).exists()
-    assert not apple_sub.subscription.is_active
+    assert receipt.delete.call_count == 1
+    assert not receipt.subscription.is_active
+    assert receipt.subscription.save.call_count == 1

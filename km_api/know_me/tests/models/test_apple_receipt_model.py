@@ -1,7 +1,9 @@
 import hashlib
 from unittest import mock
 
-from know_me import models
+from django.utils import timezone
+
+from know_me import models, subscriptions
 
 
 def test_clean():
@@ -86,6 +88,35 @@ def test_repr():
     expected = f"<AppleReceipt: id='{receipt.id}'>"
 
     assert repr(receipt) == expected
+
+
+@mock.patch("know_me.subscriptions.validate_apple_receipt", autospec=True)
+def test_update_info(mock_validate):
+    """
+    This method should revalidate its own information against the Apple
+    store and update its own fields based on the response.
+    """
+    receipt_data = "foo"
+    new_receipt_data = "bar"
+    expires_date = timezone.now().replace(microsecond=0)
+    original_transaction_id = 1234
+    transaction_info = {
+        "expires_date_ms": int(expires_date.timestamp()) * 1000,
+        "original_transaction_id": original_transaction_id,
+    }
+    mock_validate.return_value = subscriptions.AppleTransaction(
+        transaction_info, new_receipt_data
+    )
+
+    receipt = models.AppleReceipt(receipt_data=receipt_data)
+    receipt.update_info()
+
+    assert receipt.expiration_time == expires_date
+    assert receipt.receipt_data == new_receipt_data
+    assert receipt.receipt_data_hash == models.AppleReceipt.hash_data(
+        new_receipt_data
+    )
+    assert receipt.transaction_id == original_transaction_id
 
 
 def test_str():
