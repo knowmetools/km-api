@@ -3,11 +3,11 @@ import enum
 import pytest
 
 from know_me.subscriptions import (
-    InvalidReceiptTypeException,
-    validate_apple_receipt_response,
-    ReceiptServerException,
     AppleReceiptCodes,
-    AppleReceipt,
+    AppleTransaction,
+    InvalidReceiptTypeException,
+    ReceiptServerException,
+    validate_apple_receipt_response,
 )
 
 
@@ -123,14 +123,18 @@ def test_validate_apple_receipt_valid(product_code, settings):
     """
     settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"] = ["annual", "monthly"]
     latest_receipt_data = "receipt-data"
-    receipt_info = {"product_id": product_code}
+    transaction_info = {
+        "expires_date_ms": 0,
+        "original_transaction_id": 123,
+        "product_id": product_code,
+    }
 
     result = validate_apple_receipt_response(
         {
             "latest_receipt": latest_receipt_data,
-            "latest_receipt_info": [{"product_id": "foo"}, receipt_info],
+            "latest_receipt_info": [{"product_id": "foo"}, transaction_info],
             "status": ReceiptCode.VALID,
         }
     )
 
-    assert result == AppleReceipt(receipt_info, latest_receipt_data)
+    assert result == AppleTransaction(transaction_info, latest_receipt_data)

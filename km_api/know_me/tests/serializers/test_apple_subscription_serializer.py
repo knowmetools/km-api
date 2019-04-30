@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from know_me import subscriptions
 from know_me.serializers import subscription_serializers
-from know_me.subscriptions import AppleReceipt
+from know_me.subscriptions import AppleTransaction
 from test_utils import serialized_time, receipt_data_hash
 
 
@@ -52,7 +52,7 @@ def test_validate_object(mock_validate_apple, db):
         "expires_date_ms": str(int(expires.timestamp() * 1000)),
         "product_id": "foo",
     }
-    mock_validate_apple.return_value = AppleReceipt(
+    mock_validate_apple.return_value = AppleTransaction(
         receipt_response, receipt_data
     )
 
@@ -89,7 +89,7 @@ def test_validate_object_duplicate_matches_latest_receipt_data(
     existing_receipt = apple_subscription_factory(
         latest_receipt_data="foo", receipt_data="bar"
     )
-    mock_validate_apple.return_value = AppleReceipt(
+    mock_validate_apple.return_value = AppleTransaction(
         {}, existing_receipt.latest_receipt_data
     )
 
@@ -118,7 +118,7 @@ def test_validate_object_duplicate_matches_original_receipt_data(
     existing_receipt = apple_subscription_factory(
         latest_receipt_data="foo", receipt_data="bar"
     )
-    mock_validate_apple.return_value = AppleReceipt(
+    mock_validate_apple.return_value = AppleTransaction(
         {}, existing_receipt.receipt_data
     )
 

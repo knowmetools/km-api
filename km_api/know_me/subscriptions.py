@@ -86,36 +86,43 @@ class ReceiptServerException(ReceiptException):
     pass
 
 
-class AppleReceipt:
+class AppleTransaction:
     """
-    A container for a single transaction from an auto-renewable
-    subscription.
-
-    The class provides some useful helper methods for accessing data
-    from the dictionary returned by Apple.
+    A container for a single transaction from a renewable subscription
+    through the Apple store.
     """
 
-    def __init__(self, receipt_info, latest_receipt_data):
+    def __init__(self, transaction: dict, latest_receipt_data: str):
         """
-        Create a new Apple receipt.
+        Create a new instance representing a single transaction.
 
         Args:
-            receipt_info:
-                The dictionary returned from Apple containing
-                information about the receipt.
+            transaction:
+                A dictionary containing information about a single
+                transaction from a renewable subscription.
             latest_receipt_data:
-                The base64 encoded data for the most recent version of
-                the receipt.
+                The base64 encoded receipt data from the most recent
+                receipt that can be used to identify the transaction.
         """
-        self.raw_info = receipt_info
+        self.raw_info = transaction
         self.latest_receipt_data = latest_receipt_data
 
-        # The raw expiration date is a string version of a timestamp.
-        self.expires_date_ms = int(receipt_info.get("expires_date_ms", 0))
-        self.product_id = receipt_info.get("product_id")
-
     def __eq__(self, other):
-        if isinstance(other, AppleReceipt):
+        """
+        Determine if the transaction is equivalent to another object.
+
+        Two transaction container instances are equal iff they map to
+        the same raw data.
+
+        Args:
+            other:
+                The object to test this instance for equality to.
+
+        Returns:
+            A boolean indicating if this instance is equal to the other
+            object.
+        """
+        if isinstance(other, AppleTransaction):
             return (
                 self.raw_info == other.raw_info
                 and self.latest_receipt_data == other.latest_receipt_data
@@ -124,17 +131,33 @@ class AppleReceipt:
         return super().__eq__(other)
 
     @property
-    def expires_date(self):
+    def expires_date(self) -> datetime.datetime:
         """
         Returns:
-            A :class:`datetime.datetime` instance representing the
-            expiration date of the receipt.
+            A :class:`datetime.datetime` instance representing the time
+            that the transaction expires.
         """
-        # The expiration date from Apple is in milliseconds but we need
-        # a time in seconds so we have to do a quick conversion.
         return datetime.datetime.fromtimestamp(
-            self.expires_date_ms // 1000, datetime.timezone.utc
+            int(self.raw_info["expires_date_ms"]) // 1000,
+            datetime.timezone.utc,
         )
+
+    @property
+    def original_transaction_id(self):
+        """
+        Returns:
+            The ID of the original transaction that led to the
+            transaction represented by the instance.
+        """
+        return int(self.raw_info["original_transaction_id"])
+
+    @property
+    def product_id(self):
+        """
+        Returns:
+            The ID of the product that the transaction is for.
+        """
+        return self.raw_info["product_id"]
 
 
 def get_apple_receipt_info(receipt_data):
@@ -250,8 +273,8 @@ def validate_apple_receipt_response(receipt_response):
             ugettext("The provided receipt does not have any transactions.")
         )
 
-    latest_receipt = latest_receipts[-1]
-    product = latest_receipt.get("product_id")
+    latest_transaction = latest_receipts[-1]
+    product = latest_transaction.get("product_id")
 
     if product not in settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"]:
         logger.info(
@@ -264,4 +287,6 @@ def validate_apple_receipt_response(receipt_response):
             ugettext("Receipt contains transactions for an invalid product.")
         )
 
-    return AppleReceipt(latest_receipt, receipt_response["latest_receipt"])
+    return AppleTransaction(
+        latest_transaction, receipt_response["latest_receipt"]
+    )

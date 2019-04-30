@@ -46,7 +46,7 @@ def test_handle_expiring_apple_subscription(
             "latest_receipt": apple_data.receipt_data,
             "latest_receipt_info": [
                 {
-                    "expires_data_ms": str(int(expires.timestamp() * 1000)),
+                    "expires_date_ms": str(int(expires.timestamp() * 1000)),
                     "product_id": PREMIUM_PRODUCT_CODE,
                 }
             ],
