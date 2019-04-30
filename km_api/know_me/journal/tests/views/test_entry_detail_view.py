@@ -39,3 +39,17 @@ def test_get_serializer_class():
     expected = serializers.EntryDetailSerializer
 
     assert view.get_serializer_class() == expected
+
+
+def test_get_subscription_owner():
+    """
+    The view's method to get the owner of a subscription should return
+    the owner of the journal the entry was made on.
+    """
+    entry = mock.MagicMock(name="Mock Journal Entry")
+    request = mock.MagicMock(name="Mock Request")
+    expected = entry.km_user.user
+
+    view = views.EntryDetailView()
+
+    assert view.get_subscription_owner(request, entry) == expected
