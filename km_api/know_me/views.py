@@ -12,7 +12,6 @@ from rest_framework import generics, pagination, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.schemas import AutoSchema
-from rest_framework.views import APIView
 
 from know_me import models, permissions, serializers
 from know_me.serializers import subscription_serializers
@@ -21,7 +20,7 @@ from permission_utils.view_mixins import DocumentActionMixin
 logger = logging.getLogger(__name__)
 
 
-class AppleReceiptQueryView(APIView):
+class AppleReceiptQueryView(generics.RetrieveAPIView):
     """
     get:
     Determine if an Apple receipt is in use. If a 200 response is
@@ -46,19 +45,23 @@ class AppleReceiptQueryView(APIView):
                         "should be encoded as hexadecimal characters."
                     )
                 ),
+                type="String",
             )
         ]
     )
+    serializer_class = subscription_serializers.AppleReceiptQuerySerializer
 
-    def get(self, request, *args, **kwargs):
-        receipt_hash = self.kwargs["receipt_hash"]
+    def get_object(self):
+        """
+        Get the Apple receipt with the given hash.
 
-        exists = models.AppleReceipt.objects.filter(
-            receipt_data_hash=receipt_hash
-        ).exists()
-        code = status.HTTP_200_OK if exists else status.HTTP_404_NOT_FOUND
-
-        return Response(status=code)
+        Returns:
+            The :class:`AppleReceipt` instance with the given receipt
+            data hash.
+        """
+        return get_object_or_404(
+            models.AppleReceipt, receipt_data_hash=self.kwargs["receipt_hash"]
+        )
 
 
 class AppleSubscriptionView(generics.RetrieveDestroyAPIView):
