@@ -37,6 +37,16 @@ def test_has_object_read_permission():
     assert mock_has_perm.call_args[0] == (request,)
 
 
+def test_has_object_read_permission_no_subscription():
+    """
+    If the receipt does not yet have a parent subscription, read
+    access should be permitted.
+    """
+    receipt = models.AppleReceipt()
+
+    assert receipt.has_object_read_permission(mock.Mock(name="request"))
+
+
 def test_has_object_write_permission():
     """
     The write permission check should be delegated to the parent
@@ -53,6 +63,16 @@ def test_has_object_write_permission():
 
     assert result == mock_has_perm.return_value
     assert mock_has_perm.call_args[0] == (request,)
+
+
+def test_has_object_write_permission_no_subscription():
+    """
+    If the receipt does not yet have a parent subscription, write
+    access should be permitted.
+    """
+    receipt = models.AppleReceipt()
+
+    assert receipt.has_object_write_permission(mock.Mock(name="request"))
 
 
 def test_string_conversion(apple_subscription_factory):

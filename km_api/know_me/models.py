@@ -151,7 +151,10 @@ class AppleReceipt(mixins.IsAuthenticatedMixin, models.Model):
             A boolean indicating if the requesting user has read
             permissions to the instance.
         """
-        return self.subscription.has_object_read_permission(request)
+        if hasattr(self, "subscription"):
+            return self.subscription.has_object_read_permission(request)
+
+        return True
 
     def has_object_write_permission(self, request):
         """
@@ -166,7 +169,10 @@ class AppleReceipt(mixins.IsAuthenticatedMixin, models.Model):
             A boolean indicating if the requesting user has write
             permissions to the instance.
         """
-        return self.subscription.has_object_write_permission(request)
+        if hasattr(self, "subscription"):
+            return self.subscription.has_object_write_permission(request)
+
+        return True
 
     def update_info(self):
         """
