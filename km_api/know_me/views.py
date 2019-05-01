@@ -18,7 +18,6 @@ from know_me import models, permissions, serializers
 from know_me.serializers import subscription_serializers
 from permission_utils.view_mixins import DocumentActionMixin
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -36,6 +35,8 @@ class AppleReceiptQueryView(APIView):
         manual_fields=[
             coreapi.Field(
                 "receipt_hash",
+                description="The hash of the receipt data to search for.",
+                example=models.AppleReceipt.hash_data("foo"),
                 location="path",
                 required=True,
                 schema=coreschema.String(
@@ -51,10 +52,10 @@ class AppleReceiptQueryView(APIView):
 
     def get(self, request, *args, **kwargs):
         receipt_hash = self.kwargs["receipt_hash"]
-        filters = Q(latest_receipt_data_hash=receipt_hash)
-        filters |= Q(receipt_data_hash=receipt_hash)
 
-        exists = models.SubscriptionAppleData.objects.filter(filters)
+        exists = models.AppleReceipt.objects.filter(
+            receipt_data_hash=receipt_hash
+        ).exists()
         code = status.HTTP_200_OK if exists else status.HTTP_404_NOT_FOUND
 
         return Response(status=code)

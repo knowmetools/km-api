@@ -12,18 +12,6 @@ RENEWAL_WINDOW = datetime.timedelta(hours=1)
 
 
 @pytest.fixture
-def mock_apple_receipt_qs():
-    """
-    Fixture to mock querysets interacting with Apple receipts.
-    """
-    mock_qs = mock.Mock(spec=models.AppleReceipt.objects)
-    mock_qs.filter.return_value = mock_qs
-
-    with mock.patch("know_me.models.AppleReceipt.objects", new=mock_qs):
-        yield mock_qs
-
-
-@pytest.fixture
 def mock_subscription_qs():
     """
     Fixture to mock querysets interacting with subscriptions.

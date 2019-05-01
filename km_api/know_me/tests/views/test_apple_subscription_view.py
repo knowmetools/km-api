@@ -6,20 +6,6 @@ from django.http import Http404
 from know_me import views, models
 
 
-@pytest.fixture
-def mock_apple_receipt_qs():
-    mock_queryset = mock.Mock(spec=models.AppleReceipt.objects)
-    mock_queryset.all.return_value = mock_queryset
-    mock_queryset.model.DoesNotExist = models.AppleReceipt.DoesNotExist
-
-    with mock.patch(
-        "know_me.models.AppleReceipt.objects", new=mock_queryset
-    ), mock.patch(
-        "know_me.models.AppleReceipt._meta.default_manager", new=mock_queryset
-    ):
-        yield mock_queryset
-
-
 def test_get_object_exists(mock_apple_receipt_qs):
     """
     If there is an Apple receipt for the requesting user, it should be

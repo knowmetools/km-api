@@ -15,13 +15,13 @@ def test_apple_receipt_does_not_exist(api_client):
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_apple_receipt_exists(api_client, apple_subscription_factory):
+def test_apple_receipt_exists(api_client, apple_receipt_factory):
     """
     If an Apple subscription whose receipt data matches the provided
     hash exists, a 200 response should be returned.
     """
     # Assume an Apple receipt for some user exists.
-    apple_receipt = apple_subscription_factory()
+    apple_receipt = apple_receipt_factory()
 
     # Querying for that receipt by its hash should return a 200 response
     # indicating it exists.
