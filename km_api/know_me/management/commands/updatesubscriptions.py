@@ -1,8 +1,6 @@
 import datetime
-import hashlib
 
 from django.core import management
-from django.db.models import Q
 from django.utils import timezone
 
 from know_me import models, subscriptions
@@ -13,16 +11,29 @@ class Command(management.BaseCommand):
     Management command to update the status of all subscriptions.
     """
 
-    EXPIRATION_WINDOW = datetime.timedelta(hours=1)
+    RENEWAL_WINDOW = datetime.timedelta(hours=1)
     """
     The amount of time prior to an existing subscription's expiration
-    date that we should begin updating it.
+    date that we should begin attempting to renew it.
     """
 
     help = (
         "Update the validity and expiration status of all Know Me premium "
         "subscriptions."
     )
+
+    @staticmethod
+    def deactivate_orphan_subscriptions():
+        """
+        Deactivate all active subscriptions that do not have a payment
+        method associated with them.
+
+        Returns:
+            The number of deactivated subscriptions.
+        """
+        return models.Subscription.objects.filter(
+            apple_receipt__isnull=True, is_active=True
+        ).update(is_active=False)
 
     def handle(self, *args, **options):
         """
@@ -37,81 +48,66 @@ class Command(management.BaseCommand):
         self.stdout.write(
             "Deactivating all subscriptions without a receipt..."
         )
-        orphan_sub_count = models.Subscription.objects.filter(
-            apple_data__isnull=True, is_active=True
-        ).update(is_active=False)
-        self.stdout.write(
-            f"Deactivated {orphan_sub_count} orphan subscription(s)."
-        )
+        orphan_subs = self.deactivate_orphan_subscriptions()
+        self.stdout.write(f"Deactivated {orphan_subs} orphan subscription(s).")
 
-        cutoff_time = timezone.now() + self.EXPIRATION_WINDOW
+        now = timezone.now()
+        cutoff_time = now + self.RENEWAL_WINDOW
         self.stdout.write(
             f"Updating Apple subscriptions that expire before "
             f"{cutoff_time.isoformat()}..."
         )
 
-        query = models.SubscriptionAppleData.objects.filter(
-            expiration_time__lte=cutoff_time
-        )
-        self.stdout.write(
-            f"Found {query.count()} Apple subscription(s) to update."
-        )
-
-        for apple_sub in query:
-            is_active = False
-
-            try:
-                updated = subscriptions.validate_apple_receipt(
-                    apple_sub.receipt_data
-                )
-
-                latest_hash = hashlib.sha256(
-                    updated.latest_receipt_data.encode()
-                ).hexdigest()
-
-                unique_query = Q(latest_receipt_data_hash=latest_hash)
-                unique_query |= Q(receipt_data_hash=latest_hash)
-
-                if (
-                    models.SubscriptionAppleData.objects.exclude(
-                        pk=apple_sub.pk
-                    )
-                    .filter(unique_query)
-                    .exists()
-                ):
-                    self.stdout.write(
-                        self.style.NOTICE(
-                            f"Apple receipt with ID {apple_sub.pk} has an "
-                            f"updated hash that conflicts with another "
-                            f"receipt: {latest_hash}"
-                        )
-                    )
-
-                    is_active = False
-                else:
-                    apple_sub.expiration_time = updated.expires_date
-                    apple_sub.latest_receipt_data = updated.latest_receipt_data
-                    apple_sub.clean()
-                    apple_sub.save()
-
-                    if apple_sub.expiration_time > timezone.now():
-                        is_active = True
-            except subscriptions.ReceiptException:
-                self.stdout.write(
-                    self.style.NOTICE(
-                        f"Apple receipt with ID {apple_sub.pk} failed "
-                        f"verification."
-                    )
-                )
-
-                # If there is an error verifying the receipt, the
-                # subscription should be deactivated.
-                is_active = False
-
-            models.Subscription.objects.filter(apple_data=apple_sub).update(
-                is_active=is_active
-            )
+        self.update_apple_subscriptions(now, self.RENEWAL_WINDOW)
 
         self.stdout.write(
             self.style.SUCCESS("Finished updating Apple subscriptions.")
         )
+
+    def update_apple_subscriptions(
+        self, now: datetime.datetime, renewal_window: datetime.timedelta
+    ):
+        """
+        Attempt to renew Apple subscriptions that expire within the
+        given cutoff time.
+
+        Args:
+            now:
+                The time to compare receipt expiration times to to
+                determine if they are expired.
+            renewal_window:
+                The amount of time before a receipt's expiration time
+                that renewal should be attempted. In other words, all
+                Apple receipts expiring before the current time plus
+                this window will attempt to renew themselves.
+
+        Returns:
+            A dictionary containing counts for the different renewal
+            outcomes.
+        """
+        receipts = models.AppleReceipt.objects.filter(
+            expiration_time__lte=now + renewal_window
+        )
+
+        for receipt in receipts:
+            is_active = True
+
+            try:
+                receipt.update_info()
+                receipt.save()
+
+                if receipt.expiration_time < now:
+                    is_active = False
+            except subscriptions.ReceiptException as e:
+                self.stderr.write(
+                    self.style.NOTICE(
+                        f"Apple receipt {receipt.pk} failed validation: "
+                        f"{e.msg}"
+                    )
+                )
+
+                is_active = False
+
+            models.Subscription.objects.filter(apple_receipt=receipt).update(
+                is_active=is_active
+            )

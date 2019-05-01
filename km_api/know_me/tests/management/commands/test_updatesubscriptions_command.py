@@ -1,12 +1,38 @@
 import datetime
+from unittest import mock
 
 import pytest
 from django.utils import timezone
 
+from know_me import models, subscriptions
 from know_me.management.commands.updatesubscriptions import Command
-from test_utils import receipt_data_hash
 
 PREMIUM_PRODUCT_CODE = "premium"
+RENEWAL_WINDOW = datetime.timedelta(hours=1)
+
+
+@pytest.fixture
+def mock_apple_receipt_qs():
+    """
+    Fixture to mock querysets interacting with Apple receipts.
+    """
+    mock_qs = mock.Mock(spec=models.AppleReceipt.objects)
+    mock_qs.filter.return_value = mock_qs
+
+    with mock.patch("know_me.models.AppleReceipt.objects", new=mock_qs):
+        yield mock_qs
+
+
+@pytest.fixture
+def mock_subscription_qs():
+    """
+    Fixture to mock querysets interacting with subscriptions.
+    """
+    mock_qs = mock.Mock(spec=models.Subscription.objects)
+    mock_qs.filter.return_value = mock_qs
+
+    with mock.patch("know_me.models.Subscription.objects", new=mock_qs):
+        yield mock_qs
 
 
 @pytest.fixture(autouse=True)
@@ -17,221 +43,144 @@ def set_know_me_premium_product_codes(settings):
     settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"] = [PREMIUM_PRODUCT_CODE]
 
 
-def test_handle_no_subscriptions(db):
+def test_deactivate_orphan_subscriptions(mock_subscription_qs):
     """
-    If there are no subscriptions, ``handle`` should succeed without
-    doing anything.
+    Subscriptions that have no receipts activating them should be
+    deactivated.
     """
+    mock_filtered_qs = mock.Mock(name="Mock Subscription Queryset")
+    mock_subscription_qs.filter.return_value = mock_filtered_qs
+
+    result = Command.deactivate_orphan_subscriptions()
+
+    assert mock_subscription_qs.filter.call_args[1] == {
+        "apple_receipt__isnull": True,
+        "is_active": True,
+    }
+    assert mock_filtered_qs.update.call_args[1] == {"is_active": False}
+    assert result == mock_filtered_qs.update.return_value
+
+
+@mock.patch("know_me.management.commands.updatesubscriptions.timezone.now")
+@mock.patch(
+    "know_me.management.commands.updatesubscriptions.Command.deactivate_orphan_subscriptions"  # noqa
+)
+@mock.patch(
+    "know_me.management.commands.updatesubscriptions.Command.update_apple_subscriptions"  # noqa
+)
+def test_handle(mock_update_apple, mock_deactivate_orphans, mock_now):
+    """
+    The entry point into the command should execute the methods used to
+    deactivate orphan subscriptions and update Apple subscriptions.
+    """
+    now = timezone.now()
+    mock_now.return_value = now
+
     command = Command()
     command.handle()
 
+    assert mock_deactivate_orphans.call_count == 1
+    assert mock_update_apple.call_args[0] == (now, command.RENEWAL_WINDOW)
 
-def test_handle_expiring_apple_subscription(
-    apple_receipt_client, apple_subscription_factory
+
+def test_update_apple_subscriptions_error(
+    mock_apple_receipt_qs, mock_subscription_qs
 ):
     """
-    If an Apple subscription's expiration time has passed, then its
-    parent subscription should be marked as inactive when the command is
-    run.
+    If there is an error when trying to update a receipt's information,
+    its parent subscription should be marked as expired.
     """
-    expires = timezone.now().replace(microsecond=0) - datetime.timedelta(
-        days=30
-    )
-    apple_data = apple_subscription_factory(subscription__is_active=True)
-
-    apple_receipt_client.enqueue_status(
-        apple_data.receipt_data,
-        {
-            "status": 0,
-            "latest_receipt": apple_data.receipt_data,
-            "latest_receipt_info": [
-                {
-                    "expires_date_ms": str(int(expires.timestamp() * 1000)),
-                    "product_id": PREMIUM_PRODUCT_CODE,
-                }
-            ],
-        },
-    )
+    now = timezone.now()
+    receipt = mock.Mock(name="Mock Receipt")
+    receipt.update_info.side_effect = subscriptions.ReceiptException("foo")
+    mock_apple_receipt_qs.filter.return_value = [receipt]
 
     command = Command()
-    command.handle()
-    apple_data.refresh_from_db()
+    command.update_apple_subscriptions(now, RENEWAL_WINDOW)
 
-    assert not apple_data.subscription.is_active
+    assert mock_apple_receipt_qs.filter.call_args[1] == {
+        "expiration_time__lte": now + RENEWAL_WINDOW
+    }
+    assert receipt.update_info.call_count == 1
+    assert mock_subscription_qs.filter.call_args[1] == {
+        "apple_receipt": receipt
+    }
+    assert mock_subscription_qs.update.call_args[1] == {"is_active": False}
 
 
-def test_handle_renewed_apple_subscription(
-    apple_receipt_client, apple_subscription_factory
+def test_update_apple_subscriptions_expiring(
+    mock_apple_receipt_qs, mock_subscription_qs
 ):
     """
-    If an Apple subscription has lapsed and rendered its parent
-    subscription inactive, then running the command after the Apple
-    subscription has been renewed should activate the parent
-    subscription.
+    If an Apple receipt's expiration time has passed, its parent
+    subscription should be deactivated.
     """
-    new_expires = timezone.now().replace(microsecond=0) + datetime.timedelta(
-        days=30
-    )
-    apple_data = apple_subscription_factory(
-        expiration_time=timezone.now() + Command.EXPIRATION_WINDOW,
-        subscription__is_active=False,
-    )
-    new_receipt_data = "new-receipt-data"
-
-    apple_receipt_client.enqueue_status(
-        apple_data.receipt_data,
-        {
-            "status": 0,
-            "latest_receipt": new_receipt_data,
-            "latest_receipt_info": [
-                {
-                    "expires_date_ms": str(
-                        int(new_expires.timestamp() * 1000)
-                    ),
-                    "product_id": PREMIUM_PRODUCT_CODE,
-                }
-            ],
-        },
-    )
+    now = timezone.now()
+    receipt = mock.Mock(name="Mock Receipt")
+    receipt.expiration_time = now - datetime.timedelta(hours=1)
+    mock_apple_receipt_qs.filter.return_value = [receipt]
 
     command = Command()
-    command.handle()
-    apple_data.refresh_from_db()
+    command.update_apple_subscriptions(now, RENEWAL_WINDOW)
 
-    assert apple_data.expiration_time == new_expires
-    assert apple_data.latest_receipt_data == new_receipt_data
-    assert apple_data.latest_receipt_data_hash == receipt_data_hash(
-        new_receipt_data
-    )
-    assert apple_data.subscription.is_active
+    assert mock_apple_receipt_qs.filter.call_args[1] == {
+        "expiration_time__lte": now + RENEWAL_WINDOW
+    }
+    assert receipt.update_info.call_count == 1
+    assert mock_subscription_qs.filter.call_args[1] == {
+        "apple_receipt": receipt
+    }
+    assert mock_subscription_qs.update.call_args[1] == {"is_active": False}
 
 
-def test_handle_renewed_apple_subscription_duplicate_latest(
-    apple_receipt_client, apple_subscription_factory
+def test_update_apple_subscriptions_renewed(
+    mock_apple_receipt_qs, mock_subscription_qs
 ):
     """
-    If the latest receipt data returned when updating an Apple receipt
-    conflicts with another receipt's latest data, the subscription
-    should be deactivated and the offending Apple receipt deleted.
+    If a receipt that had previously expired becomes active again, the
+    parent subscription should be activated.
     """
-    new_expires = timezone.now().replace(microsecond=0) + datetime.timedelta(
-        days=30
-    )
-    existing_receipt = apple_subscription_factory(
-        # Far future expires so it isn't updated
-        expiration_time=timezone.now() + datetime.timedelta(days=30),
-        latest_receipt_data="foo",
-        receipt_data="bar",
-    )
-    apple_data = apple_subscription_factory(
-        expiration_time=timezone.now() + Command.EXPIRATION_WINDOW,
-        subscription__is_active=True,
-    )
-    subscription = apple_data.subscription
-
-    apple_receipt_client.enqueue_status(
-        apple_data.receipt_data,
-        {
-            "status": 0,
-            "latest_receipt": existing_receipt.latest_receipt_data,
-            "latest_receipt_info": [
-                {
-                    "expires_date_ms": str(
-                        int(new_expires.timestamp() * 1000)
-                    ),
-                    "product_id": PREMIUM_PRODUCT_CODE,
-                }
-            ],
-        },
-    )
+    now = timezone.now()
+    receipt = mock.Mock(name="Mock Receipt")
+    receipt.expiration_time = now + datetime.timedelta(hours=1)
+    mock_apple_receipt_qs.filter.return_value = [receipt]
 
     command = Command()
-    command.handle()
-    subscription.refresh_from_db()
+    command.update_apple_subscriptions(now, RENEWAL_WINDOW)
 
-    assert not subscription.is_active
+    assert mock_apple_receipt_qs.filter.call_args[1] == {
+        "expiration_time__lte": now + RENEWAL_WINDOW
+    }
+    assert receipt.update_info.call_count == 1
+    assert mock_subscription_qs.filter.call_args[1] == {
+        "apple_receipt": receipt
+    }
+    assert mock_subscription_qs.update.call_args[1] == {"is_active": True}
 
 
-def test_handle_renewed_apple_subscription_duplicate_original(
-    apple_receipt_client, apple_subscription_factory
+def test_update_apple_subscriptions_still_valid(
+    mock_apple_receipt_qs, mock_subscription_qs
 ):
     """
-    If the latest receipt data returned when updating an Apple receipt
-    conflicts with another receipt's original data, the subscription
-    should be deactivated and the offending Apple receipt deleted.
+    If an Apple receipt successfully updates its information through the
+    Apple store, it should be saved.
     """
-    new_expires = timezone.now().replace(microsecond=0) + datetime.timedelta(
-        days=30
-    )
-    existing_receipt = apple_subscription_factory(
-        # Far future expires so it isn't updated
-        expiration_time=timezone.now() + datetime.timedelta(days=30),
-        latest_receipt_data="foo",
-        receipt_data="bar",
-    )
-    apple_data = apple_subscription_factory(
-        expiration_time=timezone.now() + Command.EXPIRATION_WINDOW,
-        subscription__is_active=True,
-    )
-    subscription = apple_data.subscription
+    now = timezone.now()
+    receipts = []
+    for i in range(10):
+        receipt = mock.Mock(name=f"Mock Receipt {i}")
+        receipt.expiration_time = now + datetime.timedelta(minutes=1)
+        receipts.append(receipt)
 
-    apple_receipt_client.enqueue_status(
-        apple_data.receipt_data,
-        {
-            "status": 0,
-            "latest_receipt": existing_receipt.receipt_data,
-            "latest_receipt_info": [
-                {
-                    "expires_date_ms": str(
-                        int(new_expires.timestamp() * 1000)
-                    ),
-                    "product_id": PREMIUM_PRODUCT_CODE,
-                }
-            ],
-        },
-    )
+    mock_apple_receipt_qs.filter.return_value = receipts
 
     command = Command()
-    command.handle()
-    subscription.refresh_from_db()
+    command.update_apple_subscriptions(now, RENEWAL_WINDOW)
 
-    assert not subscription.is_active
+    assert mock_apple_receipt_qs.filter.call_args[1] == {
+        "expiration_time__lte": now + RENEWAL_WINDOW
+    }
 
-
-def test_handle_still_expired_apple_subscription(
-    apple_receipt_client, apple_subscription_factory
-):
-    """
-    If an Apple receipt has already expired and the subscription has
-    been marked as inactive, then running the command should keep the
-    subscription inactive.
-    """
-    apple_data = apple_subscription_factory(
-        expiration_time=timezone.now() - Command.EXPIRATION_WINDOW,
-        subscription__is_active=False,
-    )
-
-    apple_receipt_client.enqueue_status(
-        apple_data.receipt_data, {"status": 21010}
-    )
-
-    command = Command()
-    command.handle()
-    apple_data.refresh_from_db()
-
-    assert not apple_data.subscription.is_active
-
-
-def test_handle_subscription_no_receipt(subscription_factory):
-    """
-    If there is an active subscription without any receipt data (ie the
-    receipt data got deleted), it should be set to inactive when the
-    command is run.
-    """
-    subscription = subscription_factory(is_active=True)
-
-    command = Command()
-    command.handle()
-    subscription.refresh_from_db()
-
-    assert not subscription.is_active
+    for receipt in receipts:
+        assert receipt.update_info.call_count == 1
+        assert receipt.save.call_count == 1
