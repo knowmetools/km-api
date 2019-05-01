@@ -127,10 +127,10 @@ class AppleSubscriptionView(generics.RetrieveDestroyAPIView):
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        base_subscription, _ = models.Subscription.objects.get_or_create(
-            user=self.request.user, defaults={"is_active": True}
+        subscription, _ = models.Subscription.objects.get_or_create(
+            user=self.request.user, defaults={"is_active": False}
         )
-        serializer.save(subscription=base_subscription)
+        serializer.save(subscription=subscription)
 
         return Response(serializer.data)
 

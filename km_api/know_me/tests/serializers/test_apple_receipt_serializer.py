@@ -29,15 +29,18 @@ def mock_apple_receipt_objects():
 
 def test_save():
     """
-    Saving the serializer should simply call save on the instance
-    associated with the serializer.
+    Saving the serializer should save the instance associated with the
+    serializer and activate the subscription passed in.
     """
     serializer = subscription_serializers.AppleReceiptSerializer()
     serializer.instance = mock.Mock(name="Mock Apple Receipt")
     subscription = mock.Mock(name="Mock Subscription")
+    subscription.is_active = False
 
     serializer.save(subscription=subscription)
 
+    assert subscription.is_active
+    assert subscription.save.call_count == 1
     assert serializer.instance.subscription == subscription
     assert serializer.instance.save.call_count == 1
 

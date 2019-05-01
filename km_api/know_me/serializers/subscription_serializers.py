@@ -57,6 +57,8 @@ class AppleReceiptSerializer(serializers.ModelSerializer):
                 The subscription to associate the Apple receipt being
                 saved with.
         """
+        subscription.is_active = True
+        subscription.save()
         self.instance.subscription = subscription
         self.instance.save()
 

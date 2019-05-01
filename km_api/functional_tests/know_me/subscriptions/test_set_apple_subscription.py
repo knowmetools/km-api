@@ -198,3 +198,60 @@ def test_set_valid_apple_receipt(
     assert response_data["receipt_data_hash"] == receipt_data_hash(
         receipt_data
     )
+
+
+def test_set_valid_apple_receipt_activates_subscription(
+    api_client, apple_receipt_client, subscription_factory, user_factory
+):
+    """
+    If the user has an existing ``Subscription`` instance that is
+    inactive, uploading a new Apple receipt should activate the
+    subscription.
+    """
+    expires = timezone.now().replace(microsecond=0) + datetime.timedelta(
+        days=30
+    )
+
+    # Given Anne, who is a valid user with an existing subscription, is
+    # logged in.
+    password = "password"
+    user = user_factory(first_name="Anne", password=password)
+    api_client.log_in(user.primary_email.email, password)
+
+    subscription_factory(is_active=False, user=user)
+
+    # If Anne has a valid receipt for a recognized product...
+    receipt_data = "base64-encoded-receipt-data"
+    apple_receipt_client.enqueue_status(
+        receipt_data,
+        {
+            "status": 0,
+            "latest_receipt": receipt_data,
+            "latest_receipt_info": [
+                {
+                    "expires_date_ms": str(int(expires.timestamp() * 1000)),
+                    "original_transaction_id": "1",
+                    "product_id": PREMIUM_PRODUCT_CODE,
+                }
+            ],
+        },
+    )
+
+    # ...then when she sets that receipt as her Know Me subscription...
+    data = {"receipt_data": receipt_data}
+    response = api_client.put(URL, json=data)
+    response_data = response.json()
+
+    # ...she should receive a 200 response...
+    assert response.status_code == status.HTTP_200_OK
+    assert response_data["expiration_time"] == serialized_time(expires)
+    assert response_data["receipt_data"] == receipt_data
+    assert response_data["receipt_data_hash"] == receipt_data_hash(
+        receipt_data
+    )
+
+    # ...and her subscription should be set to active.
+    response = api_client.get("/know-me/subscription/")
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["is_active"]
