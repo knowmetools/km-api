@@ -89,8 +89,9 @@ class AppleReceipt(mixins.IsAuthenticatedMixin, models.Model):
         help_text=_("The time of the receipt's last update."),
         verbose_name=_("last update time"),
     )
-    transaction_id = models.PositiveIntegerField(
+    transaction_id = models.CharField(
         help_text=_("The ID of the original transaction from the receipt."),
+        max_length=64,
         unique=True,
         verbose_name=_("original transaction ID"),
     )

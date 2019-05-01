@@ -149,7 +149,7 @@ class AppleTransaction:
             The ID of the original transaction that led to the
             transaction represented by the instance.
         """
-        return int(self.raw_info["original_transaction_id"])
+        return self.raw_info["original_transaction_id"]
 
     @property
     def product_id(self):

@@ -19,7 +19,7 @@ class AppleReceiptFactory(factory.DjangoModelFactory):
         lambda r: models.AppleReceipt.hash_data(r.receipt_data)
     )
     subscription = factory.SubFactory("know_me.factories.SubscriptionFactory")
-    transaction_id = factory.Sequence(lambda n: n)
+    transaction_id = factory.Sequence(str)
 
     class Meta:
         model = "know_me.AppleReceipt"

@@ -8,7 +8,7 @@ from know_me import subscriptions
 
 EXPIRES_DATE_MS = int(timezone.now().timestamp()) * 1000
 PRODUCT_ID = "com.knowmetools.knowme.test"
-TRANSACTION_ID = 1234
+TRANSACTION_ID = "1234"
 
 
 @pytest.fixture
@@ -19,8 +19,8 @@ def transaction_info():
     """
     return {
         "expires_date_ms": str(EXPIRES_DATE_MS),
-        "original_transaction_id": str(TRANSACTION_ID),
-        "product_id": str(PRODUCT_ID),
+        "original_transaction_id": TRANSACTION_ID,
+        "product_id": PRODUCT_ID,
     }
 
 
