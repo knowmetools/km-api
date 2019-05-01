@@ -29,3 +29,7 @@ def test_apple_receipt_exists(api_client, apple_receipt_factory):
     response = api_client.get(url)
 
     assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "email": apple_receipt.subscription.user.primary_email.email,
+        "receipt_data_hash": apple_receipt.receipt_data_hash,
+    }

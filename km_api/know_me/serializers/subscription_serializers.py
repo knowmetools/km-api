@@ -24,6 +24,26 @@ class AppleReceiptInfoSerializer(serializers.ModelSerializer):
         read_only_fields = ("__all__",)
 
 
+class AppleReceiptQuerySerializer(serializers.ModelSerializer):
+    """
+    Read-only serializer for responding to Apple receipt queries.
+    """
+
+    email = serializers.EmailField(
+        help_text=_(
+            "The primary email address of the Know Me user who is using the "
+            "Apple receipt with the specified hash."
+        ),
+        read_only=True,
+        source="subscription.user.primary_email.email",
+    )
+
+    class Meta:
+        fields = ("email", "receipt_data_hash")
+        model = models.AppleReceipt
+        read_only_fields = ("__all__",)
+
+
 class AppleReceiptSerializer(serializers.ModelSerializer):
     """
     Serializer for an Apple receipt.
