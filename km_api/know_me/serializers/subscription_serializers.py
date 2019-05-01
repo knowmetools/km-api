@@ -100,7 +100,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     subscription.
     """
 
-    apple_receipt = AppleReceiptInfoSerializer(source="apple_data")
+    apple_receipt = AppleReceiptInfoSerializer()
 
     class Meta:
         fields = ("apple_receipt", "is_active")

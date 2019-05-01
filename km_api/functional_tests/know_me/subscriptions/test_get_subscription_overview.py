@@ -16,7 +16,7 @@ def test_get_subscription_anonymous(api_client):
 
 
 def test_get_subscription_apple_receipt(
-    api_client, apple_subscription_factory, user_factory
+    api_client, apple_receipt_factory, user_factory
 ):
     """
     If the requesting user has an Apple receipt as their payment source
@@ -26,7 +26,7 @@ def test_get_subscription_apple_receipt(
     # Assume Elijah is an existing user with an Apple receipt.
     password = "password"
     user = user_factory(first_name="Elijah", password=password)
-    apple_receipt = apple_subscription_factory(
+    apple_receipt = apple_receipt_factory(
         subscription__is_active=True, subscription__user=user
     )
 
