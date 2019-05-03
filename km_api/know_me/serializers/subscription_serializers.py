@@ -1,6 +1,7 @@
 import logging
 
 from django.db import transaction
+from django.utils import timezone
 from django.utils.translation import ugettext, ugettext_lazy as _
 from rest_email_auth.models import EmailAddress
 from rest_framework import serializers
@@ -77,7 +78,7 @@ class AppleReceiptSerializer(serializers.ModelSerializer):
                 The subscription to associate the Apple receipt being
                 saved with.
         """
-        subscription.is_active = True
+        subscription.is_active = self.instance.expiration_time > timezone.now()
         subscription.save()
         self.instance.subscription = subscription
         self.instance.save()
