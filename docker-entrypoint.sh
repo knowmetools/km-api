@@ -33,6 +33,7 @@ create_db_user() {
 
 if [[ "$1" = 'background-jobs' ]]; then
     ${MANAGE_CMD} cleanemailconfirmations
+    ${MANAGE_CMD} updatelegacyusers
     ${MANAGE_CMD} updatesubscriptions
     exit 0
 fi
