@@ -165,10 +165,11 @@ def parse_connect(api_root, app_id, master_key):
 def upload_users(client):
     url = "{}/know-me/legacy-users/".format(client.api_root)
 
-    user_count = User.Query.all().count()
+    user_query = User.Query.filter(hasUsedProfile=True)
+    user_count = user_query.count()
     logger.info("Uploading %d users", user_count)
 
-    for user in tqdm(User.Query.all().limit(user_count)):
+    for user in tqdm(user_query.limit(user_count)):
         if not hasattr(user, "email"):
             logger.warning("User %s does not have an email", user)
             continue
