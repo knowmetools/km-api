@@ -1,3 +1,4 @@
+import datetime
 from unittest import mock
 
 import pytest
@@ -27,17 +28,55 @@ def mock_apple_receipt_objects():
         yield mock_queryset
 
 
-def test_save():
+def test_save_expired():
     """
     Saving the serializer should save the instance associated with the
-    serializer and activate the subscription passed in.
+    serializer and deactivate the subscription passed in if the
+    receipt's expiration time has passed.
     """
-    serializer = subscription_serializers.AppleReceiptSerializer()
-    serializer.instance = mock.Mock(name="Mock Apple Receipt")
-    subscription = mock.Mock(name="Mock Subscription")
-    subscription.is_active = False
+    now = timezone.now()
+    expires = now - datetime.timedelta(days=1)
 
-    serializer.save(subscription=subscription)
+    with mock.patch(
+        "know_me.serializers.subscription_serializers.timezone.now",
+        autospec=True,
+        return_value=now,
+    ):
+        serializer = subscription_serializers.AppleReceiptSerializer()
+        serializer.instance = mock.Mock(name="Mock Apple Receipt")
+        serializer.instance.expiration_time = expires
+        subscription = mock.Mock(name="Mock Subscription")
+        subscription.is_active = True
+
+        serializer.save(subscription=subscription)
+
+    assert not subscription.is_active
+    assert subscription.save.call_count == 1
+    assert serializer.instance.subscription == subscription
+    assert serializer.instance.save.call_count == 1
+
+
+def test_save_not_expired():
+    """
+    Saving the serializer should save the instance associated with the
+    serializer and activate the subscription passed in if the receipt's
+    expiration time has not yet passed.
+    """
+    now = timezone.now()
+    expires = now + datetime.timedelta(days=1)
+
+    with mock.patch(
+        "know_me.serializers.subscription_serializers.timezone.now",
+        autospec=True,
+        return_value=now,
+    ):
+        serializer = subscription_serializers.AppleReceiptSerializer()
+        serializer.instance = mock.Mock(name="Mock Apple Receipt")
+        serializer.instance.expiration_time = expires
+        subscription = mock.Mock(name="Mock Subscription")
+        subscription.is_active = False
+
+        serializer.save(subscription=subscription)
 
     assert subscription.is_active
     assert subscription.save.call_count == 1

@@ -65,6 +65,48 @@ def test_set_duplicate_apple_receipt(
     }
 
 
+def test_set_expired_apple_receipt(
+    api_client, apple_receipt_client, user_factory
+):
+    """
+    If a user uploads an Apple receipt that has expired but is otherwise
+    valid, the upload should succeed but their subscription should not
+    be activated.
+
+    Regression test for #481.
+    """
+    expires = timezone.now().replace(microsecond=0)
+
+    # Assume Rebecca is an existing user.
+    password = "password"
+    user = user_factory(first_name="Rebecca", password=password)
+    api_client.log_in(user.primary_email.email, password)
+
+    # If she uploads an expired Apple receipt...
+    receipt_data = "expired-receipt"
+    apple_receipt_client.enqueue_status(
+        receipt_data,
+        {
+            "status": 0,
+            "latest_receipt": receipt_data,
+            "latest_receipt_info": [
+                {
+                    "expires_date_ms": str(int(expires.timestamp()) * 1000),
+                    "original_transaction_id": "1234",
+                    "product_id": PREMIUM_PRODUCT_CODE,
+                }
+            ],
+        },
+    )
+    data = {"receipt_data": receipt_data}
+    response = api_client.put(URL, data)
+
+    # ...then the upload should succeed but her subscription should not
+    # be active.
+    assert response.status_code == status.HTTP_200_OK
+    assert not api_client.user_has_premium
+
+
 def test_set_invalid_apple_receipt(
     api_client, apple_receipt_client, user_factory
 ):
