@@ -48,6 +48,19 @@ class KMUserAdmin(admin.ModelAdmin):
     search_fields = ("user__first_name", "user__last_name")
 
 
+@admin.register(models.LegacyUser)
+class LegacyUserAdmin(admin.ModelAdmin):
+    """
+    Admin for legacy Know Me users.
+    """
+
+    date_hierarchy = "created_at"
+    fields = ("email", "created_at", "updated_at")
+    list_display = ("email", "created_at", "updated_at")
+    readonly_fields = ("created_at", "updated_at")
+    search_fields = ("email",)
+
+
 @admin.register(models.Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     """
