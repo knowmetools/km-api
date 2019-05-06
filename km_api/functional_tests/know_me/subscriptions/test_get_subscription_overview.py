@@ -36,11 +36,37 @@ def test_get_subscription_apple_receipt(
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        "is_active": True,
         "apple_receipt": {
             "expiration_time": serialized_time(apple_receipt.expiration_time),
             "receipt_data_hash": apple_receipt.receipt_data_hash,
         },
+        "is_active": True,
+        "is_legacy_subscription": False,
+    }
+
+
+def test_get_subscription_legacy(
+    api_client, user_factory, subscription_factory
+):
+    """
+    If the requesting user has a legacy subscription, the subscription
+    overview should include a flag indicating that.
+    """
+    # Assume Matt is an existing user with a legacy subscription.
+    password = "password"
+    user = user_factory(first_name="Matt", password="password")
+    subscription = subscription_factory(is_legacy_subscription=True, user=user)
+
+    # If he gets an overview of his subscriptions, he should see a flag
+    # indicating he has a legacy subscription.
+    api_client.log_in(user.primary_email.email, password)
+    response = api_client.get(URL)
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "apple_receipt": None,
+        "is_active": subscription.is_active,
+        "is_legacy_subscription": True,
     }
 
 

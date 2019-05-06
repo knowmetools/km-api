@@ -124,7 +124,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     apple_receipt = AppleReceiptInfoSerializer()
 
     class Meta:
-        fields = ("apple_receipt", "is_active")
+        fields = ("apple_receipt", "is_active", "is_legacy_subscription")
         model = models.Subscription
         read_only_fields = ("__all__",)
 

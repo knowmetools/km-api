@@ -710,6 +710,14 @@ class Subscription(mixins.IsAuthenticatedMixin, models.Model):
     A subscription to Know Me.
     """
 
+    is_legacy_subscription = models.BooleanField(
+        default=False,
+        help_text=_(
+            "A boolean indicating if the user has an active subscription due "
+            "to them being a legacy user."
+        ),
+        verbose_name=_("is legacy subscription"),
+    )
     is_active = models.BooleanField(
         help_text=_("A boolean indicating if the subscription is active."),
         verbose_name=_("is active"),

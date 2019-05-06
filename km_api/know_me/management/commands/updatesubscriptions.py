@@ -28,11 +28,19 @@ class Command(management.BaseCommand):
         Deactivate all active subscriptions that do not have a payment
         method associated with them.
 
+        The criteria for an orphan subscription are:
+
+        1. Active subscription.
+        2. No associated apple receipt.
+        3. Not a legacy subscription.
+
         Returns:
             The number of deactivated subscriptions.
         """
         return models.Subscription.objects.filter(
-            apple_receipt__isnull=True, is_active=True
+            apple_receipt__isnull=True,
+            is_legacy_subscription=False,
+            is_active=True,
         ).update(is_active=False)
 
     def handle(self, *args, **options):
