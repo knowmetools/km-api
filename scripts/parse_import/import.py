@@ -5,6 +5,8 @@ import logging
 import os
 
 from parse_rest.connection import register
+from parse_rest.datatypes import Object
+from parse_rest.query import QueryResourceDoesNotExist
 from parse_rest.user import User
 
 from tqdm import tqdm
@@ -26,6 +28,10 @@ logger = logging.getLogger(__name__)
 
 # Response returned from the API if that user has already been added
 DUPLICATE_USER_MSG = "legacy user with this email already exists."
+
+
+Profile = Object.factory("Profile")
+ProfileAccessor = Object.factory("ProfileAccessor")
 
 
 class ImproperlyConfiguredException(Exception):
@@ -164,17 +170,48 @@ def parse_connect(api_root, app_id, master_key):
 
 def upload_users(client):
     url = "{}/know-me/legacy-users/".format(client.api_root)
+    emails = set()
 
-    user_query = User.Query.filter(hasUsedProfile=True)
-    user_count = user_query.count()
-    logger.info("Uploading %d users", user_count)
+    profile_query = Profile.Query.filter(ownerId__exists=True)
+    profile_count = profile_query.count()
+    logger.info("Found %d profiles", profile_count)
 
-    for user in tqdm(user_query.limit(user_count)):
-        if not hasattr(user, "email"):
-            logger.warning("User %s does not have an email", user)
+    for profile in tqdm(profile_query.limit(profile_count)):
+        user_id = profile.ownerId
+
+        try:
+            user = User.Query.get(objectId=user_id)
+        except QueryResourceDoesNotExist:
+            logger.warning("Could not find user with ID %s", user_id)
             continue
 
-        response = client.session.post(url, data={"email": user.email})
+        if not hasattr(user, "email"):
+            logger.warning("User %s does not have an email.", user)
+            continue
+
+        emails.add(user.email)
+
+    accessor_query = ProfileAccessor.Query.filter(
+        userWithAccess__exists=True
+    ).select_related("userWithAccess")
+    accessor_count = accessor_query.count()
+    logger.info("Found %d profile accessors", accessor_count)
+
+    for accessor in tqdm(accessor_query.limit(accessor_count)):
+        try:
+            if not hasattr(accessor.userWithAccess, "email"):
+                logger.warning(
+                    "User %s does not have an email.", accessor.userWithAccess
+                )
+                continue
+
+            emails.add(accessor.userWithAccess.email)
+        except AttributeError:
+            logger.error("Failed to process accessor %s", accessor, exc_info=1)
+            continue
+
+    for email in tqdm(emails):
+        response = client.session.post(url, data={"email": email})
 
         if response.status_code == 400:
             body = response.json()
@@ -183,22 +220,19 @@ def upload_users(client):
             if email_error is not None:
                 if DUPLICATE_USER_MSG in email_error:
                     logger.debug(
-                        "Skipping user %s because they have already been "
-                        "added.",
-                        user.email,
+                        "Skipping email %s because it has already been added.",
+                        email,
                     )
                     continue
 
             logger.warning(
-                "Failed to add user %s. Received response: %s",
-                user.email,
-                body,
+                "Failed to add email %s. Received response: %s", email, body
             )
             continue
 
         response.raise_for_status()
 
-        logger.debug("Uploaded user %s", user.email)
+        logger.debug("Uploaded legacy email %s", email)
 
 
 if __name__ == "__main__":
