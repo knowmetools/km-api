@@ -45,6 +45,7 @@ if SENTRY_DSN:
     )
     sentry_sdk.init(
         dsn=SENTRY_DSN,
+        environment=os.getenv("DJANGO_SENTRY_ENVIRONMENT", "unknown"),
         integrations=[DjangoIntegration(), sentry_logging],
         release=os.getenv("DJANGO_SENTRY_RELEASE", "unknown"),
     )
