@@ -10,7 +10,11 @@ def test_serialize_inactive():
     subscription = models.Subscription(is_active=False)
     serializer = subscription_serializers.SubscriptionSerializer(subscription)
 
-    assert serializer.data == {"apple_receipt": None, "is_active": False}
+    assert serializer.data == {
+        "apple_receipt": None,
+        "is_active": False,
+        "is_legacy_subscription": False,
+    }
 
 
 def test_serialize_apple_receipt(apple_receipt_factory):
@@ -31,4 +35,20 @@ def test_serialize_apple_receipt(apple_receipt_factory):
     assert serializer.data == {
         "apple_receipt": receipt_serializer.data,
         "is_active": True,
+        "is_legacy_subscription": False,
+    }
+
+
+def test_serialize_legacy(subscription_factory):
+    """
+    If a subscription is marked as a legacy subscription, it should
+    include a flag indicating that.
+    """
+    subscription = subscription_factory(is_legacy_subscription=True)
+    serializer = subscription_serializers.SubscriptionSerializer(subscription)
+
+    assert serializer.data == {
+        "apple_receipt": None,
+        "is_active": subscription.is_active,
+        "is_legacy_subscription": True,
     }

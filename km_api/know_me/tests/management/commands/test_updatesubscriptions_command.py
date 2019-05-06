@@ -43,6 +43,7 @@ def test_deactivate_orphan_subscriptions(mock_subscription_qs):
 
     assert mock_subscription_qs.filter.call_args[1] == {
         "apple_receipt__isnull": True,
+        "is_legacy_subscription": False,
         "is_active": True,
     }
     assert mock_filtered_qs.update.call_args[1] == {"is_active": False}
