@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.urls import path
 
 from rest_framework.documentation import include_docs_urls
 
@@ -27,6 +28,7 @@ urlpatterns = [
         r"^api-auth/",
         include("rest_framework.urls", namespace="rest_framework"),
     ),
+    path("apple/", include("apple.urls")),
     url(r"^auth/", include("km_auth.urls")),
     url(r"^docs/", include_docs_urls(title="Know Me API")),
     url(r"^know-me/", include("know_me.urls")),

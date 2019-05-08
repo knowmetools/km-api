@@ -293,20 +293,16 @@ km_premium_codes = (
 )
 APPLE_PRODUCT_CODES = {"KNOW_ME_PREMIUM": km_premium_codes}
 
+# We can compare the endpoint being used against the known production
+# endpoint to determine if we are in a production environment.
+APPLE_RECEIPT_VALIDATION_PRODUCTION_ENDPOINT = (
+    "https://buy.itunes.apple.com/verifyReceipt"
+)
 APPLE_RECEIPT_VALIDATION_ENDPOINT = os.environ.get(
     "DJANGO_APPLE_RECEIPT_VALIDATION_ENDPOINT",
     "https://sandbox.itunes.apple.com/verifyReceipt",
 )
 APPLE_SHARED_SECRET = os.getenv("DJANGO_APPLE_SHARED_SECRET", "")
-
-
-# Raven (Sentry Logging)
-
-RAVEN_CONFIG = {
-    "dsn": SENTRY_DSN,
-    "environment": os.environ.get("DJANGO_SENTRY_ENVIRONMENT", "default"),
-    "release": "1.5.0",
-}
 
 
 # Rest Email Auth
