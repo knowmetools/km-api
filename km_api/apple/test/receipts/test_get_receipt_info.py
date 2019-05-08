@@ -1,8 +1,4 @@
-from know_me import subscriptions
-
-
-class ReceiptCode:
-    VALID = 0
+from apple.receipts import get_receipt_info, ReceiptCodes
 
 
 def test_get_apple_receipt_info_retry(apple_receipt_client):
@@ -11,11 +7,11 @@ def test_get_apple_receipt_info_retry(apple_receipt_client):
     method should honor that.
     """
     data = "valid-receipt"
-    expected_status = {"status": ReceiptCode.VALID}
+    expected_status = {"status": ReceiptCodes.VALID}
     apple_receipt_client.enqueue_status(data, {"is-retryable": True})
     apple_receipt_client.enqueue_status(data, expected_status)
 
-    result = subscriptions.get_apple_receipt_info(data)
+    result = get_receipt_info(data)
 
     assert result == expected_status
 
@@ -26,9 +22,9 @@ def test_get_apple_receipt_info_valid(apple_receipt_client):
     JSON data returned by the Apple store.
     """
     data = "valid-receipt"
-    expected = {"status": ReceiptCode.VALID}
+    expected = {"status": ReceiptCodes.VALID}
     apple_receipt_client.enqueue_status(data, expected)
 
-    result = subscriptions.get_apple_receipt_info(data)
+    result = get_receipt_info(data)
 
     assert result == expected

@@ -11,7 +11,7 @@ def test_validate_apple_receipt():
     receipt_data = "test-data"
 
     with mock.patch(
-        "know_me.subscriptions.get_apple_receipt_info", autospec=True
+        "know_me.subscriptions.get_receipt_info", autospec=True
     ) as mock_get_info, mock.patch(
         "know_me.subscriptions.validate_apple_receipt_response", autospec=True
     ) as mock_validate:

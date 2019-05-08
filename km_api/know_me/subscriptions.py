@@ -2,9 +2,11 @@ import datetime
 import enum
 import logging
 
-import requests
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, ugettext
+
+from apple.receipts import get_receipt_info
+
 
 logger = logging.getLogger(__name__)
 
@@ -160,46 +162,6 @@ class AppleTransaction:
         return self.raw_info["product_id"]
 
 
-def get_apple_receipt_info(receipt_data):
-    """
-    Get information about an Apple receipt by sending its base64 encoded
-    data.
-
-    Args:
-        receipt_data:
-            The base64 encoded receipt data that is sent to Apple to
-            verify.
-
-    Returns:
-        The receipt data returned by Apple.
-    """
-    logger.debug(
-        "Sending receipt data to apple for validation: %s", receipt_data
-    )
-
-    data = None
-    retry = True
-    while retry:
-        response = requests.post(
-            settings.APPLE_RECEIPT_VALIDATION_ENDPOINT,
-            json={
-                "password": settings.APPLE_SHARED_SECRET,
-                "receipt-data": receipt_data,
-            },
-        )
-        response.raise_for_status()
-        data = response.json()
-
-        # If Apple had some internal failure when returning the receipt,
-        # the request should be retried.
-        retry = data.get("is-retryable", False)
-
-        if retry:
-            logger.info("Retrying Apple receipt verification.")
-
-    return data
-
-
 def validate_apple_receipt(receipt_data):
     """
     A wrapper around :py:func:`get_apple_receipt_info` and
@@ -216,7 +178,7 @@ def validate_apple_receipt(receipt_data):
         The output of the :py:func:`validate_apple_receipt_response`
         function.
     """
-    receipt_info = get_apple_receipt_info(receipt_data)
+    receipt_info = get_receipt_info(receipt_data)
 
     return validate_apple_receipt_response(receipt_info)
 
