@@ -6,8 +6,6 @@ import hashlib
 import factory
 from django.utils import timezone
 
-from know_me import models
-
 
 class AppleReceiptFactory(factory.DjangoModelFactory):
     """
@@ -15,9 +13,6 @@ class AppleReceiptFactory(factory.DjangoModelFactory):
     """
 
     receipt_data = factory.Sequence(lambda n: f"receipt-data-{n}")
-    receipt_data_hash = factory.LazyAttribute(
-        lambda r: models.AppleReceipt.hash_data(r.receipt_data)
-    )
     subscription = factory.SubFactory("know_me.factories.SubscriptionFactory")
     transaction_id = factory.Sequence(str)
 
