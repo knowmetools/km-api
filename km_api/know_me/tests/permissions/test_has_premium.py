@@ -83,6 +83,7 @@ def test_has_permission_no_subscription(
     assert not perm.has_permission(request, view)
 
 
+# TODO: Fix this
 def test_has_permission_no_subscription_feature_disabled(api_rf):
     """
     If the

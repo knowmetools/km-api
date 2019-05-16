@@ -1,35 +1,84 @@
-import hashlib
-
+import pytest
 from rest_framework import status
 
 
-def test_apple_receipt_does_not_exist(api_client):
-    """
-    If there is no Apple receipt whose data hashes to the specified
-    value then a 404 response should be returned.
-    """
-    data_hash = hashlib.sha256("foo".encode()).hexdigest()
-    url = f"/know-me/subscription/apple/{data_hash}/"
-    response = api_client.get(url)
-
-    assert response.status_code == status.HTTP_404_NOT_FOUND
+PREMIUM_PRODUCT_CODE = "premium"
+URL = "/know-me/subscription/apple/query/"
 
 
-def test_apple_receipt_exists(api_client, apple_receipt_factory):
+@pytest.fixture(autouse=True)
+def set_know_me_premium_product_codes(settings):
     """
-    If an Apple subscription whose receipt data matches the provided
-    hash exists, a 200 response should be returned.
+    Fixture to automatically set the product code for Know Me Premium.
     """
-    # Assume an Apple receipt for some user exists.
-    apple_receipt = apple_receipt_factory()
+    settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"] = [PREMIUM_PRODUCT_CODE]
 
-    # Querying for that receipt by its hash should return a 200 response
-    # indicating it exists.
-    url = f"/know-me/subscription/apple/{apple_receipt.receipt_data_hash}/"
-    response = api_client.get(url)
+
+def test_apple_receipt_does_not_exist(
+    api_client, apple_receipt_client, apple_receipt_factory
+):
+    """
+    If there is no existing Apple receipt with the same transaction ID
+    as the receipt identified by the provided data, the query should
+    indicate that the receipt is not in use.
+    """
+    # If there is a valid receipt...
+    receipt_data = "foo"
+    apple_receipt_client.enqueue_status(
+        receipt_data,
+        {
+            "latest_receipt": receipt_data,
+            "latest_receipt_info": [
+                {
+                    "original_transaction_id": "bar",
+                    "product_id": PREMIUM_PRODUCT_CODE,
+                }
+            ],
+            "status": 0,
+        },
+    )
+
+    # ...then querying with that receipt data should indicate the
+    # receipt is not used.
+    response = api_client.post(URL, {"receipt_data": receipt_data})
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"email": None, "is_used": False}
+
+
+def test_apple_receipt_exists(
+    api_client, apple_receipt_client, apple_receipt_factory
+):
+    """
+    If an Apple receipt with the same original transaction ID as the
+    receipt passed to the endpoint exists, the endpoint should return
+    the primary email address of the user who owns the receipt.
+    """
+    # Assume there is an existing Apple receipt.
+    receipt = apple_receipt_factory()
+
+    # If there is a receipt that matches to the same transaction ID...
+    receipt_data = "foo"
+    apple_receipt_client.enqueue_status(
+        receipt_data,
+        {
+            "latest_receipt": receipt_data,
+            "latest_receipt_info": [
+                {
+                    "original_transaction_id": str(receipt.transaction_id),
+                    "product_id": PREMIUM_PRODUCT_CODE,
+                }
+            ],
+            "status": 0,
+        },
+    )
+
+    # ...then querying with that receipt data should return the email
+    # address of the original receipt's owner.
+    response = api_client.post(URL, {"receipt_data": receipt_data})
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
-        "email": apple_receipt.subscription.user.primary_email.email,
-        "receipt_data_hash": apple_receipt.receipt_data_hash,
+        "email": receipt.subscription.user.primary_email.email,
+        "is_used": True,
     }
