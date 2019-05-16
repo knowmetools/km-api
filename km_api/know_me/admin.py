@@ -10,7 +10,6 @@ class AppleReceiptInline(admin.StackedInline):
 
     fields = (
         "receipt_data",
-        "receipt_data_hash",
         "expiration_time",
         "transaction_id",
         "time_created",
@@ -19,7 +18,6 @@ class AppleReceiptInline(admin.StackedInline):
     model = models.AppleReceipt
     readonly_fields = (
         "expiration_time",
-        "receipt_data_hash",
         "time_created",
         "time_updated",
         "transaction_id",

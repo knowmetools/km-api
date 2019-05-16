@@ -66,12 +66,6 @@ class AppleReceipt(mixins.IsAuthenticatedMixin, models.Model):
         ),
         verbose_name=_("receipt data"),
     )
-    receipt_data_hash = models.CharField(
-        help_text=_("The SHA256 hash of the receipt data."),
-        max_length=64,
-        unique=True,
-        verbose_name=_("receipt data hash"),
-    )
     subscription = models.OneToOneField(
         "know_me.Subscription",
         help_text=_("The Know Me subscription the receipt belongs to."),
@@ -115,29 +109,6 @@ class AppleReceipt(mixins.IsAuthenticatedMixin, models.Model):
             A human-readable string describing the receipt.
         """
         return f"Apple receipt for {self.subscription}"
-
-    @staticmethod
-    def hash_data(data: str) -> str:
-        """
-        Compute the hash for some receipt data.
-
-        Args:
-            data:
-                The data to hash.
-
-        Returns:
-            The SHA256 hash of the given data, encoded as hexadecimal
-            characters.
-        """
-        return hashlib.sha256(data.encode()).hexdigest()
-
-    def clean(self):
-        """
-        Populate the instance's receipt data hash field.
-        """
-        super().clean()
-
-        self.receipt_data_hash = self.hash_data(self.receipt_data)
 
     def has_object_read_permission(self, request):
         """
@@ -193,7 +164,6 @@ class AppleReceipt(mixins.IsAuthenticatedMixin, models.Model):
 
         self.expiration_time = transaction.expires_date
         self.receipt_data = transaction.latest_receipt_data
-        self.receipt_data_hash = self.hash_data(self.receipt_data)
         self.transaction_id = transaction.original_transaction_id
 
 

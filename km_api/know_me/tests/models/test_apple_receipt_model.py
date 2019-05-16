@@ -1,22 +1,8 @@
-import hashlib
 from unittest import mock
 
 from django.utils import timezone
 
 from know_me import models, subscriptions
-
-
-def test_clean():
-    """
-    Cleaning a receipt should populate its hash field with the hash of
-    its receipt data.
-    """
-    data = "foo"
-    receipt = models.AppleReceipt(receipt_data=data)
-
-    receipt.clean()
-
-    assert receipt.receipt_data_hash == models.AppleReceipt.hash_data(data)
 
 
 def test_has_object_read_permission():
@@ -88,17 +74,6 @@ def test_string_conversion(apple_subscription_factory):
     assert str(data) == expected
 
 
-def test_hash_data():
-    """
-    The method should return the SHA256 hash of the provided data
-    encoded as hexadecimal characters.
-    """
-    data = "foo"
-    expected = hashlib.sha256(data.encode()).hexdigest()
-
-    assert models.AppleReceipt.hash_data(data) == expected
-
-
 def test_repr():
     """
     The repr method should return a string containing the information
@@ -133,9 +108,6 @@ def test_update_info(mock_validate):
 
     assert receipt.expiration_time == expires_date
     assert receipt.receipt_data == new_receipt_data
-    assert receipt.receipt_data_hash == models.AppleReceipt.hash_data(
-        new_receipt_data
-    )
     assert receipt.transaction_id == original_transaction_id
 
 
