@@ -2,8 +2,6 @@
 """
 import logging
 
-import coreapi
-import coreschema
 from django.conf import settings
 from django.db.models import Case, PositiveSmallIntegerField, Q, Value, When
 from django.shortcuts import get_object_or_404
@@ -11,57 +9,39 @@ from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
 from rest_framework import generics, pagination, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.schemas import AutoSchema
 
 from know_me import models, permissions, serializers
 from know_me.serializers import subscription_serializers
 from permission_utils.view_mixins import DocumentActionMixin
 
+
 logger = logging.getLogger(__name__)
 
 
-class AppleReceiptQueryView(generics.RetrieveAPIView):
+class AppleReceiptQueryView(generics.CreateAPIView):
     """
-    get:
-    Determine if an Apple receipt is in use. If a 200 response is
-    returned, that means there is an Apple receipt whose receipt data
-    hashes to the value provided in the URL. A 404 response will be
-    returned if there is no Apple receipt on file matching the provided
-    hash.
+    post:
+    Determine if an Apple receipt is already in use.
+
+    If a valid Apple receipt is passed to the endpoint, the response
+    will contain an `is_used` key indicating if the receipt is in use.
+    If it is in use, the `email` key of the response will contain the
+    primary email address of the owner of the receipt.
+
+    If the provided receipt is invalid, a 400 response will be returned.
     """
 
-    schema = AutoSchema(
-        manual_fields=[
-            coreapi.Field(
-                "receipt_hash",
-                description="The hash of the receipt data to search for.",
-                example=models.AppleReceipt.hash_data("foo"),
-                location="path",
-                required=True,
-                schema=coreschema.String(
-                    description=(
-                        "The SHA256 hash of the receipt data of the Apple "
-                        "subscription to check for the existence of. The hash "
-                        "should be encoded as hexadecimal characters."
-                    )
-                ),
-                type="String",
-            )
-        ]
-    )
     serializer_class = subscription_serializers.AppleReceiptQuerySerializer
 
-    def get_object(self):
+    def create(self, *args, **kwargs):
         """
-        Get the Apple receipt with the given hash.
+        Override the response returned from the parent class' ``create``
+        method to have a 200 status code.
+        """
+        response = super().create(*args, **kwargs)
+        response.status_code = status.HTTP_200_OK
 
-        Returns:
-            The :class:`AppleReceipt` instance with the given receipt
-            data hash.
-        """
-        return get_object_or_404(
-            models.AppleReceipt, receipt_data_hash=self.kwargs["receipt_hash"]
-        )
+        return response
 
 
 class AppleSubscriptionView(generics.RetrieveDestroyAPIView):

@@ -25,7 +25,7 @@ class AppleReceiptInfoSerializer(serializers.ModelSerializer):
         read_only_fields = ("__all__",)
 
 
-class AppleReceiptQuerySerializer(serializers.ModelSerializer):
+class AppleReceiptQuerySerializer(serializers.Serializer):
     """
     Read-only serializer for responding to Apple receipt queries.
     """
@@ -33,16 +33,84 @@ class AppleReceiptQuerySerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         help_text=_(
             "The primary email address of the Know Me user who is using the "
-            "Apple receipt with the specified hash."
+            "Apple receipt matching the provided receipt data."
         ),
         read_only=True,
-        source="subscription.user.primary_email.email",
+    )
+    is_used = serializers.BooleanField(
+        help_text=_(
+            "A boolean indicating if the provided data corresponds to an "
+            "Apple receipt that is in use."
+        ),
+        read_only=True,
+    )
+    receipt_data = serializers.CharField(
+        help_text=_(
+            "The receipt data identifying the receipt to check for the "
+            "existence of."
+        ),
+        write_only=True,
     )
 
-    class Meta:
-        fields = ("email", "receipt_data_hash")
-        model = models.AppleReceipt
-        read_only_fields = ("__all__",)
+    def __init__(self, *args, **kwargs):
+        """
+        Initialize cached properties.
+        """
+        super().__init__(*args, **kwargs)
+
+        self._receipt_info = None
+
+    def save(self):
+        """
+        Override ``save`` to do nothing as the data is not persistable.
+        """
+        pass
+
+    def validate(self, attrs):
+        """
+        Validate the serializer's data.
+
+        Args:
+            attrs:
+                The data to validate.
+
+        Returns:
+            The validated data.
+        """
+        try:
+            receipt = models.AppleReceipt.objects.get(
+                transaction_id=self._receipt_info.original_transaction_id
+            )
+            email = receipt.subscription.user.primary_email.email
+
+            attrs["email"] = email
+            attrs["is_used"] = True
+        except models.AppleReceipt.DoesNotExist:
+            attrs["email"] = None
+            attrs["is_used"] = False
+
+        return attrs
+
+    def validate_receipt_data(self, receipt_data):
+        """
+        Ensure the provided receipt data corresponds to a valid Apple
+        receipt.
+
+        Args:
+            receipt_data:
+                The receipt data to validate.
+
+        Returns:
+            The validated receipt data.
+        """
+        try:
+            self._receipt_info = subscriptions.validate_apple_receipt(
+                receipt_data
+            )
+        except subscriptions.ReceiptException as e:
+            raise serializers.ValidationError(code=e.code, detail=e.msg)
+
+        return receipt_data
 
 
 class AppleReceiptSerializer(serializers.ModelSerializer):
