@@ -1,7 +1,8 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from test_utils import serialized_time, receipt_data_hash
+from test_utils import serialized_time
+
 
 URL = reverse("know-me:apple-subscription-detail")
 
@@ -40,7 +41,6 @@ def test_get_existing_subscription(
         "expiration_time": serialized_time(receipt.expiration_time),
         "id": str(receipt.pk),
         "receipt_data": receipt.receipt_data,
-        "receipt_data_hash": receipt_data_hash(receipt.receipt_data),
         "time_created": serialized_time(receipt.time_created),
         "time_updated": serialized_time(receipt.time_updated),
     }
