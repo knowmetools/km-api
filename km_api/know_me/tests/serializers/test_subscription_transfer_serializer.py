@@ -102,15 +102,15 @@ def test_validate_active_premium_subscription(api_rf, user_factory):
         serializer.validate({"recipient_email": user.primary_email.email})
 
 
-def test_validate_apple_data(api_rf, apple_subscription_factory, user_factory):
+def test_validate_apple_data(api_rf, apple_receipt_factory, user_factory):
     """
     If the recipient has an Apple receipt for a premium subscription on
     file, then validation should fail.
     """
     owner = user_factory(has_premium=True)
     api_rf.user = owner
-    apple_data = apple_subscription_factory(subscription__is_active=False)
-    user = apple_data.subscription.user
+    receipt = apple_receipt_factory(subscription__is_active=False)
+    user = receipt.subscription.user
 
     serializer = subscription_serializers.SubscriptionTransferSerializer(
         context={"request": api_rf.post("/")}

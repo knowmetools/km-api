@@ -207,7 +207,7 @@ class SubscriptionTransferSerializer(serializers.Serializer):
                 )
             )
 
-        if models.SubscriptionAppleData.objects.filter(
+        if models.AppleReceipt.objects.filter(
             subscription__user=self._recipient_email_inst.user
         ).exists():
             raise serializers.ValidationError(
