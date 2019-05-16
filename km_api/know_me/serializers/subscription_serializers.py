@@ -20,7 +20,7 @@ class AppleReceiptInfoSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
-        fields = ("expiration_time", "receipt_data_hash")
+        fields = ("expiration_time",)
         model = models.SubscriptionAppleData
         read_only_fields = ("__all__",)
 
@@ -125,13 +125,11 @@ class AppleReceiptSerializer(serializers.ModelSerializer):
             "time_updated",
             "expiration_time",
             "receipt_data",
-            "receipt_data_hash",
         )
         model = models.AppleReceipt
         read_only_fields = (
             "expiration_time",
             "id",
-            "receipt_data_hash",
             "time_created",
             "time_updated",
         )

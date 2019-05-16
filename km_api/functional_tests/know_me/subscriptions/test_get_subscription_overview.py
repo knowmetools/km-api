@@ -2,6 +2,7 @@ from rest_framework import status
 
 from test_utils import serialized_time
 
+
 URL = "/know-me/subscription/"
 
 
@@ -37,8 +38,7 @@ def test_get_subscription_apple_receipt(
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {
         "apple_receipt": {
-            "expiration_time": serialized_time(apple_receipt.expiration_time),
-            "receipt_data_hash": apple_receipt.receipt_data_hash,
+            "expiration_time": serialized_time(apple_receipt.expiration_time)
         },
         "is_active": True,
         "is_legacy_subscription": False,

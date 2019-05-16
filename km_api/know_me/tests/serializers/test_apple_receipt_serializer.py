@@ -103,7 +103,6 @@ def test_serialize():
         "time_updated": serialized_time(receipt.time_updated),
         "expiration_time": serialized_time(receipt.expiration_time),
         "receipt_data": receipt.receipt_data,
-        "receipt_data_hash": receipt.hash_data(receipt.receipt_data),
     }
 
     assert serializer.data == expected

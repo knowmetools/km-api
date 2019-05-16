@@ -4,7 +4,7 @@ import pytest
 from django.utils import timezone
 from rest_framework import status
 
-from test_utils import serialized_time, receipt_data_hash
+from test_utils import serialized_time
 
 
 PREMIUM_PRODUCT_CODE = "premium"
@@ -237,9 +237,6 @@ def test_set_valid_apple_receipt(
     assert response.status_code == status.HTTP_200_OK
     assert response_data["expiration_time"] == serialized_time(expires)
     assert response_data["receipt_data"] == receipt_data
-    assert response_data["receipt_data_hash"] == receipt_data_hash(
-        receipt_data
-    )
 
 
 def test_set_valid_apple_receipt_activates_subscription(
@@ -288,9 +285,6 @@ def test_set_valid_apple_receipt_activates_subscription(
     assert response.status_code == status.HTTP_200_OK
     assert response_data["expiration_time"] == serialized_time(expires)
     assert response_data["receipt_data"] == receipt_data
-    assert response_data["receipt_data_hash"] == receipt_data_hash(
-        receipt_data
-    )
 
     # ...and her subscription should be set to active.
     response = api_client.get("/know-me/subscription/")
