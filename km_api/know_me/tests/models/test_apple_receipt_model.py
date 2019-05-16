@@ -61,17 +61,21 @@ def test_has_object_write_permission_no_subscription():
     assert receipt.has_object_write_permission(mock.Mock(name="request"))
 
 
-def test_string_conversion(apple_subscription_factory):
+@mock.patch(
+    "know_me.models.Subscription.__str__", autospec=True, return_value="foo"
+)
+def test_string_conversion(mock_subscription_str):
     """
     Converting an instance to a string should return a user readable
     string containing information about the parent subscription.
     """
-    data = apple_subscription_factory()
-    expected = "Apple subscription data for the {subscription}".format(
-        subscription=data.subscription
+    subscription = models.Subscription()
+    receipt = models.AppleReceipt(subscription=subscription)
+    expected = "Apple receipt for {subscription}".format(
+        subscription=mock_subscription_str.return_value
     )
 
-    assert str(data) == expected
+    assert str(receipt) == expected
 
 
 def test_repr():

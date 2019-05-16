@@ -19,7 +19,6 @@ from know_me.factories import (
     AppleReceiptFactory,
     KMUserAccessorFactory,
     KMUserFactory,
-    SubscriptionAppleDataFactory,
     SubscriptionFactory,
 )
 from know_me.journal.factories import EntryCommentFactory, EntryFactory
@@ -27,6 +26,7 @@ from test_utils.apple_receipt_validator import (
     AppleReceiptValidationClient,
     apple_validator_app,
 )
+
 
 logger = logging.getLogger(__name__)
 
@@ -143,14 +143,6 @@ def apple_receipt_validation_settings(apple_validation_server, settings):
 
     settings.APPLE_SHARED_SECRET = "mock-secret"
     settings.APPLE_RECEIPT_VALIDATION_ENDPOINT = f"http://{host}:{port}"
-
-
-@pytest.fixture
-def apple_subscription_factory(db):
-    """
-    Fixture to get the factory used to create Apple subscription data.
-    """
-    return SubscriptionAppleDataFactory
 
 
 @pytest.fixture(autouse=True, scope="session")

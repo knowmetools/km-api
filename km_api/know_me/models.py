@@ -1,6 +1,5 @@
 """Models for the Know Me app.
 """
-import hashlib
 import logging
 import uuid
 
@@ -8,15 +7,15 @@ import email_utils
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _, ugettext
+from django.utils.translation import ugettext_lazy as _
 from rest_email_auth.models import EmailAddress
 from rest_framework.reverse import reverse
 from solo.models import SingletonModel
 
 from know_me import subscriptions
 from permission_utils import model_mixins as mixins
+
 
 logger = logging.getLogger(__name__)
 
@@ -756,155 +755,3 @@ class Subscription(mixins.IsAuthenticatedMixin, models.Model):
             permissions to the instance.
         """
         return request.user == self.user
-
-
-class SubscriptionAppleData(mixins.IsAuthenticatedMixin, models.Model):
-    """
-    Data related to a subscription through Apple.
-    """
-
-    expiration_time = models.DateTimeField(
-        default=timezone.now,
-        help_text=_(
-            "The expiration time of the most recent transaction associated "
-            "with the receipt."
-        ),
-        verbose_name=_("expiration time"),
-    )
-    latest_receipt_data = models.TextField(
-        help_text=_("The latest base64 encoded data for the receipt."),
-        verbose_name=_("latest receipt data"),
-    )
-    latest_receipt_data_hash = models.CharField(
-        help_text=_("The SHA256 hash of the latest receipt data."),
-        max_length=64,
-        unique=True,
-        verbose_name=_("latest receipt data hash"),
-    )
-    receipt_data = models.TextField(
-        help_text=_(
-            "The base64 encoded receipt data that was originally uploaded."
-        ),
-        verbose_name=_("receipt data"),
-    )
-    receipt_data_hash = models.CharField(
-        help_text=_("The SHA256 hash of the original receipt data."),
-        max_length=64,
-        unique=True,
-        verbose_name=_("receipt data hash"),
-    )
-    subscription = models.OneToOneField(
-        "know_me.Subscription",
-        help_text=_("The Know Me subscription the data belongs to."),
-        on_delete=models.CASCADE,
-        related_name="apple_data",
-        verbose_name=_("subscription"),
-    )
-    time_created = models.DateTimeField(
-        auto_now_add=True,
-        help_text=_(
-            "The time that the Apple subscription was initially recorded."
-        ),
-        verbose_name=_("creation time"),
-    )
-    time_updated = models.DateTimeField(
-        auto_now=True,
-        help_text=_("The time of the subscription's last update."),
-        verbose_name=_("last update time"),
-    )
-
-    class Meta:
-        ordering = ("time_created",)
-        verbose_name = _("Apple subscription")
-        verbose_name_plural = _("Apple subscriptions")
-
-    def __str__(self):
-        """
-        Get a user readable string describing the instance.
-
-        Returns:
-            A string containing information about the parent
-            subscription.
-        """
-        return "Apple subscription data for the {subscription}".format(
-            subscription=self.subscription
-        )
-
-    def clean(self):
-        """
-        Ensure the hash fields of the instance are populated and
-        updated.
-        """
-        super().clean()
-
-        if not self.latest_receipt_data:
-            self.latest_receipt_data = self.receipt_data
-
-        self.latest_receipt_data_hash = hashlib.sha256(
-            self.latest_receipt_data.encode()
-        ).hexdigest()
-
-        self.receipt_data_hash = hashlib.sha256(
-            self.receipt_data.encode()
-        ).hexdigest()
-
-    def has_object_read_permission(self, request):
-        """
-        Check if the requesting user has read permissions on the
-        instance.
-
-        Args:
-            request:
-                The request to check permissions for.
-
-        Returns:
-            A boolean indicating if the requesting user has read
-            permissions to the instance.
-        """
-        return request.user == self.subscription.user
-
-    def has_object_write_permission(self, request):
-        """
-        Check if the requesting user has write permissions on the
-        instance.
-
-        Args:
-            request:
-                The request to check permissions for.
-
-        Returns:
-            A boolean indicating if the requesting user has write
-            permissions to the instance.
-        """
-        return request.user == self.subscription.user
-
-    def validate_unique(self, exclude=None):
-        """
-        Ensure that the receipt data for the instance is unique.
-
-        Args:
-            exclude:
-                A collection of fields to exclude from the uniqueness
-                check.
-        """
-        # For some reason the admin only uses our custom unique
-        # validation rather than the one in the super call so we
-        # exclude the default one.
-        exclude = exclude or []
-        super().validate_unique(
-            exclude + ["latest_receipt_data_hash", "receipt_data_hash"]
-        )
-
-        query = Q(latest_receipt_data_hash=self.latest_receipt_data_hash)
-        query |= Q(latest_receipt_data_hash=self.receipt_data_hash)
-        query |= Q(receipt_data_hash=self.latest_receipt_data_hash)
-        query |= Q(receipt_data_hash=self.receipt_data_hash)
-
-        if self.__class__.objects.filter(query).exists():
-            raise ValidationError(
-                {
-                    "receipt_data": ugettext(
-                        "The provided receipt data is already in use."
-                    )
-                }
-            )
