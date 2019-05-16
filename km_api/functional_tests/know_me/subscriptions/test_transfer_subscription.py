@@ -72,11 +72,8 @@ def test_transfer_recipient_active_subscription(
     }
 
 
-def test_transfer_recipient_apple_data(
-    api_client,
-    enable_premium_requirement,
-    apple_subscription_factory,
-    user_factory,
+def test_transfer_recipient_apple_receipt(
+    api_client, apple_receipt_factory, enable_premium_requirement, user_factory
 ):
     """
     If the intended recipient has an Apple receipt associated with their
@@ -93,7 +90,7 @@ def test_transfer_recipient_apple_data(
     # ...and Juliet is a user with an inactive premium subscription but
     # who has an Apple receipt tied to her account.
     user2 = user_factory(first_name="Juliet", password=password)
-    apple_subscription_factory(
+    apple_receipt_factory(
         subscription__is_active=False, subscription__user=user2
     )
 
