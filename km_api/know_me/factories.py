@@ -1,10 +1,7 @@
 """Factories to generate model instances for testing.
 """
-import datetime
-import hashlib
 
 import factory
-from django.utils import timezone
 
 
 class AppleReceiptFactory(factory.DjangoModelFactory):
@@ -68,34 +65,6 @@ class LegacyUserFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = "know_me.LegacyUser"
-
-
-class SubscriptionAppleDataFactory(factory.django.DjangoModelFactory):
-    """
-    Factory for generating ``SubscriptionAppleData`` instances.
-    """
-
-    expiration_time = factory.LazyFunction(
-        lambda: timezone.now() + datetime.timedelta(minutes=30)
-    )
-    latest_receipt_data = factory.LazyAttribute(
-        lambda receipt: receipt.receipt_data
-    )
-    latest_receipt_data_hash = factory.LazyAttribute(
-        lambda receipt: hashlib.sha256(
-            receipt.latest_receipt_data.encode()
-        ).hexdigest()
-    )
-    receipt_data = factory.Sequence(lambda n: f"bogus receipt data {n}")
-    receipt_data_hash = factory.LazyAttribute(
-        lambda instance: hashlib.sha256(
-            instance.receipt_data.encode()
-        ).hexdigest()
-    )
-    subscription = factory.SubFactory("know_me.factories.SubscriptionFactory")
-
-    class Meta:
-        model = "know_me.SubscriptionAppleData"
 
 
 class SubscriptionFactory(factory.django.DjangoModelFactory):

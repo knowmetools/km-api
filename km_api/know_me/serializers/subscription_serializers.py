@@ -21,7 +21,7 @@ class AppleReceiptInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ("expiration_time",)
-        model = models.SubscriptionAppleData
+        model = models.AppleReceipt
         read_only_fields = ("__all__",)
 
 
