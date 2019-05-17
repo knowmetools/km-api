@@ -94,6 +94,7 @@ def km_user_list(km_users, is_owned_by_user, build_full_url):
             "url": build_full_url(f"/know-me/users/{user.pk}/"),
             "created_at": serialized_time(user.created_at),
             "updated_at": serialized_time(user.updated_at),
+            "is_legacy_user": user.is_legacy_user,
             "is_premium_user": user.is_premium_user,
             "is_owned_by_current_user": is_owned_by_user(user),
             "image": build_full_file_url(user.image, build_full_url),

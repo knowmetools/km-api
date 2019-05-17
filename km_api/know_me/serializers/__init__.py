@@ -77,6 +77,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             "url",
             "created_at",
             "updated_at",
+            "is_legacy_user",
             "is_premium_user",
             "is_owned_by_current_user",
             "image",
@@ -89,6 +90,7 @@ class KMUserListSerializer(serializers.HyperlinkedModelSerializer):
             "user_image",
         )
         model = models.KMUser
+        read_only_fields = ("is_legacy_user",)
 
     def get_is_owned_by_current_user(self, km_user):
         """
