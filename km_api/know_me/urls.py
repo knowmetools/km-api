@@ -55,7 +55,7 @@ urlpatterns = [
         name="apple-subscription-detail",
     ),
     path(
-        "subscription/apple/<str:receipt_hash>/",
+        "subscription/apple/query/",
         views.AppleReceiptQueryView.as_view(),
         name="apple-receipt-query",
     ),
