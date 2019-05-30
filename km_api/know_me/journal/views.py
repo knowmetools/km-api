@@ -9,7 +9,11 @@ from watson import search as watson
 from know_me.filters import KMUserAccessFilterBackend
 from know_me.journal import models, permissions, serializers
 from know_me.models import KMUser
-from know_me.permissions import HasKMUserAccess, OwnerHasPremium
+from know_me.permissions import (
+    HasKMUserAccess,
+    ObjectOwnerHasPremium,
+    CollectionOwnerHasPremium,
+)
 from permission_utils.view_mixins import DocumentActionMixin
 
 
@@ -37,7 +41,7 @@ class EntryCommentDetailView(
     Only the user who made the comment is allowed to update it.
     """
 
-    permission_classes = (DRYPermissions, OwnerHasPremium)
+    permission_classes = (DRYPermissions, ObjectOwnerHasPremium)
     queryset = models.EntryComment.objects.all()
     serializer_class = serializers.EntryCommentSerializer
 
@@ -123,7 +127,7 @@ class EntryDetailView(generics.RetrieveUpdateDestroyAPIView):
     Update a specific journal entry.
     """
 
-    permission_classes = (DRYPermissions, OwnerHasPremium)
+    permission_classes = (DRYPermissions, ObjectOwnerHasPremium)
     queryset = models.Entry.objects.all()
     serializer_class = serializers.EntryDetailSerializer
 
@@ -160,7 +164,11 @@ class EntryListView(generics.ListCreateAPIView):
     filter_backends = (KMUserAccessFilterBackend, filters.DjangoFilterBackend)
     filterset_fields = {"created_at": ["gte", "lte"]}
     pagination_class = pagination.PageNumberPagination
-    permission_classes = (DRYPermissions, HasKMUserAccess)
+    permission_classes = (
+        DRYPermissions,
+        HasKMUserAccess,
+        CollectionOwnerHasPremium,
+    )
     queryset = models.Entry.objects.all()
 
     def filter_queryset(self, queryset):
@@ -193,6 +201,21 @@ class EntryListView(generics.ListCreateAPIView):
             return serializers.EntryDetailSerializer
 
         return serializers.EntryListSerializer
+
+    def get_subscription_owner(self, request):
+        """
+        Get the user who must have an active subscription in order for
+        the journal entry collection to be interacted with.
+
+        Args:
+            request:
+                The request being made.
+
+        Returns:
+            The owner of the Know Me user whose journal entries are
+            being accessed.
+        """
+        return KMUser.objects.get(pk=self.kwargs["pk"]).user
 
     def perform_create(self, serializer):
         """

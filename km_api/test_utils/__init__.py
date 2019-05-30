@@ -1,6 +1,25 @@
 import hashlib
 
 
+def uses_permission_class(view, permission_class):
+    """
+    Determine if the provided view uses a given permission class.
+
+    Args:
+        view:
+            The view instance to test.
+        permission_class:
+            The permission class to test for the presence of.
+
+    Returns:
+        A boolean indicating if the provided view uses the given
+        permission class.
+    """
+    return any(
+        isinstance(perm, permission_class) for perm in view.get_permissions()
+    )
+
+
 def receipt_data_hash(data):
     """
     Get the hash of some receipt data.
