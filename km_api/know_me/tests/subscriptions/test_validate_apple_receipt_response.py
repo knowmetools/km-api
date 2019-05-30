@@ -8,7 +8,11 @@ from know_me.subscriptions import (
     InvalidReceiptTypeException,
     ReceiptServerException,
     validate_apple_receipt_response,
+    CancelledReceiptException,
 )
+
+
+PREMIUM_CODE = "premium"
 
 
 class ReceiptCode(enum.IntEnum):
@@ -17,6 +21,33 @@ class ReceiptCode(enum.IntEnum):
     COULD_NOT_BE_AUTHENTICATED = 21003
     UNAVAILABLE = 21005
     COULD_NOT_BE_AUTHORIZED = 21010
+
+
+def test_validate_apple_receipt_cancelled(settings):
+    """
+    If the most recent transaction in a receipt was cancelled by Apple
+    support, the receipt should be seen as invalid.
+    """
+    settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"] = [PREMIUM_CODE]
+    latest_receipt_data = "receipt-data"
+    transaction_info = {
+        "cancellation_date": "2019-04-12T23:20:50.52Z",
+        "expires_date_ms": 0,
+        "original_transaction_id": 123,
+        "product_id": PREMIUM_CODE,
+    }
+
+    with pytest.raises(CancelledReceiptException):
+        validate_apple_receipt_response(
+            {
+                "latest_receipt": latest_receipt_data,
+                "latest_receipt_info": [
+                    {"product_id": "foo"},
+                    transaction_info,
+                ],
+                "status": ReceiptCode.VALID,
+            }
+        )
 
 
 def test_validate_apple_receipt_could_not_authenticate():

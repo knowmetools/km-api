@@ -72,6 +72,43 @@ def test_handle(mock_update_apple, mock_deactivate_orphans, mock_now):
     assert mock_update_apple.call_args[0] == (now, command.RENEWAL_WINDOW)
 
 
+def test_update_apple_subscriptions_cancelled(
+    mock_apple_receipt_qs, mock_subscription_qs
+):
+    """
+    If an Apple subscription has been cancelled by Apple, the receipt
+    should be deleted and the corresponding Know Me subscription should
+    be deactivated.
+    """
+    now = timezone.now()
+    receipt = mock.Mock(name="Mock Receipt")
+    receipt.update_info.side_effect = subscriptions.CancelledReceiptException(
+        "foo"
+    )
+
+    deletable_qs = mock.Mock(name="Deletable Queryset")
+
+    mock_apple_receipt_qs.filter.side_effect = [[receipt], deletable_qs]
+
+    command = Command()
+    command.update_apple_subscriptions(now, RENEWAL_WINDOW)
+
+    assert mock_apple_receipt_qs.filter.call_args_list[0][1] == {
+        "expiration_time__lte": now + RENEWAL_WINDOW
+    }
+    assert receipt.update_info.call_count == 1
+    assert mock_subscription_qs.filter.call_args[1] == {
+        "apple_receipt": receipt
+    }
+    assert mock_subscription_qs.update.call_args[1] == {"is_active": False}
+
+    # Receipts that were cancelled should be deleted
+    assert mock_apple_receipt_qs.filter.call_args_list[1][1] == {
+        "pk__in": [receipt.pk]
+    }
+    assert deletable_qs.delete.call_count == 1
+
+
 def test_update_apple_subscriptions_error(
     mock_apple_receipt_qs, mock_subscription_qs
 ):

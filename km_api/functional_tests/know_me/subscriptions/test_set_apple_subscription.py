@@ -19,6 +19,52 @@ def set_know_me_premium_product_codes(settings):
     settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"] = [PREMIUM_PRODUCT_CODE]
 
 
+def test_set_cancelled_apple_receipt(
+    api_client, apple_receipt_client, user_factory
+):
+    """
+    If a user sends a PUT request with a valid Apple receipt but the
+    subscription has been cancelled by Apple's customer support, the
+    upload should be rejected.
+    """
+    expires = timezone.now().replace(microsecond=0) + datetime.timedelta(
+        days=30
+    )
+
+    # Given John, who is a valid user, is logged in.
+    password = "password"
+    user = user_factory(first_name="John", password=password)
+    api_client.log_in(user.primary_email.email, password)
+
+    # If John has a cancelled receipt...
+    receipt_data = "base64-encoded-receipt-data"
+    apple_receipt_client.enqueue_status(
+        receipt_data,
+        {
+            "status": 0,
+            "latest_receipt": receipt_data,
+            "latest_receipt_info": [
+                {
+                    "cancellation_date": "2019-04-12T23:20:50.52Z",
+                    "expires_date_ms": str(int(expires.timestamp() * 1000)),
+                    "original_transaction_id": "1",
+                    "product_id": PREMIUM_PRODUCT_CODE,
+                }
+            ],
+        },
+    )
+
+    # ...then when he sets that receipt as his Know Me subscription...
+    data = {"receipt_data": receipt_data}
+    response = api_client.put(URL, json=data)
+
+    # ...he should receive a 400 response.
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {
+        "receipt_data": ["This subscription has been cancelled by Apple."]
+    }
+
+
 def test_set_duplicate_apple_receipt(
     api_client, apple_receipt_client, apple_receipt_factory, user_factory
 ):
