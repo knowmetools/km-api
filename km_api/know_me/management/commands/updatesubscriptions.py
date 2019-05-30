@@ -88,14 +88,11 @@ class Command(management.BaseCommand):
                 that renewal should be attempted. In other words, all
                 Apple receipts expiring before the current time plus
                 this window will attempt to renew themselves.
-
-        Returns:
-            A dictionary containing counts for the different renewal
-            outcomes.
         """
         receipts = models.AppleReceipt.objects.filter(
             expiration_time__lte=now + renewal_window
         )
+        receipt_pks_to_delete = []
 
         for receipt in receipts:
             is_active = True
@@ -106,6 +103,17 @@ class Command(management.BaseCommand):
 
                 if receipt.expiration_time < now:
                     is_active = False
+            except subscriptions.CancelledReceiptException as e:
+                self.stderr.write(
+                    self.style.NOTICE(
+                        f"Apple receipt for original transaction "
+                        f"{receipt.transaction_id} has been cancelled and "
+                        f"will be deleted: {e.msg}"
+                    )
+                )
+
+                is_active = False
+                receipt_pks_to_delete.append(receipt.pk)
             except subscriptions.ReceiptException as e:
                 self.stderr.write(
                     self.style.NOTICE(
@@ -119,3 +127,8 @@ class Command(management.BaseCommand):
             models.Subscription.objects.filter(apple_receipt=receipt).update(
                 is_active=is_active
             )
+
+        if receipt_pks_to_delete:
+            models.AppleReceipt.objects.filter(
+                pk__in=receipt_pks_to_delete
+            ).delete()

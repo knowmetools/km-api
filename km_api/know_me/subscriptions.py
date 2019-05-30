@@ -69,6 +69,14 @@ class ReceiptException(Exception):
         self.code = code
 
 
+class CancelledReceiptException(ReceiptException):
+    """
+    Exception indicating a receipt was cancelled by Apple support.
+    """
+
+    pass
+
+
 class InvalidReceiptTypeException(ReceiptException):
     """
     Exception indicating the wrong type of receipt was provided.
@@ -274,8 +282,13 @@ def validate_apple_receipt_response(receipt_response):
         )
 
     latest_transaction = latest_receipts[-1]
-    product = latest_transaction.get("product_id")
 
+    if latest_transaction.get("cancellation_date", None):
+        raise CancelledReceiptException(
+            ugettext("This subscription has been cancelled by Apple.")
+        )
+
+    product = latest_transaction.get("product_id")
     if product not in settings.APPLE_PRODUCT_CODES["KNOW_ME_PREMIUM"]:
         logger.info(
             "Received receipt that included a transaction for the unknown "
