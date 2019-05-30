@@ -82,3 +82,15 @@ def test_apple_receipt_exists(
         "email": receipt.subscription.user.primary_email.email,
         "is_used": True,
     }
+
+
+def test_wrong_endpoint(api_client):
+    """
+    Attempting to query using the wrong endpoint should return a 404
+    response.
+
+    Regression test for #505.
+    """
+    response = api_client.post("/know-me/subscription/apple/foobar/", {})
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
