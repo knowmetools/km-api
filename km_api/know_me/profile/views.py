@@ -4,7 +4,7 @@ from rest_framework import generics
 
 from know_me.filters import KMUserAccessFilterBackend
 from know_me.models import KMUser
-from know_me.permissions import HasKMUserAccess
+from know_me.permissions import HasKMUserAccess, ObjectOwnerHasPremium
 from know_me.profile import filters, models, permissions, serializers
 from rest_order.generics import SortView
 from rest_order.serializers import create_sort_serializer
@@ -25,9 +25,27 @@ class ListEntryDetailView(generics.RetrieveUpdateDestroyAPIView):
     Update a specific list entry's information.
     """
 
-    permission_classes = (DRYPermissions,)
+    permission_classes = (DRYPermissions, ObjectOwnerHasPremium)
     queryset = models.ListEntry.objects.all()
     serializer_class = serializers.ListEntrySerializer
+
+    @staticmethod
+    def get_subscription_owner(request, list_entry):
+        """
+        Get the user who must have an active premium subscription in
+        order to access the view.
+
+        Args:
+            request:
+                The request being made.
+            list_entry:
+                The list entry being accessed.
+
+        Returns:
+            The user who owns the profile that the list entry is a part
+            of.
+        """
+        return list_entry.profile_item.topic.profile.km_user.user
 
 
 class ListEntryListView(SortView, generics.ListCreateAPIView):

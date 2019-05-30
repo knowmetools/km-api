@@ -22,6 +22,7 @@ from know_me.factories import (
     SubscriptionFactory,
 )
 from know_me.journal.factories import EntryCommentFactory, EntryFactory
+from know_me.profile.factories import ListEntryFactory
 from test_utils.apple_receipt_validator import (
     AppleReceiptValidationClient,
     apple_validator_app,
@@ -262,6 +263,15 @@ def km_user_factory(db):
         The factory class used to create test ``KMUser`` instances.
     """
     return KMUserFactory
+
+
+@pytest.fixture
+def profile_list_entry_factory(db):
+    """
+    Fixture to get the factory used to create list entries for profile
+    items.
+    """
+    return ListEntryFactory
 
 
 @pytest.fixture(scope="session")
