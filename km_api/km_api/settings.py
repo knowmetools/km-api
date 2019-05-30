@@ -160,7 +160,7 @@ AUTHENTICATION_BACKENDS = (
 # Custom user model
 
 AUTH_USER_MODEL = "account.User"
-DEFAULT_FROM_EMAIL = "Know Me <no-reply@knowmetools.com>"
+DEFAULT_FROM_EMAIL = "Know Me <no-reply@knowme.works>"
 
 
 # Database
