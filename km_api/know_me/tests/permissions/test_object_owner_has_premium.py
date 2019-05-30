@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 from django.http import Http404
 
-from know_me.permissions import OwnerHasPremium
+from know_me.permissions import ObjectOwnerHasPremium
 
 
 def test_has_object_permission_active_subscription(
@@ -19,7 +19,7 @@ def test_has_object_permission_active_subscription(
     view = mock.Mock(name="Mock View")
     view.get_subscription_owner.return_value = user
 
-    perm = OwnerHasPremium()
+    perm = ObjectOwnerHasPremium()
     obj = mock.Mock(name="Mock Object")
 
     assert perm.has_object_permission(request, view, obj)
@@ -39,7 +39,7 @@ def test_has_object_permission_inactive_subscription(
     view = mock.Mock(name="Mock View")
     view.get_subscription_owner.return_value = user
 
-    perm = OwnerHasPremium()
+    perm = ObjectOwnerHasPremium()
     obj = mock.Mock(name="Mock Object")
 
     with pytest.raises(Http404):
@@ -59,7 +59,7 @@ def test_has_object_permission_inactive_subscription_feature_disabled(
     request = api_rf.get("/")
     view = mock.Mock(name="Mock View")
 
-    perm = OwnerHasPremium()
+    perm = ObjectOwnerHasPremium()
     obj = mock.Mock(name="Mock Object")
 
     assert perm.has_object_permission(request, view, obj)

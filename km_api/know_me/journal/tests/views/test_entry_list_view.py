@@ -2,27 +2,11 @@ import datetime
 from unittest import mock
 
 from django.utils import timezone
+from dry_rest_permissions.generics import DRYPermissions
 
+import test_utils
+from know_me import permissions
 from know_me.journal import models, serializers, views
-
-
-@mock.patch(
-    "know_me.journal.views.DRYPermissions.has_permission", autospec=True
-)
-@mock.patch(
-    "know_me.journal.views.HasKMUserAccess.has_permission", autospec=True
-)
-def test_check_permissions(mock_km_user_permission, mock_dry_permissions):
-    """
-    The view should check for model permissions as well as if the
-    requesting user has access to the parent Know Me user.
-    """
-    view = views.EntryListView()
-
-    view.check_permissions(None)
-
-    assert mock_km_user_permission.call_count == 1
-    assert mock_dry_permissions.call_count == 1
 
 
 @mock.patch(
@@ -125,6 +109,19 @@ def test_filter_queryset_keyword(api_rf, entry_factory, km_user_factory):
     assert list(view.filter_queryset(query)) == [foo_entry]
 
 
+def test_get_permissions():
+    """
+    Test the permission classes used by the view.
+    """
+    view = views.EntryListView()
+
+    assert test_utils.uses_permission_class(view, DRYPermissions)
+    assert test_utils.uses_permission_class(view, permissions.HasKMUserAccess)
+    assert test_utils.uses_permission_class(
+        view, permissions.CollectionOwnerHasPremium
+    )
+
+
 def test_get_queryset(api_rf, entry_factory):
     """
     The view should act on all journal entries.
@@ -176,6 +173,19 @@ def test_get_serializer_class_post(api_rf):
     expected = serializers.EntryDetailSerializer
 
     assert view.get_serializer_class() == expected
+
+
+def test_get_subscription_owner(km_user_factory):
+    """
+    The subscription owner should be the user who owns the Know Me user
+    that the journal belongs to.
+    """
+    km_user = km_user_factory()
+    view = views.EntryListView()
+    view.kwargs = {"pk": km_user.pk}
+    request = mock.Mock(name="Mock Request")
+
+    assert view.get_subscription_owner(request) == km_user.user
 
 
 def test_perform_create(km_user_factory):
