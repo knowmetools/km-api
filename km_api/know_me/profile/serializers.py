@@ -12,9 +12,6 @@ class MediaResourceSerializer(serializers.HyperlinkedModelSerializer):
     Serializer for ``MediaResource`` instances.
     """
 
-    category_id = serializers.PrimaryKeyRelatedField(
-        read_only=True, source="category"
-    )
     permissions = DRYPermissionsField()
     url = serializers.HyperlinkedIdentityField(
         view_name="know-me:profile:media-resource-detail"
@@ -26,7 +23,6 @@ class MediaResourceSerializer(serializers.HyperlinkedModelSerializer):
             "url",
             "created_at",
             "updated_at",
-            "category_id",
             "cover_style",
             "file",
             "link",

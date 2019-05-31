@@ -119,9 +119,26 @@ class MediaResourceDetailView(generics.RetrieveUpdateDestroyAPIView):
     Update the information for a specific media resource.
     """
 
-    permission_classes = (DRYPermissions,)
+    permission_classes = (DRYPermissions, ObjectOwnerHasPremium)
     queryset = models.MediaResource.objects.all()
     serializer_class = serializers.MediaResourceSerializer
+
+    @staticmethod
+    def get_subscription_owner(request, media_resource):
+        """
+        Get the user who should have an active premium subscription in
+        order to access a media resource.
+
+        Args:
+            request:
+                The request being made.
+            media_resource:
+                The media resource being accessed.
+
+        Returns:
+            The user who owns the media resource.
+        """
+        return media_resource.km_user.user
 
 
 class MediaResourceListView(generics.ListCreateAPIView):
