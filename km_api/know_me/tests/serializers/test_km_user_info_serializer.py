@@ -15,6 +15,6 @@ def test_serialize(api_rf, image, km_user_factory):
     image_request = api_rf.get(km_user.image.url)
     image_url = image_request.build_absolute_uri()
 
-    expected = {"image": image_url, "name": km_user.name}
+    expected = {"id": km_user.pk, "image": image_url, "name": km_user.name}
 
     assert serializer.data == expected
