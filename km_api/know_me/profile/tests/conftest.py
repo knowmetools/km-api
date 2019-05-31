@@ -28,14 +28,6 @@ def profile_factory(db):
 
 
 @pytest.fixture
-def profile_item_factory(db):
-    """
-    Fixture to get the factory used to create profile items.
-    """
-    return factories.ProfileItemFactory
-
-
-@pytest.fixture
 def profile_topic_factory(db):
     """
     Fixture to get the factory used to create profile topics.
