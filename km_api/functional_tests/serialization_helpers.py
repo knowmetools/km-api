@@ -37,6 +37,7 @@ def km_user_accessor(
         "is_accepted": accessor.is_accepted,
         "is_admin": accessor.is_admin,
         "km_user": {
+            "id": accessor.km_user.pk,
             "image": build_full_file_url(
                 accessor.km_user.image, build_full_url
             ),

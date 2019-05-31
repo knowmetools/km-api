@@ -35,7 +35,7 @@ class KMUserInfoSerializer(serializers.ModelSerializer):
     """
 
     class Meta:
-        fields = ("image", "name")
+        fields = ("id", "image", "name")
         model = models.KMUser
 
 
