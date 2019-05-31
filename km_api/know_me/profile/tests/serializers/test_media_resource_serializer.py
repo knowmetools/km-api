@@ -42,11 +42,11 @@ def test_serialize(
     assert serializer.data == expected
 
 
-def test_validate_file(file):
+def test_validate_file(text_file):
     """
     The serializer should validate when provided a file and name.
     """
-    data = {"file": file, "name": "Test Resource"}
+    data = {"file": text_file, "name": "Test Resource"}
     serializer = serializers.MediaResourceSerializer(data=data)
 
     assert serializer.is_valid()
@@ -62,12 +62,12 @@ def test_validate_link():
     assert serializer.is_valid()
 
 
-def test_validate_link_and_file(file):
+def test_validate_link_and_file(text_file):
     """
     The serializer should not accept both a file and a link.
     """
     data = {
-        "file": file,
+        "file": text_file,
         "link": "https://example.com",
         "name": "Test File and Link Resource",
     }

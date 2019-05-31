@@ -1,10 +1,15 @@
+from django.contrib.auth import get_user_model
 from dry_rest_permissions.generics import DRYPermissions
 
 from rest_framework import generics
 
 from know_me.filters import KMUserAccessFilterBackend
 from know_me.models import KMUser
-from know_me.permissions import HasKMUserAccess, ObjectOwnerHasPremium
+from know_me.permissions import (
+    HasKMUserAccess,
+    ObjectOwnerHasPremium,
+    CollectionOwnerHasPremium,
+)
 from know_me.profile import filters, models, permissions, serializers
 from rest_order.generics import SortView
 from rest_order.serializers import create_sort_serializer
@@ -152,9 +157,28 @@ class MediaResourceListView(generics.ListCreateAPIView):
     """
 
     filter_backends = (KMUserAccessFilterBackend,)
-    permission_classes = (DRYPermissions, HasKMUserAccess)
+    permission_classes = (
+        DRYPermissions,
+        HasKMUserAccess,
+        CollectionOwnerHasPremium,
+    )
     queryset = models.MediaResource.objects.all()
     serializer_class = serializers.MediaResourceSerializer
+
+    def get_subscription_owner(self, request):
+        """
+        Get the owner of the media resource collection who must have a
+        subscription in order for the collection to be accessed.
+
+        Args:
+            request:
+                The request being made.
+
+        Returns:
+            The owner of the Know Me user whose media resources are
+            being accessed.
+        """
+        return get_user_model().objects.get(km_user__pk=self.kwargs["pk"])
 
     def perform_create(self, serializer):
         """

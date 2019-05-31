@@ -1,25 +1,21 @@
 from unittest import mock
 
+from dry_rest_permissions.generics import DRYPermissions
+
+import test_utils
+from know_me.permissions import HasKMUserAccess, CollectionOwnerHasPremium
 from know_me.profile import models, serializers, views
 
 
-@mock.patch(
-    "know_me.profile.views.DRYPermissions.has_permission", autospec=True
-)
-@mock.patch(
-    "know_me.profile.views.HasKMUserAccess.has_permission", autospec=True
-)
-def test_check_permissions(mock_km_user_permission, mock_dry_permissions):
+def test_get_permissions():
     """
-    The view should check for model permissions as well as if the
-    requesting user has access to the parent Know Me user.
+    Test the permissions used by the view.
     """
     view = views.MediaResourceListView()
 
-    view.check_permissions(None)
-
-    assert mock_km_user_permission.call_count == 1
-    assert mock_dry_permissions.call_count == 1
+    assert test_utils.uses_permission_class(view, DRYPermissions)
+    assert test_utils.uses_permission_class(view, HasKMUserAccess)
+    assert test_utils.uses_permission_class(view, CollectionOwnerHasPremium)
 
 
 def test_get_queryset(api_rf, media_resource_factory):
@@ -47,6 +43,19 @@ def test_get_serializer():
     expected = serializers.MediaResourceSerializer
 
     assert view.get_serializer_class() == expected
+
+
+def test_get_subscription_owner(km_user_factory):
+    """
+    The subscription owner for a collection of media resources should be
+    the owner of the Know Me user whose resources are being accessed.
+    """
+    km_user = km_user_factory()
+    view = views.MediaResourceListView()
+    view.kwargs = {"pk": km_user.pk}
+    request = mock.Mock()
+
+    assert view.get_subscription_owner(request) == km_user.user
 
 
 @mock.patch(

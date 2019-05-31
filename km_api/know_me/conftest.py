@@ -33,7 +33,15 @@ def config_factory(db):
 
 
 @pytest.fixture
-def file():
+def legacy_user_factory(db):
+    """
+    Fixture to get the factory used to create legacy users.
+    """
+    return factories.LegacyUserFactory
+
+
+@pytest.fixture
+def text_file():
     """
     Fixture to get a file suitable for a ``FileField``.
 
@@ -44,11 +52,3 @@ def file():
         content=b"The quick brown fox jumped over the lazy dog.",
         name="foo.txt",
     )
-
-
-@pytest.fixture
-def legacy_user_factory(db):
-    """
-    Fixture to get the factory used to create legacy users.
-    """
-    return factories.LegacyUserFactory
