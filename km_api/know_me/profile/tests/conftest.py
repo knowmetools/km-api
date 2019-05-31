@@ -12,14 +12,6 @@ def list_entry_factory(db):
 
 
 @pytest.fixture
-def media_resource_factory(db):
-    """
-    Fixture to get the factory used to create media resources.
-    """
-    return factories.MediaResourceFactory
-
-
-@pytest.fixture
 def profile_factory(db):
     """
     Fixture to get the factory used to create profiles.
