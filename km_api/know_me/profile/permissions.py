@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions
@@ -25,7 +26,14 @@ class HasListEntryListPermissions(permissions.BasePermission):
             A boolean indicating if the requesting user should be
             granted access to the view.
         """
-        item = get_object_or_404(models.ProfileItem, pk=view.kwargs.get("pk"))
+        query = {"pk": view.kwargs.get("pk")}
+
+        if settings.KNOW_ME_PREMIUM_ENABLED:
+            # fmt: off
+            query["topic__profile__km_user__user__know_me_subscription__is_active"] = True  # noqa
+            # fmt: on
+
+        item = get_object_or_404(models.ProfileItem, **query)
 
         if request.method in permissions.SAFE_METHODS:
             return item.has_object_read_permission(request)
