@@ -26,6 +26,7 @@ from know_me.profile.factories import (
     ListEntryFactory,
     ProfileItemFactory,
     MediaResourceFactory,
+    ProfileFactory,
 )
 from test_utils.apple_receipt_validator import (
     AppleReceiptValidationClient,
@@ -275,6 +276,14 @@ def media_resource_factory(db):
     Fixture to get the factory used to create media resources.
     """
     return MediaResourceFactory
+
+
+@pytest.fixture
+def profile_factory(db):
+    """
+    Fixture to get the factory used to create profiles.
+    """
+    return ProfileFactory
 
 
 @pytest.fixture

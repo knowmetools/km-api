@@ -212,9 +212,26 @@ class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     Update a specific profile.
     """
 
-    permission_classes = (DRYPermissions,)
+    permission_classes = (DRYPermissions, ObjectOwnerHasPremium)
     queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileDetailSerializer
+
+    @staticmethod
+    def get_subscription_owner(request, profile):
+        """
+        Get the use who must have an active premium subscription in
+        order for the profile to be accessed.
+
+        Args:
+            request:
+                The request being made.
+            profile:
+                The profile being accessed.
+
+        Returns:
+            The user who owns the profile.
+        """
+        return profile.km_user.user
 
 
 class ProfileListView(SortView, generics.ListCreateAPIView):

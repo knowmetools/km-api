@@ -12,14 +12,6 @@ def list_entry_factory(db):
 
 
 @pytest.fixture
-def profile_factory(db):
-    """
-    Fixture to get the factory used to create profiles.
-    """
-    return factories.ProfileFactory
-
-
-@pytest.fixture
 def profile_topic_factory(db):
     """
     Fixture to get the factory used to create profile topics.
