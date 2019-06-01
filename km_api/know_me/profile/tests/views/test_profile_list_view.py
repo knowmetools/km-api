@@ -1,25 +1,10 @@
 from unittest import mock
 
+from dry_rest_permissions.generics import DRYPermissions
+
+import test_utils
+from know_me.permissions import HasKMUserAccess, CollectionOwnerHasPremium
 from know_me.profile import models, serializers, views
-
-
-@mock.patch(
-    "know_me.profile.views.DRYPermissions.has_permission", autospec=True
-)
-@mock.patch(
-    "know_me.profile.views.HasKMUserAccess.has_permission", autospec=True
-)
-def test_check_permissions(mock_km_user_permission, mock_dry_permissions):
-    """
-    The view should check for model permissions as well as if the
-    requesting user has access to the parent Know Me user.
-    """
-    view = views.ProfileListView()
-
-    view.check_permissions(None)
-
-    assert mock_km_user_permission.call_count == 1
-    assert mock_dry_permissions.call_count == 1
 
 
 @mock.patch("know_me.profile.views.KMUserAccessFilterBackend.filter_queryset")
@@ -40,6 +25,17 @@ def test_filter_queryset(mock_profile_filter, mock_access_filter):
 
     assert mock_access_filter.call_count == 1
     assert mock_profile_filter.call_count == 1
+
+
+def test_get_permissions():
+    """
+    Test the permissions used by the view.
+    """
+    view = views.ProfileListView()
+
+    assert test_utils.uses_permission_class(view, DRYPermissions)
+    assert test_utils.uses_permission_class(view, HasKMUserAccess)
+    assert test_utils.uses_permission_class(view, CollectionOwnerHasPremium)
 
 
 def test_get_queryset(profile_factory):
@@ -63,6 +59,19 @@ def test_get_serializer_class():
     view = views.ProfileListView()
 
     assert view.get_serializer_class() == serializers.ProfileListSerializer
+
+
+def test_get_subscription_owner(km_user_factory):
+    """
+    The subscription owner for a profile collection should be the the
+    owner of all the profiles.
+    """
+    km_user = km_user_factory()
+    view = views.ProfileListView()
+    view.kwargs = {"pk": km_user.pk}
+    request = mock.Mock()
+
+    assert view.get_subscription_owner(request) == km_user.user
 
 
 def test_perform_create(km_user_factory):
