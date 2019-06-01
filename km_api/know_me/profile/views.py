@@ -252,12 +252,30 @@ class ProfileListView(SortView, generics.ListCreateAPIView):
     """
 
     filter_backends = (KMUserAccessFilterBackend, filters.ProfileFilterBackend)
-    permission_classes = (DRYPermissions, HasKMUserAccess)
+    permission_classes = (
+        DRYPermissions,
+        HasKMUserAccess,
+        CollectionOwnerHasPremium,
+    )
     queryset = models.Profile.objects.all()
     serializer_class = serializers.ProfileListSerializer
     sort_child_name = "profiles"
     sort_parent = KMUser
     sort_serializer = create_sort_serializer(models.Profile)
+
+    def get_subscription_owner(self, request):
+        """
+        Get the user who must have an active premium subscription in
+        order for the profile collection to be accessed.
+
+        Args:
+            request:
+                The request being made.
+
+        Returns:
+            The user who owns the collection of profiles.
+        """
+        return get_user_model().objects.get(km_user__pk=self.kwargs.get("pk"))
 
     def perform_create(self, serializer):
         """
