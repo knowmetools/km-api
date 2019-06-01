@@ -71,9 +71,11 @@ to archive emails you no longer need by moving the pages into
 inside the archive folder.
 
 ---
+
 *__Note:__ The configuration below has never been used by us, but is provided
 by default with the Foundation for Emails project. Feel free to use it, but it
 has not been part of our process so far.
+
 ---
 
 ## Litmus Tests (config.json)
