@@ -5,12 +5,12 @@ from rest_framework.reverse import reverse
 from know_me.journal import models
 
 
-def test_create(file, km_user_factory):
+def test_create(text_file, km_user_factory):
     """
     Test creating a new journal entry.
     """
     models.Entry.objects.create(
-        attachment=file,
+        attachment=text_file,
         km_user=km_user_factory(),
         text="My sample entry text.",
     )
