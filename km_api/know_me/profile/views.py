@@ -291,9 +291,26 @@ class ProfileItemDetailView(generics.RetrieveUpdateDestroyAPIView):
     Update a specific profile item's information.
     """
 
-    permission_classes = (DRYPermissions,)
+    permission_classes = (DRYPermissions, ObjectOwnerHasPremium)
     queryset = models.ProfileItem.objects.all()
     serializer_class = serializers.ProfileItemDetailSerializer
+
+    @staticmethod
+    def get_subscription_owner(request, profile_item):
+        """
+        Get the user who must have an active premium subscription in
+        order for the profile item to be accessed.
+
+        Args:
+            request:
+                The request being made.
+            profile_item:
+                The profile item being accessed.
+
+        Returns:
+            The owner of the profile item.
+        """
+        return profile_item.topic.profile.km_user.user
 
 
 class ProfileItemListView(SortView, generics.ListCreateAPIView):
