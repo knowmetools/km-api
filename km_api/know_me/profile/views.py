@@ -488,6 +488,7 @@ class ProfileTopicListView(SortView, generics.ListCreateAPIView):
     permission_classes = (
         DRYPermissions,
         permissions.HasProfileTopicListPermissions,
+        CollectionOwnerHasPremium,
     )
     sort_child_name = "topics"
     sort_parent = models.Profile
@@ -522,6 +523,22 @@ class ProfileTopicListView(SortView, generics.ListCreateAPIView):
             return serializers.ProfileTopicDetailSerializer
 
         return serializers.ProfileTopicListSerializer
+
+    def get_subscription_owner(self, request):
+        """
+        Get the user who must have an active premium subscription in
+        order to access a collection of profile topics.
+
+        Args:
+            request:
+                The request being made.
+
+        Returns:
+            The owner of the collection.
+        """
+        return get_user_model().objects.get(
+            km_user__profile__pk=self.kwargs.get("pk")
+        )
 
     def perform_create(self, serializer):
         """
