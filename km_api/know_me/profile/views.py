@@ -451,9 +451,26 @@ class ProfileTopicDetailView(generics.RetrieveUpdateDestroyAPIView):
     Update a specific profile topic's information.
     """
 
-    permission_classes = (DRYPermissions,)
+    permission_classes = (DRYPermissions, ObjectOwnerHasPremium)
     queryset = models.ProfileTopic.objects.all()
     serializer_class = serializers.ProfileTopicListSerializer
+
+    @staticmethod
+    def get_subscription_owner(request, topic):
+        """
+        Get the user who must have an active subscription in order to
+        access a particular profile topic.
+
+        Args:
+            request:
+                The request being made.
+            topic:
+                The profile topic being accessed.
+
+        Returns:
+            The user who owns the specified profile topic.
+        """
+        return topic.profile.km_user.user
 
 
 class ProfileTopicListView(SortView, generics.ListCreateAPIView):
