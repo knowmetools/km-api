@@ -346,6 +346,7 @@ class ProfileItemListView(SortView, generics.ListCreateAPIView):
     permission_classes = (
         DRYPermissions,
         permissions.HasProfileItemListPermissions,
+        CollectionOwnerHasPremium,
     )
     serializer_class = serializers.ProfileItemDetailSerializer
     sort_child_name = "items"
@@ -398,6 +399,25 @@ class ProfileItemListView(SortView, generics.ListCreateAPIView):
             context["km_user"] = None
 
         return context
+
+    def get_subscription_owner(self, request):
+        """
+        Get the owner of the collection of profile items.
+
+        The owner is used to check for an active premium subscription.
+        Without a subscription, access to the view is prohibited.
+
+        Args:
+            request:
+                The request being made.
+
+        Returns:
+            The user who must have an active premium subscription in
+            order for the collection of profile items to be accessed.
+        """
+        return get_user_model().objects.get(
+            km_user__profile__topic__pk=self.kwargs.get("pk")
+        )
 
     def perform_create(self, serializer):
         """

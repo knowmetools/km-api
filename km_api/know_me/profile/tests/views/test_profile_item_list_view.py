@@ -1,22 +1,24 @@
 from unittest import mock
 
+from dry_rest_permissions.generics import DRYPermissions
+
+import test_utils
+from know_me.permissions import CollectionOwnerHasPremium
 from know_me.profile import serializers, views
+from know_me.profile.permissions import HasProfileItemListPermissions
 
 
-@mock.patch("know_me.profile.views.DRYPermissions.has_permission")
-@mock.patch(
-    "know_me.profile.views.permissions.HasProfileItemListPermissions.has_permission"  # noqa
-)
-def test_check_permissions(mock_list_permissions, mock_dry_permissions):
+def test_get_permissions():
     """
-    The view should use the appropriate permissions checks.
+    Test the permissions used by the view.
     """
     view = views.ProfileItemListView()
 
-    view.check_permissions(None)
-
-    assert mock_dry_permissions.call_count == 1
-    assert mock_list_permissions.call_count == 1
+    assert test_utils.uses_permission_class(view, DRYPermissions)
+    assert test_utils.uses_permission_class(
+        view, HasProfileItemListPermissions
+    )
+    assert test_utils.uses_permission_class(view, CollectionOwnerHasPremium)
 
 
 def test_get_queryset(profile_item_factory, profile_topic_factory):
@@ -105,6 +107,21 @@ def test_get_serializer_context_no_kwarg():
     context = view.get_serializer_context()
 
     assert context["km_user"] is None
+
+
+def test_get_subscription_owner(profile_topic_factory):
+    """
+    Test getting the owner of a collection of profile items. The owner
+    should be the owner of the parent topic.
+    """
+    topic = profile_topic_factory()
+    view = views.ProfileItemListView()
+    view.kwargs = {"pk": topic.pk}
+    request = mock.Mock()
+
+    expected = topic.profile.km_user.user
+
+    assert view.get_subscription_owner(request) == expected
 
 
 def test_perform_create(profile_topic_factory):

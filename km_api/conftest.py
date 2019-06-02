@@ -27,6 +27,7 @@ from know_me.profile.factories import (
     ProfileItemFactory,
     MediaResourceFactory,
     ProfileFactory,
+    ProfileTopicFactory,
 )
 from test_utils.apple_receipt_validator import (
     AppleReceiptValidationClient,
@@ -301,6 +302,14 @@ def profile_list_entry_factory(db):
     items.
     """
     return ListEntryFactory
+
+
+@pytest.fixture
+def profile_topic_factory(db):
+    """
+    Fixture to get the factory used to create profile topics.
+    """
+    return ProfileTopicFactory
 
 
 @pytest.fixture(scope="session")
