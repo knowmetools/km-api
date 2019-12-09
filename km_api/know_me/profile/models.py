@@ -132,6 +132,14 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
     Some form of media file owned by a Know Me user.
     """
 
+    cover_art = models.PositiveSmallIntegerField(
+        help_text=_(
+            "An integer that provides a hint for clients for what "
+            "cover art to use for a media resource."
+        ),
+        default=0,
+        verbose_name=_("cover art"),
+    )
     cover_style = models.PositiveSmallIntegerField(
         blank=True,
         default=0,
@@ -198,6 +206,96 @@ class MediaResource(mixins.IsAuthenticatedMixin, models.Model):
         """
         return reverse(
             "know-me:profile:media-resource-detail", kwargs={"pk": self.pk}
+        )
+
+    def has_object_read_permission(self, request):
+        """
+        Check read permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            The permissions granted by the instance's parent Know Me
+            user.
+        """
+        return self.km_user.has_object_read_permission(request)
+
+    def has_object_write_permission(self, request):
+        """
+        Check write permissions on the instance for a given request.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            The permissions granted by the instance's parent Know Me
+            user.
+        """
+        return self.km_user.has_object_write_permission(request)
+
+
+class MediaResourceCoverStyle(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    Cover style for media resources for sorting and filtering.
+    """
+
+    cover_style_override = models.PositiveSmallIntegerField(
+        help_text=_("Media Resource cover style id to override the defaults"),
+        default=0,
+        verbose_name=_("cover style override"),
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_("The time that the resource cover style was created."),
+        verbose_name=_("created at"),
+    )
+    km_user = models.ForeignKey(
+        "know_me.KMUser",
+        help_text=_("The Know Me user who owns the resource cover style."),
+        on_delete=models.CASCADE,
+        related_name="media_resource_cover_style",
+        related_query_name="media_resource_cover_style",
+        verbose_name=_("Know Me user"),
+    )
+    name = models.CharField(
+        help_text=_("Name of the media resource cover style."),
+        blank=True,
+        max_length=255,
+        verbose_name=_("name"),
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        help_text=_("Time that the resource cover style was last updated."),
+        verbose_name=_("updated at"),
+    )
+
+    class Meta:
+        unique_together = ('km_user', 'cover_style_override',)
+        verbose_name = _("media resource cover style")
+        verbose_name_plural = _("media resources cover styles")
+
+    def __str__(self):
+        """
+        Get a string representation of the resource category.
+
+        Returns:
+            The resource category's name.
+        """
+        return self.name
+
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            The absolute URL of the instance's detail view.
+        """
+        return reverse(
+            "know-me:profile:media-resource-cover-style-detail",
+            kwargs={"pk": self.pk},
         )
 
     def has_object_read_permission(self, request):

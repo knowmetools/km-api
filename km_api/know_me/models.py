@@ -310,6 +310,19 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
             "know-me:profile:media-resource-list", kwargs={"pk": self.pk}
         )
 
+    def get_media_resource_cover_style_list_url(self):
+        """
+        Get the absolute URL of the instance's media resource cover style
+        list view.
+
+        Returns:
+            The URL of the instance's media resource list view.
+        """
+        return reverse(
+            "know-me:profile:media-resource-cover-style-list",
+            kwargs={"pk": self.pk}
+        )
+
     def get_profile_list_url(self, request=None):
         """
         Get the absolute URL of the instance's profile list view.

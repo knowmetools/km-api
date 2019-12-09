@@ -29,6 +29,7 @@ def test_serialize(
         "url": request.build_absolute_uri(),
         "created_at": serialized_time(resource.created_at),
         "updated_at": serialized_time(resource.updated_at),
+        "cover_art": resource.cover_art,
         "cover_style": resource.cover_style,
         "file": file_request.build_absolute_uri(),
         "link": resource.link,

@@ -15,6 +15,18 @@ class ListEntryFactory(factory.django.DjangoModelFactory):
         model = "profile.ListEntry"
 
 
+class MediaResourceCoverStyleFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for creating ``MediaResourceCoverStyleFactory`` instances.
+    """
+
+    km_user = factory.SubFactory("know_me.factories.KMUserFactory")
+    name = factory.Sequence(lambda n: "Resource Cover Style {}".format(n))
+
+    class Meta:
+        model = "profile.MediaResourceCoverStyle"
+
+
 class MediaResourceFactory(factory.django.DjangoModelFactory):
     """
     Factory for creating ``MediaResource`` instances.

@@ -23,6 +23,7 @@ class MediaResourceSerializer(serializers.HyperlinkedModelSerializer):
             "url",
             "created_at",
             "updated_at",
+            "cover_art",
             "cover_style",
             "file",
             "link",
@@ -67,6 +68,31 @@ class MediaResourceSerializer(serializers.HyperlinkedModelSerializer):
                 )
 
         return data
+
+
+class MediaResourceCoverStyleSerializer(
+    serializers.HyperlinkedModelSerializer
+):
+    """
+    Serializer for ``MediaResourceCoverStyle`` instances.
+    """
+
+    permissions = DRYPermissionsField()
+    url = serializers.HyperlinkedIdentityField(
+        view_name="know-me:profile:media-resource-cover-style-detail"
+    )
+
+    class Meta:
+        fields = (
+            "id",
+            "url",
+            "created_at",
+            "updated_at",
+            "cover_style_override",
+            "name",
+            "permissions",
+        )
+        model = models.MediaResourceCoverStyle
 
 
 #######################

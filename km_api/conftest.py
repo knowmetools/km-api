@@ -26,6 +26,7 @@ from know_me.profile.factories import (
     ListEntryFactory,
     ProfileItemFactory,
     MediaResourceFactory,
+    MediaResourceCoverStyleFactory,
     ProfileFactory,
     ProfileTopicFactory,
 )
@@ -277,6 +278,14 @@ def media_resource_factory(db):
     Fixture to get the factory used to create media resources.
     """
     return MediaResourceFactory
+
+
+@pytest.fixture
+def media_resource_cover_style_factory(db):
+    """
+    Fixture to get the factory used to create media resource cover styles.
+    """
+    return MediaResourceCoverStyleFactory
 
 
 @pytest.fixture

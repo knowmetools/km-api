@@ -30,6 +30,20 @@ def test_get_absolute_url(km_user_factory):
     assert km_user.get_absolute_url() == expected
 
 
+def test_get_media_resource_cover_style_list_url(km_user_factory):
+    """
+    This method should return the absolute URL of the Know Me user's
+    media resource cover style list view.
+    """
+    km_user = km_user_factory()
+    expected = reverse(
+        "know-me:profile:media-resource-cover-style-list",
+        kwargs={"pk": km_user.pk}
+    )
+
+    assert km_user.get_media_resource_cover_style_list_url() == expected
+
+
 def test_get_media_resource_list_url(km_user_factory):
     """
     This method should return the absolute URL of the Know Me user's

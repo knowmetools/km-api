@@ -197,6 +197,94 @@ class MediaResourceListView(generics.ListCreateAPIView):
         return serializer.save(km_user=km_user)
 
 
+class MediaResourceCoverStyleDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    delete:
+    Delete a specific media resource cover style.
+
+    get:
+    Retrieve information about a specific media resource cover style.
+
+    patch:
+    Partially update the information for a specific media resource cover style.
+
+    put:
+    Update the information for a specific media resource cover Style.
+    """
+
+    permission_classes = (DRYPermissions, ObjectOwnerHasPremium)
+    queryset = models.MediaResourceCoverStyle.objects.all()
+    serializer_class = serializers.MediaResourceCoverStyleSerializer
+
+    @staticmethod
+    def get_subscription_owner(request, media_resource_cover_style):
+        """
+        Get the user who should have an active premium subscription in
+        order to access a media resource category.
+
+        Args:
+            request:
+                The request being made.
+            media_resource_cover_style:
+                The media resource being accessed.
+
+        Returns:
+            The user who owns the media resource category.
+        """
+        return media_resource_cover_style.km_user.user
+
+
+class MediaResourceCoverStyleListView(generics.ListCreateAPIView):
+    """
+    get:
+    Get a list of the media resource categories belonging to a specific Know Me
+    user.
+
+    post:
+    Create a new media resource category owned by the specified Know Me user.
+    """
+
+    filter_backends = (KMUserAccessFilterBackend,)
+    permission_classes = (
+        DRYPermissions,
+        HasKMUserAccess,
+        CollectionOwnerHasPremium,
+    )
+    queryset = models.MediaResourceCoverStyle.objects.all()
+    serializer_class = serializers.MediaResourceCoverStyleSerializer
+
+    def get_subscription_owner(self, request):
+        """
+        Get the owner of the media resource category collection who must
+        have a subscription in order for the collection to be accessed.
+
+        Args:
+            request:
+                The request being made.
+
+        Returns:
+            The owner of the Know Me user whose media resources category are
+            being accessed.
+        """
+        return get_user_model().objects.get(km_user__pk=self.kwargs["pk"])
+
+    def perform_create(self, serializer):
+        """
+        Create a new media resource collection.
+
+        Args:
+            serializer:
+                An instance of the view's serializer class containing
+                the data passed to the view.
+
+        Returns:
+            The newly created media resource category.
+        """
+        km_user = KMUser.objects.get(pk=self.kwargs.get("pk"))
+
+        return serializer.save(km_user=km_user)
+
+
 class ProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     delete:

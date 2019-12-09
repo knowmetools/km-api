@@ -65,6 +65,12 @@ def test_serialize(
     )
     entries_url = entries_request.build_absolute_uri()
 
+    media_resource_cover_styles_request = api_rf.get(
+        km_user.get_media_resource_cover_style_list_url()
+    )
+    media_resource_cover_styles_url = \
+        media_resource_cover_styles_request.build_absolute_uri()
+
     media_resources_request = api_rf.get(km_user.get_media_resource_list_url())
     media_resources_url = media_resources_request.build_absolute_uri()
 
@@ -84,6 +90,7 @@ def test_serialize(
         "is_premium_user": km_user.is_premium_user,
         "is_owned_by_current_user": km_user.user == request.user,
         "journal_entries_url": entries_url,
+        "media_resource_cover_styles_url": media_resource_cover_styles_url,
         "media_resources_url": media_resources_url,
         "name": km_user.user.get_short_name(),
         "permissions": {

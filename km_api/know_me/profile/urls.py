@@ -18,6 +18,11 @@ profile_urls = [
         name="media-resource-detail",
     ),
     url(
+        r"^media-resource-cover-styles/(?P<pk>[0-9]+)/$",
+        views.MediaResourceCoverStyleDetailView.as_view(),
+        name="media-resource-cover-style-detail",
+    ),
+    url(
         r"^profile-items/(?P<pk>[0-9]+)/$",
         views.ProfileItemDetailView.as_view(),
         name="profile-item-detail",
@@ -55,6 +60,11 @@ user_detail_urls = [
         r"^media-resources/$",
         views.MediaResourceListView.as_view(),
         name="media-resource-list",
+    ),
+    url(
+        r"^media-resource-cover-style/$",
+        views.MediaResourceCoverStyleListView.as_view(),
+        name="media-resource-cover-style-list",
     ),
     url(r"^profiles/$", views.ProfileListView.as_view(), name="profile-list"),
 ]
