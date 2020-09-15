@@ -8,31 +8,85 @@ import permission_utils.model_mixins
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('know_me', '0015_delete_subscriptionappledata'),
-        ('profile', '0013_mediaresourcecategory_delete'),
+        ("know_me", "0015_delete_subscriptionappledata"),
+        ("profile", "0013_mediaresourcecategory_delete"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='mediaresource',
-            name='cover_art',
-            field=models.PositiveSmallIntegerField(default=0, help_text='An integer that provides a hint for clients for what cover art to use for a media resource.', verbose_name='cover art'),
+            model_name="mediaresource",
+            name="cover_art",
+            field=models.PositiveSmallIntegerField(
+                default=0,
+                help_text="An integer that provides a hint for clients for what cover art to use for a media resource.",
+                verbose_name="cover art",
+            ),
         ),
         migrations.CreateModel(
-            name='MediaResourceCoverStyle',
+            name="MediaResourceCoverStyle",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cover_style_override', models.PositiveSmallIntegerField(default=0, help_text='Media Resource cover style id to override the defaults', verbose_name='cover style override')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='The time that the resource cover style was created.', verbose_name='created at')),
-                ('name', models.CharField(blank=True, help_text='Name of the media resource cover style.', max_length=255, verbose_name='name')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Time that the resource cover style was last updated.', verbose_name='updated at')),
-                ('km_user', models.ForeignKey(help_text='The Know Me user who owns the resource cover style.', on_delete=django.db.models.deletion.CASCADE, related_name='media_resource_cover_style', related_query_name='media_resource_cover_style', to='know_me.KMUser', verbose_name='Know Me user')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "cover_style_override",
+                    models.PositiveSmallIntegerField(
+                        default=0,
+                        help_text="Media Resource cover style id to override the defaults",
+                        verbose_name="cover style override",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The time that the resource cover style was created.",
+                        verbose_name="created at",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True,
+                        help_text="Name of the media resource cover style.",
+                        max_length=255,
+                        verbose_name="name",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Time that the resource cover style was last updated.",
+                        verbose_name="updated at",
+                    ),
+                ),
+                (
+                    "km_user",
+                    models.ForeignKey(
+                        help_text="The Know Me user who owns the resource cover style.",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="media_resource_cover_style",
+                        related_query_name="media_resource_cover_style",
+                        to="know_me.KMUser",
+                        verbose_name="Know Me user",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'media resource cover style',
-                'verbose_name_plural': 'media resources cover styles',
-                'unique_together': {('km_user', 'cover_style_override')},
+                "verbose_name": "media resource cover style",
+                "verbose_name_plural": "media resources cover styles",
+                "unique_together": {("km_user", "cover_style_override")},
             },
-            bases=(permission_utils.model_mixins.IsAuthenticatedMixin, models.Model),
+            bases=(
+                permission_utils.model_mixins.IsAuthenticatedMixin,
+                models.Model,
+            ),
         ),
     ]

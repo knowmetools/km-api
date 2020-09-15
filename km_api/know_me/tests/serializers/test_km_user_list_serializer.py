@@ -68,8 +68,9 @@ def test_serialize(
     media_resource_cover_styles_request = api_rf.get(
         km_user.get_media_resource_cover_style_list_url()
     )
-    media_resource_cover_styles_url = \
+    media_resource_cover_styles_url = (
         media_resource_cover_styles_request.build_absolute_uri()
+    )
 
     media_resources_request = api_rf.get(km_user.get_media_resource_list_url())
     media_resources_url = media_resources_request.build_absolute_uri()

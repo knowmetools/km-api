@@ -30,6 +30,7 @@ def test_list_media_resources(
             ),
             "created_at": serialized_time(resource.created_at),
             "updated_at": serialized_time(resource.updated_at),
+            "cover_art": resource.cover_art,
             "cover_style": resource.cover_style,
             "file": api_client.build_full_url(resource.file.url),
             "link": resource.link,

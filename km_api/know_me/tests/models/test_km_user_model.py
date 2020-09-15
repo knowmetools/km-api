@@ -38,7 +38,7 @@ def test_get_media_resource_cover_style_list_url(km_user_factory):
     km_user = km_user_factory()
     expected = reverse(
         "know-me:profile:media-resource-cover-style-list",
-        kwargs={"pk": km_user.pk}
+        kwargs={"pk": km_user.pk},
     )
 
     assert km_user.get_media_resource_cover_style_list_url() == expected

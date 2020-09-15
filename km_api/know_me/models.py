@@ -320,7 +320,7 @@ class KMUser(mixins.IsAuthenticatedMixin, models.Model):
         """
         return reverse(
             "know-me:profile:media-resource-cover-style-list",
-            kwargs={"pk": self.pk}
+            kwargs={"pk": self.pk},
         )
 
     def get_profile_list_url(self, request=None):
@@ -685,6 +685,134 @@ class LegacyUser(models.Model):
             The absolute URL of the instance's detail view.
         """
         return reverse("know-me:legacy-user-detail", kwargs={"pk": self.pk})
+
+
+class ReminderEmailLog(models.Model):
+    """
+    Reminder Email Log
+    """
+
+    sent_date = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_("Time the reminder emails were sent"),
+        verbose_name=_("sent at"),
+    )
+    schedule_frequency = models.CharField(
+        help_text=_(
+            "The frequency in which the reminder emails are sheduled to send."
+        ),
+        default="Weekly",
+        max_length=10,
+        verbose_name=_("schedule frequency"),
+    )
+    subscriber_count = models.PositiveIntegerField(
+        help_text=_("The number of emails being sent to users."),
+        default=0,
+        verbose_name=_("suscriber count"),
+    )
+
+    @staticmethod
+    def has_read_permission(request):
+        """
+        Determine if the requesting user has read permissions for legacy
+        users.
+
+        Only staff should have this permission.
+
+        Returns:
+            A boolean indicating if the requesting user should be
+            granted read access to legacy users.
+        """
+        return request.user.is_staff
+
+    @staticmethod
+    def has_write_permission(request):
+        """
+        Determine if the requesting user has write permissions for
+        legacy users.
+
+        Only staff should have this permission.
+
+        Returns:
+            A boolean indicating if the requesting user should be
+            granted write access to legacy users.
+        """
+        return request.user.is_staff
+
+
+class ReminderEmailSubscriber(mixins.IsAuthenticatedMixin, models.Model):
+    """
+    Subscribers to the automated reminder email.
+    """
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        help_text=_("The user who has subscribed to reminder emails."),
+        on_delete=models.CASCADE,
+        related_name="reminder_email_subscriber",
+        verbose_name=_("user"),
+    )
+    is_subscribed = models.BooleanField(default=True)
+    schedule_frequency = models.CharField(
+        help_text=_(
+            "The frequency in which the reminder emails are scheduled to send."
+        ),
+        default="Weekly",
+        max_length=10,
+        verbose_name=_("schedule frequency"),
+    )
+    subscription_uuid = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name=_("subscription uuid"),
+    )
+
+    class Meta:
+        verbose_name = _("reminder email subscriber")
+        verbose_name_plural = _("reminder email subscribers")
+
+    def __str__(self):
+        """
+        Get a user readable string representation of the instance.
+
+        Returns:
+            A string containing the name of the user who owns the
+            email reminder subscription.
+        """
+        return "Know Me email reminder subscription for {user}".format(
+            user=self.user.get_full_name()
+        )
+
+    def has_object_read_permission(self, request):
+        """
+        Check if the requesting user has read permissions on the
+        instance.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has read
+            permissions to the instance.
+        """
+        return request.user == self.user
+
+    def has_object_write_permission(self, request):
+        """
+        Check if the requesting user has write permissions on the
+        instance.
+
+        Args:
+            request:
+                The request to check permissions for.
+
+        Returns:
+            A boolean indicating if the requesting user has write
+            permissions to the instance.
+        """
+        return request.user == self.user
 
 
 class Subscription(mixins.IsAuthenticatedMixin, models.Model):

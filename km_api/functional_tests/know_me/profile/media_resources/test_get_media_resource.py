@@ -27,6 +27,7 @@ def test_get_media_resource(
         "url": api_client.build_full_url(url),
         "created_at": serialized_time(resource.created_at),
         "updated_at": serialized_time(resource.updated_at),
+        "cover_art": resource.cover_art,
         "cover_style": resource.cover_style,
         "file": api_client.build_full_url(resource.file.url),
         "link": "",

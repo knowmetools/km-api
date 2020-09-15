@@ -41,6 +41,22 @@ def legacy_user_factory(db):
 
 
 @pytest.fixture
+def reminder_email_log_factory(db):
+    """
+    Fixture to get the factory used to create reminder email log.
+    """
+    return factories.ReminderEmailLogFactory
+
+
+@pytest.fixture
+def reminder_email_subscriber_factory(db):
+    """
+    Fixture to get the factory used to create reminder email subscribers.
+    """
+    return factories.ReminderEmailSubscriberFactory
+
+
+@pytest.fixture
 def text_file():
     """
     Fixture to get a file suitable for a ``FileField``.

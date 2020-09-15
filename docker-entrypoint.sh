@@ -35,6 +35,7 @@ if [[ "$1" = 'background-jobs' ]]; then
     ${MANAGE_CMD} cleanemailconfirmations
     ${MANAGE_CMD} updatelegacyusers
     ${MANAGE_CMD} updatesubscriptions
+    ${MANAGE_CMD} sendreminderemails
     exit 0
 fi
 

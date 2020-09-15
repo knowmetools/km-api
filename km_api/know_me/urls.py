@@ -44,6 +44,23 @@ urlpatterns = [
         views.LegacyUserDetailView.as_view(),
         name="legacy-user-detail",
     ),
+    url(
+        r"^reminder-email-subscription-update/$",
+        views.ReminderEmailSubscriberDetailView.as_view(),
+        name="reminder-email-detail",
+    ),
+    url(
+        r"^reminder-email-subscription/$",
+        views.ReminderEmailSubscriberListView.as_view(),
+        name="reminder-email-list",
+    ),
+    url(
+        r"^reminder-email-unsubscribe/"
+        r"(?P<email>[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]+)/"
+        r"(?P<subscription_uuid>[0-9a-f-]+)/$",
+        views.ReminderEmailUnsubscribeView.unsubscribe,
+        name="reminder-email-delete",
+    ),
     path(
         "subscription/",
         views.SubscriptionDetailView.as_view(),

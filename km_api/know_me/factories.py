@@ -67,6 +67,26 @@ class LegacyUserFactory(factory.django.DjangoModelFactory):
         model = "know_me.LegacyUser"
 
 
+class ReminderEmailLogFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``ReminderEmailSubscriber`` instances.
+    """
+
+    class Meta:
+        model = "know_me.ReminderEmailLog"
+
+
+class ReminderEmailSubscriberFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating ``ReminderEmailSubscriber`` instances.
+    """
+
+    user = factory.SubFactory("factories.UserFactory")
+
+    class Meta:
+        model = "know_me.ReminderEmailSubscriber"
+
+
 class SubscriptionFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating ``Subscription`` instances.

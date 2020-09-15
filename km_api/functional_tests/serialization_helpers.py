@@ -105,6 +105,9 @@ def km_user_list(km_users, is_owned_by_user, build_full_url):
             "media_resources_url": build_full_url(
                 f"/know-me/users/{user.pk}/media-resources/"
             ),
+            "media_resource_cover_styles_url": build_full_url(
+                f"/know-me/users/{user.pk}/media-resource-cover-style/"
+            ),
             "name": user.name,
             "permissions": {"read": True, "write": is_owned_by_user(user)},
             "profiles_url": build_full_url(

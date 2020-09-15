@@ -4,6 +4,7 @@ import logging
 
 from django.conf import settings
 from django.db.models import Case, PositiveSmallIntegerField, Q, Value, When
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import get_object_or_404
 from dry_rest_permissions.generics import DRYGlobalPermissions, DRYPermissions
 from rest_framework import generics, pagination, status
@@ -11,7 +12,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from know_me import models, permissions, serializers
-from know_me.serializers import subscription_serializers
+from know_me.serializers import (
+    subscription_serializers,
+    email_reminder_subscriber_serializers,
+)
 from permission_utils.view_mixins import DocumentActionMixin
 
 
@@ -418,6 +422,105 @@ class PendingAccessorListView(generics.ListAPIView):
             give access to the requesting user and are not yet accepted.
         """
         return self.request.user.km_user_accessors.filter(is_accepted=False)
+
+
+class ReminderEmailSubscriberDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    delete:
+    Delete a specific reminder email subscription.
+
+    get:
+    Retrieve a specific reminder email subscription's information.
+
+    patch:
+    Partially update a specific reminder email subscription's information.
+
+    put:
+    Update a specific reminder email subscription's information.
+    """
+
+    permission_classes = (DRYPermissions,)
+    queryset = models.ReminderEmailSubscriber.objects.all()
+    serializer_class = (
+        email_reminder_subscriber_serializers.ReminderEmailSubscriberSerializer
+    )
+
+    def get_object(self):
+        """
+        Returns:
+            The email reminder subscription instance owned by the requesting
+            user.
+
+        Raises:
+            Http404:
+                If the requesting user does not have a subscription
+                instance.
+        """
+        return get_object_or_404(
+            models.ReminderEmailSubscriber, user=self.request.user
+        )
+
+
+class ReminderEmailSubscriberListView(generics.ListCreateAPIView):
+    """
+    Endpoint for listing reminder email subscribers
+    """
+
+    permission_classes = (DRYPermissions,)
+    serializer_class = (
+        email_reminder_subscriber_serializers.ReminderEmailSubscriberSerializer
+    )
+
+    def get_queryset(self):
+        """
+        Get the reminder email subscription for the current user.
+
+        Returns:
+            A queryset containing the ``ReminderEmailSubscriber`` instances
+            belonging to the user whose PK was passed to the view.
+        """
+
+        return models.ReminderEmailSubscriber.objects.filter(
+            user=self.request.user
+        )
+
+    def perform_create(self, serializer):
+        """
+        Create a reminder email subscriber for the current user.
+
+        Args:
+            serializer:
+                The serializer containing the received data.
+
+        Returns:
+            The newly created ``ReminderEmailSubscriber`` instance.
+        """
+
+        return serializer.save(user=self.request.user)
+
+
+class ReminderEmailUnsubscribeView(HttpRequest):
+    """
+    Endpoint for unsubscribing to email reminders through email link.
+    """
+
+    def unsubscribe(request, *args, **kwargs):
+        uuid = kwargs["subscription_uuid"]
+        email = kwargs["email"]
+
+        msg = "<h1>Invalid Link</h1>"
+        sub = models.ReminderEmailSubscriber.objects.filter(
+            subscription_uuid=uuid
+        ).first()
+
+        if (
+            sub is not None
+            and str(sub.user.primary_email).lower() == email.lower()
+        ):
+            sub.delete()
+            msg = "<h1>Unsubscribed</h1>"
+
+        return HttpResponse(msg, content_type="text/html", charset="utf-8")
 
 
 class SubscriptionDetailView(generics.RetrieveAPIView):

@@ -273,7 +273,7 @@ class MediaResourceCoverStyle(mixins.IsAuthenticatedMixin, models.Model):
     )
 
     class Meta:
-        unique_together = ('km_user', 'cover_style_override',)
+        unique_together = ("km_user", "cover_style_override")
         verbose_name = _("media resource cover style")
         verbose_name_plural = _("media resources cover styles")
 
